@@ -9,8 +9,7 @@ Das Eclipse - Project für das Praktikum
 * ```$ curl -i http://localhost:4567/dice;echo ```
 
 <br />
-##### Wuerfeln mit Spieler und Spielinfo - Funktioniert noch nicht 
-##### (siehe Code)
+##### Wuerfeln mit Spieler und Spielinfo
 * ```$ curl -i -H "Content-Type: application/json" http://localhost:4567/dice2?name=http://localhost:4567/users/mario; echo ```
 
 <br />
@@ -39,7 +38,6 @@ Das Eclipse - Project für das Praktikum
 
 ## TODO:
 * Yellopages
-* Wuerfeln mit Spieler und Spielinfo
 
 ### Aufgabe 2
 ### . . .

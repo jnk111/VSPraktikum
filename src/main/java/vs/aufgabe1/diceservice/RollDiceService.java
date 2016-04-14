@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import vs.aufgabe1.StatusCodes;
 import vs.aufgabe1.userservice.User;
 
@@ -33,7 +35,6 @@ public class RollDiceService {
 
 	/**
 	 * Default-Rolldice - Aufgabe 1.2.2A - 2.)
-	 * FUNKTIONIERT NICHT! Wir muessen rauskriegen wie man einen REST-Aufruf in Spark macht.
 	 */
 	private void initGETWithPlayerInfo() {
 		
@@ -44,13 +45,14 @@ public class RollDiceService {
 			Map<User, Dice> rollAction = new HashMap<>();
 			String playerUri = req.queryParams("name");
 			// String gameUri = req.queryParams("game");  --> Spaeter
-			System.out.println(playerUri);
+			String userJson = null;
 			
-			if(playerUri != null){				// Funktioniert nicht
-				res.redirect(playerUri);
+			if(playerUri != null){
+				HttpResponse<JsonNode> o = Unirest.get(playerUri).asJson();
+				userJson = o.getBody().toString();
 			}
 			
-			User user = gson.fromJson(res.body(), User.class);
+			User user = gson.fromJson(userJson, User.class);
 			
 			if(user != null
 					&& user.isValid()){

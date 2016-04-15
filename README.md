@@ -10,7 +10,7 @@ Das Eclipse - Project für das Praktikum
 
 <br />
 ##### Wuerfeln mit Spieler und Spielinfo
-* ```$ curl -i -H "Content-Type: application/json" http://localhost:4567/dice2?name=http://localhost:4567/users/mario; echo ```
+* ```$ curl -i -H "Content-Type: application/json" http://localhost:4567/dice?player=http://localhost:4567/users/mario&game=http://somegameuri:4567/gameid; echo ```
 
 <br />
 #### User-Service
@@ -37,7 +37,9 @@ Das Eclipse - Project für das Praktikum
 <br />
 
 ## TODO:
-* Yellopages
+* Yellowpages
+** Dice-Service JSON: ``` {'name':'Jan, Malte','description':'Rolls the Dice', 'service':'DiceService', uri':'http://172.18.0.35:4567/dice'} ```
+** User-Service JSON: ``` {'name':'Jan, Malte','description':'User Service', 'service':'UserService', uri':'http://172.18.0.36:4567/users'} ```
 
 ### Aufgabe 2
 ### . . .

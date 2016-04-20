@@ -26,21 +26,23 @@ public class UserService{
 	/**
 	 * Loescht einen User aus der Map, identifiziert mit dem gesamten Pfad
 	 */
-	private synchronized void initDELETE() {
+	private void initDELETE() {
 		
 		delete("/users/:userid", (req, resp) -> {
 			
 			boolean erfolg = false;
 			String id = req.pathInfo(); // Gesamten Pfad nehmen, da dies der Key in der Map ist
 			User user = users.get(id);
-			
-			if(user != null){
-				users.remove(id);
-				resp.status(StatusCodes.SUCCESS);
-				erfolg = true;
-			}else{
-				resp.status(StatusCodes.BAD_REQ);
+			synchronized(this){
+				if(user != null){
+					users.remove(id);
+					resp.status(StatusCodes.SUCCESS);
+					erfolg = true;
+				}else{
+					resp.status(StatusCodes.BAD_REQ);
+				}
 			}
+
 			return "" + erfolg + CLRF;
 		});
 	}
@@ -49,7 +51,7 @@ public class UserService{
 	/**
 	 * Veraendert einen User-Eintrag
 	 */
-	private synchronized void initPUT() {
+	private void initPUT() {
 		
 		put("/users/:userid", (req, resp) -> {
 			
@@ -58,15 +60,19 @@ public class UserService{
 			String uri = req.queryParams("uri");
 			boolean erfolg = false;
 			User user = users.get(id);
-			if(user != null
-					&& user.isValid()){
-				user.setName(name);
-				user.setUri(uri);
-				resp.status(StatusCodes.SUCCESS);
-				erfolg = true;
-			}else{
-				resp.status(StatusCodes.BAD_REQ);
+			
+			synchronized(this){
+				if(user != null
+						&& user.isValid()){
+					user.setName(name);
+					user.setUri(uri);
+					resp.status(StatusCodes.SUCCESS);
+					erfolg = true;
+				}else{
+					resp.status(StatusCodes.BAD_REQ);
+				}
 			}
+
 			
 			return "" + erfolg + CLRF;
 		});
@@ -76,19 +82,23 @@ public class UserService{
 	/**
 	 * Neuen User eintragen, Uebergabe als JSON im Request-Body
 	 */
-	private synchronized void initPOST() {
+	private void initPOST() {
 		post("/users", "application/json", (req, resp) -> {
+			
 			User user = new Gson().fromJson(req.body(), User.class); // Mapping JSON -> User
 			boolean erfolg = false;
 			
-			if(user != null
-					&& user.isValid()){ 	// JSON richtig konvertiert, hat also Klient Schnittstelle eingehalten?
-				users.put(user.getId(), user);
-				resp.status(StatusCodes.SUCCESS);
-				erfolg = true;
-			}else{
-				resp.status(StatusCodes.BAD_REQ); // BAD_REQUEST
+			synchronized(this){
+				if(user != null
+						&& user.isValid()){ 	// JSON richtig konvertiert, hat also Klient Schnittstelle eingehalten?
+					users.put(user.getId(), user);
+					resp.status(StatusCodes.SUCCESS);
+					erfolg = true;
+				}else{
+					resp.status(StatusCodes.BAD_REQ); // BAD_REQUEST
+				}
 			}
+
 			return "" + erfolg + CLRF; // Oder etwas anders zurueckgeben? void geht nicht
 		});
 	}
@@ -138,7 +148,6 @@ public class UserService{
 			}
 			return response;
 		});
-		
 	}
 
 	/**

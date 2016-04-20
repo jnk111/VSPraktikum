@@ -8,11 +8,11 @@ public class Dice {
 		this.number = (int) ((Math.random() * 6) + 1);
 	}
 
-	public int getRoll() {
+	public int getNumber() {
 		return number;
 	}
 
-	public void setRoll(int roll) {
+	public void setNumber(int roll) {
 		this.number = roll;
 	}
 

@@ -1,0 +1,23 @@
+/jail:
+    description: "Provides the jail component for the Monopoly game"
+    get:
+        description: "Returns list of URIs of player resources that are currently in jail"
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {"users": ["/users/mario"] }
+    /{userid}:
+        get:
+            description: "Returns the state of the player resource"
+            responses:
+                200:
+                    body:
+                        application/json:
+                            example: |
+                                {"id":"/user/mario","jailed":false}
+        put:
+            description: "Puts the player into jail"
+        delete:
+            description: "Removes the player from jail"

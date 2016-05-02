@@ -46,6 +46,40 @@ public class Account extends LockProvider {
 	this.balance = balance;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj) {
+	    return true;
+	}
+	if (obj == null) {
+	    return false;
+	}
+	if (this.getClass() != obj.getClass()) {
+	    return false;
+	}
+	final Account other = (Account) obj;
+	if (this.balance != other.balance) {
+	    return false;
+	}
+	if (this.user == null) {
+	    if (other.user != null) {
+		return false;
+	    }
+	} else if (!this.user.equals(other.user)) {
+	    return false;
+	}
+	return true;
+    }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + this.balance;
+	result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
+	return result;
+    }
+
     /**
      * Deposits the specified amount to this account.
      *

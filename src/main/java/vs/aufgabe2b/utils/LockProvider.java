@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Thread save basic implementation of the {@link Lockable} interface.
+ * Thread save basic lock implementation.
  *
  * @author Gerriet Hinrichs <gerriet.hinrichs@web.de>
  */
@@ -25,11 +25,21 @@ public abstract class LockProvider {
     }
 
     /**
+     * Checks if this instance is locked.
+     *
+     * @return <code>true</code> if this instance is locked, <code>false</code>
+     *         otherwise.
+     */
+    public synchronized boolean isLocked() {
+	return this.semaphore.availablePermits() > 0;
+    }
+
+    /**
      * Locks this instance. This method blocks until the instance was locked.
-     * 
+     *
      * Uses {@link #lock(long, TimeUnit)} with a timeout of <code>100</code>
      * {@link TimeUnit#MILLISECONDS}.
-     * 
+     *
      * @throws InterruptedException
      *             If the thread was interrupted.
      * @return <code>true</code> if this instance could be locked,
@@ -37,14 +47,13 @@ public abstract class LockProvider {
      * @see #lock(long, TimeUnit)
      */
     public boolean lock() throws InterruptedException {
-	// use default timeout of 1 second
 	return this.lock(100, TimeUnit.MILLISECONDS);
     }
 
     /**
      * Locks this instance. This method blocks until the instance was locked or
      * the timeout occurs.
-     * 
+     *
      * @param timeout
      *            Timeout amount.
      * @param unit

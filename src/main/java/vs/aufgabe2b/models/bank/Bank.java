@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import vs.aufgabe2b.exceptions.bank.AccountAccessException;
+import vs.aufgabe2b.transaction.AtomicOperation;
 
 /**
  * Thread save bank with transaction support.
@@ -93,25 +94,47 @@ public class Bank {
 	this.accounts.remove(user);
     }
 
-    /**
-     * Deposits the given amount to the user account.
-     *
-     * @param user
-     *            User url.
-     * @param amount
-     *            Amount to be added.
-     * @return New account balance.
-     * @throws AccountAccessException
-     *             If the user account could not be locked or if it does not
-     *             exist.
-     */
-    public int deposit(final String user, final int amount) throws AccountAccessException {
-	final SortedSet<String> involvedAccounts = new TreeSet<String>();
-	involvedAccounts.add(user);
-	this.lock(involvedAccounts);
-	final int balance = this.accounts.get(user).deposit(amount);
-	this.unlock(involvedAccounts);
-	return balance;
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj) {
+	    return true;
+	}
+	if (obj == null) {
+	    return false;
+	}
+	if (this.getClass() != obj.getClass()) {
+	    return false;
+	}
+	final Bank other = (Bank) obj;
+	if (this.accounts == null) {
+	    if (other.accounts != null) {
+		return false;
+	    }
+	} else if (!this.accounts.equals(other.accounts)) {
+	    return false;
+	}
+	if (this.accountsUrl == null) {
+	    if (other.accountsUrl != null) {
+		return false;
+	    }
+	} else if (!this.accountsUrl.equals(other.accountsUrl)) {
+	    return false;
+	}
+	if (this.id == null) {
+	    if (other.id != null) {
+		return false;
+	    }
+	} else if (!this.id.equals(other.id)) {
+	    return false;
+	}
+	if (this.transferUrl == null) {
+	    if (other.transferUrl != null) {
+		return false;
+	    }
+	} else if (!this.transferUrl.equals(other.transferUrl)) {
+	    return false;
+	}
+	return true;
     }
 
     /**
@@ -154,7 +177,7 @@ public class Bank {
 
     /**
      * Gets the transfer url.
-     * 
+     *
      * @return Transfer url.
      */
     public String getTransferUrl() {
@@ -173,74 +196,22 @@ public class Bank {
 	return this.accounts.containsKey(user);
     }
 
-    /**
-     * Sets the accounts url.
-     *
-     * @param url
-     *            New accounts url.
-     */
-    public void setAccountsUrl(final String url) {
-	this.accountsUrl = url;
-    }
-
-    /**
-     * Sets the transfer url.
-     * 
-     * @param url
-     *            New transfer url.
-     */
-    public void setTransferUrl(final String url) {
-	this.transferUrl = url;
-    }
-
-    /**
-     * Transfers the given amount from one account to the other.
-     *
-     * @param from
-     *            User url of the account sending the amount.
-     * @param to
-     *            User url of the account receiving the amount.
-     * @param amount
-     *            Amount to be transferred.
-     * @throws AccountAccessException
-     *             If a user account could not be locked or if it does not
-     *             exist.
-     */
-    public void transfer(final String from, final String to, final int amount) throws AccountAccessException {
-	final SortedSet<String> involvedAccounts = new TreeSet<String>();
-	involvedAccounts.add(from);
-	involvedAccounts.add(to);
-	this.lock(involvedAccounts);
-	this.accounts.get(from).withdraw(amount);
-	this.accounts.get(to).deposit(amount);
-	this.unlock(involvedAccounts);
-    }
-
-    /**
-     * Withdraws the given amount from the user account.
-     *
-     * @param user
-     *            User url.
-     * @param amount
-     *            Amount to be withdrawn.
-     * @return New account balance.
-     * @throws AccountAccessException
-     *             If the user account could not be locked or if it does not
-     *             exist.
-     */
-    public int withdraw(final String user, final int amount) throws AccountAccessException {
-	final SortedSet<String> involvedAccounts = new TreeSet<String>();
-	involvedAccounts.add(user);
-	this.lock(involvedAccounts);
-	final int balance = this.accounts.get(user).withdraw(amount);
-	this.unlock(involvedAccounts);
-	return balance;
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((this.accounts == null) ? 0 : this.accounts.hashCode());
+	result = prime * result + ((this.accountsUrl == null) ? 0 : this.accountsUrl.hashCode());
+	result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+	result = prime * result + ((this.transferUrl == null) ? 0 : this.transferUrl.hashCode());
+	return result;
     }
 
     /**
      * Locks the given accounts. If <code>false</code> is returned none of the
      * given accounts where locked. This method uses
-     * {@link #lock(SortedSet, long, TimeUnit)} with a timeout of one second.
+     * {@link #lock(SortedSet, long, TimeUnit)} with a timeout of
+     * <code>100</code> {@link TimeUnit#MILLISECONDS}.
      *
      * We have the {@link SortedSet} type here to prevent locking the same
      * account twice which would result in a deadlock.
@@ -251,9 +222,9 @@ public class Bank {
      *             If a user account could not be locked or if it does not
      *             exist.
      */
-    private void lock(final SortedSet<String> accounts) throws AccountAccessException {
+    public void lock(final SortedSet<String> accounts) throws AccountAccessException {
 	// use default timeout of 1 second
-	this.lock(accounts, 1, TimeUnit.SECONDS);
+	this.lock(accounts, 100, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -275,7 +246,7 @@ public class Bank {
      *             If a user account could not be locked or if it does not
      *             exist.
      */
-    private void lock(final SortedSet<String> accounts, final long timeout, final TimeUnit unit)
+    public void lock(final SortedSet<String> accounts, final long timeout, final TimeUnit unit)
 	    throws AccountAccessException {
 	// we need this list to keep track of already locked accounts to unlock
 	// them when encountering errors
@@ -284,11 +255,7 @@ public class Bank {
 	boolean cleanup = false;
 	try {
 	    for (final String current : accounts) {
-		final Account account = this.accounts.get(current);
-		// check if the account exists
-		if (account == null) {
-		    throw new AccountAccessException("Account for user '" + current + "' does not exist.");
-		}
+		final Account account = this.getAccount(current);
 		// lock existing accounts
 		if (account.lock(timeout, unit)) {
 		    locked.add(current);
@@ -318,6 +285,52 @@ public class Bank {
     }
 
     /**
+     * Performs the given atomic operation.
+     *
+     * @param operation
+     *            Action to be performed.
+     * @throws AccountAccessException
+     *             if the operation could not be performed. There where no
+     *             changes if this exception is thrown.
+     */
+    public void performAtomicOperation(final AtomicOperation operation) throws AccountAccessException {
+	if (!operation.getBank().equals(this)) {
+	    throw new AccountAccessException("The operation belong to another bank instance.");
+	}
+	final Account account = this.getAccount(operation.getAccount());
+	switch (operation.getType()) {
+	case DEPOSIT:
+	    account.deposit(operation.getAmount());
+	    break;
+	case WITHDRAW:
+	    account.withdraw(operation.getAmount());
+	    break;
+	default:
+	    throw new UnsupportedOperationException();
+	}
+    }
+
+    /**
+     * Sets the accounts url.
+     *
+     * @param url
+     *            New accounts url.
+     */
+    public void setAccountsUrl(final String url) {
+	this.accountsUrl = url;
+    }
+
+    /**
+     * Sets the transfer url.
+     *
+     * @param url
+     *            New transfer url.
+     */
+    public void setTransferUrl(final String url) {
+	this.transferUrl = url;
+    }
+
+    /**
      * Unlocks all given accounts.
      *
      * @param accounts
@@ -325,15 +338,29 @@ public class Bank {
      * @throws AccountAccessException
      *             If a user account does not exist.
      */
-    private void unlock(final SortedSet<String> accounts) throws AccountAccessException {
+    public void unlock(final SortedSet<String> accounts) throws AccountAccessException {
 	for (final String current : accounts) {
-	    final Account account = this.accounts.get(current);
+	    final Account account = this.getAccount(current);
 	    // unlock existing accounts
-	    if (account != null) {
-		account.unlock();
-	    } else {
-		throw new AccountAccessException("Account for user '" + current + "' does not exist.");
-	    }
+	    account.unlock();
 	}
+    }
+
+    /**
+     * Returns the account for the given user.
+     *
+     * @param user
+     *            User name to load the account for.
+     * @return user account.
+     * @throws AccountAccessException
+     *             if there is no account for the given user.
+     */
+    private Account getAccount(final String user) throws AccountAccessException {
+	final Account account = this.accounts.get(user);
+	// check if the account exists
+	if (account == null) {
+	    throw new AccountAccessException("Account for user '" + user + "' does not exist.");
+	}
+	return account;
     }
 }

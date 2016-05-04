@@ -1,9 +1,7 @@
 package vs.aufgabe1.diceservice;
 import static spark.Spark.get;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;

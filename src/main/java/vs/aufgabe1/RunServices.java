@@ -1,7 +1,10 @@
 package vs.aufgabe1;
 
+import com.google.gson.Gson;
+
 import vs.aufgabe1.diceservice.RollDiceService;
 import vs.aufgabe1.userservice.UserService;
+import vs.aufgabe2a.boardsservice.models.Board;
 
 public class RunServices {
 
@@ -15,6 +18,8 @@ public class RunServices {
 		// JAR exportieren
 		new UserService();		 
 		new RollDiceService();
+		
+		
 		// ... weitere Services
 	}
 

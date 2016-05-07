@@ -1,10 +1,7 @@
 package vs.aufgabe1;
 
-import com.google.gson.Gson;
-
-import vs.aufgabe1.diceservice.RollDiceService;
+import vs.aufgabe1.diceservice.DiceService;
 import vs.aufgabe1.userservice.UserService;
-import vs.aufgabe2a.boardsservice.models.Board;
 
 public class RunServices {
 
@@ -17,8 +14,8 @@ public class RunServices {
 		// Je nach dem welcher Service aktiv sein soll, Zeile kommentieren und als Runnable
 		// JAR exportieren
 		new UserService();		 
-		new RollDiceService();
-		
+//		new RollDiceService();
+		new DiceService().startService();;
 		
 		// ... weitere Services
 	}

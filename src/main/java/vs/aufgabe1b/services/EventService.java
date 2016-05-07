@@ -11,11 +11,12 @@ import java.util.Map;
 import org.eclipse.jetty.http.HttpStatus;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import vs.aufgabe1b.interfaces.EventDAO;
 import vs.aufgabe1b.models.Event;
 import vs.aufgabe1b.models.factories.EventDAOFactory;
-import vs.aufgabe1b.models.responses.EventsList;
+import vs.aufgabe1b.models.responses.EventList;
 
 public class EventService {
 
@@ -40,10 +41,15 @@ public class EventService {
 		
 		// Create new Events
 		post(EVENTS_BASE, (req,res) -> {
-			EventDAO dao = EventDAOFactory.getDAO();
-			Event newEvent = gson.fromJson(req.body(), Event.class);
-			dao.createEvent(newEvent);
-			res.status(HttpStatus.OK_200);
+			try{
+				EventDAO dao = EventDAOFactory.getDAO();
+				Event newEvent = gson.fromJson(req.body(), Event.class);
+				dao.createEvent(newEvent);
+				res.status(HttpStatus.OK_200);				
+			} catch (JsonSyntaxException ex){
+				System.err.println("Fehler: Der Content im Body der empfangenen Nachricht entspricht nicht dem gültigen Format.");
+				res.status(HttpStatus.BAD_REQUEST_400);
+			}
 			return "";
 		});
 		
@@ -76,8 +82,9 @@ public class EventService {
 			res.status(HttpStatus.OK_200);
 			res.type(CONTENT_TYPE);
 			// Crossidescripting Angriff JSON Array verhindern:
-			return new EventsList(events); 
+			return new EventList(events); 
 		}, gson::toJson);
+		
 		
 		// Delete Events.
 		delete(EVENTS_BASE, (req,res) ->{

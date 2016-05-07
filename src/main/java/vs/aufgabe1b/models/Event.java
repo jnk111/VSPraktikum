@@ -35,6 +35,8 @@ public class Event {
 		this.time = new Timestamp(System.currentTimeMillis())+"";
 		this.id = "events/"+name;
 	}
+	
+	
 
 	/**
 	 * Liefert die URL zum Event auf dem Eventserver.

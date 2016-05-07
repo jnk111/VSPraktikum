@@ -13,11 +13,11 @@ import vs.aufgabe1b.models.Event;
  * @author Jones
  *
  */
-public class EventsList {
+public class EventList {
 
 	private Collection<Event> events;
 	
-	public EventsList(Collection<Event> events){
+	public EventList(Collection<Event> events){
 		this.events = events;
 	}
 	

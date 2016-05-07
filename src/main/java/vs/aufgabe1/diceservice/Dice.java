@@ -1,19 +1,35 @@
 package vs.aufgabe1.diceservice;
 
 public class Dice {
-	
+
 	private int number;
+	private String player;
+	private String game;
+
+	private Dice(String player, String game) {
+		roll();
+		this.player = player;
+		this.game = game;
+	}
 	
-	public void rollDice(){
-		this.number = (int) ((Math.random() * 6) + 1);
+	public static Dice create(String player, String game) {
+		return new Dice(player, game);
+	}
+
+	public void roll(){
+		number = (int) ((Math.random() * 6) + 1);
 	}
 
 	public int getNumber() {
 		return number;
 	}
-
-	public void setNumber(int roll) {
-		this.number = roll;
+	
+	public String getPlayer(){
+		return player;
+	}
+	
+	public String getGame(){
+		return game;
 	}
 
 }

@@ -15,7 +15,7 @@ public class RunServices {
 		// JAR exportieren
 		new UserService();		 
 //		new RollDiceService();
-		new DiceService().startService();;
+		new DiceService().startService();
 		
 		// ... weitere Services
 	}

@@ -1,164 +1,78 @@
 package vs.aufgabe1.userservice;
-import static spark.Spark.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-
-import vs.aufgabe1.StatusCodes;
+import vs.aufgabe2a.boardsservice.exceptions.InvalidInputException;
+import vs.aufgabe2a.boardsservice.exceptions.ResourceNotFoundException;
 
 public class UserService{
 
-	private final String CLRF = "\r" + "\n";
 	
-	private static Map<String, User> users = new HashMap<>(); // Mapping id auf User
+	private static Map<String, User> users;
 	
 	public UserService(){
-		initGET();		
-		initPOST();
-		initPUT();
-		initDELETE();
+		users = new HashMap<>();
 	}
 
-	/**
-	 * Loescht einen User aus der Map, identifiziert mit dem gesamten Pfad
-	 */
-	private void initDELETE() {
+	public void deleteUser(String pathInfo) {
 		
-		delete("/users/:userid", (req, resp) -> {
-			
-			boolean erfolg = false;
-			String id = req.pathInfo(); // Gesamten Pfad nehmen, da dies der Key in der Map ist
-			User user = users.get(id);
-			synchronized(this){
-				if(user != null){
-					users.remove(id);
-					resp.status(StatusCodes.SUCCESS);
-					erfolg = true;
-				}else{
-					resp.status(StatusCodes.BAD_REQ);
-				}
-			}
-
-			return "" + erfolg + CLRF;
-		});
+		User u = users.get(pathInfo);
+		if(u != null){
+			System.out.println(pathInfo);
+			System.out.println(users.toString());
+			users.remove(pathInfo);
+			System.out.println(users.toString());
+			return;
+		}
+		throw new ResourceNotFoundException();
 	}
 
-	
-	/**
-	 * Veraendert einen User-Eintrag
-	 */
-	private void initPUT() {
+	public void updateUser(String pathInfo, String name, String uri) {
 		
-		put("/users/:userid", (req, resp) -> {
-			
-			String id = req.pathInfo(); 	// Gesamten Pfad nehmen, da dies der Key in der Map ist
-			String name = req.queryParams("name");
-			String uri = req.queryParams("uri");
-			boolean erfolg = false;
-			User user = users.get(id);
-			
-			synchronized(this){
-				if(user != null
-						&& user.isValid()){
-					user.setName(name);
-					user.setUri(uri);
-					resp.status(StatusCodes.SUCCESS);
-					erfolg = true;
-				}else{
-					resp.status(StatusCodes.BAD_REQ);
-				}
-			}
-
-			
-			return "" + erfolg + CLRF;
-		});
-		
-	}
-
-	/**
-	 * Neuen User eintragen, Uebergabe als JSON im Request-Body
-	 */
-	private void initPOST() {
-		post("/users", "application/json", (req, resp) -> {
-			
-			User user = new Gson().fromJson(req.body(), User.class); // Mapping JSON -> User
-			boolean erfolg = false;
-			
-			synchronized(this){
-				if(user != null
-						&& user.isValid()){ 	// JSON richtig konvertiert, hat also Klient Schnittstelle eingehalten?
-					users.put(user.getId(), user);
-					resp.status(StatusCodes.SUCCESS);
-					erfolg = true;
-				}else{
-					resp.status(StatusCodes.BAD_REQ); // BAD_REQUEST
-				}
-			}
-
-			return "" + erfolg + CLRF; // Oder etwas anders zurueckgeben? void geht nicht
-		});
-	}
-
-	
-	private void initGET() {
-		
-		initGETUserlist();
-		initGETUserById();
-
-	}
-
-
-	/**
-	 * Eine spezifischen User als JSON zuueckgeben
-	 */
-	private void initGETUserById() {
-		get("/users/:userid", "application/json", (req, resp) -> {
-
-			String id = req.pathInfo();
-			User user = users.get(id);
-			String response = null;
-			if(user != null){
-				response = new Gson().toJson(user);
-				resp.status(StatusCodes.SUCCESS);
+		if(paramsValid(name, uri)){
+			User u = users.get(pathInfo);
+			if(u != null){
+				u.setName(name);
+				u.setUri(uri);
 			}else{
-				response = StatusCodes.BAD_REQ + ": Not Found";
+				throw new ResourceNotFoundException();
 			}
-			return response;
-		});
+		}else{
+			throw new InvalidInputException();
+		}
+
 		
 	}
 
-	/**
-	 * Die gesamte Userliste der aktiv angemeldeten User als JSON zurueckgeben
-	 */
-	private void initGETUserlist() {
-		get("/users", "application/json", (req, resp) -> {
-			List<String> userIds = getUserIds();
-			String response = null;
-			if(!userIds.isEmpty()){
-				resp.status(StatusCodes.SUCCESS);
-				response = new Gson().toJson(userIds);
-			}else{
-				resp.status(StatusCodes.SUCCESS); // BAD_REQUEST
-				response = StatusCodes.SUCCESS + ": No Users Available";
-			}
-			return response;
-		});
+	private boolean paramsValid(String name, String uri) {
+		return (name != null && uri != null)
+						&& !(name.isEmpty() || uri.isEmpty());
 	}
 
-	/**
-	 * Erstellt eine Liste der User-IDs
-	 * @return 
-	 */
-	private static List<String> getUserIds() {
+	public void createUser(User user) {
 		
+		if(user != null && user.isValid()){
+			users.put(user.getId(), user);
+		}else{
+			throw new InvalidInputException();
+		}
+		
+	}
+
+	public User getSpecificUser(String pathInfo) {
+		User u = users.get(pathInfo);
+		if(u != null){
+			return u;
+		}
+		throw new ResourceNotFoundException();
+	}
+
+	public List<String> getUserIds() {
 		List<String> userIds = new ArrayList<>();
-		users.forEach((key, value) -> userIds.add(key)); // Andere Notation fuer 
-																										// For-Each-Loop (seit Java 1.8)
+		users.forEach((k, v) -> userIds.add(k));
 		return userIds;
 	}
+	
 }

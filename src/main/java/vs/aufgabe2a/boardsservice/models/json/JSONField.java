@@ -2,7 +2,9 @@ package vs.aufgabe2a.boardsservice.models.json;
 
 import java.util.List;
 
-public class JSONField implements JSONObject{
+import vs.aufgabe1.Validable;
+
+public class JSONField implements Validable{
 	
 	private String place;					// Uri of the Place
 	private List<String> pawns;	

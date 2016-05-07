@@ -1,6 +1,8 @@
 package vs.aufgabe2a.boardsservice.models.json;
 
-public class JSONPawn implements JSONObject{
+import vs.aufgabe1.Validable;
+
+public class JSONPawn implements Validable{
 	private String id;		// Uri to the resource itself
 	private String player; // Uri to the playerresource
 	private String place; // Uri to the Place on the Board the player stands on

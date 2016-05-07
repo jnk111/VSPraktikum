@@ -1,10 +1,9 @@
 package vs.aufgabe2a.boardsservice.models;
 
 import vs.aufgabe1.Validable;
-import vs.aufgabe2a.boardsservice.models.json.JSONObject;
 import vs.aufgabe2a.boardsservice.models.json.JSONPawn;
 
-public class Pawn  implements Convertable, Validable{
+public class Pawn  implements Convertable<JSONPawn>, Validable{
 	
 	
 	private String pawnUri; // Uri of the Pawn
@@ -73,7 +72,7 @@ public class Pawn  implements Convertable, Validable{
 	}
 
 	@Override
-	public JSONObject convert() {
+	public JSONPawn convert() {
 		
 		JSONPawn json = 
 				new JSONPawn(this.pawnUri, 

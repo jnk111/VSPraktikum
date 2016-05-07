@@ -2,7 +2,7 @@ package vs.aufgabe2a.boardsservice.models.json;
 
 import java.util.List;
 
-public class JSONBoard implements JSONObject{
+public class JSONBoard{
 	
 	private String id; 								// Uri zum Board
 	private List<JSONField> fields;		// Uris to Places on the Board

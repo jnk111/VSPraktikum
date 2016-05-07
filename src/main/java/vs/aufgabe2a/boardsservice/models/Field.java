@@ -5,9 +5,8 @@ import java.util.List;
 
 import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONField;
-import vs.aufgabe2a.boardsservice.models.json.JSONObject;
 
-public class Field implements Convertable, Validable{
+public class Field implements Convertable<JSONField>, Validable{
 	
 	private Place place;
 	private List<Pawn> pawns; // The List of pawns on the board, e. g. e.g. ['/boards/41/pawns/mario' , ...]
@@ -34,7 +33,7 @@ public class Field implements Convertable, Validable{
 	}
 
 	@Override
-	public JSONObject convert() {
+	public JSONField convert() {
 		
 		String place = this.getPlace().getPlaceUri();
 		List<String> pawnUris = new ArrayList<>();

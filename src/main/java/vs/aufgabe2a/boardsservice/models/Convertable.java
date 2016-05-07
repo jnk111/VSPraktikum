@@ -1,8 +1,6 @@
 package vs.aufgabe2a.boardsservice.models;
 
-import vs.aufgabe2a.boardsservice.models.json.JSONObject;
-
-public interface Convertable {
+public interface Convertable<T> {
 	
 	/**
 	 * Konvertiert ein Convertable-Objekt in seine JSON-Repraesentation
@@ -11,6 +9,6 @@ public interface Convertable {
 	 * @return
 	 * 				JSON-Repraesentation des Convertable-Objektes
 	 */
-	JSONObject convert();
+	T convert();
 
 }

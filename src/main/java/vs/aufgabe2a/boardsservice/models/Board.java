@@ -6,9 +6,8 @@ import java.util.List;
 import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONBoard;
 import vs.aufgabe2a.boardsservice.models.json.JSONField;
-import vs.aufgabe2a.boardsservice.models.json.JSONObject;
 
-public class Board implements Convertable, Validable{
+public class Board implements Convertable<JSONBoard>, Validable{
 	
 	private String id; // URI of the Board
 	private List<Field> fields; // Fields on the Board
@@ -61,7 +60,7 @@ public class Board implements Convertable, Validable{
 	}
 
 	@Override
-	public JSONObject convert() {
+	public JSONBoard convert() {
 		
 		List<JSONField> jsonFields = new ArrayList<>();
 		for(Field f: this.getFields()){

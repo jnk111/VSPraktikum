@@ -3,7 +3,9 @@ package vs.aufgabe2a.boardsservice.models.json;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONBoardList implements JSONObject {
+import vs.aufgabe1.Validable;
+
+public class JSONBoardList implements Validable{
 	
 	List<String> boards;
 	

@@ -6,7 +6,7 @@ package vs.aufgabe2a.boardsservice.models.json;
  * @author jan
  *
  */
-public class JSONPlace implements JSONObject{
+public class JSONPlace{
 	
 	private String name;			// Place-Name
 	private String broker;		// URI to the Place at the Broker

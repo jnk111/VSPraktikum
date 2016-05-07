@@ -16,7 +16,7 @@ public class UserService{
 		users = new HashMap<>();
 	}
 
-	public void deleteUser(String pathInfo) {
+	public synchronized void deleteUser(String pathInfo) {
 		
 		User u = users.get(pathInfo);
 		if(u != null){
@@ -29,7 +29,7 @@ public class UserService{
 		throw new ResourceNotFoundException();
 	}
 
-	public void updateUser(String pathInfo, String name, String uri) {
+	public synchronized void updateUser(String pathInfo, String name, String uri) {
 		
 		if(paramsValid(name, uri)){
 			User u = users.get(pathInfo);
@@ -51,7 +51,7 @@ public class UserService{
 						&& !(name.isEmpty() || uri.isEmpty());
 	}
 
-	public void createUser(User user) {
+	public synchronized void createUser(User user) {
 		
 		if(user != null && user.isValid()){
 			users.put(user.getId(), user);

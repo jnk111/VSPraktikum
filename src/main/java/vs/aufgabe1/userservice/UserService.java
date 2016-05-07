@@ -143,8 +143,8 @@ public class UserService{
 				resp.status(StatusCodes.SUCCESS);
 				response = new Gson().toJson(userIds);
 			}else{
-				resp.status(StatusCodes.BAD_REQ); // BAD_REQUEST
-				response = StatusCodes.BAD_REQ + ": No Users Available";
+				resp.status(StatusCodes.SUCCESS); // BAD_REQUEST
+				response = StatusCodes.SUCCESS + ": No Users Available";
 			}
 			return response;
 		});

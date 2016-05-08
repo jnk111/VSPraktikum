@@ -55,6 +55,7 @@ public class BoardService {
 	 */
 	public BoardService() {
 		boards = new HashMap<>();
+		throwMap = new HashMap<>();
 	}
 
 	/**
@@ -373,6 +374,16 @@ public class BoardService {
 	}
 
 
+	/**
+	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste, die zu der
+	 * Figur gehoert hinzu
+	 * @param pawn
+	 * 				Die Figur, fuer die gewuerfelt wird
+	 * @param gameid
+	 * 				Die ID des Games
+	 * @return
+	 * 				Der Int-Wert des gemachten Wurfes
+	 */
 	private int doDiceRoll(Pawn pawn, String gameid) {
 		
 		try {
@@ -497,6 +508,15 @@ public class BoardService {
 
 	}
 
+	/**
+	 * Gibt die Figur, die zu der Pawnid gehoert zurueck
+	 * @param board
+	 * 				Das Board auf dem die Figur steht
+	 * @param pawnid
+	 * 				Die ID der Figur
+	 * @return
+	 * 				Die angeforderte Figur
+	 */
 	private Pawn getPawn(Board board, String pawnid) {
 
 		for (Field f : board.getFields()) {

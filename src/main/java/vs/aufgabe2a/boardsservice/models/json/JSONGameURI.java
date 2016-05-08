@@ -21,8 +21,11 @@ public class JSONGameURI {
 		this.game = game;
 	}
 
+	/**
+	 * TODO: Pruefung implementieren ob uebergebenes JSONGameUri gueltig
+	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
+	 */
 	public boolean isValid() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	

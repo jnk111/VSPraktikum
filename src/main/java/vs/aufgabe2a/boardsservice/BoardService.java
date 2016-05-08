@@ -11,7 +11,6 @@ import vs.aufgabe2a.boardsservice.models.Board;
 import vs.aufgabe2a.boardsservice.models.Field;
 import vs.aufgabe2a.boardsservice.models.Pawn;
 import vs.aufgabe2a.boardsservice.models.Place;
-import vs.aufgabe2a.boardsservice.models.Throws;
 import vs.aufgabe2a.boardsservice.models.json.JSONBoard;
 import vs.aufgabe2a.boardsservice.models.json.JSONBoardList;
 import vs.aufgabe2a.boardsservice.models.json.JSONField;
@@ -24,15 +23,32 @@ import vs.aufgabe2a.boardsservice.models.json.JSONThrowsURI;
 
 public class BoardService {
 
+	/*
+	 * Mapping Board -> GameUri
+	 */
 	private Map<Board, JSONGameURI> boards;
+	
+	/*
+	 * Uri-Liste der gemachten Wuerfe, dient zur Ueberpruefung
+	 * JSONThrowsUri -> die URI der von einer Pawn gemachten Wuerfe
+	 * JSONThrowsList -> die Werte der Wuerfel
+	 */
 	private Map<JSONThrowsURI, JSONThrowsList> throwMap;
-	private Throws rolls;
+	
 
+	/**
+	 * Defaultkonstruktor
+	 */
 	public BoardService() {
 		boards = new HashMap<>();
-		rolls = new Throws();
 	}
 
+	
+	/**
+	 * Liefert alle Board-Uris, die dem Spiel zugeteilt wurden
+	 * @return	
+	 * 				Liste der Board-Uris als JSON-DTO
+	 */
 	public JSONBoardList getAllBoardURIs() {
 		
 		JSONBoardList boardURIs = new JSONBoardList();
@@ -41,8 +57,17 @@ public class BoardService {
 	}
 
 	
-	public synchronized void createNewBoard(JSONGameURI game) {
-
+	/**
+	 * Erzeugt ein neues Board fuer die uebergebene Gameid, falls
+	 * dieses Spiel vorhanden ist.
+	 * @param game	
+	 * 				Das Spiel, fuer das ein Board erzeugt werden soll
+	 * @throws InvalidInputException 
+	 * 				Json-Format der Uri ungueltig
+	 */
+	public synchronized void createNewBoard(JSONGameURI game) 
+			throws InvalidInputException{
+		
 		if(game.isValid()){
 			String boardUri = "/boards/" + game.getURI().split("/")[2];
 			boards.put(new Board(boardUri), game);
@@ -51,7 +76,18 @@ public class BoardService {
 		}
 	}
 
-	public JSONBoard getBoardForGame(String gameid) {
+
+	/**
+	 * Liefert das einer Gameid zugehoerige Board, falls vorhanden
+	 * @param gameid	
+	 * 				Die Gameid
+	 * @return	
+	 * 				Das zugehoerige Board als JSON-DTO
+	 * @throws ResourceNotFoundException	
+	 * 				Board wurde nicht gefunden
+	 */
+	public JSONBoard getBoardForGame(String gameid) 
+			throws ResourceNotFoundException{
 
 		Board b = getBoard(gameid);
 		
@@ -62,45 +98,73 @@ public class BoardService {
 
 	}
 
-	public synchronized void createNewPawnOnBoard(JSONPawn pawn, String gameid) {
+	
+	/**
+	 * Erzeugt eine neue Spiefigur auf dem Board
+	 * @param pawn		D
+	 * 				Die Figur als JSON-DTO
+	 * @param gameid	
+	 * 				Das Spiel fuer das die Figur erzeugt werden soll
+	 * @throws InvalidInputException		
+	 * 				Ungueltige JSON-DTO (z. B. required-Parameter fehlen)
+	 * @throws ResourceNotFoundException	
+	 * 				Es konnte kein Board zum Spiel gefunden werden
+	 */
+	public synchronized void createNewPawnOnBoard(JSONPawn pawn, String gameid) 
+			throws InvalidInputException, ResourceNotFoundException{
 
 		Board b = getBoard(gameid);
 		System.out.println(b);
 		
-		if(pawn.isValid() && b != null){
-			
-			Pawn p =  new Pawn();
-			
-			String pawnUri = getPawnUri(b, pawn.getPlayer());
-			p.setPawnUri(pawnUri);
-			p.setMovesUri(p.getPawnUri() + "/move");
-			p.setPlaceUri(pawn.getPlace());						// Annahme required
-			p.setPlayerUri(pawn.getPlayer());					// Annahme required
-			p.setPosition(pawn.getPosition());				// Annahme required
-			p.setRollsUri(p.getPawnUri() + "/roll");
-			b.addPawn(p);
-			
+		if(b != null){
+			if(pawn.isValid()){
+				Pawn p =  new Pawn();
+				String pawnUri = getPawnUri(b, pawn.getPlayer());
+				p.setPawnUri(pawnUri);
+				p.setMovesUri(p.getPawnUri() + "/move");
+				p.setPlaceUri(pawn.getPlace());						// Annahme required
+				p.setPlayerUri(pawn.getPlayer());					// Annahme required
+				p.setPosition(pawn.getPosition());				// Annahme required
+				p.setRollsUri(p.getPawnUri() + "/roll");
+				b.addPawn(p);
+			}else{
+				throw new InvalidInputException();
+			}
 		}else{
-			throw new InvalidInputException();
+			throw new ResourceNotFoundException();
 		}
 
 	}
 
 	/**
-	 * TODO: implement
-	 * Generates the Pawn-Uri from the GET-Response of the given playerUri
-	 * @param b		The Board
-	 * @param playerUri		The PlayerUri
-	 * @return 	Pawn-Uri
+	 * TODO: implementiere URI-Erzeugung
+	 * Generiert die Pawn-Uri aus dem GET-Response der PlayerUri
+	 * @param board		
+	 * 						The Board
+	 * @param playerUri		
+	 * 								The PlayerUri
+	 * @return 	
+	 * 				Pawn-Uri
 	 */
-	private String getPawnUri(Board b, String playerUri) {
+	private String getPawnUri(Board board, String playerUri) {
 		
-		String boardUri = b.getUri();
+		// GET playerUri
+		String boardUri = board.getUri();
 		return boardUri + "/pawns/" + ((int) (Math.random() * 20));
 		
 	}
 
-	public JSONPawnList getPawnsOnBoard(String gameid) {
+	/**
+	 * Liefert alle Pawn-Uris, die auf dem Spielbrett sind
+	 * @param 
+	 * 				gameid	Die Gameid des Boards
+	 * @return		
+	 * 				Liste von Pawn-Uris als JSON-Dto
+	 * @throws 
+	 * 				ResourceNotFoundException	Board wurde nicht gefunden
+	 */
+	public JSONPawnList getPawnsOnBoard(String gameid) 
+			throws ResourceNotFoundException { 
 		
 		JSONPawnList pl = new JSONPawnList();
 		Board b = getBoard(gameid);
@@ -116,20 +180,49 @@ public class BoardService {
 		throw new ResourceNotFoundException();		
 	}
 
-	public JSONPawn getSpecificPawn(String gameid, String pawnid) {
+	/**
+	 * Liefert eine bestimmte Spielfigur als JSON-DTO
+	 * 
+	 * @param gameid	
+	 * 				Die Gameid des Boards auf dem die Figur steht
+	 * @param pawnid	
+	 * 				Die Pawn-ID um die Figur eindeutig zu identifizieren
+	 * @return		
+	 * 				Die Pwan, als JSON-DTO
+	 * @throws 
+	 * 				ResourceNotFoundException		Board oder Spielfigur konnte nicht gefunden werden
+	 */
+	public JSONPawn getSpecificPawn(String gameid, String pawnid) 
+			throws ResourceNotFoundException{
 
 		Board b = getBoard(gameid);
-		for(Field f: b.getFields()){
-			for(Pawn p: f.getPawns()){
-				if(p.getPawnUri().contains(pawnid)){
-					return (JSONPawn) p.convert();
+		if(b != null){
+			for(Field f: b.getFields()){
+				for(Pawn p: f.getPawns()){
+					if(p.getPawnUri().contains(pawnid)){
+						return (JSONPawn) p.convert();
+					}
 				}
 			}
 		}
 		throw new ResourceNotFoundException();
 	}
 
-	public JSONThrowsList getDiceThrows(String gameid, String pawnid) {
+	
+	/**
+	 * Liefert alle Wuerfe die von einem Spieler fuer seine Figur bereits gemacht wurden,
+	 * als Json-DTO
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @param pawnid
+	 * 				Die Pawnid der Figur
+	 * @return JSONThrowsList
+	 * 				Die Liste der Wuerfe zu dieser Figur als Json-DTO
+	 * @throws ResourceNotFoundException
+	 * 				Board oder Pawn nicht gefunden
+	 */
+	public JSONThrowsList getDiceThrows(String gameid, String pawnid) 
+			throws ResourceNotFoundException {
 
 		Board b = getBoard(gameid);
 		
@@ -144,14 +237,15 @@ public class BoardService {
 		throw new ResourceNotFoundException();
 	}
 
-	public Throws getRolls() {
-		return rolls;
-	}
 
-	public void setRolls(Throws rolls) {
-		this.rolls = rolls;
-	}
-
+	/**
+	 * Liefert das Board zu einer Gameid, muss spaeter erweitert werden,
+	 * falls mehere Boards einem Spiel zugeteilt werden koennen.
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @return Board
+	 * 				Das Board zu der Gameid 			
+	 */
 	private Board getBoard(String gameid) {
 
 		for(Board b: boards.keySet()){
@@ -159,19 +253,24 @@ public class BoardService {
 				return b;
 			}
 		}
-		
 		return null;
 	}
+
 
 	/**
 	 * Ermittelt alle Felder auf dem Board, erzeugt jeweils URI und gibt
 	 * eine Liste mit ermittelten URis zurueck.
-	 * @param gameid	Die Id zum Spiel
-	 * @return Liste mit URIs
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @return List<String>
+	 * 				 Die Uri-Liste der Felder auf dem Board
+	 * @throws ResourceNotFoundException
+	 * 					Das Board wurde nicht gefunden
 	 */
-	public List<String> getAllPlaces(String gameid) {
-		Board b = getBoard(gameid);
+	public List<String> getAllPlaces(String gameid) 
+			throws ResourceNotFoundException {
 		
+		Board b = getBoard(gameid);
 		if (b != null){
 			List<String> allPlaceURIs = new ArrayList<>();
 			
@@ -183,9 +282,26 @@ public class BoardService {
 		throw new ResourceNotFoundException();		
 	}
 
-	public JSONPlace getSpecificPlace(String gameid, String placeid) {
-		Board b = getBoard(gameid);
+	
+	/**
+	 * Gibt Informationen ueber einen bestimmten Place zurueck 
+	 * (Das ist nicht das gesamte Feld, sondern nur die dem Feld zugeteilte Straße)
+	 * 
+	 * @param gameid
+	 * 					Die Gameid des Boards
+	 * @param placeid
+	 * 					Die Placeid
+	 * @return JSONPlace
+	 * 					Json-DTO des Places
+	 * 				
+	 * @throws ResourceNotFoundException
+	 * 					Board oder Place nicht gefunden
+	 * 					
+	 */
+	public JSONPlace getSpecificPlace(String gameid, String placeid) 
+			throws ResourceNotFoundException {
 		
+		Board b = getBoard(gameid);
 		if(b != null){
 			for(Field f: b.getFields()){
 				if(f.getPlace().getPlaceUri().contains(placeid)){
@@ -193,13 +309,22 @@ public class BoardService {
 				}
 			}
 		}
-
 		throw new ResourceNotFoundException();
 	}
 
-	
-
-	public synchronized void movePawn(String gameid, String pawnid, int rollValue) {
+	/**
+	 * Bewegt eine Spielfigur um den Wert der <code>rollValue</code> vorwaerts
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @param pawnid
+	 * 				Die Pawn-ID der Figur
+	 * @param rollValue
+	 * 				Der Wert um den die Figur bewegt werden soll
+	 * @throws ResourceNotFoundException
+	 * 				Board oder Figur nicht gefunden
+	 */
+	public synchronized void movePawn(String gameid, String pawnid, int rollValue) 
+			throws ResourceNotFoundException	{
 		
 		Board b = getBoard(gameid);
 		
@@ -216,13 +341,18 @@ public class BoardService {
 		throw new ResourceNotFoundException();
 	}
 
+
 	/**
-	 * TODO: implement
+	 * Uebergibt einen Wurf an das Board und fuehrt weitere noetige Aktonen aus.
 	 * @param gameid
+	 * 				Das Board der Gameid
 	 * @param pawnid
-	 * @return
+	 * 				Die Pawn-Id der Figur, fuer die gewuerfelt wird
+	 * @throws ResourceNotFoundException
+	 * 				Board oder Figur nicht gefunden
 	 */
-	public synchronized void rollDice(String gameid, String pawnid) {
+	public synchronized void rollDice(String gameid, String pawnid) 
+			throws ResourceNotFoundException{
 		
 		// call Dice-Service with player and gameuri
 		// add Dice to Throwmap related to the rolls uri of the pawnid
@@ -235,9 +365,19 @@ public class BoardService {
 			
 	}
 
-	public synchronized void deletePawnFromBoard(String gameid, String pawnid) {
-		Board b = getBoard(gameid);
+	/**
+	 * Loescht eine Spielfigur vom Board (z. B. bei verlassen des Spiels vor Ende)
+	 * @param gameid
+	 * 				Die dem Board zugeteilte Gameid
+	 * @param pawnid
+	 * 				Die Pawn-ID der Figur, die geloescht werden soll
+	 * @throws ResourceNotFoundException
+	 * 				Baord oder Figur nicht gefunden
+	 */
+	public synchronized void deletePawnFromBoard(String gameid, String pawnid) 
+			throws ResourceNotFoundException {
 		
+		Board b = getBoard(gameid);
 		if(b != null){
 			for(Field f: b.getFields()){
 				for(Pawn p: f.getPawns()){
@@ -251,7 +391,15 @@ public class BoardService {
 		throw new ResourceNotFoundException();
 	}
 
-	public synchronized void deleteBoard(String gameid) {
+	/**
+	 * Loescht das Board bei Beendigung des Spiels
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @throws ResourceNotFoundException
+	 * 				Das Board wurde nicht gefunden
+	 */
+	public synchronized void deleteBoard(String gameid) 
+			throws ResourceNotFoundException {
 		
 		Board b = getBoard(gameid);
 		
@@ -265,13 +413,19 @@ public class BoardService {
 	}
 
 	/**
-	 * TODO: Documentation
+	 * Verandert Feldinformationen auf dem Board (z. B. eine Straße erhaelt einen neue Broker-Uri)
 	 * @param place
+	 * 				Der Place als Json-DTO
 	 * @param pathinfo
+	 * 				die Uri des Feldes
 	 * @param gameid
-	 * @return
+	 * 				Die Gameid des Boardes
+	 * @throws ResourceNotFoundException
+	 * 					Board oder Place nicht gefunden
 	 */
-	public synchronized void placeANewPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid) {
+	public synchronized void updateAPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid) 
+			throws ResourceNotFoundException{
+		
 		Board key = getBoard(gameid);
 		if(place.isValid() && key != null){
 			for(Field f: key.getFields()){
@@ -279,7 +433,6 @@ public class BoardService {
 				if(p.getPlaceUri().equals(pathinfo)){
 					p.setName(place.getName());
 					p.setBrokerUri(place.getBroker());
-					p.setPlaceUri(getPlaceUri(key, p));
 					return;
 				}
 			}
@@ -289,28 +442,25 @@ public class BoardService {
 
 	
 	/**
-	 * TODO: implement
-	 * Generates the Place-Uri for a given board and place
-	 * @param board		the board
-	 * @param place the related place
-	 * @return
+	 * Befuellt ein Board mit Feldern
+	 * @param gameid
+	 * 				Die Gameid des Boards
+	 * @param board
+	 * 				Das Board als Json-DTO
+	 * @throws ResourceNotFoundException
+	 * 				Das Board wurde nicht gefunden
 	 */
-	private String getPlaceUri(Board board, Place place) {
-		
-		return board.getUri() + "/places/" + 0;
-	}
-
-	
-	public synchronized void placeABoard(String gameid, JSONBoard b) {
+	public synchronized void placeABoard(String gameid, JSONBoard board) 
+			throws ResourceNotFoundException{
 		
 		Board key = getBoard(gameid);
 		
-		if(b.isValid() && key != null){
+		if(board.isValid() && key != null){
 			List<Pawn> pawns = new ArrayList<>();
 			List<Field> fields = new ArrayList<>();
 			Pawn pawn = null;
 			
-			for(JSONField f: b.getFields()){
+			for(JSONField f: board.getFields()){
 				Field field = new Field();
 				pawns = new ArrayList<>();
 				for(String pawnUri: f.getPawns()){
@@ -331,7 +481,7 @@ public class BoardService {
 			
 			key.setFields(fields);
 			key.setPlayers("/boards/" + gameid + "/players");
-			key.setPositions(b.getPositions());									// TODO: nachfragen
+			key.setPositions(board.getPositions());									// TODO: nachfragen
 			
 			JSONGameURI entry = boards.get(key);
 			boards.put(key, entry);
@@ -340,20 +490,31 @@ public class BoardService {
 		}
 	}
 
-	public synchronized void placeAPawn(String gameid, JSONPawn p) {
+
+	/**
+	 * Weist einer Figur ein neues Feld zu (z. B. nach Wuerfeln)
+	 * @param gameid
+	 * 				Die Gameid des Boardes
+	 * @param pawn
+	 * 				Die Figur als Json-DTO
+	 * @throws ResourceNotFoundException
+	 * 				Das Board oder die Figur wurde nicht gefunden
+	 */
+	public synchronized void placeAPawn(String gameid, JSONPawn pawn) 
+			throws ResourceNotFoundException {
 		
 		Board b = getBoard(gameid);
 		
-		if(p.isValid() && b != null){
+		if(pawn.isValid() && b != null){
 			for(Field f: b.getFields()){
 				for(Pawn p2: f.getPawns()){
-					if(p2.getPawnUri().equals(p.getId())){
-						p2.setMovesUri(p.getMove());
-						p2.setPawnUri(p.getId());
-						p2.setPlaceUri(p.getPlace());
-						p2.setPlayerUri(p.getPlayer());
-						p2.setPosition(p.getPosition());
-						p2.setRollsUri(p.getRoll());
+					if(p2.getPawnUri().contains(pawn.getId())){
+						p2.setMovesUri(pawn.getMove());
+						p2.setPawnUri(pawn.getId());
+						p2.setPlaceUri(pawn.getPlace());
+						p2.setPlayerUri(pawn.getPlayer());
+						p2.setPosition(pawn.getPosition());
+						p2.setRollsUri(pawn.getRoll());
 						return;
 					}
 				}
@@ -361,5 +522,4 @@ public class BoardService {
 		}
 		throw new ResourceNotFoundException();
 	}
-
 }

@@ -3,9 +3,7 @@ package vs.aufgabe2a.boardsservice.models.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.aufgabe1.Validable;
-
-public class JSONBoardList implements Validable{
+public class JSONBoardList{
 	
 	List<String> boards;
 	
@@ -17,11 +15,4 @@ public class JSONBoardList implements Validable{
 	public void addBoardURI(String uri){
 		boards.add(uri);
 	}
-
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

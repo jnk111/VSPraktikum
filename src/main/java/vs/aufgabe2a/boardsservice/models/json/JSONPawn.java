@@ -72,6 +72,10 @@ public class JSONPawn implements Validable{
 		this.move = move;
 	}
 
+	/**
+	 * TODO: Pruefung implementieren ob uebergebenes JSONPawn gueltig
+	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
+	 */
 	@Override
 	public boolean isValid() {
 		// TODO Auto-generated method stub

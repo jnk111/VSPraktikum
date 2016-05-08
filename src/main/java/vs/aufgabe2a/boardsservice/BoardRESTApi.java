@@ -27,6 +27,7 @@ public class BoardRESTApi {
 	private final String CLRF = "\r" + "\n"; // Newline
 	private final BoardService boardService = new BoardService();
 	private final String CONTENT_TYPE = "application/json";
+	private final Gson GSON = new Gson();
 
 	/**
 	 * Konstruktor um Schnittstelle zu initialisiseren
@@ -44,11 +45,11 @@ public class BoardRESTApi {
 	 */
 	private void initGET() {
 
-		initGetAllBoards(); // TODO: Cleaner impl
-		initGetRollsOnTheBoard(); // TODO: Cleaner impl
-		initGetBoardsBelongToGameId(); // TODO: Cleaner impl
-		initGetPawnsBelongToBoard(); // TODO: Cleaner impl
-		initGetSpecificPawn(); // TODO: Cleaner impl
+		initGetAllBoards();
+		initGetRollsOnTheBoard(); 
+		initGetBoardsBelongToGameId(); 
+		initGetPawnsBelongToBoard(); 
+		initGetSpecificPawn(); 
 		initGetPlacesOnTheBoard();
 		initGetSpecificPlace();
 	}
@@ -72,7 +73,7 @@ public class BoardRESTApi {
 	private void initPUT() {
 		initPutPlaceABoard();
 		initPutPlaceAPawn();
-		initPutCreateNewPlace();
+		initPutUpdateAPlace();
 	}
 	
 	/**
@@ -85,6 +86,10 @@ public class BoardRESTApi {
 
 	}
 	
+	/**
+	 * Exception-Handling initialsisieren
+	 * Hier werden Exceptions gefangen und ein geeignete Fehlermeldung ausgegeben
+	 */
 	private void initExeptions() {
 
 		exception(JsonSyntaxException.class, (exception, request, response) -> {
@@ -104,69 +109,102 @@ public class BoardRESTApi {
 
 	// --------------------------------------------------------------------------------------
 	
+	/**
+	 * Gibt ein bestimmtes Feld zurueck.
+	 * Board wird identifiziert durch <code>gameid</code>
+	 * Place durch <code>place</code>
+	 */
 	private void initGetSpecificPlace() {
 		get("/boards/:gameid/places/:place", "application/json", (req, resp) -> {
 			JSONPlace p = boardService.getSpecificPlace(req.params(":gameid"), req.params(":place"));
-			return new Gson().toJson(p);
+			return GSON.toJson(p);
 		});
 
 	}
 
+	/**
+	 * gibt eine Liste der Place-Uris auf dem Board zurueck
+	 * Board wird identifiziert durch <code>gameid</code>
+	 */
 	private void initGetPlacesOnTheBoard() {
 		get("/boards/:gameid/places", "application/json", (req, resp) -> {
 			List<String> placeList = boardService.getAllPlaces(req.params(":gameid"));
-			return new Gson().toJson(placeList);
+			return GSON.toJson(placeList);
 		});
 
 	}
 
+	/**
+	 * Gibt eine bestimmte Spielfigur auf dem Board im Json-Format zurueck
+	 * Board wird identifiziert durch <code>gameid</code>
+	 * Pawn durch <code>pawnid</code>
+	 */
 	private void initGetSpecificPawn() {
 		get("/boards/:gameid/pawns/:pawnid", "application/json", (req, resp) -> {
 			JSONPawn p = boardService.getSpecificPawn(req.params(":gameid"), req.params(":pawnid"));
-			return new Gson().toJson(p);
+			return GSON.toJson(p);
 		});
 
 	}
 
+	/**
+	 * Gibt die Pawn-Uris der auf dem Board aufgestellten Pawns zurueck
+	 */
 	private void initGetPawnsBelongToBoard() {
 		get("/boards/:gameid/pawns", CONTENT_TYPE, (req, resp) -> {
 			JSONPawnList pl = boardService.getPawnsOnBoard(req.params(":gameid"));
-			return new Gson().toJson(pl);
+			return GSON.toJson(pl);
 		});
 
 	}
 
+	/**
+	 * Gibt das Board, das zu einem Spiel gehoert als JSON zurueck
+	 */
 	private void initGetBoardsBelongToGameId() {
 		get("/boards/:gameid", CONTENT_TYPE, (req, resp) -> {
 			JSONBoard board = boardService.getBoardForGame(req.params(":gameid"));
-			return new Gson().toJson(board);
+			return GSON.toJson(board);
 		});
 
 	}
 
+	/**
+	 * Gibt alle bisher getaetigten Wuerfe fuer eine bestimmte Figur zurueck
+	 */
 	private void initGetRollsOnTheBoard() {
 		get("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
 			JSONThrowsList throwlist = boardService.getDiceThrows(req.queryParams(":gameid"), req.queryParams(":pawnid"));
-			return new Gson().toJson(throwlist);
+			return GSON.toJson(throwlist);
 		});
 
 	}
 
+	/**
+	 * Gibt alle Board-Uris, die dem Spiel zugeteilt sind, zurueck
+	 */
 	private void initGetAllBoards() {
 		get("/boards", CONTENT_TYPE, (req, resp) -> {
-			return new Gson().toJson(boardService.getAllBoardURIs());
+			return GSON.toJson(boardService.getAllBoardURIs());
 		});
 	}
 	
-
+	/**
+	 * Meldet beim Spiel ein neues Board an und generiert eine URI fuer das
+	 * Board. Dieses kann danach ueber HTTP-PUT mit Informtionen befuellt werden.
+	 */
 	private void initPostCreateNewBoard() {
 		post("/boards", CONTENT_TYPE, (req, resp) -> {
-			JSONGameURI uri = new Gson().fromJson(req.body(), JSONGameURI.class);
+			JSONGameURI uri = GSON.fromJson(req.body(), JSONGameURI.class);
 			boardService.createNewBoard(uri);
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
 
+	/**
+	 * Laesst einen Spieler fuer seine Pawn wuerfeln, muss den Mutex fuer das Board
+	 * erworben haben
+	 */
 	private void initPostRollDice() {
 		post("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
 			boardService.rollDice(req.params(":gameid"), req.params(":pawmnid"));
@@ -175,19 +213,23 @@ public class BoardRESTApi {
 
 	}
 
+	/**
+	 * Bewegt die Spielfigur um den gegebenen Zahlenwert nach vorn.
+	 */
 	private void initPostMovePawn() {
 		post("/boards/:gameid/pawns/:pawnid/move", CONTENT_TYPE, (req, resp) -> {
-			int roll = new Gson().fromJson(req.body(), Integer.class);
+			int roll = GSON.fromJson(req.body(), Integer.class);
 			boardService.movePawn(req.params(":gameid"), req.params(":pawnid"), roll);
 			return StatusCodes.SUCCESS + CLRF;
-
 		});
-
 	}
 
+	/**
+	 * Stellt eine neue Spielfigur auf. Startfeld ist 0 -> 'Los'
+	 */
 	private void initPostCreateNewPawn() {
 		post("/boards/:gameid/pawns", CONTENT_TYPE, (req, resp) -> {
-			JSONPawn pawn = new Gson().fromJson(req.body(), JSONPawn.class);
+			JSONPawn pawn = GSON.fromJson(req.body(), JSONPawn.class);
 			boardService.createNewPawnOnBoard(pawn, req.params(":gameid"));
 			return StatusCodes.SUCCESS + CLRF;
 		});
@@ -198,26 +240,33 @@ public class BoardRESTApi {
 	 * zugeordnete Feld wird identifiziert durch die <code>gameid</code> und der
 	 * <code>place</code> : Place-ID
 	 */
-	private void initPutCreateNewPlace() {
-		put("/boards/:gameid/places/:place", "application/json", (req, resp) -> {
-			JSONPlace place = new Gson().fromJson(req.body(), JSONPlace.class);
-			boardService.placeANewPlaceOnTheBoard(place, req.pathInfo(), req.params(":gameid"));
+	private void initPutUpdateAPlace() {
+		put("/boards/:gameid/places/:place", CONTENT_TYPE, (req, resp) -> {
+			JSONPlace place = GSON.fromJson(req.body(), JSONPlace.class);
+			boardService.updateAPlaceOnTheBoard(place, req.pathInfo(), req.params(":gameid"));
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
 
-	// TODO: Fragen
+	/**
+	 * TODO: Fragen
+	 * Weißt einer Figur ein neues Feld zu, z. B. nach wuerfeln und weiterbewegen
+	 */
 	private void initPutPlaceAPawn() {
-		put("/boards/:gameid/pawns/:pawnid", "application/json", (req, resp) -> {
-			JSONPawn p = new Gson().fromJson(req.body(), JSONPawn.class);
+		put("/boards/:gameid/pawns/:pawnid", CONTENT_TYPE, (req, resp) -> {
+			JSONPawn p = GSON.fromJson(req.body(), JSONPawn.class);
 			boardService.placeAPawn(req.params(":gameid"), p);
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
 
+	/**
+	 * Befuellt ein dem Game zugeteiltes Board mit Informationen
+	 * z. B.: Feldern
+	 */
 	private void initPutPlaceABoard() {
 		put("/boards/:gameid", CONTENT_TYPE, (req, resp) -> {
-			JSONBoard board = new Gson().fromJson(req.body(), JSONBoard.class);
+			JSONBoard board = GSON.fromJson(req.body(), JSONBoard.class);
 			boardService.placeABoard(req.params(":gameid"), board);
 			return StatusCodes.SUCCESS + CLRF;
 		});

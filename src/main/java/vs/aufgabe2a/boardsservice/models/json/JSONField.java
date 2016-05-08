@@ -31,9 +31,13 @@ public class JSONField implements Validable{
 		this.pawns = pawns;
 	}
 
+	/**
+	 * TODO: Pruefung implementieren ob uebergebenes JSONField gueltig
+	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
+	 */
 	@Override
 	public boolean isValid() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 	

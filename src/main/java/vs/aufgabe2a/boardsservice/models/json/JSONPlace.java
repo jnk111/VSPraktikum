@@ -32,6 +32,10 @@ public class JSONPlace{
 		this.broker = broker;
 	}
 
+	/**
+	 * TODO: Pruefung implementieren ob uebergebener JSONPlace gueltig
+	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
+	 */
 	public boolean isValid() {
 		// TODO Auto-generated method stub
 		return true;

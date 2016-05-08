@@ -67,8 +67,12 @@ public class JSONBoard{
 	}
 
 
+	/**
+	 * TODO: Pruefung implementieren ob uebergebenes JSONBoard gueltig
+	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
+	 */
 	public boolean isValid() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 

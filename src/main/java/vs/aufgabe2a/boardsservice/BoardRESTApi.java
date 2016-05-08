@@ -8,7 +8,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import vs.aufgabe1.StatusCodes;
+import vs.aufgabe2a.boardsservice.exceptions.ConnectionRefusedException;
+import vs.aufgabe2a.boardsservice.exceptions.InvalidInputException;
+import vs.aufgabe2a.boardsservice.exceptions.MutexPutException;
 import vs.aufgabe2a.boardsservice.exceptions.ResourceNotFoundException;
+import vs.aufgabe2a.boardsservice.exceptions.TurnMutexNotFreeException;
 import vs.aufgabe2a.boardsservice.models.json.JSONBoard;
 import vs.aufgabe2a.boardsservice.models.json.JSONGameURI;
 import vs.aufgabe2a.boardsservice.models.json.JSONPawn;
@@ -103,6 +107,34 @@ public class BoardRESTApi {
 			
 			response.status(StatusCodes.NOT_FOUND);
 			response.body(StatusCodes.NOT_FOUND + ": Resource not Found!");
+			exception.printStackTrace();
+		});
+		
+		exception(InvalidInputException.class, (exception, request, response) -> {
+			
+			response.status(StatusCodes.BAD_REQ);
+			response.body(StatusCodes.BAD_REQ + ": Some Information missing!");
+			exception.printStackTrace();
+		});
+		
+		exception(MutexPutException.class, (exception, request, response) -> {
+			
+			response.status(StatusCodes.BAD_REQ);
+			response.body(StatusCodes.BAD_REQ + ": Getting Mutex Failed!");
+			exception.printStackTrace();
+		});
+		
+		exception(TurnMutexNotFreeException.class, (exception, request, response) -> {
+			
+			response.status(StatusCodes.BAD_REQ);
+			response.body(StatusCodes.BAD_REQ + ": Mutex isn't free!");
+			exception.printStackTrace();
+		});
+		
+		exception(ConnectionRefusedException.class, (exception, request, response) -> {
+			
+			response.status(StatusCodes.BAD_REQ);
+			response.body(StatusCodes.BAD_REQ + ": Service not available!");
 			exception.printStackTrace();
 		});
 	}

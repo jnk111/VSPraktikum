@@ -1,5 +1,6 @@
 package vs.client.controller;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -12,6 +13,7 @@ import vs.client.model.GameInformation;
 import vs.client.model.RestopolyClient;
 import vs.client.model.tablemodel.GameInformationTableModel;
 import vs.client.view.OffeneSpieleUI;
+import vs.client.view.RestopolyMenuUI;
 
 /**
  * Diese Klasse kontrolliert die Aktionen auf der OffeneSpieleUI,
@@ -36,10 +38,19 @@ public class OffeneSpieleController {
 	 * Initialisiert die UI.
 	 */
 	private void initializeUI() {
-		ui = new OffeneSpieleUI();
-		ladeOffeneSpiele();
-		registriereActionListener();
-		ui.showUI();
+		
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ui = new OffeneSpieleUI();
+					ladeOffeneSpiele();
+					registriereActionListener();
+					ui.showUI();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	/**

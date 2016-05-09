@@ -19,7 +19,7 @@ import javax.swing.border.EmptyBorder;
 import vs.client.model.tablemodel.GameInformationTableModel;
 
 /**
- * Diese Klasse beschreibt eine Benutzeroberfläche, die dafür da ist, dass sich
+ * Diese Klasse beschreibt eine Benutzeroberflï¿½che, die dafï¿½r da ist, dass sich
  * der Benutzer alle offenen Spiele anschauen kann.
  * 
  * @author Jones
@@ -71,21 +71,21 @@ public class OffeneSpieleUI {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		auswahlPanel.add(scrollPane);
 
-		JPanel bestätigungsPanel = new JPanel();
-		bestätigungsPanel.setBackground(SystemColor.inactiveCaption);
-		splitPane.setRightComponent(bestätigungsPanel);
-		bestätigungsPanel.setLayout(new GridLayout(0, 3, 0, 0));
+		JPanel bestaetigungsPanel = new JPanel();
+		bestaetigungsPanel.setBackground(SystemColor.inactiveCaption);
+		splitPane.setRightComponent(bestaetigungsPanel);
+		bestaetigungsPanel.setLayout(new GridLayout(0, 3, 0, 0));
 
 		JLabel lblNewLabel = new JLabel("Auswahl:");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		bestätigungsPanel.add(lblNewLabel);
+		bestaetigungsPanel.add(lblNewLabel);
 
 		lblAuswahl = new JLabel("");
 		lblAuswahl.setHorizontalAlignment(SwingConstants.CENTER);
-		bestätigungsPanel.add(lblAuswahl);
+		bestaetigungsPanel.add(lblAuswahl);
 
 		btnBeitreten = new JButton("Beitreten");
-		bestätigungsPanel.add(btnBeitreten);
+		bestaetigungsPanel.add(btnBeitreten);
 	}
 
 	public JTable getOffeneSpieleTable() {

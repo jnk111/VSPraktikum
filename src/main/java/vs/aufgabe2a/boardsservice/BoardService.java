@@ -137,7 +137,7 @@ public class BoardService {
 				p.setPlayerUri(pawn.getPlayer()); // Annahme required
 				p.setPosition(pawn.getPosition()); // Annahme required
 				p.setRollsUri(p.getPawnUri() + "/roll");
-				b.addPawn(p);
+				b.addNewPawn(p);
 				
 				// Neue Wuerfelliste fuer die Figur erstellen
 				JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
@@ -240,7 +240,7 @@ public class BoardService {
 	 *          Die Gameid des Boards
 	 * @return Board Das Board zu der Gameid
 	 */
-	private Board getBoard(String gameid) {
+	public Board getBoard(String gameid) {
 
 		for (Board b : boards.keySet()) {
 			if (boards.get(b).getURI().contains(gameid)) {
@@ -323,10 +323,24 @@ public class BoardService {
 		if (b != null) {
 			if(rollValue > 0){
 				for (Field f : b.getFields()) {
-					for (Pawn p : f.getPawns()) {
+					List<Pawn> pawns = f.getPawns();
+					for (int i = 0; i < pawns.size(); i++) {
+						Pawn p = pawns.get(i);
 						if (p.getPawnUri().contains(pawnid)) {
-							p.setPosition(p.getPosition() + rollValue);
-						// TODO Event posten
+							int oldPos = p.getPosition();							// alte Position der Figur
+							int newPos = oldPos + rollValue;					// Neue Position der Figur
+							
+							// Eine Runde rumgelaufen?
+				
+							if(newPos >= b.getFields().size() - 1){
+								newPos = ((b.getFields().size() - 1) % newPos);
+							}
+							System.out.println("NEW POSITION: " + newPos);
+							b.getFields().get(oldPos).removePawn(p);	// Figur von alter Position entfernen
+							p.setPosition(newPos);										// setze neue Pos-Nr.
+							b.getFields().get(newPos).addPawn(p);			// Setze Figur auf neue Position
+							b.updatePositions(oldPos, newPos);			// markiere, dass auf Position 'newPos' Figuren stehen	
+							p.updatePlaceUri(newPos);								// Update Placeuri to the new Place
 							return;
 						}
 					}
@@ -764,9 +778,23 @@ public class BoardService {
 	 */
 	private String getPawnUri(Board board, String playerUri) {
 
-		// GET playerUri
-		String boardUri = board.getUri();
-		return boardUri + "/pawns/" + ((int) (Math.random() * 20));
+		String pawnUri = board.getUri() + "/pawns/";
+		int max = Integer.MIN_VALUE;
+		for(Field f: board.getFields()){
+			for(Pawn p: f.getPawns()){
+				String [] uri = p.getPawnUri().split("/");
+				int value = Integer.parseInt(uri[uri.length-1]);
+				max = Math.max(max, value);
+			}
+		}
+	
+		if(max == Integer.MIN_VALUE){
+			max = 0;
+		}else{
+			max += 1;
+		}
+		
+		return pawnUri + max;
 
 	}
 	

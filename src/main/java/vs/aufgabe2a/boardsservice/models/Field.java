@@ -79,6 +79,14 @@ public class Field implements Convertable<JSONField>, Validable{
 		return super.toString();
 	}
 	
+	public void removePawn(Pawn pawn){
+		this.pawns.remove(pawn);
+	}
+	
+	public void addPawn(Pawn pawn){
+		this.pawns.add(pawn);
+	}
+	
 	
 	
 	

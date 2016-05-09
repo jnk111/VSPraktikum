@@ -124,6 +124,20 @@ public class Pawn  implements Convertable<JSONPawn>, Validable{
 		
 		return "Pawn-Uri: " + this.getPawnUri() + ", Player-Uri: " + this.getPlayerUri();
 	}
+
+
+
+	public void updatePlaceUri(int newPos) {
+		String [] uri = this.getPlaceUri().split("/");
+		String newUri = "";
+		for(int i = 0; i < uri.length - 1; i++){
+			
+			newUri += uri[i];
+			newUri += "/";
+		}
+		newUri += newPos;
+		this.setPlaceUri(newUri);		
+	}
 	
 	
 	

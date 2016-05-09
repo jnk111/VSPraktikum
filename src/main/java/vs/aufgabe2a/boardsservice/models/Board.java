@@ -75,9 +75,14 @@ public class Board implements Convertable<JSONBoard>, Validable{
 		return true;
 	}
 
-	public void addPawn(Pawn p) {
+	public void addNewPawn(Pawn p) {
 		
-		this.fields.get(0).getPawns().add(p);
+		Field f = this.fields.get(0); 
+		f.getPawns().add(p);
+		
+		if(!this.positions.contains(new Integer(0))){
+			this.positions.add(0);
+		}
 		
 	}
 
@@ -104,8 +109,18 @@ public class Board implements Convertable<JSONBoard>, Validable{
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return super.toString();
+	}
+
+	public void updatePositions(int oldPos, int newPos) {
+		
+		if(this.getFields().get(oldPos).getPawns().isEmpty()){
+			this.positions.remove(new Integer(oldPos));
+		}
+		
+		this.positions.add(newPos);
+		
+		
 	}	
 	
 	

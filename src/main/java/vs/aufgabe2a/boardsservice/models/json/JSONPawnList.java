@@ -15,4 +15,14 @@ public class JSONPawnList {
 			
 			pawns.add(uri);
 		}
+
+		public List<String> getPawns() {
+			return pawns;
+		}
+
+		public void setPawns(List<String> pawns) {
+			this.pawns = pawns;
+		}
+		
+		
 }

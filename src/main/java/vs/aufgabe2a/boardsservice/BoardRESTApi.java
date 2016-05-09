@@ -326,4 +326,10 @@ public class BoardRESTApi {
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
+
+	public BoardService getBoardService() {
+		return boardService;
+	}
+	
+	
 }

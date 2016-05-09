@@ -14,7 +14,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import vs.aufgabe1b.interfaces.EventDAO;
+import vs.aufgabe1b.interfaces.Validator;
 import vs.aufgabe1b.models.Event;
+import vs.aufgabe1b.models.EventValidator;
 import vs.aufgabe1b.models.factories.EventDAOFactory;
 import vs.aufgabe1b.models.responses.EventList;
 
@@ -22,12 +24,15 @@ public class EventService {
 
 	private final String EVENTS_BASE = "/events";
 	private final String EVENT_ID = "/:eventid";
-	public final String CONTENT_TYPE = "application/json;charset=utf-8";
+	private final String CONTENT_TYPE = "application/json;charset=utf-8";
+	
+	private int nextId; // wird hochgezählt
 	
 	private static Gson gson;
 	
 	public EventService(){
 		gson = new Gson();
+		nextId = 0;
 	}
 	
 	/**
@@ -44,8 +49,15 @@ public class EventService {
 			try{
 				EventDAO dao = EventDAOFactory.getDAO();
 				Event newEvent = gson.fromJson(req.body(), Event.class);
-				dao.createEvent(newEvent);
-				res.status(HttpStatus.OK_200);				
+				// Ressource, Player & Time dürfen leer sein, der Rest nicht.
+				Validator<Event> validator = new EventValidator();
+				if(validator.isValidRessource(newEvent)){
+					dao.createEvent(newEvent);
+					res.status(HttpStatus.OK_200);				
+				}
+				else{
+					res.status(HttpStatus.PRECONDITION_FAILED_412);
+				}
 			} catch (JsonSyntaxException ex){
 				System.err.println("Fehler: Der Content im Body der empfangenen Nachricht entspricht nicht dem gültigen Format.");
 				res.status(HttpStatus.BAD_REQUEST_400);
@@ -126,6 +138,10 @@ public class EventService {
 			res.status(HttpStatus.OK_200);
 			return event;
 		},gson::toJson);
+	}
+	
+	public synchronized void incrementID(){
+		this.nextId++;
 	}
 	
 	public static void main(String[] args) {

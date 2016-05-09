@@ -24,22 +24,22 @@ public class EventDAOImpl implements EventDAO {
 		
 		// Testdaten erstellen
 		Event event = new Event("Monopoly","type1","event1", "reason1" , "ressource1", "player1");
-		Event event2 = new Event("Monopoly","type2","event2", "reason2" , "ressource2", "player2");
-		Event event3 = new Event("Monopoly","type3","event3", "reason3" , "ressource3", "player3");
-		Event event4 = new Event("Monopoly","type4","event4", "reason4" , "ressource4", "player4");
-		Event event5 = new Event("Monopoly","type5","event5", "reason5" , "ressource5", "player5");
+//		Event event2 = new Event("Monopoly","type2","event2", "reason2" , "ressource2", "player2");
+//		Event event3 = new Event("Monopoly","type3","event3", "reason3" , "ressource3", "player3");
+//		Event event4 = new Event("Monopoly","type4","event4", "reason4" , "ressource4", "player4");
+//		Event event5 = new Event("Monopoly","type5","event5", "reason5" , "ressource5", "player5");
 		events.add(event);
-		events.add(event2);
-		events.add(event3);
-		events.add(event4);
-		events.add(event5);
+//		events.add(event2);
+//		events.add(event3);
+//		events.add(event4);
+//		events.add(event5);
 	}
 
 	/**
 	 * Liefert alle vorhandenen Events.
 	 */
 	@Override
-	public List<Event> getEvents() {
+	public synchronized List<Event> getEvents() {
 		return events;
 	}
 
@@ -54,7 +54,7 @@ public class EventDAOImpl implements EventDAO {
 	 * Vielleicht ändere ich das bei Zeit nochmal in einen eigenen Enumtyp um. ;)
 	 */
 	@Override
-	public List<Event> findAllEventsByRegex(Map<String, String> filter) {
+	public synchronized List<Event> findAllEventsByRegex(Map<String, String> filter) {
 		List<Event> choosenEvents = new ArrayList<>();
 		
 		for(Event event : events){
@@ -76,7 +76,7 @@ public class EventDAOImpl implements EventDAO {
 	 * Vielleicht ändere ich das bei Zeit nochmal in einen eigenen Enumtyp um. ;)
 	 */
 	@Override
-	public void deleteAllEventsByRegex(Map<String, String> filter) {
+	public synchronized void deleteAllEventsByRegex(Map<String, String> filter) {
 		List<Event> events = findAllEventsByRegex(filter);
 		for(Event event : events){
 			this.events.remove(event);
@@ -89,7 +89,7 @@ public class EventDAOImpl implements EventDAO {
 	 * @param newEvent Das Event das hinzugefügt werden soll.
 	 */
 	@Override
-	public void createEvent(Event newEvent) {
+	public synchronized void createEvent(Event newEvent) {
 		System.out.println("Create new Event: " + newEvent);
 		events.add(newEvent);
 		System.out.println(events);
@@ -102,7 +102,7 @@ public class EventDAOImpl implements EventDAO {
 	 * @param id Die ID des gewünschten Events.
 	 */
 	@Override
-	public Event findByID(String id) {
+	public synchronized Event findByID(String id) {
 		System.out.println("Eventid: " + id);
 		for(Event event : events){
 			if(event.getId().equals("events/"+id)){

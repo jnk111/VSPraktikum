@@ -36,13 +36,15 @@ public class Event {
 		this.id = "events/"+name;
 	}
 	
-	
+	public synchronized void setID(String id){
+		this.id = id;
+	}
 
 	/**
 	 * Liefert die URL zum Event auf dem Eventserver.
 	 * @return
 	 */
-	public String getId() {
+	public synchronized String getId() {
 		return id;
 	}
 
@@ -50,7 +52,7 @@ public class Event {
 	 * Die URI des Games
 	 * @return
 	 */
-	public String getGame() {
+	public synchronized String getGame() {
 		return game;
 	}
 
@@ -58,7 +60,7 @@ public class Event {
 	 * Der interne Typ des Events
 	 * @return
 	 */
-	public String getType() {
+	public synchronized String getType() {
 		return type;
 	}
 
@@ -66,7 +68,7 @@ public class Event {
 	 * Der Name des Events
 	 * @return
 	 */
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 
@@ -74,7 +76,7 @@ public class Event {
 	 * Beschreibung des Auslösers.
 	 * @return
 	 */
-	public String getReason() {
+	public synchronized String getReason() {
 		return reason;
 	}
 
@@ -82,7 +84,7 @@ public class Event {
 	 * die URI der Ressource, die mit diesem Event zusammenhängt
 	 * @return
 	 */
-	public String getRessource() {
+	public synchronized String getRessource() {
 		return ressource;
 	}
 
@@ -90,7 +92,7 @@ public class Event {
 	 * Die URI des Spielers der das Event ausgelöst hat.
 	 * @return
 	 */
-	public String getPlayer() {
+	public synchronized String getPlayer() {
 		return player;
 	}
 
@@ -98,18 +100,18 @@ public class Event {
 	 * Der Zeitstempel, was das Event erstellt wurde.
 	 * @return
 	 */
-	public String getTime() {
+	public synchronized String getTime() {
 		return time;
 	}
 	
 	@Override
-	public String toString(){
+	public synchronized String toString(){
 		return new Gson().toJson(this);
 		
 	}
 
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((game == null) ? 0 : game.hashCode());
@@ -119,7 +121,7 @@ public class Event {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

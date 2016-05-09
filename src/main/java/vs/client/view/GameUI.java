@@ -16,12 +16,20 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import vs.client.model.tablemodel.PlayerOverviewTableModel;
+
 public class GameUI {
 
 	private JFrame frame;
 	private JPanel contentPane;
 	private JTable playerTable;
-	
+	private JButton btnSpielzugBeenden;
+	private JButton btnJailbreak;
+	private JButton btnHausKaufen;
+	private JButton btnHausVerkaufen;
+	private JButton btnWrfeln;
+	private JLabel lblKontostand;
+
 	/**
 	 * Create the frame.
 	 */
@@ -35,59 +43,87 @@ public class GameUI {
 		frame.setLocationRelativeTo(null);
 		frame.setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
+
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setBackground(SystemColor.activeCaption);
 		contentPane.add(splitPane, BorderLayout.CENTER);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.activeCaption);
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new GridLayout(8, 0, 0, 0));
-		
+
 		JLabel lblUsername = new JLabel("Username");
 		lblUsername.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblUsername.setBackground(SystemColor.activeCaption);
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblUsername);
-		
-		JLabel lblKontostand = new JLabel("Kontostand:");
+
+		lblKontostand = new JLabel("Kontostand:");
 		lblKontostand.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblKontostand);
-		
-		JButton btnWrfeln = new JButton("W\u00FCrfeln");
+
+		btnWrfeln = new JButton("W\u00FCrfeln");
 		panel.add(btnWrfeln);
-		
-		JButton btnJailbreak = new JButton("Jailbreak");
+
+		btnJailbreak = new JButton("Jailbreak");
 		panel.add(btnJailbreak);
-		
-		JButton btnHausKaufen = new JButton("Haus Kaufen");
+
+		btnHausKaufen = new JButton("Haus Kaufen");
 		panel.add(btnHausKaufen);
-		
-		JButton btnHausVerkaufen = new JButton("Haus Verkaufen");
+
+		btnHausVerkaufen = new JButton("Haus Verkaufen");
 		panel.add(btnHausVerkaufen);
-		
-		JButton btnSpielzugBeenden = new JButton("Spielzug beenden");
+
+		btnSpielzugBeenden = new JButton("Spielzug beenden");
 		panel.add(btnSpielzugBeenden);
-		
+
 		JButton btnAusloggen = new JButton("Ausloggen");
 		panel.add(btnAusloggen);
-		
+
 		JSplitPane splitPane_1 = new JSplitPane();
 		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setRightComponent(splitPane_1);
-		
+
 		JPanel board = new JPanel();
 		splitPane_1.setRightComponent(board);
 		board.setLayout(new GridLayout(1, 0, 0, 0));
-		
-		
-		JScrollPane playerOverview = new JScrollPane();
+
+		playerTable = new JTable(new PlayerOverviewTableModel());
+		JScrollPane playerOverview = new JScrollPane(playerTable);
 		splitPane_1.setLeftComponent(playerOverview);
 		splitPane_1.setDividerLocation(150);
 		splitPane.setDividerLocation(150);
 	}
-	
+
+	public JTable getPlayerTable() {
+		return playerTable;
+	}
+
+	public JButton getBtnSpielzugBeenden() {
+		return btnSpielzugBeenden;
+	}
+
+	public JButton getBtnJailbreak() {
+		return btnJailbreak;
+	}
+
+	public JButton getBtnHausKaufen() {
+		return btnHausKaufen;
+	}
+
+	public JButton getBtnHausVerkaufen() {
+		return btnHausVerkaufen;
+	}
+
+	public JButton getBtnWrfeln() {
+		return btnWrfeln;
+	}
+
+	public JLabel getLblKontostand() {
+		return lblKontostand;
+	}
+
 	public void showUI() {
 		frame.setVisible(true);
 	}

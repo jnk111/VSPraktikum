@@ -3,7 +3,7 @@ package vs.aufgabe2b.exceptions.bank;
 /**
  * Class for transaction exceptions.
  *
- * @author Gerriet Hinrichs <gerriet.hinrichs@web.de>
+ * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class TransactionException extends Exception {
 
@@ -14,33 +14,33 @@ public class TransactionException extends Exception {
 
     /**
      * Creates a new exception.
-     * 
+     *
      * @param message
      *            Short error description.
      */
     public TransactionException(final String message) {
-	super(message);
+        super(message);
     }
 
     /**
      * Creates a new exception.
-     * 
+     *
      * @param message
      *            Short error description.
      * @param cause
      *            Reason for the access error.
      */
     public TransactionException(final String message, final Throwable cause) {
-	super(message, cause);
+        super(message, cause);
     }
 
     /**
      * Creates a new exception.
-     * 
+     *
      * @param cause
      *            Reason for the access error.
      */
     public TransactionException(final Throwable cause) {
-	super(cause);
+        super(cause);
     }
 }

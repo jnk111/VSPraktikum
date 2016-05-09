@@ -34,6 +34,13 @@ public class RestopolyClient {
 		return data;
 	}
 
+	public List<PlayerInformation> getPlayerInformations() {
+		// TODO Auto-generated method stub
+		List<PlayerInformation> data = new ArrayList<>();
+		data.add(new PlayerInformation("dummy", "pawn", "2000", true));
+		return data;
+	}
+
 	/**
 	 * Liefert das Würfelergebnis vom DiceService.
 	 * Der DiceService muss laufen, damit ein Ergebnis errechnet werden kann.
@@ -55,5 +62,6 @@ public class RestopolyClient {
 		
 		return dice.getNumber();
 	}
+
 
 }

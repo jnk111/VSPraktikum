@@ -29,6 +29,10 @@ public class GameUI {
 	private JButton btnHausVerkaufen;
 	private JButton btnWrfeln;
 	private JLabel lblKontostand;
+	private JPanel fieldPanel;
+	private JPanel häuser;
+	private JPanel panel_2;
+	private JPanel panel_3;
 
 	/**
 	 * Create the frame.
@@ -87,7 +91,19 @@ public class GameUI {
 
 		JPanel board = new JPanel();
 		splitPane_1.setRightComponent(board);
-		board.setLayout(new GridLayout(1, 0, 0, 0));
+		board.setLayout(new GridLayout(2, 2, 0, 0));
+		
+		fieldPanel = new JPanel();
+		board.add(fieldPanel);
+		
+		häuser = new JPanel();
+		board.add(häuser);
+		
+		panel_2 = new JPanel();
+		board.add(panel_2);
+		
+		panel_3 = new JPanel();
+		board.add(panel_3);
 
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		JScrollPane playerOverview = new JScrollPane(playerTable);

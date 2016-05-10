@@ -41,7 +41,7 @@ public class RunBoardExample {
 	public static void main(String[] args) {
 
 		boardApi = new BoardRESTApi();
-		diceApi = new DiceService();
+		diceApi = new DiceService(null);
 		setupGame();
 
 	}

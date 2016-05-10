@@ -2,18 +2,25 @@ package vs.aufgabe1.diceservice;
 
 import static spark.Spark.get;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.Gson;
 
 import vs.aufgabe1b.RestClient;
 import vs.aufgabe1b.models.Event;
+import vs.yellowpages.ServiceNames;
+import vs.yellowpages.models.Service;
 
 public class DiceService {
 
 	public final String SLASH_DICE = "/dice";
 	private Gson gson;
+	private Map<String, Service> neededServices;
 	
-	public DiceService(){
+	public DiceService(Map<String, Service> neededServices){
 		gson = new Gson();
+		this.setNeededServices(neededServices);
 	}
 	
 	/**
@@ -28,9 +35,19 @@ public class DiceService {
 			// Event(String game, String type, String name, String reason, String ressource, String player)
 			Event event = new Event(game,"DiceRoll","DiceRoll",player+" has rolled the dice.", SLASH_DICE,player);
 			RestClient client = new RestClient();
-			String code = client.sendCreateEventRequest(event);
+			String eventServiceUri = neededServices.get(ServiceNames.EVENT).getUri(); 
+			String code = client.sendCreateEventRequest(event, eventServiceUri);
 			System.out.println("EventManager ReturnCode: " + code);
 			return Dice.create(player, game);
 		}, gson::toJson);
 	}
+
+	public Map<String, Service> getNeededServices() {
+		return neededServices;
+	}
+
+	public void setNeededServices(Map<String, Service> neededServices) {
+		this.neededServices = neededServices;
+	}
+
 }

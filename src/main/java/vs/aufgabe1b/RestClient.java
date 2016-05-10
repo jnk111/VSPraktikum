@@ -13,11 +13,12 @@ public class RestClient {
 	/**
 	 * Sendet eine Anfrage an den EventManager, um ein neues Event anzumelden.
 	 * @param event Das Event, dass eingetragen werden soll.
+	 * @param serviceUri 
 	 * @return Den Statuscode der Anfrage.
 	 * @throws IOException
 	 */
-	public String sendCreateEventRequest(Event event) throws IOException{
-		URL url = new URL("http://localhost:4567/events");
+	public String sendCreateEventRequest(Event event, String serviceUri) throws IOException{
+		URL url = new URL(serviceUri);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setDoOutput(true);

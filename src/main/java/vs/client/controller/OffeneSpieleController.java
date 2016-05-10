@@ -13,7 +13,6 @@ import vs.client.model.GameInformation;
 import vs.client.model.RestopolyClient;
 import vs.client.model.tablemodel.GameInformationTableModel;
 import vs.client.view.OffeneSpieleUI;
-import vs.client.view.RestopolyMenuUI;
 
 /**
  * Diese Klasse kontrolliert die Aktionen auf der OffeneSpieleUI,
@@ -90,7 +89,7 @@ public class OffeneSpieleController {
 			public void actionPerformed(ActionEvent e) {
 				String gameID = ui.getLblAuswahl().getText();
 				if(!gameID.equals("")){
-					GameController gameController = new GameController(client,gameID);
+					new GameController(client,gameID);
 				}
 			}
 		});

@@ -13,7 +13,7 @@ public class Event {
 	private String reason;
 	private String ressource;
 	private String player;
-	private String time;
+	private Timestamp time;
 	
 	/**
 	 * Initialisiert ein Event
@@ -32,7 +32,7 @@ public class Event {
 		this.reason = reason;
 		this.ressource = ressource;
 		this.player = player;
-		this.time = new Timestamp(System.currentTimeMillis())+"";
+		this.time = new Timestamp(System.currentTimeMillis());
 		this.id = "events/"+name;
 	}
 	
@@ -100,7 +100,7 @@ public class Event {
 	 * Der Zeitstempel, was das Event erstellt wurde.
 	 * @return
 	 */
-	public synchronized String getTime() {
+	public synchronized Timestamp getTime() {
 		return time;
 	}
 	
@@ -117,6 +117,11 @@ public class Event {
 		result = prime * result + ((game == null) ? 0 : game.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((player == null) ? 0 : player.hashCode());
+		result = prime * result + ((reason == null) ? 0 : reason.hashCode());
+		result = prime * result + ((ressource == null) ? 0 : ressource.hashCode());
+		result = prime * result + ((time == null) ? 0 : time.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -144,7 +149,34 @@ public class Event {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (player == null) {
+			if (other.player != null)
+				return false;
+		} else if (!player.equals(other.player))
+			return false;
+		if (reason == null) {
+			if (other.reason != null)
+				return false;
+		} else if (!reason.equals(other.reason))
+			return false;
+		if (ressource == null) {
+			if (other.ressource != null)
+				return false;
+		} else if (!ressource.equals(other.ressource))
+			return false;
+		if (time == null) {
+			if (other.time != null)
+				return false;
+		} else if (!time.equals(other.time))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
 		return true;
 	}
+
+
 	
 }

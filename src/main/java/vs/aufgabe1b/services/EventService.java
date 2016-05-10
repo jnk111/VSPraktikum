@@ -141,7 +141,7 @@ public class EventService {
 	}
 	
 	public synchronized void incrementID(){
-		this.nextId++;
+		this.nextId = this.nextId + 1;
 	}
 	
 	public static void main(String[] args) {

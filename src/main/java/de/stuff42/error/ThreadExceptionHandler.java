@@ -19,6 +19,7 @@
  *
  * Written by Gerriet Hinrichs of stuff42.
  */
+
 package de.stuff42.error;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -26,43 +27,43 @@ import java.lang.Thread.UncaughtExceptionHandler;
 /**
  * Default uncaught exception handler for threads.
  *
- * @author Gerriet Hinrichs <gerriet.hinrichs@web.de>
+ * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class ThreadExceptionHandler implements UncaughtExceptionHandler {
 
-	/**
-	 * Creates a new {@link ThreadExceptionHandler} instance and registers it as
-	 * {@link UncaughtExceptionHandler} for the current thread.
-	 */
-	public static void register() {
-		Thread.currentThread().setUncaughtExceptionHandler(new ThreadExceptionHandler());
-	}
+    /**
+     * Creates a new {@link ThreadExceptionHandler} instance and registers it as
+     * {@link UncaughtExceptionHandler} for the current thread.
+     */
+    public static void register() {
+        Thread.currentThread().setUncaughtExceptionHandler(new ThreadExceptionHandler());
+    }
 
-	/**
-	 * Creates a new {@link ThreadExceptionHandler} instance and registers it as
-	 * {@link UncaughtExceptionHandler} for the given thread.
-	 * 
-	 * @param thread
-	 *          Thread to register the handler for.
-	 */
-	public static void register(final Thread thread) {
-		thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
-	}
+    /**
+     * Creates a new {@link ThreadExceptionHandler} instance and registers it as
+     * {@link UncaughtExceptionHandler} for the given thread.
+     * 
+     * @param thread
+     *            Thread to register the handler for.
+     */
+    public static void register(final Thread thread) {
+        thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
+    }
 
-	/**
-	 * Creates a new {@link ThreadExceptionHandler} instance and registers it as
-	 * default {@link UncaughtExceptionHandler} for this application.
-	 */
-	public static void registerDefault() {
-		Thread.setDefaultUncaughtExceptionHandler(new ThreadExceptionHandler());
-	}
+    /**
+     * Creates a new {@link ThreadExceptionHandler} instance and registers it as
+     * default {@link UncaughtExceptionHandler} for this application.
+     */
+    public static void registerDefault() {
+        Thread.setDefaultUncaughtExceptionHandler(new ThreadExceptionHandler());
+    }
 
-	@Override
-	public void uncaughtException(final Thread t, final Throwable e) {
-		System.err.println("---");
-		System.err.println("Thread: " + t.getName() + " (#" + t.getId() + ")");
-		System.err.print(ExceptionUtils.getExceptionInfo(e, "FATAL"));
-		System.exit(-1);
-	}
+    @Override
+    public void uncaughtException(final Thread thread, final Throwable ex) {
+        System.err.println("---");
+        System.err.println("Thread: " + thread.getName() + " (#" + thread.getId() + ")");
+        System.err.print(ExceptionUtils.getExceptionInfo(ex, "FATAL"));
+        System.exit(-1);
+    }
 
 }

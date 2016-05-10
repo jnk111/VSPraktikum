@@ -374,7 +374,7 @@ public class BoardService {
 			putPlayersTurn(pawn, gameid);
 			int rollValue = doDiceRoll(pawn, gameid);
 			movePawnRESTCall(gameid, pawnid, rollValue);
-			placeAPawnRESTCall(gameid, pawn);
+			//placeAPawnRESTCall(gameid, pawn);
 			
 			// weitere Aktionen...
 			
@@ -556,7 +556,7 @@ public class BoardService {
 	 * @throws InvalidInputException
 	 *           Board oder Pawn wurde nicht gefunden -> Abbruch
 	 */
-	private void checkPlayerHasTurn(Pawn pawn, String gameid)
+	private synchronized void checkPlayerHasTurn(Pawn pawn, String gameid)
 			throws TurnMutexNotFreeException, ConnectionRefusedException, InvalidInputException {
 
 		try {
@@ -717,6 +717,7 @@ public class BoardService {
 
 	/**
 	 * Weist einer Figur ein neues Feld zu (z. B. nach Wuerfeln)
+	 * oder zu Debuggingzwecken
 	 * 
 	 * @param gameid
 	 *          Die Gameid des Boardes
@@ -825,7 +826,6 @@ public class BoardService {
 	}
 	
 	/**
-	 * 
 	 * Holt alle Events des Spielers seit dem letzten Wurf
 	 * @param pawn
 	 * 				Die Figur

@@ -3,10 +3,9 @@ package vs.aufgabe2a.boardsservice.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONField;
 
-public class Field implements Convertable<JSONField>, Validable{
+public class Field implements Convertable<JSONField>{
 	
 	private Place place;
 	private List<Pawn> pawns; // The List of pawns on the board, e. g. e.g. ['/boards/41/pawns/mario' , ...]
@@ -45,11 +44,6 @@ public class Field implements Convertable<JSONField>, Validable{
 		
 	}
 
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return true;
-	}
 
 	@Override
 	public int hashCode() {

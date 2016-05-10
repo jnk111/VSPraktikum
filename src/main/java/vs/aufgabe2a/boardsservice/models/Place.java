@@ -1,9 +1,8 @@
 package vs.aufgabe2a.boardsservice.models;
 
-import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONPlace;
 
-public class Place implements Convertable<JSONPlace>, Validable{
+public class Place implements Convertable<JSONPlace>{
 	
 	private String name;
 	private String brokerUri;
@@ -53,12 +52,6 @@ public class Place implements Convertable<JSONPlace>, Validable{
 	public JSONPlace convert() {
 		
 		return new JSONPlace(this.name, this.brokerUri);
-	}
-
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

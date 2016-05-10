@@ -1,5 +1,6 @@
 package vs.aufgabe2a.boardsservice.models.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vs.aufgabe1.Validable;
@@ -13,6 +14,12 @@ public class JSONField implements Validable{
 		
 		this.place = place;
 		this.pawns = pawns;
+	}
+	
+	public JSONField(String place){
+		
+		this.place = place;
+		this.pawns = new ArrayList<>();
 	}
 
 	public String getPlace() {
@@ -32,13 +39,18 @@ public class JSONField implements Validable{
 	}
 
 	/**
-	 * TODO: Pruefung implementieren ob uebergebenes JSONField gueltig
+	 * Prueft ob das Ubergeben Field gueltig ist
+	 * Keines der Felder darf null sein.
+	 * Falls nicht alle benoetigt werden, sollte der entsprechende
+	 * Konstruktor aufgerufen werden.
+	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	@Override
 	public boolean isValid() {
 
-		return true;
+		return this.getPlace() != null
+						&& this.getPawns() != null;
 	}
 	
 	

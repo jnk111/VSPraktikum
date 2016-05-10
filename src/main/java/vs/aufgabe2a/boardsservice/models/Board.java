@@ -3,11 +3,10 @@ package vs.aufgabe2a.boardsservice.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONBoard;
 import vs.aufgabe2a.boardsservice.models.json.JSONField;
 
-public class Board implements Convertable<JSONBoard>, Validable{
+public class Board implements Convertable<JSONBoard>{
 	
 	private String id; // URI of the Board
 	private List<Field> fields; // Fields on the Board
@@ -67,12 +66,6 @@ public class Board implements Convertable<JSONBoard>, Validable{
 			jsonFields.add((JSONField) f.convert()); // Zusichern da convert() JSONObject liefert
 		}
 		return new JSONBoard(this.getUri(), jsonFields, this.positions, this.players);
-	}
-
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return true;
 	}
 
 	public void addNewPawn(Pawn p) {

@@ -680,7 +680,7 @@ public class BoardService {
 
 		Board key = getBoard(gameid);
 
-		if (board.isValid() && key != null) {
+		if (key != null) {
 			List<Pawn> pawns = new ArrayList<>();
 			List<Field> fields = new ArrayList<>();
 			Pawn pawn = null;

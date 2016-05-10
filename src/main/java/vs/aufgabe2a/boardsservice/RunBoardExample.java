@@ -25,7 +25,7 @@ import vs.aufgabe2a.boardsservice.models.json.JSONPawn;
 import vs.aufgabe2a.boardsservice.models.json.JSONPawnList;
 import vs.aufgabe2a.boardsservice.models.json.JSONPlace;
 
-public class Run {
+public class RunBoardExample {
 
 	private static final Gson GSON = new Gson();
 	private static final int TIMEOUT = 1000;
@@ -178,6 +178,8 @@ public class Run {
 					response.append(line);
 				}
 				in.close();
+				
+				@SuppressWarnings("unchecked")
 				List<String> places = GSON.fromJson(response.toString(), List.class);
 				System.out.println("Received Places: " + GSON.toJson(places));
 				System.out.println();

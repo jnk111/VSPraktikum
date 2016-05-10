@@ -1,9 +1,8 @@
 package vs.aufgabe2a.boardsservice.models;
 
-import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONPawn;
 
-public class Pawn  implements Convertable<JSONPawn>, Validable{
+public class Pawn  implements Convertable<JSONPawn>{
 	
 	
 	private String pawnUri; // Uri of the Pawn
@@ -84,14 +83,6 @@ public class Pawn  implements Convertable<JSONPawn>, Validable{
 		
 		return json;
 	}
-
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-
 
 	@Override
 	public int hashCode() {

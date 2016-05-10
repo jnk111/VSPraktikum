@@ -4,10 +4,6 @@ public class JSONGameURI {
 	
 	private String game;
 	
-	public JSONGameURI(){
-		
-	}
-	
 	public JSONGameURI(String gameUri){
 		
 		this.game = gameUri;
@@ -22,13 +18,11 @@ public class JSONGameURI {
 	}
 
 	/**
-	 * TODO: Pruefung implementieren ob uebergebenes JSONGameUri gueltig
+	 * Prueft ob die uebergebene GameUri gueltig ist
+	 * Die <code>gameid</code> darf nicht null sein
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	public boolean isValid() {
-		return true;
+		return this.getURI() != null;
 	}
-	
-	
-
 }

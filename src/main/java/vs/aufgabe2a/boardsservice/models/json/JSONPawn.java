@@ -73,12 +73,18 @@ public class JSONPawn implements Validable{
 	}
 
 	/**
-	 * TODO: Pruefung implementieren ob uebergebenes JSONPawn gueltig
+	 * Prueft ob die Ubergebene Figur gueltig ist
+	 * Mindestes <code>place</code> 
+	 * und <code>playerUri</code> duerfen nicht null sein.
+	 * Die <code>id</code> wird vom Service vergeben.
+	 * Falls nicht alle benoetigt werden, sollte der entsprechende
+	 * Konstruktor aufgerufen werden.
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	@Override
 	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return true;
+		
+		return  this.getPlace() != null
+								&& this.getPlayer() != null;
 	}
 }

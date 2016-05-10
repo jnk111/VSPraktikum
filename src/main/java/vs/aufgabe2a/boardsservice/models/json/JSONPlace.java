@@ -33,11 +33,15 @@ public class JSONPlace{
 	}
 
 	/**
-	 * TODO: Pruefung implementieren ob uebergebener JSONPlace gueltig
+	 * Prueft ob der uebergebene Place gueltig ist
+	 * Keines der Felder darf null sein.
+	 * Falls nicht alle benoetigt werden, sollte der entsprechende
+	 * Konstruktor aufgerufen werden.
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return true;
+		
+		return this.getBroker() != null
+						&& this.getName() != null;
 	}
 }

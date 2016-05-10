@@ -2,7 +2,6 @@ package vs.aufgabe1.diceservice;
 
 import static spark.Spark.get;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -17,6 +16,7 @@ public class DiceService {
 	public final String SLASH_DICE = "/dice";
 	private Gson gson;
 	private Map<String, Service> neededServices;
+	
 	
 	public DiceService(Map<String, Service> neededServices){
 		gson = new Gson();

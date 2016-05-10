@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * Thread save bank with transaction support.
+ * Thread safe bank with transaction support.
  * </p>
  * <p>
  * Account interaction is done by using locks on per account basis to allow
@@ -226,7 +226,7 @@ public class Bank {
      *             exist.
      */
     public void lock(final SortedSet<String> accountList) throws AccountAccessException {
-        // use default timeout of 1 second
+        // use default timeout of 100 milliseconds
         this.lock(accountList, 100, TimeUnit.MILLISECONDS);
     }
 

@@ -30,12 +30,12 @@ public class RunBoardExample {
 	private static final Gson GSON = new Gson();
 	private static final int TIMEOUT = 1000;
 	private static BoardRESTApi boardApi;
+	
 	@SuppressWarnings("unused")
 	private static DiceService diceApi;
 
 	/**
 	 * Startet den Boardservice und fuehrt ein paar Testoperationen aus.
-	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {

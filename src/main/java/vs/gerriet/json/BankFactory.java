@@ -1,9 +1,12 @@
-package vs.gerriet;
+package vs.gerriet.json;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import vs.gerriet.model.Bank;
+import vs.gerriet.service.BankService;
 
 /**
  * Factory for bank instances.

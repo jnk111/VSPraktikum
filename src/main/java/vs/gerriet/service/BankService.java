@@ -1,8 +1,13 @@
-package vs.gerriet;
+package vs.gerriet.service;
 
 import com.google.gson.Gson;
 
 import spark.Spark;
+import vs.gerriet.json.BankData;
+import vs.gerriet.json.BankFactory;
+import vs.gerriet.json.BankList;
+import vs.gerriet.json.GameId;
+import vs.gerriet.model.Bank;
 
 /**
  * Class providing the bank service.

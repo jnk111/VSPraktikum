@@ -1,4 +1,4 @@
-package vs.gerriet;
+package vs.gerriet.json;
 
 /**
  * Object for the bank list.

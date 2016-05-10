@@ -1,16 +1,16 @@
-package vs.gerriet;
+package vs.gerriet.exception;
 
 /**
- * Exception class for account access errors.
+ * Class for transaction exceptions.
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class AccountAccessException extends Exception {
+public class TransactionException extends Exception {
 
     /**
      * Serial version UID.
      */
-    private static final long serialVersionUID = 5384250035735724532L;
+    private static final long serialVersionUID = -6787078477242481400L;
 
     /**
      * Creates a new exception.
@@ -18,7 +18,7 @@ public class AccountAccessException extends Exception {
      * @param message
      *            Short error description.
      */
-    public AccountAccessException(final String message) {
+    public TransactionException(final String message) {
         super(message);
     }
 
@@ -30,7 +30,7 @@ public class AccountAccessException extends Exception {
      * @param cause
      *            Reason for the access error.
      */
-    public AccountAccessException(final String message, final Throwable cause) {
+    public TransactionException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -40,7 +40,7 @@ public class AccountAccessException extends Exception {
      * @param cause
      *            Reason for the access error.
      */
-    public AccountAccessException(final Throwable cause) {
+    public TransactionException(final Throwable cause) {
         super(cause);
     }
 }

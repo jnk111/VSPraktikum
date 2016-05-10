@@ -1,4 +1,8 @@
-package vs.gerriet;
+package vs.gerriet.transaction;
+
+import vs.gerriet.exception.AccountAccessException;
+import vs.gerriet.exception.TransactionException;
+import vs.gerriet.model.Bank;
 
 /**
  * <p>

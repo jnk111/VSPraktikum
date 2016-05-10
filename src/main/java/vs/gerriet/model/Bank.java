@@ -1,4 +1,4 @@
-package vs.gerriet;
+package vs.gerriet.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
+import vs.gerriet.exception.AccountAccessException;
+import vs.gerriet.transaction.AtomicOperation;
 
 /**
  * <p>

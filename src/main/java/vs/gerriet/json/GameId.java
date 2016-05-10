@@ -1,4 +1,4 @@
-package vs.gerriet;
+package vs.gerriet.json;
 
 /**
  * Container object containing a game id.

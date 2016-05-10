@@ -1,4 +1,6 @@
-package vs.gerriet;
+package vs.gerriet.model;
+
+import vs.gerriet.utils.LockProvider;
 
 /**
  * Thread save class for user accounts with locking.

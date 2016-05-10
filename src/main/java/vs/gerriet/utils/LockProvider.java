@@ -1,4 +1,4 @@
-package vs.gerriet;
+package vs.gerriet.utils;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;

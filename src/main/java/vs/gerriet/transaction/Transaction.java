@@ -1,4 +1,4 @@
-package vs.gerriet;
+package vs.gerriet.transaction;
 
 import java.util.Collections;
 import java.util.Queue;
@@ -6,6 +6,11 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import vs.gerriet.exception.AccountAccessException;
+import vs.gerriet.exception.TransactionException;
+import vs.gerriet.model.Bank;
+import vs.gerriet.utils.LockProvider;
 
 /**
  * Class for bank transactions.

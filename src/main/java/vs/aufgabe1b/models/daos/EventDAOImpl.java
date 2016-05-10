@@ -21,18 +21,6 @@ public class EventDAOImpl implements EventDAO {
 	 */
 	public EventDAOImpl() {
 		events = Collections.synchronizedList(new ArrayList<>());
-		
-		// Testdaten erstellen
-		Event event = new Event("Monopoly","type1","event1", "reason1" , "ressource1", "player1");
-//		Event event2 = new Event("Monopoly","type2","event2", "reason2" , "ressource2", "player2");
-//		Event event3 = new Event("Monopoly","type3","event3", "reason3" , "ressource3", "player3");
-//		Event event4 = new Event("Monopoly","type4","event4", "reason4" , "ressource4", "player4");
-//		Event event5 = new Event("Monopoly","type5","event5", "reason5" , "ressource5", "player5");
-		events.add(event);
-//		events.add(event2);
-//		events.add(event3);
-//		events.add(event4);
-//		events.add(event5);
 	}
 
 	/**

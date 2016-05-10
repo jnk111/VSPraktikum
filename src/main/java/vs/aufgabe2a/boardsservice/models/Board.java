@@ -118,11 +118,9 @@ public class Board implements Convertable<JSONBoard>, Validable{
 			this.positions.remove(new Integer(oldPos));
 		}
 		
-		this.positions.add(newPos);
-		
-		
+		if(!this.positions.contains(new Integer(newPos))
+				&& newPos > -1){
+			this.positions.add(newPos);
+		}		
 	}	
-	
-	
-	
 }

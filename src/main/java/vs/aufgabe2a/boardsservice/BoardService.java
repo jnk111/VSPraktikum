@@ -125,7 +125,6 @@ public class BoardService {
 			throws InvalidInputException, ResourceNotFoundException {
 
 		Board b = getBoard(gameid);
-		System.out.println(b);
 
 		if (b != null) {
 			if (pawn.isValid()) {
@@ -335,7 +334,6 @@ public class BoardService {
 							if(newPos >= b.getFields().size() - 1){
 								newPos = ((b.getFields().size() - 1) % newPos);
 							}
-							System.out.println("NEW POSITION: " + newPos);
 							b.getFields().get(oldPos).removePawn(p);	// Figur von alter Position entfernen
 							p.setPosition(newPos);										// setze neue Pos-Nr.
 							b.getFields().get(newPos).addPawn(p);			// Setze Figur auf neue Position
@@ -608,6 +606,7 @@ public class BoardService {
 				for (Pawn p : f.getPawns()) {
 					if (p.getPawnUri().contains(pawnid)) {
 						f.getPawns().remove(p);
+						b.updatePositions(p.getPosition(), -1);
 						return;
 					}
 				}
@@ -778,27 +777,30 @@ public class BoardService {
 	 */
 	private String getPawnUri(Board board, String playerUri) {
 
-		String pawnUri = board.getUri() + "/pawns/";
-		int max = Integer.MIN_VALUE;
+		String [] uri = playerUri.split("/");
+		
+		String id = uri[uri.length - 1];
+		int num = 0;
 		for(Field f: board.getFields()){
-			for(Pawn p: f.getPawns()){
-				String [] uri = p.getPawnUri().split("/");
-				int value = Integer.parseInt(uri[uri.length-1]);
-				max = Math.max(max, value);
+			while(hasSamePawnID(f, id)){
+				num++;
+				id = uri[uri.length - 1] + "_" + num;
 			}
 		}
-	
-		if(max == Integer.MIN_VALUE){
-			max = 0;
-		}else{
-			max += 1;
-		}
-		
-		return pawnUri + max;
-
+		return board.getUri() + "/pawns/" + id;		
 	}
 	
 	
+	private boolean hasSamePawnID(Field f, String pawnUri) {
+		
+		for(Pawn p: f.getPawns()){
+			if(p.getPawnUri().contains(pawnUri)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * TODO: implement
 	 * REST-Aufruf um einer Figur ein neues Feld zuzuweisen, nachdem sie bewegt wurde

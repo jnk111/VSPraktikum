@@ -1,7 +1,5 @@
 package vs.aufgabe2a.boardsservice.models;
 
-import java.util.List;
-
 import vs.aufgabe1.Validable;
 import vs.aufgabe2a.boardsservice.models.json.JSONPlace;
 
@@ -10,7 +8,6 @@ public class Place implements Convertable<JSONPlace>, Validable{
 	private String name;
 	private String brokerUri;
 	private String placeUri; // Uri to the place on the board
-	private List<Pawn> pawns; // Pawns on the Field of the place
 	
 	public Place(){
 		this(null);
@@ -34,14 +31,6 @@ public class Place implements Convertable<JSONPlace>, Validable{
 
 	public void setPlaceUri(String place) {
 		this.placeUri = place;
-	}
-
-	public List<Pawn> getPawns() {
-		return pawns;
-	}
-
-	public void setPawns(List<Pawn> pawns) {
-		this.pawns = pawns;
 	}
 
 	public String getName() {
@@ -100,8 +89,7 @@ public class Place implements Convertable<JSONPlace>, Validable{
 		
 		return "Name: " + this.name + ", URI: " 
 						+ this.placeUri + ", Broker: " 
-							+ this.brokerUri + ", Pawns: "
-								+ this.getPawns().toString();
+							+ this.brokerUri;
 	}
 
 }

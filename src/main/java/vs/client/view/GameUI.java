@@ -30,7 +30,7 @@ public class GameUI {
 	private JButton btnWrfeln;
 	private JLabel lblKontostand;
 	private JPanel fieldPanel;
-	private JPanel häuser;
+	private JPanel haeuser;
 	private JPanel panel_2;
 	private JPanel panel_3;
 
@@ -96,8 +96,8 @@ public class GameUI {
 		fieldPanel = new JPanel();
 		board.add(fieldPanel);
 		
-		häuser = new JPanel();
-		board.add(häuser);
+		haeuser = new JPanel();
+		board.add(haeuser);
 		
 		panel_2 = new JPanel();
 		board.add(panel_2);

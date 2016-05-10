@@ -22,9 +22,9 @@ public class StartUpRESTopoly {
 	}
 
 	private static Map<String, Service> getNeededServices(YellowPagesService start) {
-		Map<String, Service> services = new HashMap<>();
-		services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
-		// ... weitere
+			Map<String, Service> services = new HashMap<>();
+//		services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+//		 ... weitere
 		return services;
 	}
 

@@ -3,9 +3,9 @@ package vs.jonas.services;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.jan.Service;
-import vs.jan.ServiceNames;
-import vs.jan.YellowPagesService;
+import vs.jan.models.Service;
+import vs.jan.models.ServiceNames;
+import vs.jan.services.yellowpageservice.YellowPagesService;
 import vs.jonas.services.services.DiceService;
 
 public class RunDiceService {

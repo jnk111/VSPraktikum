@@ -1,4 +1,4 @@
-package vs.jan.services.yellowpageservice;
+package vs.jonas.services.services;
 
 import java.io.IOException;
 import java.util.HashMap;

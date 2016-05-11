@@ -1,13 +1,10 @@
-package vs.jan.services.run.yellowpageservice;
+package vs.jonas.services.services;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import vs.jan.models.Service;
 import vs.jan.models.ServiceNames;
-import vs.jan.services.yellowpageservice.YellowPagesService;
-import vs.jonas.services.services.DiceService;
-import vs.jonas.services.services.EventService;
 import vs.malte.GamesService;
 
 /**

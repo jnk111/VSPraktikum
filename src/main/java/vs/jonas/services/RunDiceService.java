@@ -5,8 +5,8 @@ import java.util.Map;
 
 import vs.jan.models.Service;
 import vs.jan.models.ServiceNames;
-import vs.jan.services.yellowpageservice.YellowPagesService;
 import vs.jonas.services.services.DiceService;
+import vs.jonas.services.services.YellowPagesService;
 
 public class RunDiceService {
 	

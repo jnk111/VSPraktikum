@@ -15,9 +15,9 @@ public class RunDiceService {
 		
 //		Falls lokale Services verwendet werden:
 //						Der Event-Service muss vor dem Dice-Service laufen
-		new EventService().startService();
+//		new EventService().startService();
 
-		YellowPagesService start = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+		YellowPagesService start = new YellowPagesService(YellowPagesService.ONLINE_SERVICES);
 		
 		Map<String, Service> neededServicesDice = new HashMap<>();
 		neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));

@@ -33,7 +33,7 @@ public class RestopolyClient {
 	private Service diceService;
 	
 	public RestopolyClient(){
-		yellowPages = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+		yellowPages = new YellowPagesService(YellowPagesService.CLIENT_SERVICES);
 		gameservice = yellowPages.getService(ServiceNames.GAME);
 		diceService = yellowPages.getService(ServiceNames.DICE);
 		

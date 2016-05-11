@@ -17,30 +17,42 @@ public class YellowPagesService {
 	private final String YELLOW_SERVICE_URL = "http://172.18.0.5:4567/services"; 
 	private final String OF_NAME = "/of/name/JJMG"; 
 	
+	private final String YELLOW_SERVICE_IP_VON_AUSSEN = "https://141.22.34.15/cnt/172.18.0.5/4567";
+	private final String YELLOW_SERVICE_URL_VON_AUSSEN = "https://141.22.34.15/cnt/172.18.0.5/4567/services";
+	
 	private Map<String, Service> services;
 	
 	public static final String ONLINE_SERVICES = "online";
 	public static final String LOCAL_SERVICES = "local";
+	public static final String CLIENT_SERVICES = "client";
 	
 	public YellowPagesService(String service_herkunft){
-		initServices(service_herkunft);
+		try {
+			initServices(service_herkunft);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public YellowPagesService(){
-		initServices(ONLINE_SERVICES);
+		try {
+			initServices(ONLINE_SERVICES);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	private void initServices(String service_herkunft) {
+	private void initServices(String service_herkunft) throws IOException {
 		services = new HashMap<>();
 		
 //		Je nachdem, ob local getestet werden soll oder im Docker-Container
 		if(service_herkunft.equals(ONLINE_SERVICES)){
-			try {
-				fetchAllServices();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+			fetchAllServices();
+		}
+		else if(service_herkunft.equals(CLIENT_SERVICES)){
+			fetchClientServices();
 		}
 		else{
 			fetchLocalServices();
@@ -48,6 +60,24 @@ public class YellowPagesService {
 //		fetchHardcodedServices();
 	}
 	
+
+	private void fetchClientServices() throws IOException {
+		System.out.println("*** Fetch all Services ***");
+		
+		GetRestClient client = new GetRestClient();
+		String resBody = client.get(YELLOW_SERVICE_URL_VON_AUSSEN+OF_NAME);
+		
+		// Die Liste aller Services (Uris) von uns
+		ServiceArray services = new Gson().fromJson(resBody, ServiceArray.class);
+		
+		// Jeden Service anhand der uri von den YellowPages abfragen
+		for(String uri : services.getServices()){
+			String body = client.get(YELLOW_SERVICE_IP_VON_AUSSEN+uri);
+			Service service = new Gson().fromJson(body, Service.class);
+			this.services.put(service.getService(),service);
+		}
+		System.out.println(this.services);
+	}
 
 	/**
 	 * Holt sich alle angemeldeten Services 
@@ -89,10 +119,10 @@ public class YellowPagesService {
 		services.put(ServiceNames.EVENT, events);
 		
 		// Description fehlerhaft
-		Service users = new Service("/services/383", "dice service", "JJMG", ServiceNames.USER, "running","http://172.18.0.35:4567/users");
+		Service users = new Service("/services/383", "dice service", "JJMG", ServiceNames.USER, "running","http://172.18.0.60:4567/users");
 		services.put(ServiceNames.USER, users);
 		
-		Service dice = new Service("/services/385", "dice service", "JJMG", ServiceNames.DICE, "running","http://172.18.0.44:4567/dice");
+		Service dice = new Service("/services/385", "dice service", "JJMG", ServiceNames.DICE, "running","http://172.18.0.59:4567/dice");
 		services.put(ServiceNames.DICE, dice);
 	}
 	

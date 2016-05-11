@@ -5,7 +5,7 @@ import java.util.Map;
 
 import vs.jan.models.Service;
 import vs.jan.models.ServiceNames;
-import vs.malte.GamesService;
+import vs.malte.services.GamesService;
 
 /**
  * TODO: implement

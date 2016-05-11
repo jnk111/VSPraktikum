@@ -14,7 +14,7 @@ import vs.jan.models.ServiceNames;
 import vs.jonas.services.RunAllServices;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
-import vs.malte.GameDTO;
+import vs.malte.models.GameDTO;
 
 /**
  * Diese Klasse ist die Hauptkomponente fuer die Kommunikation mit den 
@@ -64,7 +64,7 @@ public class RestopolyClient {
 	}
 
 	/**
-	 * Liefert das Würfelergebnis vom DiceService.
+	 * Liefert das Wï¿½rfelergebnis vom DiceService.
 	 * Der DiceService muss laufen, damit ein Ergebnis errechnet werden kann.
 	 * @return Das Wurfergebnis
 	 * @throws IOException

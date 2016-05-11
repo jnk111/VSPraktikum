@@ -39,7 +39,6 @@ import vs.jan.models.json.JSONThrowsURI;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
-import vs.jonas.services.services.EventService;
 
 public class BoardService {
 
@@ -60,11 +59,9 @@ public class BoardService {
 
 	/**
 	 * Defaultkonstruktor
-	 * 
-	 * @param neededServices
 	 */
-	public BoardService(Map<String, Service> neededServices) {
-		this.setNeededServices(neededServices);
+	public BoardService() {
+		this.neededServices = getNeededServices(ServiceNames.BOARD);
 		boards = new HashMap<>();
 		throwMap = new HashMap<>();
 	}
@@ -402,7 +399,6 @@ public class BoardService {
 			URL url = new URL(service.getUri());
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
 
 			connection.setDoOutput(true);
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
@@ -1006,11 +1002,25 @@ public class BoardService {
 		return new ArrayList<>();
 	}
 
-	public Map<String, Service> getNeededServices() {
-		return neededServices;
-	}
-
 	public void setNeededServices(Map<String, Service> neededServices) {
 		this.neededServices = neededServices;
+	}
+	
+
+	public Map<String, Service> getNeededServices(String type) {
+		Map<String, Service> services = new HashMap<>();
+		
+		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+		// ... weitere
+
+		if(type.equals(ServiceNames.DICE)
+				|| type.equals(ServiceNames.BOARD)){
+			Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
+					"http://localhost:4567/events");
+
+			services.put(ServiceNames.EVENT, s);
+		}
+
+		return services;
 	}
 }

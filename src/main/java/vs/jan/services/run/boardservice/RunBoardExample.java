@@ -32,6 +32,7 @@ import vs.jan.services.boardservice.BoardRESTApi;
 import vs.jan.services.userservice.UserServiceRESTApi;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
+import vs.malte.services.GamesService;
 
 public class RunBoardExample {
 
@@ -52,8 +53,9 @@ public class RunBoardExample {
 		new EventService().startService(); // Der EventService muss f�r den DiceService laufen
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
+		new GamesService();
 		Map<String, Service> neededServicesBoard = getNeededServices(ServiceNames.BOARD);
-		boardApi = new BoardRESTApi(neededServicesBoard);
+		boardApi = new BoardRESTApi();
 		
 //		diceApi = new DiceService(null);
 		setupGame();

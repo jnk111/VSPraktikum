@@ -30,7 +30,6 @@ import vs.jan.models.json.JSONThrowsList;
  */
 public class BoardRESTApi {
 
-	private Map<String, Service> neededServices;
 	private final String CLRF = "\r" + "\n"; // Newline
 	private BoardService boardService;
 	private final String CONTENT_TYPE = "application/json";
@@ -39,9 +38,8 @@ public class BoardRESTApi {
 	/**
 	 * Konstruktor um Schnittstelle zu initialisiseren
 	 */
-	public BoardRESTApi(Map<String, Service> neededServices) {
-		this.neededServices = neededServices;
-		boardService = new BoardService(this.neededServices);
+	public BoardRESTApi() {
+		boardService = new BoardService();
 		initGET();
 		initPOST();
 		initPUT();

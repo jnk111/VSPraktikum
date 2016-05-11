@@ -2,25 +2,18 @@ package vs.malte.services;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class HttpService
 {
-    public static int post( String URL, Object body ) throws IOException
+    public static int post( String URL, Object body )
     {
         return connect( "POST", URL, body );
     }
 
-    public static int connect( String method, String URL, Object body )
+    private static int connect( String method, String URL, Object body )
     {
         int result = 500;   // ERROR TODO
         
@@ -34,7 +27,6 @@ public class HttpService
             connection.setDoOutput( true );
 
             String json = new Gson().toJson( body );
-            System.out.println( json );
 
             if ( json != null )
             {

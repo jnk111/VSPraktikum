@@ -17,7 +17,6 @@ public class Account extends LockProvider {
     /**
      * Account balance.
      */
-    // TODO @gerriet-hinrichs: check if double or long is needed.
     private int balance;
 
     /**

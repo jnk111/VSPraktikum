@@ -2,7 +2,10 @@ package vs.gerriet.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -10,7 +13,11 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import vs.gerriet.exception.AccountAccessException;
+import vs.gerriet.json.AccountInfo;
+import vs.gerriet.json.TransferInfo;
 import vs.gerriet.transaction.AtomicOperation;
+import vs.gerriet.transaction.Transfer;
+import vs.gerriet.utils.IdUtils;
 
 /**
  * <p>
@@ -24,7 +31,6 @@ import vs.gerriet.transaction.AtomicOperation;
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class Bank {
-
     /**
      * Contains the bank's id.
      */
@@ -41,6 +47,11 @@ public class Bank {
     private String transferUrl;
 
     /**
+     * Contains performed transfers.
+     */
+    private final Map<String, TransferInfo> transfers;
+
+    /**
      * We use a sorted map to store accounts to ensure proper ordering. This is
      * required since we can only lock one account at a time and always want to
      * lock / unlock accounts in the same order to prevent deadlocks.
@@ -53,7 +64,18 @@ public class Bank {
     public Bank(final String id) {
         // create an account map and add synchronization
         this.accounts = Collections.synchronizedSortedMap(new TreeMap<String, Account>());
+        this.transfers = Collections.synchronizedMap(new HashMap<String, TransferInfo>());
         this.id = id;
+    }
+
+    /**
+     * Adds performed transfer.
+     *
+     * @param transfer
+     *            Transfer to be added.
+     */
+    public void addTransfer(final Transfer transfer) {
+        this.transfers.put(transfer.getId(), transfer.getInfo());
     }
 
     /**
@@ -83,7 +105,7 @@ public class Bank {
         if (this.hasAccount(user)) {
             return false;
         }
-        this.accounts.put(user, new Account(user, balance));
+        this.accounts.put(IdUtils.getIdFromUri(user), new Account(user, balance));
         return true;
     }
 
@@ -94,7 +116,7 @@ public class Bank {
      *            User url.
      */
     public void deleteAccount(final String user) {
-        this.accounts.remove(user);
+        this.accounts.remove(IdUtils.getIdFromUri(user));
     }
 
     @Override
@@ -141,6 +163,16 @@ public class Bank {
     }
 
     /**
+     * Returns an array containing all accounts within this bank instance.
+     *
+     * @return Accounts for this bank.
+     */
+    public String[] getAccounts() {
+        final Set<?> keys = this.accounts.keySet();
+        return keys.toArray(new String[keys.size()]);
+    }
+
+    /**
      * Gets the accounts url.
      *
      * @return Accounts url.
@@ -150,7 +182,16 @@ public class Bank {
     }
 
     /**
-     * Returns the balance of the user account.
+     * Returns the bank's id.
+     *
+     * @return Bank id.
+     */
+    public String getId() {
+        return this.id;
+    }
+
+    /**
+     * Returns information about the given user account.
      *
      * @param user
      *            User url.
@@ -159,23 +200,38 @@ public class Bank {
      *             If the user account could not be locked or if it does not
      *             exist.
      */
-    public int getBalance(final String user) throws AccountAccessException {
+    public AccountInfo getInfo(final String user) throws AccountAccessException {
         final SortedSet<String> involvedAccounts = new TreeSet<>();
-        involvedAccounts.add(user);
+        final String accountId = IdUtils.getIdFromUri(user);
+        involvedAccounts.add(accountId);
         this.lock(involvedAccounts);
         // we know the account exist, otherwise lock() would fail
-        final int balance = this.accounts.get(user).getBalance();
+        final Account acc = this.accounts.get(accountId);
+        final AccountInfo res = new AccountInfo(acc.getUser(), acc.getBalance());
         this.unlock(involvedAccounts);
-        return balance;
+        return res;
     }
 
     /**
-     * Returns the bank's id.
+     * Returns the transfer info for the transfer with the given id.
      *
-     * @return Bank id.
+     * @param transferId
+     *            Id of the transfer to load info from.
+     * @return Transfer information. Returns <code>null</code> if no transfer
+     *         was found for the given instance.
      */
-    public String getId() {
-        return this.id;
+    public TransferInfo getTransferInfo(final String transferId) {
+        return this.transfers.get(transferId);
+    }
+
+    /**
+     * Returns all successful transfer IDs.
+     *
+     * @return Transfer IDs.
+     */
+    public String[] getTransfers() {
+        final Set<?> keys = this.transfers.keySet();
+        return keys.toArray(new String[keys.size()]);
     }
 
     /**
@@ -196,7 +252,7 @@ public class Bank {
      *         <code>false</code> otherwise.
      */
     public boolean hasAccount(final String user) {
-        return this.accounts.containsKey(user);
+        return this.accounts.containsKey(IdUtils.getIdFromUri(user));
     }
 
     @Override
@@ -246,7 +302,7 @@ public class Bank {
      * </p>
      *
      * @param accountList
-     *            Set containing the user urls of all accounts to be locked.
+     *            Set containing the IDs of all accounts to be locked.
      * @param timeout
      *            Timeout amount.
      * @param unit
@@ -367,7 +423,7 @@ public class Bank {
      *             if there is no account for the given user.
      */
     private Account getAccount(final String user) throws AccountAccessException {
-        final Account account = this.accounts.get(user);
+        final Account account = this.accounts.get(IdUtils.getIdFromUri(user));
         // check if the account exists
         if (account == null) {
             throw new AccountAccessException("Account for user '" + user + "' does not exist.");

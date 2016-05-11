@@ -1,12 +1,11 @@
-package vs.gerriet.json;
+package vs.gerriet.model;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import vs.gerriet.model.Bank;
-import vs.gerriet.service.BankService;
+import vs.gerriet.controller.bank.BanksController;
 
 /**
  * Factory for bank instances.
@@ -32,7 +31,7 @@ public class BankFactory {
     public static Bank createBank(final String game) {
         // TODO @gerriet-hinrichs: replace "/games/" by constant
         final String regex = "^" + Pattern.quote("/games/");
-        final String id = game.replaceAll(regex, BankService.URL_BANKS_BASE);
+        final String id = game.replaceAll(regex, BanksController.URI);
         Bank bank = BankFactory.getBank(id);
         if (bank == null) {
             bank = new Bank(id);

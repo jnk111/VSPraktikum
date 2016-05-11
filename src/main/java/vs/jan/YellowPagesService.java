@@ -1,20 +1,19 @@
 package vs.jan;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import spark.utils.IOUtils;
+import com.google.gson.Gson;
+
+import vs.jonas.GetRestClient;
+import vs.malte.ServiceArray;
 
 public class YellowPagesService {
-
-	/**
-	 * Die URL zu unseren Service Uris
-	 */
-	private String service_uris; 
-	private String yellowPageURL; 
+	
+	private final String YELLOW_SERVICE_IP = "http://172.18.0.5:4567";
+	private final String YELLOW_SERVICE_URL = "http://172.18.0.5:4567/services"; 
+	private final String OF_NAME = "/of/name/JJMG"; 
 	
 	private Map<String, Service> services;
 	
@@ -26,12 +25,13 @@ public class YellowPagesService {
 	private void initServices() {
 		services = new HashMap<>();
 		
-//		Sobald das über den Docker Container läuft:
-		service_uris = "http://172.18.0.5:4567/services/of/name/JJMG";
-		yellowPageURL = "http://172.18.0.5:4567/services/"; 
-		
 //		Von den folgenden drei Methoden nur eine Auswählen:
-		fetchAllServices(); 
+		try {
+			fetchAllServices();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 //		fetchHardcodedServices();
 //		fetchLocalServices();
 	}
@@ -39,37 +39,24 @@ public class YellowPagesService {
 
 	/**
 	 * Holt sich alle angemeldeten Services 
+	 * @throws IOException 
 	 */
-	private void fetchAllServices() {
+	private void fetchAllServices() throws IOException {
 		System.out.println("*** Fetch all Services ***");
-		try {
-			URL url = new URL(service_uris);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setDoInput(true);
-			
-			conn.setRequestProperty("Accept", "application/json");
-			
-			conn.connect(); //do it
-			int code = conn.getResponseCode(); 
-			String resBody = code < 400 ? IOUtils.toString(conn.getInputStream()) 
-			: IOUtils.toString(conn.getErrorStream());
-			System.out.println(resBody);
-			conn.disconnect();
-			
-			/*
-			 * Hier könnte man jetzt den resBody in per GSON deserialisieren und würde dann 
-			 * in der Theorie ein Array mit den Uris unserer Services erhalten.
-			 * 
-			 * Mit der URI kann man dann die yellowPageUrl ansprechen und würde dann Informationen über den
-			 * einzelnen Service erhalten, so dass wir die Services dann in die Map einfügen können.
-			 */
-			// ServiceList services = new Gson().fromJson(resBody, ServiceList.class);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		GetRestClient client = new GetRestClient();
+		String resBody = client.get(YELLOW_SERVICE_URL+OF_NAME);
+		
+		// Die Liste aller Services (Uris) von uns
+		ServiceArray services = new Gson().fromJson(resBody, ServiceArray.class);
+		
+		// Jeden Service anhand der uri von den YellowPages abfragen
+		for(String uri : services.getServices()){
+			String body = client.get(YELLOW_SERVICE_IP+uri);
+			Service service = new Gson().fromJson(body, Service.class);
+			this.services.put(service.getService(),service);
 		}
-
+		System.out.println(this.services);
 	}
 
 	public Map<String, Service> getAllServices() {

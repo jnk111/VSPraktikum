@@ -7,7 +7,6 @@ import vs.jan.Service;
 import vs.jan.ServiceNames;
 import vs.jan.YellowPagesService;
 import vs.jonas.services.services.DiceService;
-import vs.jonas.services.services.EventService;
 
 public class RunDiceService {
 	

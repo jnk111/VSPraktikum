@@ -1,5 +1,7 @@
 package vs.jan;
 
+import com.google.gson.Gson;
+
 public class Service {
 
 	/**
@@ -86,7 +88,9 @@ public class Service {
 		this.uri = uri;
 	}
 
-	
+	public String toString(){
+		return new Gson().toJson(this);
+	}
 	
 
 }

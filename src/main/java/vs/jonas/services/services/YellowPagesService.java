@@ -76,7 +76,6 @@ public class YellowPagesService {
 			Service service = new Gson().fromJson(body, Service.class);
 			this.services.put(service.getService(),service);
 		}
-		System.out.println(this.services);
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class YellowPagesService {
 		
 		GetRestClient client = new GetRestClient();
 		String resBody = client.get(YELLOW_SERVICE_URL+OF_NAME);
-		
+				
 		// Die Liste aller Services (Uris) von uns
 		ServiceArray services = new Gson().fromJson(resBody, ServiceArray.class);
 		
@@ -98,7 +97,6 @@ public class YellowPagesService {
 			Service service = new Gson().fromJson(body, Service.class);
 			this.services.put(service.getService(),service);
 		}
-		System.out.println(this.services);
 	}
 
 	public Map<String, Service> getAllServices() {
@@ -142,6 +140,7 @@ public class YellowPagesService {
 	}
 
 	public static void main(String[] args) {
-		new YellowPagesService();
+		
+		new YellowPagesService(ONLINE_SERVICES);
 	}
 }

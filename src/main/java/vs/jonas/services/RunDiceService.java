@@ -6,7 +6,6 @@ import java.util.Map;
 import vs.jan.models.Service;
 import vs.jan.models.ServiceNames;
 import vs.jonas.services.services.DiceService;
-import vs.jonas.services.services.EventService;
 import vs.jonas.services.services.YellowPagesService;
 
 public class RunDiceService {
@@ -19,7 +18,9 @@ public class RunDiceService {
 
 		YellowPagesService start = new YellowPagesService(YellowPagesService.ONLINE_SERVICES);
 		
+		System.out.println("Created YellowPagesService succesfully");
 		Map<String, Service> neededServicesDice = new HashMap<>();
+		
 		neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
 		new DiceService(neededServicesDice).startService();
 	}

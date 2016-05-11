@@ -30,6 +30,9 @@ public class DiceService {
 	public void startService(){		
 		
 		get(SLASH_DICE,(req,res) ->{
+			System.out.println("*** Roll Dice ***");
+			System.out.println("Needed Services:"+neededServices);
+			
 			res.status(200);
 			String playerUri = req.queryParams("player");
 			String gameUri = req.queryParams("game");
@@ -39,9 +42,13 @@ public class DiceService {
 				// EventData(String game, String type, String name, String reason, String ressource, String player)
 				EventData event = new EventData(gameUri,"DiceRoll","DiceRoll",playerUri+" has rolled the dice.", SLASH_DICE,playerUri);
 				RestClient client = new RestClient();
-				String eventServiceUri = neededServices.get(ServiceNames.EVENT).getUri(); 
-				String code = client.sendCreateEventRequest(event, eventServiceUri);
-				System.out.println("EventManager ReturnCode: " + code);
+				Service service = neededServices.get(ServiceNames.EVENT);
+				if(service != null){
+					String eventServiceUri = service.getUri(); 
+					System.out.println("EventService-Uri: " + eventServiceUri);
+					String code = client.sendCreateEventRequest(event, eventServiceUri);
+					System.out.println("EventManager ReturnCode: " + code);
+				}
 			}
 			return Dice.create(playerUri, gameUri);
 		}, gson::toJson);

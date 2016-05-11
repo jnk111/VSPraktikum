@@ -3,6 +3,7 @@ package vs.jan.services.boardservice;
 import static spark.Spark.*;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -12,6 +13,7 @@ import vs.jan.exceptions.InvalidInputException;
 import vs.jan.exceptions.MutexPutException;
 import vs.jan.exceptions.ResourceNotFoundException;
 import vs.jan.exceptions.TurnMutexNotFreeException;
+import vs.jan.models.Service;
 import vs.jan.models.StatusCodes;
 import vs.jan.models.json.JSONBoard;
 import vs.jan.models.json.JSONGameURI;
@@ -28,15 +30,18 @@ import vs.jan.models.json.JSONThrowsList;
  */
 public class BoardRESTApi {
 
+	private Map<String, Service> neededServices;
 	private final String CLRF = "\r" + "\n"; // Newline
-	private final BoardService boardService = new BoardService();
+	private BoardService boardService;
 	private final String CONTENT_TYPE = "application/json";
 	private final Gson GSON = new Gson();
 
 	/**
 	 * Konstruktor um Schnittstelle zu initialisiseren
 	 */
-	public BoardRESTApi() {
+	public BoardRESTApi(Map<String, Service> neededServices) {
+		this.neededServices = neededServices;
+		boardService = new BoardService(this.neededServices);
 		initGET();
 		initPOST();
 		initPUT();

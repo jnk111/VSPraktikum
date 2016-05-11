@@ -1,6 +1,7 @@
 package vs.jan.services.boardservice;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -23,6 +24,8 @@ import vs.jan.models.Board;
 import vs.jan.models.Field;
 import vs.jan.models.Pawn;
 import vs.jan.models.Place;
+import vs.jan.models.Service;
+import vs.jan.models.ServiceNames;
 import vs.jan.models.User;
 import vs.jan.models.json.JSONBoard;
 import vs.jan.models.json.JSONBoardList;
@@ -33,33 +36,42 @@ import vs.jan.models.json.JSONPawnList;
 import vs.jan.models.json.JSONPlace;
 import vs.jan.models.json.JSONThrowsList;
 import vs.jan.models.json.JSONThrowsURI;
+import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
+import vs.jonas.services.services.EventService;
 
 public class BoardService {
 
+	private final Gson GSON = new Gson();
 	/*
 	 * Mapping Board -> GameUri
 	 */
 	private Map<Board, JSONGameURI> boards;
 
 	/*
-	 * Uri-Liste der gemachten Wuerfe
-	 * JSONThrowsUri -> die URI der von einer Pawn gemachten Wuerfe 
-	 * JSONThrowsList -> die Werte der Wuerfel
+	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
+	 * gemachten Wuerfe JSONThrowsList -> die Werte der Wuerfel
 	 */
 	private Map<JSONThrowsURI, JSONThrowsList> throwMap;
 
+	private Map<String, Service> neededServices;
+
+
 	/**
 	 * Defaultkonstruktor
+	 * 
+	 * @param neededServices
 	 */
-	public BoardService() {
+	public BoardService(Map<String, Service> neededServices) {
+		this.setNeededServices(neededServices);
 		boards = new HashMap<>();
 		throwMap = new HashMap<>();
 	}
 
 	/**
 	 * Liefert alle Board-Uris, die dem Spiel zugeteilt wurden
+	 * 
 	 * @return Liste der Board-Uris als JSON-DTO
 	 */
 	public JSONBoardList getAllBoardURIs() {
@@ -136,12 +148,12 @@ public class BoardService {
 				p.setPosition(pawn.getPosition()); // Annahme required
 				p.setRollsUri(p.getPawnUri() + "/roll");
 				b.addNewPawn(p);
-				
+
 				// Neue Wuerfelliste fuer die Figur erstellen
 				JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
 				JSONThrowsList list = new JSONThrowsList();
 				throwMap.put(uri, list);
-				
+
 			} else {
 				throw new InvalidInputException();
 			}
@@ -150,7 +162,6 @@ public class BoardService {
 		}
 
 	}
-
 
 	/**
 	 * Liefert alle Pawn-Uris, die auf dem Spielbrett sind
@@ -240,7 +251,7 @@ public class BoardService {
 	 */
 	public Board getBoard(String gameid) {
 
-		if(gameid != null){
+		if (gameid != null) {
 			for (Board b : boards.keySet()) {
 				if (boards.get(b).getURI().contains(gameid)) {
 					return b;
@@ -316,40 +327,101 @@ public class BoardService {
 	 * @throws InvalidInputException
 	 *           Es wurde keine gueltiger Wurf uebergeben
 	 */
-	public synchronized void movePawn(String gameid, String pawnid, int rollValue) 
+	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
 			throws ResourceNotFoundException, InvalidInputException {
 
 		Board b = getBoard(gameid);
 
 		if (b != null) {
-			if(rollValue > 0){
+			if (rollValue > 0) {
 				for (Field f : b.getFields()) {
 					List<Pawn> pawns = f.getPawns();
 					for (int i = 0; i < pawns.size(); i++) {
 						Pawn p = pawns.get(i);
 						if (p.getPawnUri().contains(pawnid)) {
-							int oldPos = p.getPosition();							// alte Position der Figur
-							int newPos = oldPos + rollValue;					// Neue Position der Figur
-							
+							int oldPos = p.getPosition(); // alte Position der Figur
+							int newPos = oldPos + rollValue; // Neue Position der Figur
+
 							// Eine Runde rumgelaufen?
-				
-							if(newPos >= b.getFields().size() - 1){
+
+							if (newPos >= b.getFields().size() - 1) {
 								newPos = ((b.getFields().size() - 1) % newPos);
 							}
-							b.getFields().get(oldPos).removePawn(p);	// Figur von alter Position entfernen
-							p.setPosition(newPos);										// setze neue Pos-Nr.
-							b.getFields().get(newPos).addPawn(p);			// Setze Figur auf neue Position
-							b.updatePositions(oldPos, newPos);			// markiere, dass auf Position 'newPos' Figuren stehen	
-							p.updatePlaceUri(newPos);								// Update Placeuri to the new Place
+							b.getFields().get(oldPos).removePawn(p); // Figur von alter
+																												// Position entfernen
+							p.setPosition(newPos); // setze neue Pos-Nr.
+							b.getFields().get(newPos).addPawn(p); // Setze Figur auf neue
+																										// Position
+							b.updatePositions(oldPos, newPos); // markiere, dass auf Position
+																									// 'newPos' Figuren stehen
+							p.updatePlaceUri(newPos); // Update Placeuri to the new Place
+							postEvent(gameid, "move", "move", p);
 							return;
+
 						}
 					}
 				}
-			}else{
+			} else {
 				throw new InvalidInputException();
 			}
 		}
 		throw new ResourceNotFoundException();
+	}
+
+	/**
+	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
+	 * einem Wuerfelwurd zu einer neuen Position bewegen
+	 * 
+	 * @param gameid
+	 *          Die ID des Spiels
+	 * @param type
+	 *          Der Eventtyp, z. B.: 'move'
+	 * @param name
+	 *          Der Eventname
+	 * @param pawn
+	 *          Die Figur um die es sich handelt
+	 */
+	private void postEvent(String gameid, String type, String name, Pawn pawn) {
+
+		Service service = this.neededServices.get(ServiceNames.EVENT);
+		String reas = null;
+		String resource = null;
+
+		switch (type) {
+		case "move": {
+			reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
+			resource = pawn.getRollsUri();
+			break;
+		}
+		}
+
+		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
+
+		try {
+
+			URL url = new URL(service.getUri());
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+
+			connection.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+			String json = GSON.toJson(event);
+			wr.writeBytes(json);
+			wr.flush();
+			wr.close();
+
+			int respCode = connection.getResponseCode();
+			if(respCode != HttpURLConnection.HTTP_OK){
+				throw new InvalidInputException();
+			}
+
+		} catch (MalformedURLException mfe) {
+			throw new InvalidInputException();
+		} catch (IOException ioe) {
+			throw new ConnectionRefusedException();
+		}
+
 	}
 
 	/**
@@ -359,12 +431,12 @@ public class BoardService {
 	 *          Das Board der Gameid
 	 * @param pawnid
 	 *          Die Pawn-Id der Figur, fuer die gewuerfelt wird
-	 *          
-	 * @return List<Event>
-	 * 					Liste aller Events die mit diesem Wurf stattgefunden haben
+	 * 
+	 * @return List<Event> Liste aller Events die mit diesem Wurf stattgefunden
+	 *         haben
 	 * @throws ResourceNotFoundException
 	 *           Board oder Figur nicht gefunden
-	 *           
+	 * 
 	 */
 	public synchronized List<Event> rollDice(String gameid, String pawnid) throws ResourceNotFoundException {
 
@@ -372,37 +444,36 @@ public class BoardService {
 		Pawn pawn = getPawn(board, pawnid);
 
 		if (pawn != null && board != null) {
-			//checkPlayerHasTurn(pawn, gameid);
-			//putPlayersTurn(pawn, gameid);
-			//int rollValue = doDiceRoll(pawn, gameid);
-			
-			int rollValue = doDiceRollLocal(pawn, gameid);	// Zum Testen Local
+			// checkPlayerHasTurn(pawn, gameid);
+			// putPlayersTurn(pawn, gameid);
+			// int rollValue = doDiceRoll(pawn, gameid);
+
+			int rollValue = doDiceRollLocal(pawn, gameid); // Zum Testen Local
 			movePawn(gameid, pawnid, rollValue);
-			
-			//placeAPawnRESTCall(gameid, pawn);
-			
+
+			// placeAPawnRESTCall(gameid, pawn);
+
 			// weitere Aktionen...
-			
+
 			return retrieveEventList(pawn, gameid, new Date());
-			
+
 		} else {
 			throw new ResourceNotFoundException();
 		}
 	}
 
-
 	/**
-	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste, die zu der
-	 * Figur gehoert hinzu
+	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste,
+	 * die zu der Figur gehoert hinzu
+	 * 
 	 * @param pawn
-	 * 				Die Figur, fuer die gewuerfelt wird
+	 *          Die Figur, fuer die gewuerfelt wird
 	 * @param gameid
-	 * 				Die ID des Games
-	 * @return
-	 * 				Der Int-Wert des gemachten Wurfes
+	 *          Die ID des Games
+	 * @return Der Int-Wert des gemachten Wurfes
 	 */
 	private int doDiceRoll(Pawn pawn, String gameid) {
-		
+
 		try {
 			Dice roll = null;
 			User user = getPlayer(pawn, gameid);
@@ -422,9 +493,6 @@ public class BoardService {
 				in.close();
 				roll = new Gson().fromJson(response.toString(), Dice.class);
 				addThrowToPawnThrowList(pawn, roll);
-				
-				// TODO: Event posten
-				
 				return roll.getNumber();
 			}
 		} catch (MalformedURLException mfe) {
@@ -432,23 +500,23 @@ public class BoardService {
 		} catch (IOException ioe) {
 			throw new ConnectionRefusedException();
 		}
-		
+
 		return -1;
 
 	}
-	
+
 	/**
-	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste, die zu der
-	 * Figur gehoert hinzu
+	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste,
+	 * die zu der Figur gehoert hinzu
+	 * 
 	 * @param pawn
-	 * 				Die Figur, fuer die gewuerfelt wird
+	 *          Die Figur, fuer die gewuerfelt wird
 	 * @param gameid
-	 * 				Die ID des Games
-	 * @return
-	 * 				Der Int-Wert des gemachten Wurfes
+	 *          Die ID des Games
+	 * @return Der Int-Wert des gemachten Wurfes
 	 */
 	private int doDiceRollLocal(Pawn pawn, String gameid) {
-		
+
 		// http://localhost:4567/dice
 		String playerUri = "http://localhost:4567/users/mario";
 		String player = "mario";
@@ -456,7 +524,7 @@ public class BoardService {
 		try {
 			Dice roll = null;
 			User user = getPlayerFromUserService(pawn, gameid);
-			URL url = new URL("http://localhost:4567/dice?" + "player=" + player + "&uri=" + playerUri);
+			URL url = new URL("http://localhost:4567/dice?" + "player=" + playerUri + "&game=" + gameid);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);
@@ -472,9 +540,9 @@ public class BoardService {
 				in.close();
 				roll = new Gson().fromJson(response.toString(), Dice.class);
 				addThrowToPawnThrowList(pawn, roll);
-				
+
 				// TODO: Event posten
-				
+
 				return roll.getNumber();
 			}
 		} catch (MalformedURLException mfe) {
@@ -482,7 +550,7 @@ public class BoardService {
 		} catch (IOException ioe) {
 			throw new ConnectionRefusedException();
 		}
-		
+
 		return -1;
 
 	}
@@ -496,9 +564,9 @@ public class BoardService {
 	 *          Die Gameid zum Spiel
 	 * @return User Der Spieler der wuerfeln moechte
 	 * @throws ResourceNotFoundException
-	 * 					Spieler wurde nicht gefunden
+	 *           Spieler wurde nicht gefunden
 	 * @throws ConnectionRefusedException
-	 * 					Service nicht erreichbar
+	 *           Service nicht erreichbar
 	 */
 	private User getPlayer(Pawn pawn, String gameid)
 			throws InvalidInputException, ResourceNotFoundException, ConnectionRefusedException {
@@ -533,9 +601,10 @@ public class BoardService {
 			throw new ConnectionRefusedException();
 		}
 	}
-	
+
 	/**
 	 * TODO: only for testing
+	 * 
 	 * @param pawn
 	 * @param gameid
 	 * @return
@@ -608,7 +677,7 @@ public class BoardService {
 			if (responseCode != HttpURLConnection.HTTP_OK) {
 				throw new MutexPutException();
 			}
-			
+
 			// TODO: Event posten
 		} catch (MalformedURLException mfe) {
 			throw new InvalidInputException();
@@ -620,12 +689,12 @@ public class BoardService {
 
 	/**
 	 * Gibt die Figur, die zu der Pawnid gehoert zurueck
+	 * 
 	 * @param board
-	 * 				Das Board auf dem die Figur steht
+	 *          Das Board auf dem die Figur steht
 	 * @param pawnid
-	 * 				Die ID der Figur
-	 * @return
-	 * 				Die angeforderte Figur
+	 *          Die ID der Figur
+	 * @return Die angeforderte Figur
 	 */
 	private Pawn getPawn(Board board, String pawnid) {
 
@@ -814,8 +883,8 @@ public class BoardService {
 	}
 
 	/**
-	 * Weist einer Figur ein neues Feld zu (z. B. nach Wuerfeln)
-	 * oder zu Debuggingzwecken
+	 * Weist einer Figur ein neues Feld zu (z. B. nach Wuerfeln) oder zu
+	 * Debuggingzwecken
 	 * 
 	 * @param gameid
 	 *          Die Gameid des Boardes
@@ -838,9 +907,9 @@ public class BoardService {
 						p2.setPlayerUri(pawn.getPlayer());
 						p2.setPosition(pawn.getPosition());
 						p2.setRollsUri(pawn.getRoll());
-						
+
 						// TODO Event posten
-						
+
 						return;
 					}
 				}
@@ -848,22 +917,22 @@ public class BoardService {
 		}
 		throw new ResourceNotFoundException();
 	}
-	
-	
+
 	/**
 	 * Fuegt einen neuen Wurf zu der Wurfliste die der aktuell wuerfelnden Figur
 	 * zugeteilt ist, hinzu
+	 * 
 	 * @param pawn
-	 * 				Die aktuelle Figur, fuer die gewuerfelt wird
+	 *          Die aktuelle Figur, fuer die gewuerfelt wird
 	 * @param roll
-	 * 				Der Wuerfel
+	 *          Der Wuerfel
 	 */
 	private void addThrowToPawnThrowList(Pawn pawn, Dice roll) {
 		JSONThrowsURI throwUri = new JSONThrowsURI(pawn.getRollsUri());
 		JSONThrowsList list = throwMap.get(throwUri);
 		list.addThrow(roll);
 	}
-	
+
 	/**
 	 * TODO: implementiere URI-Erzeugung Generiert die Pawn-Uri aus dem
 	 * GET-Response der PlayerUri
@@ -876,24 +945,23 @@ public class BoardService {
 	 */
 	private String getPawnUri(Board board, String playerUri) {
 
-		String [] uri = playerUri.split("/");
-		
+		String[] uri = playerUri.split("/");
+
 		String id = uri[uri.length - 1];
 		int num = 0;
-		for(Field f: board.getFields()){
-			while(hasSamePawnID(f, id)){
+		for (Field f : board.getFields()) {
+			while (hasSamePawnID(f, id)) {
 				num++;
 				id = uri[uri.length - 1] + "_" + num;
 			}
 		}
-		return board.getUri() + "/pawns/" + id;		
+		return board.getUri() + "/pawns/" + id;
 	}
-	
-	
+
 	private boolean hasSamePawnID(Field f, String pawnUri) {
-		
-		for(Pawn p: f.getPawns()){
-			if(p.getPawnUri().contains(pawnUri)){
+
+		for (Pawn p : f.getPawns()) {
+			if (p.getPawnUri().contains(pawnUri)) {
 				return true;
 			}
 		}
@@ -901,41 +969,48 @@ public class BoardService {
 	}
 
 	/**
-	 * TODO: implement
-	 * REST-Aufruf um einer Figur ein neues Feld zuzuweisen, nachdem sie bewegt wurde
-	 * wird von rollDice() aufgerufen
+	 * TODO: implement REST-Aufruf um einer Figur ein neues Feld zuzuweisen,
+	 * nachdem sie bewegt wurde wird von rollDice() aufgerufen
+	 * 
 	 * @param gameid
 	 * @param pawn
 	 */
 	private void placeAPawnRESTCall(String gameid, Pawn pawn) {
-		
+
 	}
 
 	/**
-	 * TODO: implement
-	 * REST-Aufruf um einer Figur eine neue Position zuzuweisen, nachdem sie bewegt wurde
-	 * wird von rollDice() aufgerufen
+	 * TODO: implement REST-Aufruf um einer Figur eine neue Position zuzuweisen,
+	 * nachdem sie bewegt wurde wird von rollDice() aufgerufen
+	 * 
 	 * @param gameid
 	 * @param pawn
 	 */
 	private void movePawnRESTCall(String gameid, String pawnid, int rollValue) {
-		
-		
+
 	}
-	
+
 	/**
 	 * Holt alle Events des Spielers seit dem letzten Wurf
+	 * 
 	 * @param pawn
-	 * 				Die Figur
+	 *          Die Figur
 	 * @param gameid
-	 * 				Das Board
-	 * @param date 
-	 * 				Der aktuelle Zeitpunkt des Wurfes
-	 * @return List<Event>
-	 * 					Die Liste aller Events fuer diesen Wurf
-	 * 	
+	 *          Das Board
+	 * @param date
+	 *          Der aktuelle Zeitpunkt des Wurfes
+	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
+	 * 
 	 */
 	private List<Event> retrieveEventList(Pawn pawn, String gameid, Date date) {
 		return new ArrayList<>();
+	}
+
+	public Map<String, Service> getNeededServices() {
+		return neededServices;
+	}
+
+	public void setNeededServices(Map<String, Service> neededServices) {
+		this.neededServices = neededServices;
 	}
 }

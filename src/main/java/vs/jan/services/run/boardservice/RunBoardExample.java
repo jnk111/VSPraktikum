@@ -48,11 +48,12 @@ public class RunBoardExample {
 	 */
 	public static void main(String[] args) {
 
-		Map<String, Service> neededServicesDice = getNeededServices();
+		Map<String, Service> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den DiceService laufen
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
-		boardApi = new BoardRESTApi();
+		Map<String, Service> neededServicesBoard = getNeededServices(ServiceNames.BOARD);
+		boardApi = new BoardRESTApi(neededServicesBoard);
 		
 //		diceApi = new DiceService(null);
 		setupGame();
@@ -625,16 +626,20 @@ public class RunBoardExample {
 	}
 	
 	
-	private static Map<String, Service> getNeededServices() {
+	private static Map<String, Service> getNeededServices(String type) {
 		Map<String, Service> services = new HashMap<>();
 		
 		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
 		// ... weitere
 
-		Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
-				"http://localhost:4567/events");
+		if(type.equals(ServiceNames.DICE)
+				|| type.equals(ServiceNames.BOARD)){
+			Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
+					"http://localhost:4567/events");
 
-		services.put(ServiceNames.EVENT, s);
+			services.put(ServiceNames.EVENT, s);
+		}
+
 		return services;
 	}
 

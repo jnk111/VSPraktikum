@@ -127,13 +127,13 @@ public class GamesService
         {
             // ======================== Manuelle Service-Einstellungen ======================== //
 
-            newServices.put( "dice", "localhost:4567/dice" );
-            newServices.put( "board", "localhost:4567/boards" );
-            newServices.put( "bank", "localhost:4567/banks" );
-            newServices.put( "broker", "localhost:4567/broker" );
-            newServices.put( "decks", "localhost:4567/decks" );
-            newServices.put( "events", "localhost:4567/events" );
-            newServices.put( "users", "localhost:4567/users" );
+            newServices.put( "dice", "http://localhost:4567/dice" );
+            newServices.put( "board", "http://localhost:4567/boards" );
+            newServices.put( "bank", "http://localhost:4567/banks" );
+            newServices.put( "broker", "http://localhost:4567/broker" );
+            newServices.put( "decks", "http://localhost:4567/decks" );
+            newServices.put( "events", "http://localhost:4567/events" );
+            newServices.put( "users", "http://localhost:4567/users" );
 
             newGame.getServiceList().setAllServices( newServices );
             newGame.setPlayers( newServices.get( "users" ) );

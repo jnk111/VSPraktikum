@@ -11,7 +11,7 @@ import vs.gerriet.model.Bank;
  * <p>
  * Does not provide a overloaded clone method because no deep copy is required.
  * </p>
- * 
+ *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class AtomicOperation implements Cloneable {

@@ -105,13 +105,38 @@ public class Transaction extends LockProvider {
      *         otherwise.
      */
     public synchronized boolean addOperation(final AtomicOperation operation) {
-        if (!this.isLocked() && operation.getBank().equals(this.bank)
-                && this.operations.offer(operation)) {
+        if (this.isOperationValid(operation) && this.operations.offer(operation)) {
             this.accounts.add(operation.getAccount());
             this.confirmed.clear();
             return true;
         }
         return false;
+    }
+
+    /**
+     * Adds the given transfer to this transaction's internal queue. This method
+     * checks the bank instance assigned to the operation(s) and will not add
+     * the element if this transaction is locked.
+     * 
+     * @param operation
+     *            Transfer to be added.
+     * @return <code>true</code> if the transfer was added, <code>false</code>
+     *         otherwise.
+     */
+    public synchronized boolean addOperation(final Transfer operation) {
+        for (final AtomicOperation op : operation.operations) {
+            if (!this.isOperationValid(op)) {
+                return false;
+            }
+        }
+        boolean res = true;
+        for (final AtomicOperation op : operation.operations) {
+            res = res && this.addOperation(op);
+        }
+        if (!res) {
+            this.operations.removeAll(operation.operations);
+        }
+        return res;
     }
 
     /**
@@ -208,5 +233,9 @@ public class Transaction extends LockProvider {
         while (!this.doneOperations.isEmpty()) {
             this.doneOperations.pop().undo();
         }
+    }
+
+    private boolean isOperationValid(final AtomicOperation operation) {
+        return !this.isLocked() && operation.getBank().equals(this.bank);
     }
 }

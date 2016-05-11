@@ -1,4 +1,4 @@
-package vs.malte;
+package vs.malte.services;
 
 /**
  * Spielerobjekt fuer ein erstelltes Spiel

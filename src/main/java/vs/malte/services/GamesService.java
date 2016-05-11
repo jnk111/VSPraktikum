@@ -1,4 +1,4 @@
-package vs.malte;
+package vs.malte.services;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -12,6 +12,14 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import vs.malte.models.Components;
+import vs.malte.models.CreateUserDTO;
+import vs.malte.models.Game;
+import vs.malte.models.GameDTO;
+import vs.malte.models.ServiceArray;
+import vs.malte.models.ServiceDTO;
+import vs.malte.models.ServiceList;
 
 public class GamesService
 {

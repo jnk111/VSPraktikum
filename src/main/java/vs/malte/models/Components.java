@@ -1,10 +1,11 @@
-package vs.malte;
+package vs.malte.models;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServiceList
+public class Components
 {
+
     private String games;
     private String dice;
     private String board;
@@ -13,9 +14,9 @@ public class ServiceList
     private String decks;
     private String events;
 
-    public ServiceList( String game, String dice, String board, String bank, String broker, String decks, String events )
+    public Components( String games, String dice, String board, String bank, String broker, String decks, String events )
     {
-        this.games = game;
+        this.games = games;
         this.dice = dice;
         this.board = board;
         this.bank = bank;
@@ -24,11 +25,11 @@ public class ServiceList
         this.events = events;
     }
 
-    public ServiceList()
+    public Components()
     {
     }
 
-    public String getGame()
+    public String getgames()
     {
         return games;
     }
@@ -64,72 +65,71 @@ public class ServiceList
     }
 
     /**
-     * Gibt eine HashMap zurueck mit allen Services die in der ServiceList-Klasse gespeicht sind.
+     * Gibt eine HashMap zurueck mit allen Komponenten die in der ServiceList-Klasse gespeichert sind.
      * 
      * @return HashMap mit allen genutzten Services
      */
-    public Map<String, String> getAllServices()
+    public Map<String, String> getAllComponents()
     {
-        Map<String, String> services = new HashMap<>();
-
-        if ( games != null )
-            services.put( "games", games );
-
-        if ( dice != null )
-            services.put( "dice", dice );
-
-        if ( board != null )
-            services.put( "board", board );
-
-        if ( bank != null )
-            services.put( "bank", bank );
-
-        if ( broker != null )
-            services.put( "broker", broker );
-
-        if ( decks != null )
-            services.put( "decks", decks );
-
-        if ( events != null )
-            services.put( "events", events );
-
-        return services;
+        Map<String, String> components = new HashMap<>();
+        
+        if(games != null)
+        components.put( "games", games );
+        
+        if(dice != null)
+        components.put( "dice", dice );
+        
+        if(board != null)
+        components.put( "board", board );
+        
+        if(bank != null)
+        components.put( "bank", bank );
+        
+        if(broker != null)
+        components.put( "broker", broker );
+        
+        if(decks != null)
+        components.put( "decks", decks );
+        
+        if(events != null)
+        components.put( "events", events );
+        
+        return components;
     }
-
+    
     /**
-     * Methode zu Setzen von neuen Services in die Service-Klasse.
+     * Methode zu Setzen von neuen Komponenten in die Service-Klasse.
      * 
-     * @param HashMap
-     *            mit neuen Services
+     * @param HashMap mit neuen Services
      */
-    public void setAllServices( Map<String, String> newServices )
+    public void setAllComponents(Map<String, String> newComponents)
     {
-        if ( newServices.containsKey( "games" ) )
-            setGame( newServices.get( "games" ) );
+        if(newComponents.containsKey( "games" ))
+            this.games = newComponents.get( "games" );
 
-        if ( newServices.containsKey( "dice" ) )
-            setDice( newServices.get( "dice" ) );
+        if(newComponents.containsKey( "dice" ))
+            this.dice = newComponents.get( "dice" );
 
-        if ( newServices.containsKey( "board" ) )
-            setBoard( newServices.get( "board" ) );
+        if(newComponents.containsKey( "board" ))
+            this.board = newComponents.get( "board" );
 
-        if ( newServices.containsKey( "bank" ) )
-            setBank( newServices.get( "bank" ) );
+        if(newComponents.containsKey( "bank" ))
+            this.bank = newComponents.get( "bank" );
 
-        if ( newServices.containsKey( "broker" ) )
-            setBroker( newServices.get( "broker" ) );
+        if(newComponents.containsKey( "broker" ))
+            this.broker = newComponents.get( "broker" );
 
-        if ( newServices.containsKey( "decks" ) )
-            setDecks( newServices.get( "decks" ) );
+        if(newComponents.containsKey( "decks" ))
+            this.decks = newComponents.get( "decks" );
 
-        if ( newServices.containsKey( "events" ) )
-            setEvents( newServices.get( "events" ) );
-
+        if(newComponents.containsKey( "events" ))
+            this.events = newComponents.get( "events" );
+        
     }
 
-    public void setGame( String game )
+    public void setGames( String games )
     {
-        this.games = game;
+        this.games = games;
     }
 
     public void setDice( String dice )
@@ -165,7 +165,7 @@ public class ServiceList
     @Override
     public String toString()
     {
-        return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker=" + broker + ", decks=" + decks + ", events="
+        return "ServiceList [games=" + games + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker=" + broker + ", decks=" + decks + ", events="
                 + events + "]";
     }
 
@@ -177,7 +177,7 @@ public class ServiceList
      */
     public boolean isValid()
     {
-        // return ( getGame() == null || ServiceTest.isValidService( getGame() ) )
+        // return ( getgames() == null || ServiceTest.isValidService( getgames() ) )
         // && ( getDice() == null || ServiceTest.isValidService( getDice() ) )
         // && ( getBoard() == null || ServiceTest.isValidService( getBoard() ) )
         // && ( getBank() == null || ServiceTest.isValidService( getBank() ) )
@@ -185,7 +185,7 @@ public class ServiceList
         // && ( getDecks() == null || ServiceTest.isValidService( getDecks() ) )
         // && ( getEvents() == null || ServiceTest.isValidService( getEvents() ) );
 
-        return ( getGame() == null || getGame().matches( "/games" ) )
+        return ( getgames() == null || getgames().matches( "/games" ) )
                 && ( getDice() == null || getDice().matches( "/dice" ) )
                 && ( getBoard() == null || getBoard().matches( "/board" ) )
                 && ( getBank() == null || getBank().matches( "/bank" ) )
@@ -193,5 +193,4 @@ public class ServiceList
                 && ( getDecks() == null || getDecks().matches( "/decks" )
                         && ( getEvents() == null || getEvents().matches( "/events" ) ) );
     }
-
 }

@@ -1,13 +1,24 @@
 package vs.gerriet.service;
 
-import com.google.gson.Gson;
-
+import de.stuff42.error.ExceptionUtils;
+import de.stuff42.error.ThreadExceptionHandler;
 import spark.Spark;
-import vs.gerriet.json.BankData;
-import vs.gerriet.json.BankFactory;
-import vs.gerriet.json.BankList;
-import vs.gerriet.json.GameId;
-import vs.gerriet.model.Bank;
+import vs.gerriet.controller.Controller;
+import vs.gerriet.controller.Controller.DeleteController;
+import vs.gerriet.controller.Controller.GetController;
+import vs.gerriet.controller.Controller.PostController;
+import vs.gerriet.controller.Controller.PutController;
+import vs.gerriet.controller.bank.BankController;
+import vs.gerriet.controller.bank.BanksController;
+import vs.gerriet.controller.bank.account.AccountsController;
+import vs.gerriet.controller.bank.account.AccountsListController;
+import vs.gerriet.controller.bank.transaction.TransactionController;
+import vs.gerriet.controller.bank.transaction.TransactionListController;
+import vs.gerriet.controller.bank.transfer.TransferController;
+import vs.gerriet.controller.bank.transfer.TransferFromController;
+import vs.gerriet.controller.bank.transfer.TransferFromToController;
+import vs.gerriet.controller.bank.transfer.TransferToController;
+import vs.gerriet.controller.bank.transfer.TransfersController;
 
 /**
  * Class providing the bank service.
@@ -17,142 +28,62 @@ import vs.gerriet.model.Bank;
 public class BankService {
 
     /**
-     * Base url for the bank service.
-     */
-    public static final String URL_BANKS_BASE = "/banks/";
-
-    /**
-     * Url part for account access.
-     */
-    public static final String URL_ACCOUNTS_PART = "accounts/";
-
-    /**
-     * Url part for transfer access.
-     */
-    public static final String URL_TRANSFER_PART = "transfer/";
-
-    /**
-     * Url part for transfer source specification.
-     */
-    public static final String URL_TRANSFER_FROM_PART = "from/";
-
-    /**
-     * Url part for transfer destination specification.
-     */
-    public static final String URL_TRANSFER_TO_PART = "to/";
-
-    /**
-     * Url part for transaction access.
-     */
-    public static final String URL_TRANSACTION_PART = "transaction/";
-
-    /**
-     * MIME type for JSON data.
-     */
-    private static final String JSON_MIME_TYPE = "application/json";
-
-    /**
-     * Creates (or loads) the bank instance for the given game.
+     * Registers default error handler and starts bank service.
      *
-     * @param game
-     *            Game id request object.
-     * @return Bank data.
+     * @param argv
+     *            Program arguments.
      */
-    private static BankData createBank(final GameId game) {
-        final Bank bank = BankFactory.createBank(game.game);
-        return BankData.createFromBank(bank);
+    public static void main(final String[] argv) {
+        // set filter for stack trace simplification
+        ExceptionUtils.setFilters(new String[] { "vs.gerriet", "de.stuff42" });
+        // register global error handling (if something goes horribly wrong)
+        ThreadExceptionHandler.registerDefault();
+        // start bank service
+        BankService.run();
     }
 
     /**
-     * Returns bank data for the given bank id.
+     * Registers the given controller into the spark web-server.
      *
-     * @param id
-     *            Bank id.
-     * @return Bank data or <code>null</code> if the given id does not exist.
+     * @param controller
+     *            Controller to be registered.
      */
-    private static BankData getBank(final String id) {
-        final Bank bank = BankFactory.getBank(id);
-        if (bank == null) {
-            return null;
+    private static void registerController(final Controller controller) {
+        if (controller instanceof GetController) {
+            Spark.get(controller.getUri(), ((GetController) controller)::get);
         }
-        return BankData.createFromBank(bank);
-    }
-
-    /**
-     * Returns the bank list.
-     *
-     * @return Bank id list.
-     */
-    private static BankList getBanks() {
-        return new BankList(BankFactory.getBanks());
-    }
-
-    /**
-     * Updates the bank object.
-     *
-     * @param id
-     *            Bank id.
-     * @param data
-     *            Bank data used for updating.
-     * @return <code>true</code> if the bank exists, <code>false</code>
-     *         otherwise.
-     */
-    private static boolean updateBank(final String id, final BankData data) {
-        final Bank bank = BankFactory.getBank(id);
-        if (bank == null) {
-            return false;
+        if (controller instanceof PostController) {
+            Spark.post(controller.getUri(), ((PostController) controller)::post);
         }
-        bank.setAccountsUrl(data.accounts);
-        bank.setTransferUrl(data.transfers);
-        return true;
+        if (controller instanceof PutController) {
+            Spark.put(controller.getUri(), ((PutController) controller)::put);
+        }
+        if (controller instanceof DeleteController) {
+            Spark.delete(controller.getUri(), ((DeleteController) controller)::delete);
+        }
     }
 
     /**
-     * {@link Gson} instance used to encode responses.
+     * Registers all controllers for the bank service.
      */
-    private final Gson gson = new Gson();
+    private static void run() {
+        BankService.registerController(new BanksController());
+        BankService.registerController(new BankController());
+        BankService.registerController(new TransfersController());
+        BankService.registerController(new TransferController());
+        BankService.registerController(new TransferFromToController());
+        BankService.registerController(new TransferToController());
+        BankService.registerController(new TransferFromController());
+        BankService.registerController(new TransactionListController());
+        BankService.registerController(new TransactionController());
+        BankService.registerController(new AccountsListController());
+        BankService.registerController(new AccountsController());
+    }
 
     /**
-     * Registers all urls for the bank service.
+     * Hide the default constructor.
      */
-    public BankService() {
-        // bank list
-        Spark.get(BankService.URL_BANKS_BASE, (reqest, response) -> {
-            response.type(BankService.JSON_MIME_TYPE);
-            return BankService.getBanks();
-        }, this.gson::toJson);
-
-        // bank creation
-        Spark.post(BankService.URL_BANKS_BASE, (request, response) -> {
-            final GameId game = this.gson.fromJson(request.body(), GameId.class);
-            response.type(BankService.JSON_MIME_TYPE);
-            return BankService.createBank(game);
-        }, this.gson::toJson);
-
-        // bank getter
-        Spark.get(BankService.URL_BANKS_BASE + ":id/", (request, response) -> {
-            final String bankId = BankService.URL_BANKS_BASE + request.params("id") + "/";
-            response.type(BankService.JSON_MIME_TYPE);
-            final BankData res = BankService.getBank(bankId);
-            if (res == null) {
-                response.status(404);
-                return null;
-            }
-            return res;
-        }, this.gson::toJson);
-
-        // bank data setter
-        Spark.put(BankService.URL_BANKS_BASE + ":id/", (request, response) -> {
-            final String bankId = BankService.URL_BANKS_BASE + request.params("id") + "/";
-            final BankData data = this.gson.fromJson(request.body(), BankData.class);
-            if (BankService.updateBank(bankId, data)) {
-                response.status(200);
-            } else {
-                response.status(404);
-            }
-            return "";
-        });
-
-        // TODO @gerriet-hinrichs: add missing urls
+    private BankService() {
+        // hide default constructor
     }
 }

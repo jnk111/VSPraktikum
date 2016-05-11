@@ -13,6 +13,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import vs.malte.json.BoardDTO;
 import vs.malte.json.CreateUserDTO;
 import vs.malte.json.GameDTO;
 import vs.malte.json.ServiceArray;
@@ -28,7 +29,7 @@ public class GamesService
     private final String YELLOW_PAGE = "http://172.18.0.5:4567";
     private final String YP_GROUP_CMD = "/services/of/name/";
     private final String YP_GROUP_NAME = "JJMG";
-    
+
     private final boolean LOCAL = true;     // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen
 
     private static Map<String, Game> games;
@@ -122,19 +123,18 @@ public class GamesService
                 e.printStackTrace();    // TODO: Fehlerbehanldung
             }
         }
-        else  
+        else
         {
             // ======================== Manuelle Service-Einstellungen ======================== //
-            
-            
-            newServices.put("dice", "localhost:4567/dice");
-            newServices.put("board", "localhost:4567/boards");
-            newServices.put("bank", "localhost:4567/banks");
-            newServices.put("broker", "localhost:4567/broker");
-            newServices.put("decks", "localhost:4567/decks");
-            newServices.put("events", "localhost:4567/events");
-            newServices.put("users", "localhost:4567/users");
-            
+
+            newServices.put( "dice", "localhost:4567/dice" );
+            newServices.put( "board", "localhost:4567/boards" );
+            newServices.put( "bank", "localhost:4567/banks" );
+            newServices.put( "broker", "localhost:4567/broker" );
+            newServices.put( "decks", "localhost:4567/decks" );
+            newServices.put( "events", "localhost:4567/events" );
+            newServices.put( "users", "localhost:4567/users" );
+
             newGame.getServiceList().setAllServices( newServices );
             newGame.setPlayers( newServices.get( "users" ) );
         }
@@ -151,9 +151,32 @@ public class GamesService
     private Game initGameComponents( Game game )
     {
         // Init Board
-        String boardsUri = game.getServiceList().getBoard();
-        game.getComponents().setBoard( game.getServiceList().getBoard() );
 
+        game = createBoard( game );
+
+        
+        return game;
+    }
+
+    private Game createBoard( Game game )
+    {
+        String boardsUrl = game.getServiceList().getBoard();
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setGame( game.getId() );
+
+        int responseCode = HttpService.post( boardsUrl, boardDTO );
+
+        if ( responseCode == 200 )
+        {
+            game.getComponents().setBoard( boardsUrl + game.getName() );
+        }
+        else
+        {
+            // TODO throw Component not available Exception
+        }
+
+        System.out.println( game.getComponents().getBoard() );
+        
         return game;
     }
 

@@ -15,12 +15,12 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class HttpService
 {
-    public static int post( String URL, Object body ) throws IOException
+    public static int post( String URL, Object body )
     {
         return connect( "POST", URL, body );
     }
 
-    public static int connect( String method, String URL, Object body )
+    private static int connect( String method, String URL, Object body )
     {
         int result = 500;   // ERROR TODO
         

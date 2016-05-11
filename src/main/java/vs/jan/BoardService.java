@@ -41,7 +41,6 @@ public class BoardService {
 
 	/**
 	 * Liefert alle Board-Uris, die dem Spiel zugeteilt wurden
-	 * 
 	 * @return Liste der Board-Uris als JSON-DTO
 	 */
 	public JSONBoardList getAllBoardURIs() {

@@ -58,8 +58,8 @@ public class UserServiceRESTApi{
 		post("/users", "application/json", (req, resp) -> {
 			User user = new Gson().fromJson(req.body(), User.class); // Mapping JSON -> User
 			SERVICE.createUser(user);
-			resp.status(StatusCodes.SUCCESS);
-			return StatusCodes.SUCCESS + CLRF;
+			resp.status(StatusCodes.CREATED);
+			return StatusCodes.CREATED + CLRF;
 		});
 	}
 	

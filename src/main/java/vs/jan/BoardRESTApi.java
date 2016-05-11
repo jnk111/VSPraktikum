@@ -138,9 +138,9 @@ public class BoardRESTApi {
 			JSONPlace p = boardService.getSpecificPlace(req.params(":gameid"), req.params(":place"));
 			return GSON.toJson(p);
 		});
-
 	}
 
+	
 	/**
 	 * gibt eine Liste der Place-Uris auf dem Board zurueck
 	 * Board wird identifiziert durch <code>gameid</code>
@@ -150,9 +150,9 @@ public class BoardRESTApi {
 			List<String> placeList = boardService.getAllPlaces(req.params(":gameid"));
 			return GSON.toJson(placeList);
 		});
-
 	}
 
+	
 	/**
 	 * Gibt eine bestimmte Spielfigur auf dem Board im Json-Format zurueck
 	 * Board wird identifiziert durch <code>gameid</code>
@@ -216,7 +216,7 @@ public class BoardRESTApi {
 		post("/boards", CONTENT_TYPE, (req, resp) -> {
 			JSONGameURI uri = GSON.fromJson(req.body(), JSONGameURI.class);
 			boardService.createNewBoard(uri);
-			return StatusCodes.SUCCESS + CLRF;
+			return StatusCodes.CREATED + CLRF;
 		});
 	}
 

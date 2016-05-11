@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import vs.jonas.Dice;
+import vs.jonas.services.model.Dice;
 
 public class Throws {
 	

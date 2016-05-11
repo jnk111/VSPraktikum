@@ -14,8 +14,8 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import vs.jonas.Dice;
-import vs.jonas.Event;
+import vs.jonas.services.model.Dice;
+import vs.jonas.services.model.Event;
 
 public class BoardService {
 

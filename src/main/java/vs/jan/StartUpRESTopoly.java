@@ -3,7 +3,8 @@ package vs.jan;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.jonas.DiceService;
+import vs.jonas.services.services.DiceService;
+import vs.jonas.services.services.EventService;
 
 /**
  * TODO: implement
@@ -17,6 +18,8 @@ public class StartUpRESTopoly {
 
 		YellowPagesService start = new YellowPagesService();
 		Map<String, Service> neededServicesDice = getNeededServices(start);
+		
+		new EventService().startService(); // Der EventService muss für den DiceService laufen
 		new DiceService(neededServicesDice);
 
 	}

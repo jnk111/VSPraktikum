@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import vs.jonas.DiceService;
+import vs.jonas.services.services.DiceService;
 
 public class RunBoardExample {
 

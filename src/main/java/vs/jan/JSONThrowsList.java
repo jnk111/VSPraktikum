@@ -3,7 +3,7 @@ package vs.jan;
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.jonas.Dice;
+import vs.jonas.services.model.Dice;
 
 public class JSONThrowsList {
 	

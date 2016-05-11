@@ -19,23 +19,33 @@ public class YellowPagesService {
 	
 	private Map<String, Service> services;
 	
+	public static final String ONLINE_SERVICES = "online";
+	public static final String LOCAL_SERVICES = "local";
+	
+	public YellowPagesService(String service_herkunft){
+		initServices(service_herkunft);
+	}
+	
 	public YellowPagesService(){
-
-		initServices();
+		initServices(ONLINE_SERVICES);
 	}
 
-	private void initServices() {
+	private void initServices(String service_herkunft) {
 		services = new HashMap<>();
 		
-//		Von den folgenden drei Methoden nur eine Ausw�hlen:
-		try {
-			fetchAllServices();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+//		Je nachdem, ob local getestet werden soll oder im Docker-Container
+		if(service_herkunft.equals(ONLINE_SERVICES)){
+			try {
+				fetchAllServices();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+		else{
+			fetchLocalServices();
+		}
 //		fetchHardcodedServices();
-//		fetchLocalServices();
 	}
 	
 

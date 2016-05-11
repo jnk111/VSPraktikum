@@ -10,12 +10,13 @@ import com.google.gson.Gson;
 
 import spark.utils.IOUtils;
 import vs.jonas.services.model.Dice;
+import vs.jonas.services.services.YellowPagesService;
 
 /**
- * Diese Klasse ist die Hauptkomponente f�r die Kommunikation mit den 
+ * Diese Klasse ist die Hauptkomponente fuer die Kommunikation mit den 
  * verschiedenen Services. 
  * 
- * Hier werden Anmeldevorg�nge und Abfragen get�tigt und von den Controllern
+ * Hier werden Anmeldevorgaenge und Abfragen getaetigt und von den Controllern
  * abgefragt.
  * 
  * @author Jones
@@ -23,8 +24,13 @@ import vs.jonas.services.model.Dice;
  */
 public class RestopolyClient {
 
+	private YellowPagesService yellowPages;
+	
+	public RestopolyClient(){
+		yellowPages = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+	}
 	/**
-	 * TODO Dummydata f�r Informationen �ber laufende Spiele
+	 * TODO Dummydata fuer Informationen ueber laufende Spiele
 	 * @return
 	 */
 	public List<GameInformation> getGameInformations() {

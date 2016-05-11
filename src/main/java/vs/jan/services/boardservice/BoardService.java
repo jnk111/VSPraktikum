@@ -36,6 +36,7 @@ import vs.jan.models.json.JSONPawnList;
 import vs.jan.models.json.JSONPlace;
 import vs.jan.models.json.JSONThrowsList;
 import vs.jan.models.json.JSONThrowsURI;
+import vs.jan.tools.HttpService;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
@@ -385,39 +386,15 @@ public class BoardService {
 		String resource = null;
 
 		switch (type) {
-		case "move": {
-			reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
-			resource = pawn.getRollsUri();
-			break;
-		}
-		}
-
-		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
-
-		try {
-
-			URL url = new URL(service.getUri());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-
-			connection.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			String json = GSON.toJson(event);
-			wr.writeBytes(json);
-			wr.flush();
-			wr.close();
-
-			int respCode = connection.getResponseCode();
-			if(respCode != HttpURLConnection.HTTP_OK){
-				throw new InvalidInputException();
+			case "move": {
+				reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
+				resource = pawn.getRollsUri();
+				break;
 			}
-
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
 		}
-
+		
+		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
+		HttpService.post(service.getUri(), event, HttpURLConnection.HTTP_OK);
 	}
 
 	/**
@@ -517,37 +494,18 @@ public class BoardService {
 		String playerUri = "http://localhost:4567/users/mario";
 		String player = "mario";
 		pawn.setPlayerUri(playerUri);
-		try {
-			Dice roll = null;
-			User user = getPlayerFromUserService(pawn, gameid);
-			URL url = new URL("http://localhost:4567/dice?" + "player=" + playerUri + "&game=" + gameid);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
-			connection.connect();
-			int responseCode = connection.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String line = null;
-				StringBuffer response = new StringBuffer();
-				while ((line = in.readLine()) != null) {
-					response.append(line);
-				}
-				in.close();
-				roll = new Gson().fromJson(response.toString(), Dice.class);
-				addThrowToPawnThrowList(pawn, roll);
+		
+		User user = getPlayer(pawn, gameid);
+		String json = HttpService.get("http://localhost:4567/dice?" 
+									+ "player=" + playerUri + "&game=" 
+											+ gameid, HttpURLConnection.HTTP_OK);
+		Dice roll = GSON.fromJson(json, Dice.class);
 
-				// TODO: Event posten
-
-				return roll.getNumber();
-			}
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
-		}
-
+		addThrowToPawnThrowList(pawn, roll);
+		
+		if(roll != null) return roll.getNumber();
 		return -1;
+
 
 	}
 
@@ -564,83 +522,13 @@ public class BoardService {
 	 * @throws ConnectionRefusedException
 	 *           Service nicht erreichbar
 	 */
-	private User getPlayer(Pawn pawn, String gameid)
-			throws InvalidInputException, ResourceNotFoundException, ConnectionRefusedException {
-		try {
+	private User getPlayer(Pawn pawn, String gameid) {
 			// z. B.: 'http://localhost:4567/games/42/players/mario
-			User currPlayer = null;
-			URL url = new URL(pawn.getPlayerUri());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
-			connection.connect();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String line = null;
-			StringBuffer response = new StringBuffer();
-
-			while ((line = in.readLine()) != null) {
-				response.append(line);
-			}
-			in.close();
-			currPlayer = new Gson().fromJson(response.toString(), User.class);
-
-			if (currPlayer != null && currPlayer.isValid()) {
-				return currPlayer;
-			} else {
-				throw new ResourceNotFoundException();
-			}
-
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
-		}
+			String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
+			User currPlayer = GSON.fromJson(json, User.class);
+			return currPlayer;
 	}
 
-	/**
-	 * TODO: only for testing
-	 * 
-	 * @param pawn
-	 * @param gameid
-	 * @return
-	 * @throws InvalidInputException
-	 * @throws ResourceNotFoundException
-	 * @throws ConnectionRefusedException
-	 */
-	private User getPlayerFromUserService(Pawn pawn, String gameid)
-			throws InvalidInputException, ResourceNotFoundException, ConnectionRefusedException {
-		try {
-			// z. B.: 'http://localhost:4567/games/42/players/mario
-			User currPlayer = null;
-			URL url = new URL(pawn.getPlayerUri());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
-			connection.connect();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String line = null;
-			StringBuffer response = new StringBuffer();
-
-			while ((line = in.readLine()) != null) {
-				response.append(line);
-			}
-			in.close();
-			currPlayer = new Gson().fromJson(response.toString(), User.class);
-
-			if (currPlayer != null && currPlayer.isValid()) {
-				return currPlayer;
-			} else {
-				throw new ResourceNotFoundException();
-			}
-
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
-		}
-	}
 
 	/**
 	 * Teilt den Turn-Mutex dem gerade wuerfelnden Spieler zu, alle anderen

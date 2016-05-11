@@ -13,12 +13,12 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import vs.malte.json.CreateUserDTO;
+import vs.malte.json.GameDTO;
+import vs.malte.json.ServiceArray;
+import vs.malte.json.ServiceDTO;
 import vs.malte.models.Components;
-import vs.malte.models.CreateUserDTO;
 import vs.malte.models.Game;
-import vs.malte.models.GameDTO;
-import vs.malte.models.ServiceArray;
-import vs.malte.models.ServiceDTO;
 import vs.malte.models.ServiceList;
 
 public class GamesService
@@ -28,6 +28,8 @@ public class GamesService
     private final String YELLOW_PAGE = "http://172.18.0.5:4567";
     private final String YP_GROUP_CMD = "/services/of/name/";
     private final String YP_GROUP_NAME = "JJMG";
+    
+    private final boolean LOCAL = true;     // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen
 
     private static Map<String, Game> games;
 
@@ -98,24 +100,43 @@ public class GamesService
     {
         Map<String, String> newServices = new HashMap<>();
 
-        try
+        if ( !LOCAL )
         {
-            HttpResponse<JsonNode> response = Unirest.get( YELLOW_PAGE + YP_GROUP_CMD + YP_GROUP_NAME ).asJson();
-            ServiceArray servicesOfGroup = new Gson().fromJson( response.getBody().toString(), ServiceArray.class );
-
-            for ( String s : servicesOfGroup.getServices() )
+            try
             {
-                response = Unirest.get( YELLOW_PAGE + s ).asJson();
-                ServiceDTO serviceDTO = new Gson().fromJson( response.getBody().toString(), ServiceDTO.class );
-                newServices.put( serviceDTO.getService(), serviceDTO.getUri() );
-            }
+                HttpResponse<JsonNode> response = Unirest.get( YELLOW_PAGE + YP_GROUP_CMD + YP_GROUP_NAME ).asJson();
+                ServiceArray servicesOfGroup = new Gson().fromJson( response.getBody().toString(), ServiceArray.class );
 
-            newGame.getServiceList().setAllServices( newServices );
-            newGame.setPlayers( newServices.get( "users" ) ); // TODO: Userservice ( Da Userservice laut Spezi nicht unter Services gespeichert ist )
+                for ( String s : servicesOfGroup.getServices() )
+                {
+                    response = Unirest.get( YELLOW_PAGE + s ).asJson();
+                    ServiceDTO serviceDTO = new Gson().fromJson( response.getBody().toString(), ServiceDTO.class );
+                    newServices.put( serviceDTO.getService(), serviceDTO.getUri() );
+                }
+
+                newGame.getServiceList().setAllServices( newServices );
+                newGame.setPlayers( newServices.get( "users" ) ); // TODO: Userservice ( Da Userservice laut Spezi nicht unter Services gespeichert ist )
+            }
+            catch ( UnirestException e )
+            {
+                e.printStackTrace();    // TODO: Fehlerbehanldung
+            }
         }
-        catch ( UnirestException e )
+        else  
         {
-            e.printStackTrace();
+            // ======================== Manuelle Service-Einstellungen ======================== //
+            
+            
+            newServices.put("dice", "localhost:4567/dice");
+            newServices.put("board", "localhost:4567/boards");
+            newServices.put("bank", "localhost:4567/banks");
+            newServices.put("broker", "localhost:4567/broker");
+            newServices.put("decks", "localhost:4567/decks");
+            newServices.put("events", "localhost:4567/events");
+            newServices.put("users", "localhost:4567/users");
+            
+            newGame.getServiceList().setAllServices( newServices );
+            newGame.setPlayers( newServices.get( "users" ) );
         }
 
         return newGame;
@@ -131,7 +152,6 @@ public class GamesService
     {
         // Init Board
         String boardsUri = game.getServiceList().getBoard();
-
         game.getComponents().setBoard( game.getServiceList().getBoard() );
 
         return game;
@@ -395,7 +415,7 @@ public class GamesService
             {
                 resp.status( 400 ); // Bad Request
             }
-            
+
             return result;
         } );
     }

@@ -1,4 +1,4 @@
-package vs.malte.models;
+package vs.malte.json;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

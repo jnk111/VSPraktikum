@@ -1,4 +1,4 @@
-package vs.malte.models;
+package vs.malte.json;
 
 public class BoardDTO
 {

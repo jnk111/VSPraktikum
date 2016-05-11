@@ -39,7 +39,6 @@ import vs.jan.models.json.JSONThrowsURI;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
-import vs.jonas.services.services.EventService;
 
 public class BoardService {
 

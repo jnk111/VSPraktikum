@@ -1,4 +1,4 @@
-package vs.malte;
+package vs.malte.models;
 
 /**
  * GameDTO zum Erstellen eines neuen Spiels.

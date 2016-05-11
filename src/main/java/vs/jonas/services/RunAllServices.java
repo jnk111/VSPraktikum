@@ -8,7 +8,7 @@ import vs.jan.models.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
 import vs.jonas.services.services.YellowPagesService;
-import vs.malte.GamesService;
+import vs.malte.services.GamesService;
 
 public class RunAllServices {
 

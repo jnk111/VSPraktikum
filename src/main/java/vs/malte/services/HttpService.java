@@ -1,4 +1,4 @@
-package vs.malte;
+package vs.malte.services;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

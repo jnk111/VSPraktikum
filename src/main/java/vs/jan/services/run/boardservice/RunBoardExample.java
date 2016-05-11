@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -18,13 +20,18 @@ import vs.jan.models.Board;
 import vs.jan.models.Field;
 import vs.jan.models.Pawn;
 import vs.jan.models.Place;
+import vs.jan.models.Service;
+import vs.jan.models.ServiceNames;
+import vs.jan.models.User;
 import vs.jan.models.json.JSONBoard;
 import vs.jan.models.json.JSONGameURI;
 import vs.jan.models.json.JSONPawn;
 import vs.jan.models.json.JSONPawnList;
 import vs.jan.models.json.JSONPlace;
 import vs.jan.services.boardservice.BoardRESTApi;
+import vs.jan.services.userservice.UserServiceRESTApi;
 import vs.jonas.services.services.DiceService;
+import vs.jonas.services.services.EventService;
 
 public class RunBoardExample {
 
@@ -41,8 +48,13 @@ public class RunBoardExample {
 	 */
 	public static void main(String[] args) {
 
+		Map<String, Service> neededServicesDice = getNeededServices();
+		new EventService().startService(); // Der EventService muss f�r den DiceService laufen
+		new DiceService(neededServicesDice).startService();
+		new UserServiceRESTApi();
 		boardApi = new BoardRESTApi();
-		diceApi = new DiceService(null);
+		
+//		diceApi = new DiceService(null);
 		setupGame();
 
 	}
@@ -54,17 +66,55 @@ public class RunBoardExample {
 
 	private static void setupBoard() {
 		int boardID = 42;
+		setupUser();
 		createBoard(boardID);
 		placeBoard(boardID);
 		checkBoardAdded(boardID);
 		createPawns(boardID);
-		movePawns(boardID);
-		updatePawns(boardID);
-		deletePawns(boardID);
-		putPlaces(boardID);
+		//movePawns(boardID);
+		//updatePawns(boardID);
+		//deletePawns(boardID);
+		//putPlaces(boardID);
 		getFinalBoardState(boardID);
 							
 
+	}
+
+	private static void setupUser() {
+		try {
+
+			User user = new User("/users/mario", "Mario", "http://somehost:4567/client/mario");
+			Thread.sleep(TIMEOUT);
+			System.out.println("Create A User on Userservice");
+			System.out.println("-------------------------------------------------------------------------------------------");
+			URL url = new URL("http://localhost:4567/users");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+
+			connection.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+			String json = GSON.toJson(user); 
+			System.out.println("Sending JSON-Body: " + json);
+			wr.writeBytes(json);
+			wr.flush();
+			wr.close();
+
+			int respCode = connection.getResponseCode();
+			System.out.println("Response Code: " + respCode);
+
+		} catch (MalformedURLException mfe) {
+			throw new InvalidInputException();
+		} catch (IOException ioe) {
+			throw new ConnectionRefusedException();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("-------------------------------------------------------------------------------------------");
+		System.out.println();
+		System.out.println();
+		
 	}
 
 	private static void getFinalBoardState(int boardID) {
@@ -572,6 +622,20 @@ public class RunBoardExample {
 		System.out.println();
 		System.out.println();
 
+	}
+	
+	
+	private static Map<String, Service> getNeededServices() {
+		Map<String, Service> services = new HashMap<>();
+		
+		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+		// ... weitere
+
+		Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
+				"http://localhost:4567/events");
+
+		services.put(ServiceNames.EVENT, s);
+		return services;
 	}
 
 }

@@ -240,12 +240,15 @@ public class BoardService {
 	 */
 	public Board getBoard(String gameid) {
 
-		for (Board b : boards.keySet()) {
-			if (boards.get(b).getURI().contains(gameid)) {
-				return b;
+		if(gameid != null){
+			for (Board b : boards.keySet()) {
+				if (boards.get(b).getURI().contains(gameid)) {
+					return b;
+				}
 			}
+			return null;
 		}
-		return null;
+		throw new InvalidInputException();
 	}
 
 	/**
@@ -369,10 +372,13 @@ public class BoardService {
 		Pawn pawn = getPawn(board, pawnid);
 
 		if (pawn != null && board != null) {
-			checkPlayerHasTurn(pawn, gameid);
-			putPlayersTurn(pawn, gameid);
-			int rollValue = doDiceRoll(pawn, gameid);
-			movePawnRESTCall(gameid, pawnid, rollValue);
+			//checkPlayerHasTurn(pawn, gameid);
+			//putPlayersTurn(pawn, gameid);
+			//int rollValue = doDiceRoll(pawn, gameid);
+			
+			int rollValue = doDiceRollLocal(pawn, gameid);	// Zum Testen Local
+			movePawn(gameid, pawnid, rollValue);
+			
 			//placeAPawnRESTCall(gameid, pawn);
 			
 			// weitere Aktionen...
@@ -430,6 +436,56 @@ public class BoardService {
 		return -1;
 
 	}
+	
+	/**
+	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste, die zu der
+	 * Figur gehoert hinzu
+	 * @param pawn
+	 * 				Die Figur, fuer die gewuerfelt wird
+	 * @param gameid
+	 * 				Die ID des Games
+	 * @return
+	 * 				Der Int-Wert des gemachten Wurfes
+	 */
+	private int doDiceRollLocal(Pawn pawn, String gameid) {
+		
+		// http://localhost:4567/dice
+		String playerUri = "http://localhost:4567/users/mario";
+		String player = "mario";
+		pawn.setPlayerUri(playerUri);
+		try {
+			Dice roll = null;
+			User user = getPlayerFromUserService(pawn, gameid);
+			URL url = new URL("http://localhost:4567/dice?" + "player=" + player + "&uri=" + playerUri);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setDoOutput(true);
+			connection.connect();
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				String line = null;
+				StringBuffer response = new StringBuffer();
+				while ((line = in.readLine()) != null) {
+					response.append(line);
+				}
+				in.close();
+				roll = new Gson().fromJson(response.toString(), Dice.class);
+				addThrowToPawnThrowList(pawn, roll);
+				
+				// TODO: Event posten
+				
+				return roll.getNumber();
+			}
+		} catch (MalformedURLException mfe) {
+			throw new InvalidInputException();
+		} catch (IOException ioe) {
+			throw new ConnectionRefusedException();
+		}
+		
+		return -1;
+
+	}
 
 	/**
 	 * Ermittelt den Spieler zu der Figur vom Game-Service
@@ -447,9 +503,52 @@ public class BoardService {
 	private User getPlayer(Pawn pawn, String gameid)
 			throws InvalidInputException, ResourceNotFoundException, ConnectionRefusedException {
 		try {
-			// z. B.: 'http://localhost:4567/games/42/players/games/42/players/mario
+			// z. B.: 'http://localhost:4567/games/42/players/mario
 			User currPlayer = null;
-			URL url = new URL("http://localhost:4567/games/" + gameid + "/players" + pawn.getPlayerUri());
+			URL url = new URL(pawn.getPlayerUri());
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setDoOutput(true);
+			connection.connect();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			String line = null;
+			StringBuffer response = new StringBuffer();
+
+			while ((line = in.readLine()) != null) {
+				response.append(line);
+			}
+			in.close();
+			currPlayer = new Gson().fromJson(response.toString(), User.class);
+
+			if (currPlayer != null && currPlayer.isValid()) {
+				return currPlayer;
+			} else {
+				throw new ResourceNotFoundException();
+			}
+
+		} catch (MalformedURLException mfe) {
+			throw new InvalidInputException();
+		} catch (IOException ioe) {
+			throw new ConnectionRefusedException();
+		}
+	}
+	
+	/**
+	 * TODO: only for testing
+	 * @param pawn
+	 * @param gameid
+	 * @return
+	 * @throws InvalidInputException
+	 * @throws ResourceNotFoundException
+	 * @throws ConnectionRefusedException
+	 */
+	private User getPlayerFromUserService(Pawn pawn, String gameid)
+			throws InvalidInputException, ResourceNotFoundException, ConnectionRefusedException {
+		try {
+			// z. B.: 'http://localhost:4567/games/42/players/mario
+			User currPlayer = null;
+			URL url = new URL(pawn.getPlayerUri());
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);

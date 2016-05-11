@@ -206,7 +206,7 @@ public class BoardRESTApi {
 	 */
 	private void initGetRollsOnTheBoard() {
 		get("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
-			JSONThrowsList throwlist = boardService.getDiceThrows(req.queryParams(":gameid"), req.queryParams(":pawnid"));
+			JSONThrowsList throwlist = boardService.getDiceThrows(req.params(":gameid"), req.params(":pawnid"));
 			return GSON.toJson(throwlist);
 		});
 
@@ -239,7 +239,7 @@ public class BoardRESTApi {
 	 */
 	private void initPostRollDice() {
 		post("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
-			boardService.rollDice(req.params(":gameid"), req.params(":pawmnid"));
+			boardService.rollDice(req.params(":gameid"), req.params(":pawnid"));
 			return StatusCodes.SUCCESS + CLRF;
 		});
 

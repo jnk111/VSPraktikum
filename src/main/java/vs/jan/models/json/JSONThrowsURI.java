@@ -16,4 +16,28 @@ public class JSONThrowsURI {
 		this.rollUri = rollUri;
 	}
 
+	@Override
+	public int hashCode() {
+		
+		return this.getRollUri().hashCode() * 42;
+		
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj instanceof JSONThrowsURI){
+			JSONThrowsURI uri = (JSONThrowsURI) obj;
+			return uri.getRollUri().equals(this.getRollUri());
+		}
+		
+		return false;
+	}
+	
+	
+
 }

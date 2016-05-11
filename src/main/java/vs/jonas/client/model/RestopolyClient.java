@@ -14,7 +14,7 @@ import vs.jan.models.ServiceNames;
 import vs.jonas.services.RunAllServices;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
-import vs.malte.models.GameDTO;
+import vs.malte.json.GameDTO;
 
 /**
  * Diese Klasse ist die Hauptkomponente fuer die Kommunikation mit den 

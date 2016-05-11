@@ -3,6 +3,9 @@ package vs.jonas.client.controller;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.view.RestopolyMenuUI;
@@ -45,8 +48,20 @@ public class MenuController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				String gameName = JOptionPane.showInputDialog("Name des Spiels:");
+				if(gameName != null){
+					if(!gameName.equals("")){
+						try {
+							client.createANewGame(gameName);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "Ungültiger Name. \nDer Name darf nicht leer sein.");
+					}					
+				}
 			}
 		});
 	}

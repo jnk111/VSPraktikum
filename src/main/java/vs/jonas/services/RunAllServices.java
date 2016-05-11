@@ -8,21 +8,22 @@ import vs.jan.models.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
 import vs.jonas.services.services.YellowPagesService;
+import vs.malte.GamesService;
 
-public class RunDiceService {
+public class RunAllServices {
+
 	
-	public static void main(String [] args){
+	public static void run(){
 		
-//		Falls lokale Services verwendet werden:
-//						Der Event-Service muss vor dem Dice-Service laufen
-		new EventService().startService();
 
 		YellowPagesService start = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+		
+		new GamesService();
+		new EventService().startService();
 		
 		Map<String, Service> neededServicesDice = new HashMap<>();
 		neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
 		new DiceService(neededServicesDice).startService();
 	}
-
 
 }

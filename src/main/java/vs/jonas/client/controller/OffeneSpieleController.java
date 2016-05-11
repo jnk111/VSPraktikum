@@ -3,6 +3,7 @@ package vs.jonas.client.controller;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JTable;
@@ -54,8 +55,9 @@ public class OffeneSpieleController {
 	
 	/**
 	 * L�dt die aktuellen offenen Spiele in die Tabelle
+	 * @throws IOException 
 	 */
-	private void ladeOffeneSpiele(){
+	private void ladeOffeneSpiele() throws IOException{
 		GameInformationTableModel model = (GameInformationTableModel) ui.getOffeneSpieleTable().getModel();
 		List<GameInformation> data = client.getGameInformations();
 		model.loadData(data);

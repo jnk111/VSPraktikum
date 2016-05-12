@@ -43,6 +43,27 @@ public class BankService {
     }
 
     /**
+     * Starts bank service.
+     */
+    public static void run() {
+        // setup listen properties
+        Spark.ipAddress("0.0.0.0");
+        Spark.port(4567);
+        // register controllers
+        BankService.registerController(new BanksController());
+        BankService.registerController(new BankController());
+        BankService.registerController(new TransfersController());
+        BankService.registerController(new TransferController());
+        BankService.registerController(new TransferFromToController());
+        BankService.registerController(new TransferToController());
+        BankService.registerController(new TransferFromController());
+        BankService.registerController(new TransactionListController());
+        BankService.registerController(new TransactionController());
+        BankService.registerController(new AccountsListController());
+        BankService.registerController(new AccountsController());
+    }
+
+    /**
      * Registers the given controller into the spark web-server.
      *
      * @param controller
@@ -61,23 +82,6 @@ public class BankService {
         if (controller instanceof DeleteController) {
             Spark.delete(controller.getUri(), ((DeleteController) controller)::delete);
         }
-    }
-
-    /**
-     * Registers all controllers for the bank service.
-     */
-    private static void run() {
-        BankService.registerController(new BanksController());
-        BankService.registerController(new BankController());
-        BankService.registerController(new TransfersController());
-        BankService.registerController(new TransferController());
-        BankService.registerController(new TransferFromToController());
-        BankService.registerController(new TransferToController());
-        BankService.registerController(new TransferFromController());
-        BankService.registerController(new TransactionListController());
-        BankService.registerController(new TransactionController());
-        BankService.registerController(new AccountsListController());
-        BankService.registerController(new AccountsController());
     }
 
     /**

@@ -57,7 +57,6 @@ public class BoardService {
 
 	private Map<String, Service> neededServices;
 
-
 	/**
 	 * Defaultkonstruktor
 	 */
@@ -386,13 +385,13 @@ public class BoardService {
 		String resource = null;
 
 		switch (type) {
-			case "move": {
-				reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
-				resource = pawn.getRollsUri();
-				break;
-			}
+		case "move": {
+			reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
+			resource = pawn.getRollsUri();
+			break;
 		}
-		
+		}
+
 		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
 		HttpService.post(service.getUri(), event, HttpURLConnection.HTTP_OK);
 	}
@@ -494,18 +493,17 @@ public class BoardService {
 		String playerUri = "http://localhost:4567/users/mario";
 		String player = "mario";
 		pawn.setPlayerUri(playerUri);
-		
+
 		User user = getPlayer(pawn, gameid);
-		String json = HttpService.get("http://localhost:4567/dice?" 
-									+ "player=" + playerUri + "&game=" 
-											+ gameid, HttpURLConnection.HTTP_OK);
+		String json = HttpService.get("http://localhost:4567/dice?" + "player=" + playerUri + "&game=" + gameid,
+				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
 
 		addThrowToPawnThrowList(pawn, roll);
-		
-		if(roll != null) return roll.getNumber();
-		return -1;
 
+		if (roll != null)
+			return roll.getNumber();
+		return -1;
 
 	}
 
@@ -523,12 +521,11 @@ public class BoardService {
 	 *           Service nicht erreichbar
 	 */
 	private User getPlayer(Pawn pawn, String gameid) {
-			// z. B.: 'http://localhost:4567/games/42/players/mario
-			String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
-			User currPlayer = GSON.fromJson(json, User.class);
-			return currPlayer;
+		// z. B.: 'http://localhost:4567/games/42/players/mario
+		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
+		User currPlayer = GSON.fromJson(json, User.class);
+		return currPlayer;
 	}
-
 
 	/**
 	 * Teilt den Turn-Mutex dem gerade wuerfelnden Spieler zu, alle anderen
@@ -549,26 +546,7 @@ public class BoardService {
 	 */
 	private void putPlayersTurn(Pawn pawn, String gameid)
 			throws MutexPutException, InvalidInputException, ConnectionRefusedException {
-
-		try {
-			URL url = new URL("http://localhost:4567/games/" + gameid + "/turn");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("PUT");
-			connection.setDoOutput(true);
-			connection.getOutputStream().write(pawn.getPlayerUri().getBytes());
-			connection.connect();
-			int responseCode = connection.getResponseCode();
-			if (responseCode != HttpURLConnection.HTTP_OK) {
-				throw new MutexPutException();
-			}
-
-			// TODO: Event posten
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
-		}
-
+		HttpService.put("http://localhost:4567/games/" + gameid + "/turn", pawn, HttpURLConnection.HTTP_OK);
 	}
 
 	/**
@@ -610,33 +588,13 @@ public class BoardService {
 	private synchronized void checkPlayerHasTurn(Pawn pawn, String gameid)
 			throws TurnMutexNotFreeException, ConnectionRefusedException, InvalidInputException {
 
-		try {
-			User currPlayer = null;
-			URL url = new URL("http://localhost:4567/games/" + gameid + "/turn");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
-			connection.connect();
-			int responseCode = connection.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String line = null;
-				StringBuffer response = new StringBuffer();
-				while ((line = in.readLine()) != null) {
-					response.append(line);
-				}
-				in.close();
-				currPlayer = new Gson().fromJson(response.toString(), User.class);
-
-				if (currPlayer != null && currPlayer.isValid()) {
-					throw new TurnMutexNotFreeException();
-				}
-			}
-		} catch (MalformedURLException mfe) {
-			throw new InvalidInputException();
-		} catch (IOException ioe) {
-			throw new ConnectionRefusedException();
+		String json = HttpService.get("http://localhost:4567/games/" + gameid + "/turn", HttpURLConnection.HTTP_OK);
+		User currPlayer = GSON.fromJson(json, User.class);
+		
+		if (currPlayer != null && currPlayer.isValid()) {
+			throw new TurnMutexNotFreeException();
 		}
+
 	}
 
 	/**
@@ -682,9 +640,7 @@ public class BoardService {
 			boards.remove(b);
 			return;
 		}
-
 		throw new ResourceNotFoundException();
-
 	}
 
 	/**
@@ -893,16 +849,14 @@ public class BoardService {
 	public void setNeededServices(Map<String, Service> neededServices) {
 		this.neededServices = neededServices;
 	}
-	
 
 	public Map<String, Service> getNeededServices(String type) {
 		Map<String, Service> services = new HashMap<>();
-		
+
 		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
 		// ... weitere
 
-		if(type.equals(ServiceNames.DICE)
-				|| type.equals(ServiceNames.BOARD)){
+		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
 			Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
 					"http://localhost:4567/events");
 

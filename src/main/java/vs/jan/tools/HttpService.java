@@ -17,12 +17,16 @@ public class HttpService{
 	
 	private static final Gson GSON = new Gson();
 	
+	public static void put(String URL, Object body, int expResponseCode){
+		HttpURLConnection connection = connect("PUT", URL, body, expResponseCode);
+		update(connection, body, expResponseCode);
+	}
 	public static void post(String URL, Object body, int expResponseCode) {
 		HttpURLConnection connection = connect("POST", URL, body, expResponseCode);
-		doPost(connection, body, expResponseCode);
+		update(connection, body, expResponseCode);
 	}
 
-	private static void doPost(HttpURLConnection connection, Object body, int expResponseCode) {
+	private static void update(HttpURLConnection connection, Object body, int expResponseCode) {
 		
 		try{
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());

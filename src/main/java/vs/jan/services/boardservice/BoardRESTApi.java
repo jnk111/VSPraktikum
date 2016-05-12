@@ -3,8 +3,6 @@ package vs.jan.services.boardservice;
 import static spark.Spark.*;
 
 import java.util.List;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -13,7 +11,6 @@ import vs.jan.exceptions.InvalidInputException;
 import vs.jan.exceptions.MutexPutException;
 import vs.jan.exceptions.ResourceNotFoundException;
 import vs.jan.exceptions.TurnMutexNotFreeException;
-import vs.jan.models.Service;
 import vs.jan.models.StatusCodes;
 import vs.jan.models.json.JSONBoard;
 import vs.jan.models.json.JSONGameURI;

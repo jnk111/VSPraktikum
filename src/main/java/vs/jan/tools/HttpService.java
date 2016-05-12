@@ -12,23 +12,50 @@ import com.google.gson.Gson;
 
 import vs.jan.exceptions.ConnectionRefusedException;
 import vs.jan.exceptions.InvalidInputException;
+import vs.jan.exceptions.ResourceNotFoundException;
 
-public class HttpService{
-	
+public class HttpService {
+
 	private static final Gson GSON = new Gson();
-	
-	public static void put(String URL, Object body, int expResponseCode){
+
+	public static void put(String URL, Object body, int expResponseCode) {
 		HttpURLConnection connection = connect("PUT", URL, body, expResponseCode);
 		update(connection, body, expResponseCode);
 	}
+
 	public static void post(String URL, Object body, int expResponseCode) {
 		HttpURLConnection connection = connect("POST", URL, body, expResponseCode);
 		update(connection, body, expResponseCode);
 	}
 
-	private static void update(HttpURLConnection connection, Object body, int expResponseCode) {
-		
+	public static void delete(String URL, int expResponseCode) {
+		HttpURLConnection connection = connect("DELETE", URL, null, expResponseCode);
+		doDelete(connection, URL, expResponseCode);
+	}
+
+	private static void doDelete(HttpURLConnection connection, String uRL, int expResponseCode) {
+
 		try{
+			connection.setRequestMethod("DELETE");
+			int responseCode = connection.getResponseCode();
+			if (responseCode != expResponseCode) {
+				throw new ResourceNotFoundException();
+			}
+		}catch(IOException ioe){
+			throw new ConnectionRefusedException();
+		}
+
+
+	}
+
+	public static String get(String URL, int expResponseCode) {
+		HttpURLConnection connection = connect("GET", URL, null, expResponseCode);
+		return doGet(connection, URL, expResponseCode);
+	}
+
+	private static void update(HttpURLConnection connection, Object body, int expResponseCode) {
+
+		try {
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			String json = GSON.toJson(body);
 			wr.writeBytes(json);
@@ -36,17 +63,12 @@ public class HttpService{
 			wr.close();
 
 			int respCode = connection.getResponseCode();
-			if(respCode != expResponseCode){
+			if (respCode != expResponseCode) {
 				throw new InvalidInputException();
 			}
-		}catch(IOException ioe){
+		} catch (IOException ioe) {
 			throw new InvalidInputException();
 		}
-	}
-	
-	public static String get(String URL, int expResponseCode) {
-		HttpURLConnection connection = connect("GET", URL, null, expResponseCode);
-		return doGet(connection, URL, expResponseCode);
 	}
 
 	private static String doGet(HttpURLConnection connection, String uRL, int expResponseCode) {
@@ -69,8 +91,7 @@ public class HttpService{
 		return null;
 	}
 
-	public static HttpURLConnection connect(String method, String URL, 
-																					Object body, int expResponseCode) {
+	public static HttpURLConnection connect(String method, String URL, Object body, int expResponseCode) {
 		try {
 			URL url = new URL(URL);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();

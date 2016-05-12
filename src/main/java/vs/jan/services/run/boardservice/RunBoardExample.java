@@ -1,12 +1,7 @@
 package vs.jan.services.run.boardservice;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +9,6 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import vs.jan.exceptions.ConnectionRefusedException;
 import vs.jan.exceptions.InvalidInputException;
 import vs.jan.models.Board;
 import vs.jan.models.Field;
@@ -92,7 +86,9 @@ public class RunBoardExample {
 		System.out.println("-------------------------------------------------------------------------------------------");
 
 		User user = new User("/users/mario", "Mario", "http://somehost:4567/client/mario");
+		System.out.println("User that will be created: " + GSON.toJson(user));
 		HttpService.post("http://localhost:4567/users", user, StatusCodes.CREATED);
+		System.out.println("SUCCESS");
 
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
@@ -131,11 +127,13 @@ public class RunBoardExample {
 		int index = (int) (Math.random() * places.size());
 		String pUri = places.get(index);
 		JSONPlace place = getPlace(pUri);
+		System.out.println("Place that will be updated: " + GSON.toJson(place));
 		Place p = new Place(pUri, place.getName(), place.getBroker());
 		p.setName("Los");
 		p.setBrokerUri("/broker/places/" + p.getName().toLowerCase());
-		System.out.println("Place that will be updated: " + GSON.toJson(place));
 		HttpService.put("http://localhost:4567" + pUri, p.convert(), HttpURLConnection.HTTP_OK);
+		System.out.println("SUCCESS");
+		System.out.println("Updated Place: " + GSON.toJson(p.convert()));
 
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
@@ -150,6 +148,8 @@ public class RunBoardExample {
 			System.out.println("Get Place with uri: " + placeUri + " ...");
 			String json = HttpService.get("http://localhost:4567" + placeUri, HttpURLConnection.HTTP_OK);
 			JSONPlace place = GSON.fromJson(json, JSONPlace.class);
+			System.out.println("SUCCESS");
+			System.out.println("Fetched Place: " + GSON.toJson(place));
 
 			if (place != null) {
 				return place;
@@ -162,13 +162,16 @@ public class RunBoardExample {
 
 	private static List<String> getPlacesUris(int boardID) {
 
-		System.out.println("Get Places...");
+		System.out.println("Get Places Uris...");
 		String json = HttpService.get("http://localhost:4567/boards/" + boardID + "/places", HttpURLConnection.HTTP_OK);
 
 		@SuppressWarnings("unchecked")
 		List<String> places = GSON.fromJson(json, List.class);
+		
 
 		if (places != null) {
+			System.out.println("SUCCESS");
+			System.out.println("fetched place uris: " + GSON.toJson(places));
 			return places;
 		}
 
@@ -178,11 +181,13 @@ public class RunBoardExample {
 	private static void deletePawns(int boardID) throws InterruptedException {
 		System.out.println("Delete a random pawn on the board...");
 		System.out.println("-------------------------------------------------------------------------------------------");
-
+		JSONPawnList list = null;
 		try {
 			Thread.sleep(TIMEOUT);
 			System.out.println("Old PawnList:");
-			JSONPawnList list = getPawnsOnBoard(boardID);
+			list = getPawnsOnBoard(boardID);
+			System.out.println();
+			System.out.println(GSON.toJson(list));
 
 			List<JSONPawn> pawns = new ArrayList<>();
 
@@ -200,7 +205,9 @@ public class RunBoardExample {
 		}
 
 		System.out.println("New PawnList...");
-		getPawnsOnBoard(boardID);
+		list = getPawnsOnBoard(boardID);
+		System.out.println();
+		System.out.println(GSON.toJson(list));
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		System.out.println();
@@ -211,13 +218,8 @@ public class RunBoardExample {
 
 		try {
 			System.out.println("Pawn that will be deleted: " + GSON.toJson(pawn));
-			URL url = new URL("http://localhost:4567" + pawn.getId());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("DELETE");
-			connection.setDoOutput(true);
-			int responseCode = connection.getResponseCode();
-			System.out.println("Response Code: " + responseCode);
-			System.out.println();
+			HttpService.delete("http://localhost:4567" + pawn.getId(), HttpURLConnection.HTTP_OK);
+			System.out.println("SUCCESS");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -254,29 +256,13 @@ public class RunBoardExample {
 
 	private static void updatePawn(JSONPawn pawn, int boardID) {
 
-		try {
-
 			System.out.println("Pawn that will be updated: " + GSON.toJson(pawn));
-			URL url = new URL("http://localhost:4567" + pawn.getId());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("PUT");
-			connection.setDoOutput(true);
-
-			connection.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			System.out.println("Update PlayerUri...");
 			pawn.setPlayer("/games/" + boardID + "/players/updated");
-			String json = GSON.toJson(pawn);
-			System.out.println("Sending JSON-Body: " + json);
-			wr.writeBytes(json);
-			wr.flush();
-			wr.close();
-			int responseCode = connection.getResponseCode();
-			System.out.println("Response Code: " + responseCode);
+			HttpService.put("http://localhost:4567" + pawn.getId(), pawn, HttpURLConnection.HTTP_OK);
+			System.out.println("SUCCESS");
+			System.out.println();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static void movePawns(int boardID) throws InterruptedException {
@@ -313,8 +299,11 @@ public class RunBoardExample {
 		
 			Thread.sleep(TIMEOUT);
 			int rollValue = (int) ((Math.random() * 6) + 1);
-			System.out.println("move Pawn with uri: " + p.getId());
+			System.out.println("Move Pawn with uri: " + p.getId());
 			HttpService.post("http://localhost:4567" + p.getMove(), rollValue, HttpURLConnection.HTTP_OK);
+			System.out.println("SUCCESS");
+			System.out.println();
+			
 	}
 
 	private static JSONPawn getPawn(int boardID, String pawnUri) throws InterruptedException {
@@ -325,6 +314,9 @@ public class RunBoardExample {
 		JSONPawn pawn = GSON.fromJson(json, JSONPawn.class);
 
 		if (pawn != null) {
+			System.out.println("SUCCESS");
+			System.out.println("Fetched Pawn: " + GSON.toJson(pawn));
+			System.out.println();
 			return pawn;
 		}
 		throw new InvalidInputException();
@@ -338,6 +330,9 @@ public class RunBoardExample {
 		String json = HttpService.get("http://localhost:4567/boards/" + boardID + "/pawns", HttpURLConnection.HTTP_OK);
 		JSONPawnList list = GSON.fromJson(json, JSONPawnList.class);
 		if (list != null) {
+			System.out.println("SUCCESS");
+			System.out.println("Fetched Pawnlist: " + GSON.toJson(list));
+			System.out.println();
 			return list;
 		}
 		throw new InvalidInputException();
@@ -349,8 +344,9 @@ public class RunBoardExample {
 		Pawn p = new Pawn();
 		p.setPlayerUri("/games/" + boardID + "/players/" + playerName);
 		p.setPlaceUri("/boards/" + boardID + "/places/0");
-		System.out.println("Create Pawn...");
+		System.out.println("Create Pawn: " + GSON.toJson(p.convert()));
 		HttpService.post("http://localhost:4567/boards/" + boardID + "/pawns", p.convert(), HttpURLConnection.HTTP_OK);
+		System.out.println("SUCCESS");
 		System.out.println();
 
 	}
@@ -373,8 +369,10 @@ public class RunBoardExample {
 		Thread.sleep(TIMEOUT);
 
 		System.out.println("Put Board...");
-		HttpService.put("http://localhost:4567/boards/" + boardID, b, HttpURLConnection.HTTP_OK);
-
+		HttpService.put("http://localhost:4567/boards/" + boardID, b.convert(), HttpURLConnection.HTTP_OK);
+		System.out.println("SUCCESS");
+		System.out.println("Placed Board: " + GSON.toJson(b.convert()));
+		System.out.println();
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		System.out.println();
@@ -386,6 +384,7 @@ public class RunBoardExample {
 		System.out.println("Get Board with id " + boardID + "...");
 		String json = HttpService.get("http://localhost:4567/boards/" + boardID, HttpURLConnection.HTTP_OK);
 		JSONBoard board = GSON.fromJson(json, JSONBoard.class);
+		System.out.println("SUCCESS");
 		System.out.println("Board: " + GSON.toJson(board));
 		System.out.println();
 
@@ -398,6 +397,7 @@ public class RunBoardExample {
 		System.out.println("-------------------------------------------------------------------------------------------");
 		JSONGameURI gameid = new JSONGameURI("/games/" + boardID);
 		HttpService.post("http://localhost:4567/boards", gameid, HttpURLConnection.HTTP_OK);
+		System.out.println("SUCCESS");
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		System.out.println();

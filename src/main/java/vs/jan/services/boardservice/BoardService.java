@@ -491,11 +491,10 @@ public class BoardService {
 
 		// http://localhost:4567/dice
 		String playerUri = "http://localhost:4567/users/mario";
-		String player = "mario";
 		pawn.setPlayerUri(playerUri);
 
 		User user = getPlayer(pawn, gameid);
-		String json = HttpService.get("http://localhost:4567/dice?" + "player=" + playerUri + "&game=" + gameid,
+		String json = HttpService.get("http://localhost:4567/dice?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
 

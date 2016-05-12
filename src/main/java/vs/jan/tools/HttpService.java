@@ -38,6 +38,7 @@ public class HttpService {
 		try{
 			connection.setRequestMethod("DELETE");
 			int responseCode = connection.getResponseCode();
+			System.out.println("GOT RESPONSE CODE: " + responseCode);
 			if (responseCode != expResponseCode) {
 				throw new ResourceNotFoundException();
 			}
@@ -56,13 +57,17 @@ public class HttpService {
 	private static void update(HttpURLConnection connection, Object body, int expResponseCode) {
 
 		try {
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			String json = GSON.toJson(body);
-			wr.writeBytes(json);
-			wr.flush();
-			wr.close();
+			
+			if(body != null){
+				DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+				String json = GSON.toJson(body);
+				wr.writeBytes(json);
+				wr.flush();
+				wr.close();
+			}
 
 			int respCode = connection.getResponseCode();
+			System.out.println("GOT RESPONSE CODE: " + respCode);
 			if (respCode != expResponseCode) {
 				throw new InvalidInputException();
 			}
@@ -75,6 +80,7 @@ public class HttpService {
 		try {
 			connection.setRequestMethod("GET");
 			int responseCode = connection.getResponseCode();
+			System.out.println("GOT RESPONSE CODE: " + responseCode);
 			if (responseCode == expResponseCode) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String line = null;

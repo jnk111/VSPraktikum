@@ -69,13 +69,13 @@ public class GamesService
             resp.status( 500 ); // Internal Server Error
 
             Game game = createGame( req.body() );   // TODO Fehlerbehandlung: kein Game name angegeben
-            game = initGameServices( game );
-            game = initGameComponents( game );
-
+            
             if ( game != null && game.isValid() )
             {
                 if ( !games.containsKey( game.getId() ) )
                 {
+                    game = initGameServices( game );
+                    game = initGameComponents( game );
                     games.put( game.getId(), game );
 
                     resp.status( 201 ); // Created

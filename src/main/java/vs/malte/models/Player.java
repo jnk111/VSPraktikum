@@ -1,24 +1,22 @@
-package vs.malte.services;
+package vs.malte.models;
 
 /**
  * Spielerobjekt fuer ein erstelltes Spiel
  * 
- * TODO: PAWNs muessen im Spiel noch vergliechen werden, damit nicht mehrere Spieler
- * die selbe Spielfigur haben.
+ * TODO: PAWNs muessen im Spiel noch vergliechen werden, damit nicht mehrere Spieler die selbe Spielfigur haben.
  * 
  * @author maltrn
  *
  */
 public class Player
 {
+    private String id;
     private String user;
-    private String id;      // TODO: ID und USER nicht das gleiche? = NOPE!
+    private boolean ready;
     private String pawn;
     private String account;
-    private boolean ready;
+    
 
-    
-    
     public Player( String user, String id, String pawn, String account, boolean ready )
     {
         super();
@@ -44,16 +42,16 @@ public class Player
         this.id = id;
     }
 
-    public String getUser()
+    public String getUserName()
     {
         return user;
     }
 
-    public void setUser( String user )
+    public void setUserName( String user )
     {
         this.user = user;
     }
-    
+
     public boolean getReadyness()
     {
         return ready;
@@ -92,7 +90,7 @@ public class Player
     public boolean isValid()
     {
         return getId() != null &&
-                getUser() != null &&
+                getUserName() != null &&
                 getAccount() != null &&
                 getPawn() != null;
     }
@@ -112,7 +110,7 @@ public class Player
         {
             Player thatPlayer = (Player) that;
 
-            result = ( this.getUser().equals( thatPlayer.getUser() ) ||
+            result = ( this.getUserName().equals( thatPlayer.getUserName() ) ||
                     this.getId().equals( thatPlayer.getId() ) );
         }
 

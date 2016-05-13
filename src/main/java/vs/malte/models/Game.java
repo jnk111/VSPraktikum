@@ -3,8 +3,6 @@ package vs.malte.models;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.malte.services.Player;
-
 public class Game
 {
     private String id;

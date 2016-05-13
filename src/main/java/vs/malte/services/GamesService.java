@@ -4,9 +4,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -182,11 +180,14 @@ public class GamesService
         int responseCode = HttpService.post( boardsUrl, boardDTO );
 
         if ( responseCode == 200 )
-        {
+        {    
             game.getComponents().setBoard( boardsUrl + "/" + game.getName() );
+            
+            System.out.println( "Board created: " + game.getComponents().getBoard() );
         }
         else
         {
+            System.err.println( "Fehler beim erstellen eines Boards" );
             // TODO throw Component not available Exception
         }
 
@@ -431,17 +432,18 @@ public class GamesService
             String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
 
             Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
+            String mapKey = newPlayer.getUserName();
 
             // ================= Playerobjekt wird entsprechend der Spezi fuer GameService konfiguriert ================= //
             newPlayer.setId( "/games/" + game.getName() + "/players/" + newPlayer.getUserName().toLowerCase() );
-            newPlayer.setUserName( "user/" + newPlayer.getUserName().toLowerCase() );
+            newPlayer.setUserName( "/user/" + newPlayer.getUserName().toLowerCase() );
 
-            if ( game != null && !game.getPlayers().containsKey( newPlayer.getId() ) )
+            if ( game != null && !game.getPlayers().containsKey( mapKey ) )
             {
                 // ================= Post an UserService (User wird im UserService erstellt) ================= //
 
                 CreateUserDTO userDTO = new CreateUserDTO();
-                userDTO.setId( newPlayer.getUserName().replaceAll( "user/", "/users/" ) );
+                userDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
                 userDTO.setName( newPlayer.getUserName().replaceAll( "user/", "" ) );
                 userDTO.setUri( hostUri + "/client/" + userDTO.getName() );
 
@@ -451,7 +453,7 @@ public class GamesService
 
                 createPawn( newPlayer, game );
 
-                game.getPlayers().put( newPlayer.getId(), newPlayer );
+                game.getPlayers().put( mapKey , newPlayer );
 
                 resp.status( 201 ); // created
             }
@@ -599,9 +601,9 @@ public class GamesService
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
-            String playerId = ( USERID_PREFIX + req.params( ":playerId" ).toLowerCase() );
-
-            Player player = game.getPlayers().get( playerId );
+            String mapKey = ( req.params( ":playerId" ).toLowerCase() );
+            
+            Player player = game.getPlayers().get( mapKey );
 
             if ( player != null )
             {

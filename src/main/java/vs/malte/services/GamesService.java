@@ -510,7 +510,7 @@ public class GamesService
 
                 for ( Player player : game.getPlayers().values() )
                 {
-                    players.getPlayers().add( "/games/" + game.getName() + "/players/" + player.getUserName() );
+                    players.getPlayers().add( "/games/" + game.getName() + "/players" + player.getUserName().replaceAll( "/user", "") );
                 }
 
                 result = new Gson().toJson( players );

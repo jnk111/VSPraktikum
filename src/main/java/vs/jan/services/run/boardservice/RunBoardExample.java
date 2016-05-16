@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import vs.gerriet.service.BankService;
 import vs.jan.exceptions.InvalidInputException;
 import vs.jan.models.Board;
 import vs.jan.models.Field;
@@ -54,6 +55,7 @@ public class RunBoardExample {
 	public static void main(String[] args) throws InterruptedException, MalformedURLException {
 
 		Map<String, Service> neededServicesDice = getNeededServices(ServiceNames.DICE);
+		BankService.run();
 		new EventService().startService(); // Der EventService muss f�r den
 																				// DiceService laufen
 		new DiceService(neededServicesDice).startService();

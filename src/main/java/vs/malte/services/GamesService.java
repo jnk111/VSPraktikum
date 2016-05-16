@@ -13,13 +13,19 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import vs.malte.json.BankDTO;
 import vs.malte.json.BoardDTO;
+import vs.malte.json.BrokerDTO;
 import vs.malte.json.CreateUserDTO;
+import vs.malte.json.DecksDTO;
 import vs.malte.json.GameDTO;
+import vs.malte.json.PawnDTO;
+import vs.malte.json.PlayerDTO;
 import vs.malte.json.ServiceArray;
 import vs.malte.json.ServiceDTO;
 import vs.malte.models.Components;
 import vs.malte.models.Game;
+import vs.malte.models.Player;
 import vs.malte.models.ServiceList;
 
 public class GamesService
@@ -40,7 +46,7 @@ public class GamesService
 
         initPostNewGame();
         initGetAvailableGames();
-        initGetGameStatus();
+        initGetGame();
         initGetGameServices();
         initPutGameService();
         initPutGameComponent();
@@ -49,6 +55,9 @@ public class GamesService
         initGetAllPlayers();
         initGetPlayerReadyness();
         initPutPlayerReady();
+        initGetSpecificPlayer();
+        initGetGameStatus();
+        initPutGameStatus();
     }
 
     /**
@@ -58,31 +67,34 @@ public class GamesService
     {
         post( "/games", ( req, resp ) ->
         {
-            resp.header( "Content-Type", "application/json" );
-            resp.status( 500 ); // Internal Server Error
-
-            Game game = createGame( req.body() );   // TODO Fehlerbehandlung: kein Game name angegeben
-            game = initGameServices( game );
-            game = initGameComponents( game );
-
-            if ( game != null && game.isValid() )
+            synchronized ( this )
             {
-                if ( !games.containsKey( game.getId() ) )
-                {
-                    games.put( game.getId(), game );
+                resp.header( "Content-Type", "application/json" );
+                resp.status( 500 ); // Internal Server Error
 
-                    resp.status( 201 ); // Created
+                Game game = createGame( req.body() );   // TODO Fehlerbehandlung: kein Game name angegeben
+
+                if ( game != null && game.isValid() )
+                {
+                    if ( !games.containsKey( game.getId() ) )
+                    {
+                        game = initGameServices( game );
+                        game = initGameComponents( game );
+                        games.put( game.getId(), game );
+
+                        resp.status( 201 ); // Created
+                    }
+                    else
+                    {
+                        resp.status( 409 ); // Conflict
+                    }
                 }
                 else
                 {
-                    resp.status( 409 ); // Conflict
+                    resp.status( 400 ); // Bad Request
                 }
-            }
-            else
-            {
-                resp.status( 400 ); // Bad Request
-            }
 
+            }
             return "";
         } );
     }
@@ -150,11 +162,17 @@ public class GamesService
      */
     private Game initGameComponents( Game game )
     {
-        // Init Board
-
         game = createBoard( game );
+        game = createBank( game );
+        game = createBroker( game );
+        game = createDecks( game );
 
-        
+        // initialize dice
+        game.getComponents().setDice( game.getServiceList().getDice() );
+
+        // initialize events
+        game.getComponents().setEvents( game.getServiceList().getEvents() );
+
         return game;
     }
 
@@ -168,15 +186,76 @@ public class GamesService
 
         if ( responseCode == 200 )
         {
-            game.getComponents().setBoard( boardsUrl + game.getName() );
+            game.getComponents().setBoard( boardsUrl + "/" + game.getName() );
+
+            System.out.println( "Board created: " + game.getComponents().getBoard() );
+        }
+        else
+        {
+            System.err.println( "Fehler beim erstellen eines Boards" );
+            // TODO throw Component not available Exception
+        }
+
+        return game;
+    }
+
+    private Game createBank( Game game )
+    {
+        String bankUrl = game.getServiceList().getBank();
+        BankDTO bankDTO = new BankDTO();
+        bankDTO.setGame( game.getId() );
+
+        int responseCode = HttpService.post( bankUrl, bankUrl );
+
+        if ( responseCode == 200 )
+        {
+            game.getComponents().setBank( bankUrl + "/" + game.getName() );
         }
         else
         {
             // TODO throw Component not available Exception
         }
 
-        System.out.println( game.getComponents().getBoard() );
-        
+        return game;
+    }
+
+    private Game createBroker( Game game )
+    {
+        String brokerUrl = game.getServiceList().getBank();
+        BrokerDTO brokerDTO = new BrokerDTO();
+        brokerDTO.setGame( game.getId() );
+
+        int responseCode = HttpService.post( brokerUrl, brokerUrl );
+
+        if ( responseCode == 200 )
+        {
+            game.getComponents().setBroker( brokerUrl + "/" + game.getName() );
+        }
+        else
+        {
+            // TODO throw Component not available Exception
+        }
+
+        return game;
+    }
+
+    private Game createDecks( Game game )
+    {
+        String decksUrl = game.getServiceList().getBank();
+        DecksDTO decksDTO = new DecksDTO();
+        decksDTO.setGame( game.getId() );
+
+        int responseCode = HttpService.post( decksUrl, decksUrl );
+
+        if ( responseCode == 200 )
+        {
+            game.getComponents().setDecks( decksUrl + "/" + game.getName() );
+        }
+        else
+        {
+            // TODO throw Component not available Exception
+        }
+
         return game;
     }
 
@@ -210,7 +289,7 @@ public class GamesService
     /**
      * Initialisiert die GET-Methode zur Abfrage des aktuellen Spielstatus
      */
-    private void initGetGameStatus()
+    private void initGetGame()
     {
         get( "/games/:gameid", ( req, resp ) ->
         {
@@ -270,21 +349,24 @@ public class GamesService
     {
         put( "/games/:gameid/services", ( req, resp ) ->
         {
-            resp.header( "Content-Type", "application/json" );
-            resp.status( 500 ); // Internal Server Error
-
-            ServiceList newServiceList = new Gson().fromJson( req.body(), ServiceList.class );
-            Game game = getGame( req.params( ":gameId" ) );
-
-            if ( game != null )
+            synchronized ( this )
             {
-                resp.status( 202 ); // Accepted
+                resp.header( "Content-Type", "application/json" );
+                resp.status( 500 ); // Internal Server Error
 
-                game.getServiceList().setAllServices( newServiceList.getAllServices() );
-            }
-            else
-            {
-                resp.status( 400 ); // Bad Request
+                ServiceList newServiceList = new Gson().fromJson( req.body(), ServiceList.class );
+                Game game = getGame( req.params( ":gameId" ) );
+
+                if ( game != null )
+                {
+                    resp.status( 202 ); // Accepted
+
+                    game.getServiceList().setAllServices( newServiceList.getAllServices() );
+                }
+                else
+                {
+                    resp.status( 400 ); // Bad Request
+                }
             }
             return "";
         } );
@@ -297,21 +379,24 @@ public class GamesService
     {
         put( "/games/:gameid/components", ( req, resp ) ->
         {
-            resp.header( "Content-Type", "application/json" );
-            resp.status( 500 ); // Internal Server Error
-
-            Components newComponents = new Gson().fromJson( req.body(), Components.class );
-            Game game = getGame( req.params( ":gameId" ) );
-
-            if ( game != null )
+            synchronized ( this )
             {
-                resp.status( 202 ); // Accepted
+                resp.header( "Content-Type", "application/json" );
+                resp.status( 500 ); // Internal Server Error
 
-                game.getComponents().setAllComponents( newComponents.getAllComponents() );
-            }
-            else
-            {
-                resp.status( 400 ); // Bad Request
+                Components newComponents = new Gson().fromJson( req.body(), Components.class );
+                Game game = getGame( req.params( ":gameId" ) );
+
+                if ( game != null )
+                {
+                    resp.status( 202 ); // Accepted
+
+                    game.getComponents().setAllComponents( newComponents.getAllComponents() );
+                }
+                else
+                {
+                    resp.status( 400 ); // Bad Request
+                }
             }
             return "";
         } );
@@ -345,43 +430,80 @@ public class GamesService
     }
 
     /**
-     * Initialisiert die Post-Methode zum erstellen eines neuen Spielers. Greift auf Userservice zu um Spieler zu speichern.
+     * Initialisiert die Post-Methode zum erstellen eines neuen Spielers. Greift auf Userservice zu und Speichert den Spieler dort (kA wozu TODO).
+     * 
+     * return nur Statuscodes ( 201 falls Spieler erfolgreich erstellt wurde; 409 falls Spieler bereits vorhanden )
      */
     private void initPostNewPlayer()
     {
         post( "/games/:gameId/players", ( req, resp ) ->
         {
-            resp.header( "Content-Type", "application/json" );
-            resp.status( 500 ); // Internal Server Error
-
-            Game game = getGame( req.params( ":gameId" ) );
-            String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
-
-            Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
-
-            newPlayer.setId( "/users/" + newPlayer.getUser().toLowerCase() );                      // TODO: ID so richtig? oder komplette URL?
-            newPlayer.setUser( newPlayer.getUser().toLowerCase() );
-
-            if ( game != null && !game.getPlayers().containsKey( newPlayer.getId() ) )
+            synchronized ( this )
             {
-                CreateUserDTO userDTO = new CreateUserDTO();
-                userDTO.setId( newPlayer.getId() );
-                userDTO.setName( newPlayer.getUser().toLowerCase() );
-                userDTO.setUri( hostUri );
+                resp.header( "Content-Type", "application/json" );
+                resp.status( 500 ); // Internal Server Error
 
-                HttpService.post( game.getUserService(), userDTO );
+                Game game = getGame( req.params( ":gameId" ) );
+                String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
 
-                game.getPlayers().put( newPlayer.getId(), newPlayer );
+                Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
+                String mapKey = newPlayer.getUserName();
 
-                resp.status( 201 ); // created
+                // ================= Playerobjekt wird entsprechend der Spezi fuer GameService konfiguriert ================= //
+                newPlayer.setId( "/games/" + game.getName() + "/players/" + newPlayer.getUserName().toLowerCase() );
+                newPlayer.setUserName( "/user/" + newPlayer.getUserName().toLowerCase() );
+
+                if ( game != null && !game.getPlayers().containsKey( mapKey ) )
+                {
+                    // ================= Post an UserService (User wird im UserService erstellt) ================= //
+
+                    CreateUserDTO userDTO = new CreateUserDTO();
+                    userDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
+                    userDTO.setName( newPlayer.getUserName().replaceAll( "user/", "" ) );
+                    userDTO.setUri( hostUri + "/client/" + userDTO.getName() );
+
+                    System.out.println( "userDTO: " + new Gson().toJson( userDTO ) );
+
+                    HttpService.post( game.getUserService(), userDTO );
+
+                    createPawn( newPlayer, game );
+
+                    game.getPlayers().put( mapKey, newPlayer );
+
+                    resp.status( 201 ); // created
+                }
+                else
+                {
+                    resp.status( 409 ); // Conflict
+                }
             }
-            else
-            {
-                resp.status( 400 ); // Bad Request
-            }
-
             return "";
         } );
+    }
+
+    private Player createPawn( Player player, Game game )
+    {
+        PawnDTO newPawn = new PawnDTO();
+
+        newPawn.setPlayer( player.getId() );
+        newPawn.setPlace( "/boards/" + game.getName() + "/places/" + "0" );   // TODO muss automatisiert werden, aber wie? Wer "putet", gameservice oder boards?
+        newPawn.setPosition( 0 );                                             // TODO SAME SAME
+
+        System.out.println( "Pawn: " + new Gson().toJson( newPawn ) );
+        System.out.println( "playerPawnUri: " + game.getComponents().getBoard() + "/pawns/" + player.getUserName().replaceAll( "user/", "" ) );
+
+        int responseCode = HttpService.post( game.getComponents().getBoard() + "/pawns", newPawn );
+
+        if ( responseCode == 200 )
+        {
+            player.setPawn( game.getComponents().getBoard() + "/pawns/" + player.getUserName().replaceAll( "user/", "" ) );
+        }
+        else
+        {
+            System.err.println( "Pawn erstellen fehlgeschlagen" );      // TODO Fehlerbehandlung falls Pawn nicht erstellt werden kann (Neuversuch alle 3s?).
+        }
+
+        return player;
     }
 
     /**
@@ -399,9 +521,15 @@ public class GamesService
 
             if ( game != null )
             {
-                resp.status( 200 ); // OK
+                PlayerDTO players = new PlayerDTO();
 
-                result = new Gson().toJson( game.getPlayers() );
+                for ( Player player : game.getPlayers().values() )
+                {
+                    players.getPlayers().add( "/games/" + game.getName() + "/players" + player.getUserName().replaceAll( "/user", "" ) );
+                }
+
+                result = new Gson().toJson( players );
+                resp.status( 200 ); // OK
             }
             else
             {
@@ -424,14 +552,12 @@ public class GamesService
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
-            String playerId = ( USERID_PREFIX + req.params( ":playerId" ) );
+            String mapKey = ( req.params( ":playerId" ).toLowerCase() );
 
-            Player player = game.getPlayers().get( playerId );
+            Player player = game.getPlayers().get( mapKey );
 
             if ( player != null )
             {
-                resp.status( 200 ); // created
-
                 result = new Gson().toJson( player.getReadyness() );
             }
             else
@@ -453,18 +579,17 @@ public class GamesService
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
-            String playerId = ( USERID_PREFIX + req.params( ":playerId" ) );
+            String mapKey = ( req.params( ":playerId" ).toLowerCase() );
             Game game = getGame( req.params( ":gameId" ) );
 
             if ( game != null )
             {
-                Player player = game.getPlayers().get( playerId );
+                Player player = game.getPlayers().get( mapKey );
 
                 if ( player != null )
                 {
-                    resp.status( 200 ); // created
-
                     player.setReady( true );
+                    resp.status( 200 ); // ok
                 }
                 else
                 {
@@ -475,6 +600,100 @@ public class GamesService
             {
                 resp.status( 400 ); // Bad Request
             }
+            return "";
+        } );
+    }
+
+    private void initGetSpecificPlayer()
+    {
+        get( "/games/:gameId/players/:playerId", ( req, resp ) ->
+        {
+            resp.header( "Content-Type", "application/json" );
+            resp.status( 500 ); // Internal Server Error
+
+            String result = "";
+            Game game = getGame( req.params( ":gameId" ) );
+            String mapKey = ( req.params( ":playerId" ).toLowerCase() );
+
+            Player player = game.getPlayers().get( mapKey );
+
+            if ( player != null )
+            {
+                resp.status( 200 ); // created
+
+                result = new Gson().toJson( player );
+            }
+            else
+            {
+                resp.status( 400 ); // Bad Request
+            }
+
+            return result;
+        } );
+    }
+
+    private void initGetGameStatus()
+    {
+        get( "/games/:gameId/status", ( req, resp ) ->
+        {
+            resp.header( "Content-Type", "application/json" );
+            resp.status( 500 ); // Internal Server Error
+
+            String result = "";
+            Game game = getGame( req.params( ":gameId" ) );
+
+            if ( game != null )
+            {
+                resp.status( 200 ); // created
+
+                result = new Gson().toJson( game.getStatus() );
+            }
+            else
+            {
+                resp.status( 400 ); // Bad Request
+            }
+
+            return result;
+        } );
+    }
+
+    /**
+     * Veraendert bei Aufruf, entsprechend der vorliegenden Daten, den Status des Spiels. Standardwert: "registration", nach Erstellen des Spiels. Das Aufrufen der put-Methode
+     * bewirkt erst eine Veraenderung, wenn der Status aller Spieler auf "ready" geaendert wurde, dann aendert sich bei Aufruf der Status auf "running". Sobald alle Kriterien
+     * erfuellt sind, die das Spiel laut Regeln beenden, bewirkt das erneute Aufrufen der put-Methode eine Aenderung des Statuses in "finished".
+     * 
+     * return nur Statuscodes ( 200: Status geaendert; 409: Status konnte nicht geaendert werden )
+     */
+    private void initPutGameStatus()
+    {
+        put( "/games/:gameId/status", ( req, resp ) ->
+        {
+            resp.header( "Content-Type", "application/json" );
+            resp.status( 500 ); // Internal Server Error
+
+            Game game = getGame( req.params( ":gameId" ) );
+
+            if ( game != null )
+            {
+                if ( game.allPlayersReady() && !game.isRunning() )
+                {
+                    game.setStatus( "running" );
+                    resp.status( 200 ); // ok
+                }
+                // else if ( game.isFinshed() )
+                // {
+                //
+                // }
+                else
+                {
+                    resp.status( 409 ); // Conflict
+                }
+            }
+            else
+            {
+                resp.status( 400 ); // Bad Request
+            }
+
             return "";
         } );
     }

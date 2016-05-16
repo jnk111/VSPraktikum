@@ -3,8 +3,6 @@ package vs.malte.models;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.malte.services.Player;
-
 public class Game
 {
     private String id;
@@ -14,13 +12,15 @@ public class Game
     private ServiceList services;
     private Components components;
     private Map<String, Player> joinedPlayers;  // TODO playerMap soll nich in JSON angezeigt werden
+    private String status;
 
     public Game()
     {
-        started = false;       
+        started = false;
         joinedPlayers = new HashMap<>();
         services = new ServiceList();
         components = new Components();
+        status = "registration";
     }
 
     public String getId()
@@ -53,11 +53,38 @@ public class Game
         return components;
     }
 
+    public String getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Aendert den Status des Spiels.
+     * 
+     * @param registration
+     *            XOR running XOR finished
+     */
+    public void setStatus( String status )
+    {
+        if ( status.equals( "registration" ) )
+            this.status = status;
+        else if ( status.equals( "running" ) )
+        {
+            this.status = status;
+            this.started = true;
+        }
+        else if ( status.equals( "finished" ) )
+        {
+            this.status = status;
+            this.started = false;
+        }
+    }
+
     public boolean isRunning()
     {
         return started;
     }
-    
+
     public void setComponents( Components components )
     {
         this.components = components;
@@ -96,6 +123,23 @@ public class Game
     public boolean isValid()
     {
         return true;                        // TODO isValid fuer Game-Klasse anpassen
+    }
+
+    public boolean allPlayersReady()
+    {
+        for ( Player player : joinedPlayers.values() )
+        {
+            if ( !player.isReady() )
+                return false;
+        }
+
+        return true;
+    }
+    
+    
+    public boolean isFinished()
+    {
+        return false;
     }
 
     @Override

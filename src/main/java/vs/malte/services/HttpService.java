@@ -13,10 +13,15 @@ public class HttpService
         return connect( "POST", URL, body );
     }
 
+    public static int put( String URL, Object body )
+    {
+        return connect( "PUT", URL, body );
+    }
+
     private static int connect( String method, String URL, Object body )
     {
         int result = 500;   // ERROR TODO
-        
+
         try
         {
             URL url = new URL( URL );
@@ -41,7 +46,7 @@ public class HttpService
             System.err.println( "Beim Posten ist was schief gelaufen" );  // TODO: Fehlerbehandlung
             e.printStackTrace();
         }
-        
+
         return result;
     }
 }

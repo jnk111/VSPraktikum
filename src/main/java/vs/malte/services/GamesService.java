@@ -6,7 +6,6 @@ import static spark.Spark.put;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -38,11 +37,13 @@ public class GamesService
 
     private final boolean LOCAL = true;     // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen
 
-    private static Map<String, Game> games;
+    private Map<String, Game> games;
+    private final MutexService mutexService;
 
     public GamesService()
     {
         games = new HashMap<>();
+        mutexService = new MutexService();
 
         initPostNewGame();
         initGetAvailableGames();
@@ -58,6 +59,8 @@ public class GamesService
         initGetSpecificPlayer();
         initGetGameStatus();
         initPutGameStatus();
+        initPutPlayersTurn();
+        initGetPlayersTurn();
     }
 
     /**
@@ -105,6 +108,9 @@ public class GamesService
         Game newGame = new Game();
         newGame.setName( gameDTO.getName() );
         newGame.setId( GAMEID_PREFIX + gameDTO.getName() );
+
+        // Erstelle Mutex
+        mutexService.newGameMutex( newGame.getId() );
 
         return newGame;
     }
@@ -677,7 +683,7 @@ public class GamesService
             {
                 if ( game.allPlayersReady() && !game.isRunning() )
                 {
-                    game.setStatus( "running" );
+                    startGame( game );
                     resp.status( 200 ); // ok
                 }
                 // else if ( game.isFinshed() )
@@ -695,6 +701,94 @@ public class GamesService
             }
 
             return "";
+        } );
+    }
+
+    private void startGame( Game game )
+    {
+        game.setStatus( "running" );
+
+        // ready alles Spieler wieder auf false setzen
+        for ( Player player : game.getPlayers().values() )
+            player.setReady( false );
+
+        // Mitspieler in Array speichern
+        Player[] playerArray = new Player[game.getPlayers().size()];
+
+        int i = 0;
+        for ( Player player : game.getPlayers().values() )
+        {
+            playerArray[i] = player;
+            i++;
+        }
+
+        // ersten Spieler auswählen
+        int firstPlayer = (int) ( Math.random() * playerArray.length );
+
+        // Erlaubnis an Spieler uebergeben den Mutex zu belegen
+        mutexService.assignMutexPermission( game.getId(), playerArray[firstPlayer].getId() );
+
+        mutexService.acquire( game.getId(), playerArray[firstPlayer].getId() );
+        
+        System.out.println( playerArray[firstPlayer].getId() );
+    }
+
+    /**
+     * Versucht den Mutex fuer den jeweiligen Spieler zuerhalten. Klappt nur wenn dieser auch an der Reihe ist.
+     * 
+     * Uebergeben werden muss ein Playerobjekt als json. ( Die Methode verwendet nur die ID des Playerobjekts, die anderen Felder koennen leer bleiben )
+     * 
+     */
+    private void initPutPlayersTurn()
+    {
+        put( "/games/:gameId/players/turn", ( req, resp ) ->
+        {
+            resp.header( "Content-Type", "application/json" );
+            resp.status( 500 ); // Internal Server Error
+
+            Game game = getGame( req.params( ":gameId" ) );
+            Player player = new Gson().fromJson( req.body(), Player.class );
+
+            if ( game != null && player != null )       // TODO Fehlercode falls der Spieler den Mutex bereits hat
+            {
+                if ( mutexService.acquire( game.getId(), player.getId() ) )
+                {
+                    resp.status( 201 ); // aquired the mutex
+                    System.out.println( "Mutex acquired to: " + player.getId() );
+                }
+                else
+                    resp.status( 409 ); // already aquired by an other player
+            }
+            else
+            {
+                resp.status( 400 ); // Bad Request
+            }
+            return "";
+        } );
+    }
+
+    private void initGetPlayersTurn()
+    {
+        get( "/games/:gameId/players/turn", ( req, resp ) ->
+        {
+            resp.header( "Content-Type", "application/json" );
+            resp.status( 500 ); // Internal Server Error
+
+            String result = "";
+            Game game = getGame( req.params( ":gameId" ) );
+
+            if ( game != null )
+            {
+                resp.status( 200 ); // ok
+
+                result = new Gson().toJson( mutexService.getMutexUser( game.getId() ) );
+            }
+            else
+            {
+                resp.status( 400 ); // Bad Request
+            }
+
+            return result;
         } );
     }
 

@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import vs.jan.exceptions.BoardNotInitiliazedException;
 import vs.jan.exceptions.ConnectionRefusedException;
 import vs.jan.exceptions.InvalidInputException;
 import vs.jan.exceptions.MutexPutException;
@@ -135,6 +136,13 @@ public class BoardRESTApi {
 			
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": Service not available!");
+			exception.printStackTrace();
+		});
+		
+		exception(BoardNotInitiliazedException.class, (exception, request, response) -> {
+			
+			response.status(StatusCodes.BAD_REQ);
+			response.body(StatusCodes.BAD_REQ + ": Board is not initialized!");
 			exception.printStackTrace();
 		});
 	}

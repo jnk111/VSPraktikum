@@ -1,7 +1,6 @@
 package vs.jan.services.boardservice;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,6 +14,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import vs.jan.exceptions.BoardNotInitiliazedException;
 import vs.jan.exceptions.ConnectionRefusedException;
 import vs.jan.exceptions.InvalidInputException;
 import vs.jan.exceptions.MutexPutException;
@@ -135,24 +135,28 @@ public class BoardService {
 		Board b = getBoard(gameid);
 
 		if (b != null) {
-			if (pawn.isValid()) {
-				Pawn p = new Pawn();
-				String pawnUri = getPawnUri(b, pawn.getPlayer());
-				p.setPawnUri(pawnUri);
-				p.setMovesUri(p.getPawnUri() + "/move");
-				p.setPlaceUri(pawn.getPlace()); // Annahme required
-				p.setPlayerUri(pawn.getPlayer()); // Annahme required
-				p.setPosition(pawn.getPosition()); // Annahme required
-				p.setRollsUri(p.getPawnUri() + "/roll");
-				b.addNewPawn(p);
+			if(b.hasFields()){
+				if (pawn.isValid()) {
+					Pawn p = new Pawn();
+					String pawnUri = getPawnUri(b, pawn.getPlayer());
+					p.setPawnUri(pawnUri);
+					p.setMovesUri(p.getPawnUri() + "/move");
+					p.setPlaceUri(pawn.getPlace()); // Annahme required
+					p.setPlayerUri(pawn.getPlayer()); // Annahme required
+					p.setPosition(pawn.getPosition()); // Annahme required
+					p.setRollsUri(p.getPawnUri() + "/roll");
+					b.addNewPawn(p);
 
-				// Neue Wuerfelliste fuer die Figur erstellen
-				JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
-				JSONThrowsList list = new JSONThrowsList();
-				throwMap.put(uri, list);
+					// Neue Wuerfelliste fuer die Figur erstellen
+					JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
+					JSONThrowsList list = new JSONThrowsList();
+					throwMap.put(uri, list);
 
-			} else {
-				throw new InvalidInputException();
+				} else {
+					throw new InvalidInputException();
+				}
+			}else{
+				throw new BoardNotInitiliazedException();
 			}
 		} else {
 			throw new ResourceNotFoundException();

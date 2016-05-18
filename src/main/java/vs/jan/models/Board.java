@@ -115,5 +115,10 @@ public class Board implements Convertable<JSONBoard>{
 				&& newPos > -1){
 			this.positions.add(newPos);
 		}		
+	}
+
+	public boolean hasFields() {
+		
+		return this.fields != null && !this.fields.isEmpty();
 	}	
 }

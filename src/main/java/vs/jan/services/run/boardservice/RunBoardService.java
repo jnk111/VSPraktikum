@@ -8,7 +8,6 @@ import vs.gerriet.service.BankService;
 import vs.jan.models.Service;
 import vs.jan.models.ServiceNames;
 import vs.jan.services.boardservice.BoardRESTApi;
-import vs.jan.services.boardservice.GameServiceFixed;
 import vs.jan.services.userservice.UserServiceRESTApi;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -22,7 +21,7 @@ public class RunBoardService {
 																				// DiceService laufen
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
-		new GameServiceFixed();
+		//new GameServiceFixed();
 		new BoardRESTApi();
 	}
 	

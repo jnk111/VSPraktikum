@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import vs.jan.exceptions.InvalidInputException;
-import vs.jan.exceptions.ResourceNotFoundException;
-import vs.jan.models.User;
+import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.model.User;
 
 public class UserService{
 

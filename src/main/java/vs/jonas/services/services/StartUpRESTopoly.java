@@ -3,8 +3,8 @@ package vs.jonas.services.services;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.jan.models.Service;
-import vs.jan.models.ServiceNames;
+import vs.jan.model.Service;
+import vs.jan.model.ServiceNames;
 import vs.malte.services.GamesService;
 
 /**

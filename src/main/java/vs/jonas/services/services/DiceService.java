@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import vs.jan.models.Service;
-import vs.jan.models.ServiceNames;
+import vs.jan.model.Service;
+import vs.jan.model.ServiceNames;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.RestClient;

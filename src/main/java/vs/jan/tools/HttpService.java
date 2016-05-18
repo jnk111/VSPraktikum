@@ -10,9 +10,9 @@ import java.net.URL;
 
 import com.google.gson.Gson;
 
-import vs.jan.exceptions.ConnectionRefusedException;
-import vs.jan.exceptions.InvalidInputException;
-import vs.jan.exceptions.ResourceNotFoundException;
+import vs.jan.exception.ConnectionRefusedException;
+import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.ResourceNotFoundException;
 
 public class HttpService {
 

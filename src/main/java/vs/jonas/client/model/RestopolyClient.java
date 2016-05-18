@@ -9,8 +9,8 @@ import java.util.List;
 import com.google.gson.Gson;
 
 import spark.utils.IOUtils;
-import vs.jan.models.Service;
-import vs.jan.models.ServiceNames;
+import vs.jan.model.Service;
+import vs.jan.model.ServiceNames;
 import vs.jonas.services.RunAllServices;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;

@@ -2,9 +2,9 @@ package vs.malte;
 
 import java.util.concurrent.TimeUnit;
 
-import vs.jan.services.boardservice.BoardRESTApi;
+import vs.jan.api.boardservice.BoardRESTApi;
+import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.services.boardservice.BoardService;
-import vs.jan.services.userservice.UserServiceRESTApi;
 import vs.malte.example.Example;
 import vs.malte.services.GamesService;
 

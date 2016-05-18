@@ -3,19 +3,18 @@ package vs.jan.services.run.boardservice;
 import java.util.HashMap;
 import java.util.Map;
 
-import vs.gerriet.controller.bank.BanksController;
 import vs.gerriet.service.BankService;
-import vs.jan.models.Service;
-import vs.jan.models.ServiceNames;
-import vs.jan.services.boardservice.BoardRESTApi;
-import vs.jan.services.userservice.UserServiceRESTApi;
+import vs.jan.api.boardservice.BoardRESTApi;
+import vs.jan.api.userservice.UserServiceRESTApi;
+import vs.jan.model.Service;
+import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
-import vs.malte.services.GamesService;
 
 public class RunBoardService {
 
 	public static void main(String[] args) {
+		BankService.run();
 		Map<String, Service> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den
 																				// DiceService laufen

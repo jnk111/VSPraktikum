@@ -1,5 +1,7 @@
 package vs.jonas.client.model;
 
+import com.google.gson.Gson;
+
 public class PlayerInformation {
 
 	String name;
@@ -31,6 +33,9 @@ public class PlayerInformation {
 		return ready;
 	}
 	
-	
+	@Override
+	public String toString(){
+		return new Gson().toJson(this);
+	}
 	
 }

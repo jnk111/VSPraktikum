@@ -10,6 +10,8 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import vs.jonas.client.model.GameInformation;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.tablemodel.GameInformationTableModel;
@@ -56,8 +58,9 @@ public class OffeneSpieleController {
 	/**
 	 * L�dt die aktuellen offenen Spiele in die Tabelle
 	 * @throws IOException 
+	 * @throws UnirestException 
 	 */
-	private void ladeOffeneSpiele() throws IOException{
+	private void ladeOffeneSpiele() throws IOException, UnirestException{
 		GameInformationTableModel model = (GameInformationTableModel) ui.getOffeneSpieleTable().getModel();
 		List<GameInformation> data = client.getGameInformations();
 		model.loadData(data);

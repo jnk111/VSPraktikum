@@ -1,5 +1,7 @@
 package vs.jonas.client.model;
 
+import com.google.gson.Gson;
+
 /**
  * Diese Klasse liefert Informationen �ber Spiele.
  * Sie wird verwendet, um in der UI offene Spiele anzeigen zu k�nnen,
@@ -66,6 +68,9 @@ public class GameInformation{
 		this.numberOfPlayers = numberOfPlayers;
 	}
 	
-	
+	@Override
+	public String toString(){
+		return new Gson().toJson(this);
+	}
 	
 }

@@ -11,7 +11,7 @@ import vs.jonas.client.model.comparator.GameInformationComparator;
 
 @SuppressWarnings("serial")
 /**
- * Diese Klasse implementiert ein TableModel um Informationen �ber laufende Spiele anzuzeigen.
+ * Diese Klasse implementiert ein TableModel um Informationen ueber laufende Spiele anzuzeigen.
  * @author Jones
  */
 public class GameInformationTableModel extends DefaultTableModel {
@@ -49,7 +49,7 @@ public class GameInformationTableModel extends DefaultTableModel {
 	}
 
 	/**
-	 * Liefert die Anzahl an Eintr�gen
+	 * Liefert die Anzahl an Eintraegen
 	 */
     @Override
 	public int getRowCount() {
@@ -85,10 +85,11 @@ public class GameInformationTableModel extends DefaultTableModel {
 	}
 	
 	/**
-	 * L�dt die Tabelle mit neuen Daten.
+	 * Laedt die Tabelle mit neuen Daten.
 	 * @param data Die neuen Daten.
 	 */
 	public void loadData(List<GameInformation> data){
+		System.out.println("Load GameInformationTable ...");
 		if(data != null){
 			gameInformations = new ArrayList<>(data);
 			Collections.sort(gameInformations,new GameInformationComparator());

@@ -96,6 +96,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 *            Die neuen Daten.
 	 */
 	public void loadData(List<PlayerInformation> data) {
+		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
 			playerInformations = new ArrayList<>(data);
 			Collections.sort(playerInformations, new PlayerInformationComparator());

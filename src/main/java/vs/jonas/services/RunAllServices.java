@@ -3,6 +3,8 @@ package vs.jonas.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.ServiceUnavailableException;
+
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
@@ -22,7 +24,12 @@ public class RunAllServices {
 		new EventService().startService();
 		
 		Map<String, Service> neededServicesDice = new HashMap<>();
-		neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+		try {
+			neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+		} catch (ServiceUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		new DiceService(neededServicesDice).startService();
 	}
 

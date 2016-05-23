@@ -1,20 +1,21 @@
 package vs.malte.example;
 
-import vs.malte.example.json.GameDTO;
+import vs.malte.example.json.CreateGameExDTO;
 import vs.malte.example.json.UserDTO;
 import vs.malte.services.HttpService;
 
 public class Example
 {
     /**
-     * Legt ein Spiel mit 3 Spielern an und setzt diese auf ready
+     * Legt zwei Spiele mit jeweils 3 Spielern an und setzt diese auf ready
      */
     public static void runExample01(String GameServiceIP)
     {
-        GameDTO cg = new GameDTO();
+        CreateGameExDTO cg = new CreateGameExDTO();
         cg.setName( "game01" );
         HttpService.post( GameServiceIP + "/games", cg );
-        cg.setName( "" );
+        cg.setName( "game02" );
+        HttpService.post( GameServiceIP + "/games", cg );
         UserDTO user = new UserDTO();
 
         user.setUser( "klaus" );

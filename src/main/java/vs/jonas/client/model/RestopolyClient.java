@@ -16,7 +16,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.YellowPagesService;
-import vs.malte.json.GameDTO;
+import vs.malte.json.CreateGameDTO;
 
 /**
  * Diese Klasse ist die Hauptkomponente fuer die Kommunikation mit den 
@@ -84,7 +84,7 @@ public class RestopolyClient {
 	
 	public void createANewGame(String gameName) throws IOException{
 		String uri = gameservice.getUri();
-		GameDTO game = new GameDTO();
+		CreateGameDTO game = new CreateGameDTO();
 		game.setName(gameName);
 		// TODO 
 //		String resBody = postData(game, uri);

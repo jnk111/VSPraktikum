@@ -1,10 +1,10 @@
 package vs.malte.example.json;
 
-public class GameDTO
+public class CreateGameExDTO
 {
     private String name;
     
-    public GameDTO()
+    public CreateGameExDTO()
     {
     }
 

@@ -4,11 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.services.boardservice.BoardService;
 import vs.malte.example.Example;
 import vs.malte.services.GamesService;
 
-public class StartUpGameService
+public class StartUpProject
 {
     public static void main( String[] args )
     {

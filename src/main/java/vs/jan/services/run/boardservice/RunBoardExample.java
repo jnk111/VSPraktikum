@@ -27,7 +27,7 @@ import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
-import vs.malte.example.json.GameDTO;
+import vs.malte.example.json.CreateGameExDTO;
 import vs.malte.models.Player;
 import vs.malte.services.GamesService;
 
@@ -437,7 +437,7 @@ public class RunBoardExample {
 
 		Thread.sleep(TIMEOUT);
 		System.out.println("Create Game on: " + gameUri);
-		GameDTO g = new GameDTO();
+		CreateGameExDTO g = new CreateGameExDTO();
 		g.setName("" + boardID);
 		HttpService.post(gameUri, g, HttpURLConnection.HTTP_CREATED);
 		System.out.println("SUCCESS");

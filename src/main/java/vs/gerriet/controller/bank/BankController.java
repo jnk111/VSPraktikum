@@ -6,9 +6,10 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PutController;
+import vs.gerriet.id.BankId;
 import vs.gerriet.json.BankData;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.BankFactory;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.BanksContainer;
 
 /**
  * Controller for access on a specific bank instance.
@@ -31,8 +32,18 @@ public class BankController extends AbstractController implements GetController,
      *         valid id.
      */
     public static Bank getBank(final Request request) {
-        final String bankId = BanksController.URI + request.params("bankid") + "/";
-        return BankFactory.getBank(bankId);
+        return BanksContainer.getBank(BankController.getBankId(request));
+    }
+
+    /**
+     * Creates a bank id container instance from the given request.
+     *
+     * @param request
+     *            Current request to load the parameter from.
+     * @return Bank id container instance.
+     */
+    public static BankId getBankId(final Request request) {
+        return new BankId(request, "bankId");
     }
 
     /**
@@ -60,9 +71,9 @@ public class BankController extends AbstractController implements GetController,
      */
     @Override
     public String put(final Request request, final Response response) {
-        final String bankId = BanksController.URI + request.params("bankid") + "/";
+        final BankId bankId = BankController.getBankId(request);
         final BankData data = this.gson.fromJson(request.body(), BankData.class);
-        final Bank bank = BankFactory.getBank(bankId);
+        final Bank bank = BanksContainer.getBank(bankId);
         if (bank == null) {
             response.status(404);
             return "";

@@ -1,5 +1,7 @@
-package vs.gerriet.model;
+package vs.gerriet.model.bank;
 
+import vs.gerriet.exception.AccountAccessException;
+import vs.gerriet.id.UserId;
 import vs.gerriet.utils.LockProvider;
 
 /**
@@ -10,9 +12,9 @@ import vs.gerriet.utils.LockProvider;
 public class Account extends LockProvider {
 
     /**
-     * Contains the user url this account belongs to.
+     * Contains the user id this account belongs to.
      */
-    private final String user;
+    private final UserId user;
 
     /**
      * Account balance.
@@ -26,7 +28,7 @@ public class Account extends LockProvider {
      * @param user
      *            User url.
      */
-    Account(final String user) {
+    Account(final UserId user) {
         this.user = user;
         this.balance = 0;
     }
@@ -36,11 +38,11 @@ public class Account extends LockProvider {
      * have the given balance.
      *
      * @param user
-     *            User url.
+     *            User id.
      * @param balance
      *            Account balance.
      */
-    Account(final String user, final int balance) {
+    Account(final UserId user, final int balance) {
         this.user = user;
         this.balance = balance;
     }
@@ -104,7 +106,7 @@ public class Account extends LockProvider {
      *
      * @return User url.
      */
-    String getUser() {
+    UserId getUser() {
         return this.user;
     }
 
@@ -124,8 +126,13 @@ public class Account extends LockProvider {
      * @param amount
      *            Amount to be withdrawn from this account.
      * @return New account balance.
+     * @throws AccountAccessException
+     *             if there is not enough money on this account.
      */
-    synchronized int withdraw(final int amount) {
+    synchronized int withdraw(final int amount) throws AccountAccessException {
+        if (this.balance - amount < 0) {
+            throw new AccountAccessException("Unsufficiant balance for user '" + this.user + "'");
+        }
         return this.balance -= amount;
     }
 }

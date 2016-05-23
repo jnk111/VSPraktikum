@@ -1,15 +1,15 @@
-package vs.gerriet.transaction;
+package vs.gerriet.model.bank.transaction;
 
-import java.util.Collections;
 import java.util.Queue;
 import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
-import vs.gerriet.model.Bank;
+import vs.gerriet.id.bank.AccountId;
+import vs.gerriet.model.bank.Bank;
 import vs.gerriet.utils.LockProvider;
 
 /**
@@ -64,12 +64,14 @@ public class Transaction extends LockProvider {
      * required since we can only lock one account at a time and always want to
      * lock / unlock accounts in the same order to prevent deadlocks.
      */
-    private final SortedSet<String> accounts;
+    private final SortedSet<AccountId> accounts;
 
     /**
      * Contains confirmation status for accounts.
      */
-    private final SortedSet<String> confirmed;
+    // TODO @gerriet-hinrichs: Missing parameter within RAML specification?
+    private final SortedSet<AccountId> confirmed;
+
     /**
      * Contains the bank instance for this transaction. This is required so only
      * operations to be performed on that bank can be added.
@@ -90,8 +92,8 @@ public class Transaction extends LockProvider {
         this.operations = new ConcurrentLinkedQueue<>();
         // stack is based on Vector which is thread safe
         this.doneOperations = new Stack<>();
-        this.accounts = Collections.synchronizedSortedSet(new TreeSet<String>());
-        this.confirmed = Collections.synchronizedSortedSet(new TreeSet<String>());
+        this.accounts = new ConcurrentSkipListSet<>();
+        this.confirmed = new ConcurrentSkipListSet<>();
     }
 
     /**
@@ -117,7 +119,7 @@ public class Transaction extends LockProvider {
      * Adds the given transfer to this transaction's internal queue. This method
      * checks the bank instance assigned to the operation(s) and will not add
      * the element if this transaction is locked.
-     * 
+     *
      * @param operation
      *            Transfer to be added.
      * @return <code>true</code> if the transfer was added, <code>false</code>
@@ -160,7 +162,7 @@ public class Transaction extends LockProvider {
         // lock this instance and all user accounts first
         try {
             this.lock();
-            this.bank.lock(this.accounts);
+            this.bank.getAccounts().lock(this.accounts);
         } catch (@SuppressWarnings("unused") InterruptedException | AccountAccessException ex) {
             // locking this transaction failed or at least one account we
             // processed does not exist
@@ -181,7 +183,7 @@ public class Transaction extends LockProvider {
         } finally {
             // unlock all user accounts
             try {
-                this.bank.unlock(this.accounts);
+                this.bank.getAccounts().unlock(this.accounts);
             } catch (final AccountAccessException ex) {
                 // should not occur, we already locked all accounts. If we go
                 // here something went horribly wrong!
@@ -199,7 +201,7 @@ public class Transaction extends LockProvider {
      * @param account
      *            Account to confirm this transaction for.
      */
-    public void confirm(final String account) {
+    public void confirm(final AccountId account) {
         this.confirmed.add(account);
     }
 

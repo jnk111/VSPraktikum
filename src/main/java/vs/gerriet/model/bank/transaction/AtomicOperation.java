@@ -1,8 +1,9 @@
-package vs.gerriet.transaction;
+package vs.gerriet.model.bank.transaction;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
-import vs.gerriet.model.Bank;
+import vs.gerriet.id.bank.AccountId;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * <p>
@@ -55,7 +56,7 @@ public class AtomicOperation implements Cloneable {
     /**
      * Account this operation is performed on.
      */
-    private final String account;
+    private final AccountId account;
     /**
      * Type of this operation.
      */
@@ -84,7 +85,7 @@ public class AtomicOperation implements Cloneable {
      * @param message
      *            Message for this operation.
      */
-    AtomicOperation(final Bank bank, final Type type, final String account, final int amount,
+    AtomicOperation(final Bank bank, final Type type, final AccountId account, final int amount,
             final String message) {
         this.account = account;
         this.amount = amount;
@@ -98,7 +99,7 @@ public class AtomicOperation implements Cloneable {
      *
      * @return User account.
      */
-    public String getAccount() {
+    public AccountId getAccount() {
         return this.account;
     }
 

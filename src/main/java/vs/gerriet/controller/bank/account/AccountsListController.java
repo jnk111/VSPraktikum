@@ -7,8 +7,9 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.controller.bank.BanksController;
+import vs.gerriet.id.UserId;
 import vs.gerriet.json.AccountInfo;
-import vs.gerriet.model.Bank;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for generic account access (account list and account creation).
@@ -52,7 +53,9 @@ public class AccountsListController extends AbstractController
             return "";
         }
         final AccountInfo body = this.gson.fromJson(request.body(), AccountInfo.class);
-        if (bank.createAccount(body.player, body.balance)) {
+        final UserId user = new UserId(null);
+        user.loadUri(body.player);
+        if (bank.createAccount(user, body.balance)) {
             response.status(201);
         } else {
             response.status(409);

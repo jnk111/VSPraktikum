@@ -8,9 +8,9 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.json.BankData;
 import vs.gerriet.json.BankList;
-import vs.gerriet.json.GameId;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.BankFactory;
+import vs.gerriet.json.GameIdContainer;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.BanksContainer;
 
 /**
  * Controller for generic bank access (bank list and bank creation).
@@ -30,7 +30,7 @@ public class BanksController extends AbstractController implements GetController
     @Override
     public String get(final Request request, final Response response) {
         response.type(Controller.MIME_TYPE_JSON);
-        return this.gson.toJson(new BankList(BankFactory.getBanks()));
+        return this.gson.toJson(new BankList(BanksContainer.getBanks()));
     }
 
     @Override
@@ -43,9 +43,9 @@ public class BanksController extends AbstractController implements GetController
      */
     @Override
     public String post(final Request request, final Response response) {
-        final GameId game = this.gson.fromJson(request.body(), GameId.class);
+        final GameIdContainer game = this.gson.fromJson(request.body(), GameIdContainer.class);
         response.type(Controller.MIME_TYPE_JSON);
-        final Bank bank = BankFactory.createBank(game.game);
+        final Bank bank = BanksContainer.createBank(game.createGameId());
         return this.gson.toJson(BankData.createFromBank(bank));
     }
 

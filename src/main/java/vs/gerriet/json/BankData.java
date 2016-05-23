@@ -1,6 +1,6 @@
 package vs.gerriet.json;
 
-import vs.gerriet.model.Bank;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Bank data object.

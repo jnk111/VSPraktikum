@@ -3,11 +3,6 @@ package vs.gerriet.service;
 import de.stuff42.error.ExceptionUtils;
 import de.stuff42.error.ThreadExceptionHandler;
 import spark.Spark;
-import vs.gerriet.controller.Controller;
-import vs.gerriet.controller.Controller.DeleteController;
-import vs.gerriet.controller.Controller.GetController;
-import vs.gerriet.controller.Controller.PostController;
-import vs.gerriet.controller.Controller.PutController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.controller.bank.BanksController;
 import vs.gerriet.controller.bank.account.AccountsController;
@@ -19,6 +14,7 @@ import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
 import vs.gerriet.controller.bank.transfer.TransfersController;
+import vs.gerriet.utils.ServiceUtils;
 
 /**
  * Class providing the bank service.
@@ -38,6 +34,9 @@ public class BankService {
         ExceptionUtils.setFilters(new String[] { "vs.gerriet", "de.stuff42" });
         // register global error handling (if something goes horribly wrong)
         ThreadExceptionHandler.registerDefault();
+        // setup listen properties
+        Spark.ipAddress("0.0.0.0");
+        Spark.port(4567);
         // start bank service
         BankService.run();
     }
@@ -46,42 +45,21 @@ public class BankService {
      * Starts bank service.
      */
     public static void run() {
-        // setup listen properties
-        Spark.ipAddress("0.0.0.0");
-        Spark.port(4567);
-        // register controllers
-        BankService.registerController(new BanksController());
-        BankService.registerController(new BankController());
-        BankService.registerController(new TransfersController());
-        BankService.registerController(new TransferController());
-        BankService.registerController(new TransferFromToController());
-        BankService.registerController(new TransferToController());
-        BankService.registerController(new TransferFromController());
-        BankService.registerController(new TransactionListController());
-        BankService.registerController(new TransactionController());
-        BankService.registerController(new AccountsListController());
-        BankService.registerController(new AccountsController());
-    }
-
-    /**
-     * Registers the given controller into the spark web-server.
-     *
-     * @param controller
-     *            Controller to be registered.
-     */
-    private static void registerController(final Controller controller) {
-        if (controller instanceof GetController) {
-            Spark.get(controller.getUri(), ((GetController) controller)::get);
-        }
-        if (controller instanceof PostController) {
-            Spark.post(controller.getUri(), ((PostController) controller)::post);
-        }
-        if (controller instanceof PutController) {
-            Spark.put(controller.getUri(), ((PutController) controller)::put);
-        }
-        if (controller instanceof DeleteController) {
-            Spark.delete(controller.getUri(), ((DeleteController) controller)::delete);
-        }
+        // register bank access controllers
+        ServiceUtils.registerController(new BanksController());
+        ServiceUtils.registerController(new BankController());
+        // register transfer controllers
+        ServiceUtils.registerController(new TransfersController());
+        ServiceUtils.registerController(new TransferController());
+        ServiceUtils.registerController(new TransferFromToController());
+        ServiceUtils.registerController(new TransferToController());
+        ServiceUtils.registerController(new TransferFromController());
+        // register transaction controllers
+        ServiceUtils.registerController(new TransactionListController());
+        ServiceUtils.registerController(new TransactionController());
+        // register accounts controllers
+        ServiceUtils.registerController(new AccountsListController());
+        ServiceUtils.registerController(new AccountsController());
     }
 
     /**

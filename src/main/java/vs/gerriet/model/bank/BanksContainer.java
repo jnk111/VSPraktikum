@@ -1,24 +1,24 @@
-package vs.gerriet.model;
+package vs.gerriet.model.bank;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import vs.gerriet.controller.bank.BanksController;
+import vs.gerriet.id.BankId;
+import vs.gerriet.id.GameId;
 
 /**
- * Factory for bank instances.
+ * Container & Factory for bank instances.
  *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
-public class BankFactory {
+public class BanksContainer {
 
     /**
      * Contains all known bank instances.
      */
-    private static Map<String, Bank> banks =
-            Collections.synchronizedMap(new HashMap<String, Bank>());
+    private static Map<BankId, Bank> banks =
+            Collections.synchronizedMap(new HashMap<BankId, Bank>());
 
     /**
      * Creates a bank for the given game. If the game already has a bank,
@@ -28,14 +28,12 @@ public class BankFactory {
      *            Game id.
      * @return Found or created Bank instance.
      */
-    public static Bank createBank(final String game) {
-        // TODO @gerriet-hinrichs: replace "/games/" by constant
-        final String regex = "^" + Pattern.quote("/games/");
-        final String id = game.replaceAll(regex, BanksController.URI);
-        Bank bank = BankFactory.getBank(id);
+    public static Bank createBank(final GameId game) {
+        final BankId id = new BankId(game.getBaseData());
+        Bank bank = BanksContainer.getBank(id);
         if (bank == null) {
             bank = new Bank(id);
-            BankFactory.banks.put(id, bank);
+            BanksContainer.banks.put(id, bank);
         }
         return bank;
     }
@@ -47,7 +45,7 @@ public class BankFactory {
      *            Bank id.
      */
     public static void deleteBank(final String id) {
-        BankFactory.banks.remove(id);
+        BanksContainer.banks.remove(id);
     }
 
     /**
@@ -58,9 +56,9 @@ public class BankFactory {
      * @return Bank instance for the given id. Returns <code>null</code> if the
      *         id is invalid.
      */
-    public static Bank getBank(final String id) {
-        if (BankFactory.banks.containsKey(id)) {
-            return BankFactory.banks.get(id);
+    public static Bank getBank(final BankId id) {
+        if (BanksContainer.banks.containsKey(id)) {
+            return BanksContainer.banks.get(id);
         }
         return null;
     }
@@ -71,8 +69,8 @@ public class BankFactory {
      * @return Bank instance IDs.
      */
     public static String[] getBanks() {
-        String[] res = new String[BankFactory.banks.size()];
-        res = BankFactory.banks.keySet().toArray(res);
+        String[] res = new String[BanksContainer.banks.size()];
+        res = BanksContainer.banks.keySet().toArray(res);
         return res;
     }
 
@@ -80,7 +78,7 @@ public class BankFactory {
      * Hide the default constructor since this class only contains static
      * methods.
      */
-    private BankFactory() {
+    private BanksContainer() {
         // hide the default constructor
     }
 }

@@ -6,11 +6,12 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.AccountAccessException;
-import vs.gerriet.model.Bank;
+import vs.gerriet.id.bank.AccountId;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for account access.
- * 
+ *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class AccountsController extends AbstractController implements GetController {
@@ -25,11 +26,11 @@ public class AccountsController extends AbstractController implements GetControl
     @Override
     public String get(final Request request, final Response response) {
         final Bank bank = BankController.getBank(request);
-        final String accountId = request.params("accountid");
         if (bank == null) {
             response.status(404);
             return "";
         }
+        final AccountId accountId = new AccountId(bank.getId(), request, "accountid");
         try {
             return this.gson.toJson(bank.getInfo(accountId));
         } catch (@SuppressWarnings("unused") final AccountAccessException ex) {

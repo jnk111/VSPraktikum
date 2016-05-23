@@ -1,8 +1,5 @@
 package vs.gerriet.utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Utility class for id functions.
  *
@@ -13,40 +10,19 @@ public class IdUtils {
     /**
      * Counter for unique instance IDs.
      */
-    private static long counter = 0;
-
-    /**
-     * <p>
-     * Calculates id from uri.
-     * </p>
-     * <p>
-     * If no uri is given, the initial string will be returned.
-     * </p>
-     *
-     * @param uri
-     *            Uri.
-     * @return calculated id.
-     */
-    public static String getIdFromUri(final String uri) {
-        final Pattern pattern = Pattern.compile(".*/([^/]*)/?$");
-        final Matcher m = pattern.matcher(uri);
-        if (m.matches()) {
-            return m.group(0);
-        }
-        return uri.replace('/', '-');
-    }
+    private static int counter = 0;
 
     /**
      * <p>
      * Returns a unique id for this running instance.
      * </p>
      * <p>
-     * Other running instances will have the same IDs.
+     * Other running instances will generate the same IDs.
      * </p>
      *
      * @return unique id.
      */
-    public static synchronized long getUniqueRunntimeId() {
+    public static synchronized int getUniqueRunntimeId() {
         return IdUtils.counter++;
     }
 

@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import vs.jan.exception.ExcMessageHandler;
+import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.JSONGameURI;
 import vs.jan.json.JSONPlace;
 import vs.jan.model.Board;

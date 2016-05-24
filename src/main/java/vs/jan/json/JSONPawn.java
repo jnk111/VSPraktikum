@@ -2,26 +2,27 @@ package vs.jan.json;
 
 import vs.jan.model.Validable;
 
-public class JSONPawn implements Validable{
-	private String id;		// Uri to the resource itself
+public class JSONPawn implements Validable {
+	private String id; // Uri to the resource itself
 	private String player; // Uri to the playerresource
 	private String place; // Uri to the Place on the Board the player stands on
 	private int position; // numeric position on the board
 	private String roll; // Uri to the roll of the player
 	private String move; // Uri to the moves of the player
-	
-	
-	public JSONPawn(String id, String player, 
-									String place, int position,
-									String roll, String move){
-		
+
+	public JSONPawn(String player) {
+		this(null, player, null, 0, null, null);
+	}
+
+	public JSONPawn(String id, String player, String place, int position, String roll, String move) {
+
 		this.id = id;
 		this.player = player;
 		this.place = place;
 		this.position = position;
 		this.roll = roll;
 		this.move = move;
-		
+
 	}
 
 	public String getId() {
@@ -33,7 +34,7 @@ public class JSONPawn implements Validable{
 	}
 
 	public String getPlayer() {
-		return player;
+		return this.player;
 	}
 
 	public void setPlayer(String player) {
@@ -73,16 +74,15 @@ public class JSONPawn implements Validable{
 	}
 
 	/**
-	 * Prueft ob die Ubergebene Figur gueltig ist
-	 * Mindestes <code>place</code> 
-	 * und <code>playerUri</code> duerfen nicht null sein.
-	 * Die <code>id</code> wird vom Service vergeben.
-	 * Falls nicht alle benoetigt werden, sollte der entsprechende
-	 * Konstruktor aufgerufen werden.
+	 * Prueft ob die Ubergebene Figur gueltig ist Mindestes <code>place</code> und
+	 * <code>playerUri</code> duerfen nicht null sein. Die <code>id</code> wird
+	 * vom Service vergeben. Falls nicht alle benoetigt werden, sollte der
+	 * entsprechende Konstruktor aufgerufen werden.
+	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	@Override
 	public boolean isValid() {
-		return  this.getPlayer() != null;
+		return this.getPlayer() != null;
 	}
 }

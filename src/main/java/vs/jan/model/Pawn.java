@@ -2,33 +2,26 @@ package vs.jan.model;
 
 import vs.jan.json.JSONPawn;
 
-public class Pawn  implements Convertable<JSONPawn>{
-	
-	
+public class Pawn implements Convertable<JSONPawn> {
+
 	private String pawnUri; // Uri of the Pawn
 	private String placeUri; // The URI of the Place on the Board
 	private String playerUri; // Uri to the playerresource
 	private int position; // The Position on the Board
 	private String rollsUri; // The URI to the rolls of the player
 	private String movesUri; // The URI to the moves of the player
-	
-	public Pawn(){
-		
+
+	public Pawn() {
+
 	}
-	
-	
 
 	public String getPlayerUri() {
 		return playerUri;
 	}
 
-
-
 	public void setPlayerUri(String playerUri) {
 		this.playerUri = playerUri;
 	}
-
-
 
 	public String getPawnUri() {
 		return pawnUri;
@@ -72,69 +65,51 @@ public class Pawn  implements Convertable<JSONPawn>{
 
 	@Override
 	public JSONPawn convert() {
-		
-		JSONPawn json = 
-				new JSONPawn(this.pawnUri, 
-						this.playerUri, 
-						this.placeUri, 
-						this.position, 
-						this.rollsUri, 
-						this.movesUri);
-		
+
+		JSONPawn json = new JSONPawn(this.pawnUri, this.playerUri, this.placeUri, this.position, this.rollsUri,
+				this.movesUri);
+
 		return json;
 	}
 
 	@Override
 	public int hashCode() {
-		
+
 		return this.getPawnUri().hashCode() * 42;
 	}
 
-
-
 	@Override
 	public boolean equals(Object obj) {
-		
-		if(obj == null){
+
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof Pawn){
-			
+
+		if (obj instanceof Pawn) {
+
 			Pawn p = (Pawn) obj;
 			return p.getPawnUri().equals(this.getPawnUri());
 		}
-		
+
 		return false;
 	}
 
-
-
 	@Override
 	public String toString() {
-		
+
 		return "Pawn-Uri: " + this.getPawnUri() + ", Player-Uri: " + this.getPlayerUri();
 	}
 
-
-
 	public void updatePlaceUri(int newPos) {
-		String [] uri = this.getPlaceUri().split("/");
+		String[] uri = this.getPlaceUri().split("/");
 		String newUri = "";
-		for(int i = 0; i < uri.length - 1; i++){
-			
+		for (int i = 0; i < uri.length - 1; i++) {
+
 			newUri += uri[i];
 			newUri += "/";
 		}
 		newUri += newPos;
-		this.setPlaceUri(newUri);		
+		this.setPlaceUri(newUri);
 	}
-	
-	
-	
-	
-	
-	
-	
 
 }

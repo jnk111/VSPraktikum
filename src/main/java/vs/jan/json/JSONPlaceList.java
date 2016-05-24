@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JSONPlaceList {
-	
+
 	private List<JSONPlace> places;
-	
-	public JSONPlaceList(){
+
+	public JSONPlaceList() {
 		places = new ArrayList<>();
 	}
-	
-	public void addPlace(JSONPlace p){
-		
+
+	public void addPlace(JSONPlace p) {
+
 		places.add(p);
 	}
 
@@ -23,8 +23,5 @@ public class JSONPlaceList {
 	public void setPlaces(List<JSONPlace> places) {
 		this.places = places;
 	}
-	
-	
-	
 
 }

@@ -35,17 +35,16 @@ public class HttpService {
 
 	private static void doDelete(HttpURLConnection connection, String uRL, int expResponseCode) {
 
-		try{
+		try {
 			connection.setRequestMethod("DELETE");
 			int responseCode = connection.getResponseCode();
 			System.out.println("GOT RESPONSE CODE: " + responseCode);
 			if (responseCode != expResponseCode) {
 				throw new ResourceNotFoundException();
 			}
-		}catch(IOException ioe){
+		} catch (IOException ioe) {
 			throw new ConnectionRefusedException();
 		}
-
 
 	}
 
@@ -57,8 +56,8 @@ public class HttpService {
 	private static void update(HttpURLConnection connection, Object body, int expResponseCode) {
 
 		try {
-			
-			if(body != null){
+
+			if (body != null) {
 				DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 				String json = GSON.toJson(body);
 				wr.writeBytes(json);

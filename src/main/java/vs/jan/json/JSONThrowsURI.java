@@ -1,10 +1,10 @@
 package vs.jan.json;
 
 public class JSONThrowsURI {
-	
+
 	private String rollUri;
-	
-	public JSONThrowsURI(String rollUri){
+
+	public JSONThrowsURI(String rollUri) {
 		this.rollUri = rollUri;
 	}
 
@@ -18,26 +18,24 @@ public class JSONThrowsURI {
 
 	@Override
 	public int hashCode() {
-		
+
 		return this.getRollUri().hashCode() * 42;
-		
+
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		
-		if(obj == null){
+
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof JSONThrowsURI){
+
+		if (obj instanceof JSONThrowsURI) {
 			JSONThrowsURI uri = (JSONThrowsURI) obj;
 			return uri.getRollUri().equals(this.getRollUri());
 		}
-		
+
 		return false;
 	}
-	
-	
 
 }

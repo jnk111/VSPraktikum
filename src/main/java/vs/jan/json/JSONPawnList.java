@@ -5,24 +5,23 @@ import java.util.List;
 
 public class JSONPawnList {
 
-		List<String> pawns;
-		
-		public JSONPawnList(){
-			pawns = new ArrayList<>();
-		}
-		
-		public void addPawnURI(String uri){
-			
-			pawns.add(uri);
-		}
+	List<String> pawns;
 
-		public List<String> getPawns() {
-			return pawns;
-		}
+	public JSONPawnList() {
+		pawns = new ArrayList<>();
+	}
 
-		public void setPawns(List<String> pawns) {
-			this.pawns = pawns;
-		}
-		
-		
+	public void addPawnURI(String uri) {
+
+		pawns.add(uri);
+	}
+
+	public List<String> getPawns() {
+		return pawns;
+	}
+
+	public void setPawns(List<String> pawns) {
+		this.pawns = pawns;
+	}
+
 }

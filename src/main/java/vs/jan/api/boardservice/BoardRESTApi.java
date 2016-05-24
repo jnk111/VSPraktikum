@@ -20,6 +20,9 @@ import vs.jan.json.JSONPlace;
 import vs.jan.json.JSONThrowsList;
 import vs.jan.model.StatusCodes;
 import vs.jan.services.boardservice.BoardService;
+import vs.malte.json.CurrentPlayerDTO;
+import vs.malte.models.Game;
+import vs.malte.models.Player;
 
 /**
  * Restschnittstelle fuer den Boardservice
@@ -44,6 +47,7 @@ public class BoardRESTApi {
 		initPUT();
 		initDELETE();
 		initExeptions();
+		initGetPlayersCurrent();
 	}
 
 	/**
@@ -52,16 +56,16 @@ public class BoardRESTApi {
 	private void initGET() {
 
 		initGetAllBoards();
-		initGetRollsOnTheBoard(); 
-		initGetBoardsBelongToGameId(); 
-		initGetPawnsBelongToBoard(); 
-		initGetSpecificPawn(); 
+		initGetRollsOnTheBoard();
+		initGetBoardsBelongToGameId();
+		initGetPawnsBelongToBoard();
+		initGetSpecificPawn();
 		initGetPlacesOnTheBoard();
 		initGetSpecificPlace();
 	}
-	
+
 	// Handler-Initialisieren
-	//--------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------------
 	/**
 	 * POST-Handler initialisieren
 	 */
@@ -72,7 +76,7 @@ public class BoardRESTApi {
 		initPostMovePawn();
 		initPostRollDice();
 	}
-	
+
 	/**
 	 * PUT-Handler initialisieren
 	 */
@@ -81,7 +85,7 @@ public class BoardRESTApi {
 		initPutPlaceAPawn();
 		initPutUpdateAPlace();
 	}
-	
+
 	/**
 	 * Delete-Handler initialisieren
 	 */
@@ -91,10 +95,10 @@ public class BoardRESTApi {
 		initDeleteSpecificPawn();
 
 	}
-	
+
 	/**
-	 * Exception-Handling initialsisieren
-	 * Hier werden Exceptions gefangen und ein geeignete Fehlermeldung ausgegeben
+	 * Exception-Handling initialsisieren Hier werden Exceptions gefangen und ein
+	 * geeignete Fehlermeldung ausgegeben
 	 */
 	private void initExeptions() {
 
@@ -104,44 +108,44 @@ public class BoardRESTApi {
 			response.body(StatusCodes.BAD_REQ + ": Invalid Json Input!");
 			exception.printStackTrace();
 		});
-		
+
 		exception(ResourceNotFoundException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.NOT_FOUND);
 			response.body(StatusCodes.NOT_FOUND + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(InvalidInputException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(MutexPutException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(TurnMutexNotFreeException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(ConnectionRefusedException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(BoardNotInitiliazedException.class, (exception, request, response) -> {
-			
+
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
@@ -149,11 +153,10 @@ public class BoardRESTApi {
 	}
 
 	// --------------------------------------------------------------------------------------
-	
+
 	/**
-	 * Gibt ein bestimmtes Feld zurueck.
-	 * Board wird identifiziert durch <code>gameid</code>
-	 * Place durch <code>place</code>
+	 * Gibt ein bestimmtes Feld zurueck. Board wird identifiziert durch
+	 * <code>gameid</code> Place durch <code>place</code>
 	 */
 	private void initGetSpecificPlace() {
 		get("/boards/:gameid/places/:place", "application/json", (req, resp) -> {
@@ -162,10 +165,9 @@ public class BoardRESTApi {
 		});
 	}
 
-	
 	/**
-	 * gibt eine Liste der Place-Uris auf dem Board zurueck
-	 * Board wird identifiziert durch <code>gameid</code>
+	 * gibt eine Liste der Place-Uris auf dem Board zurueck Board wird
+	 * identifiziert durch <code>gameid</code>
 	 */
 	private void initGetPlacesOnTheBoard() {
 		get("/boards/:gameid/places", "application/json", (req, resp) -> {
@@ -174,11 +176,9 @@ public class BoardRESTApi {
 		});
 	}
 
-	
 	/**
-	 * Gibt eine bestimmte Spielfigur auf dem Board im Json-Format zurueck
-	 * Board wird identifiziert durch <code>gameid</code>
-	 * Pawn durch <code>pawnid</code>
+	 * Gibt eine bestimmte Spielfigur auf dem Board im Json-Format zurueck Board
+	 * wird identifiziert durch <code>gameid</code> Pawn durch <code>pawnid</code>
 	 */
 	private void initGetSpecificPawn() {
 		get("/boards/:gameid/pawns/:pawnid", "application/json", (req, resp) -> {
@@ -229,10 +229,10 @@ public class BoardRESTApi {
 			return GSON.toJson(boardService.getAllBoardURIs());
 		});
 	}
-	
+
 	/**
-	 * Meldet beim Spiel ein neues Board an und generiert eine URI fuer das
-	 * Board. Dieses kann danach ueber HTTP-PUT mit Informtionen befuellt werden.
+	 * Meldet beim Spiel ein neues Board an und generiert eine URI fuer das Board.
+	 * Dieses kann danach ueber HTTP-PUT mit Informtionen befuellt werden.
 	 */
 	private void initPostCreateNewBoard() {
 		post("/boards", CONTENT_TYPE, (req, resp) -> {
@@ -243,8 +243,8 @@ public class BoardRESTApi {
 	}
 
 	/**
-	 * Laesst einen Spieler fuer seine Pawn wuerfeln, muss den Mutex fuer das Board
-	 * erworben haben
+	 * Laesst einen Spieler fuer seine Pawn wuerfeln, muss den Mutex fuer das
+	 * Board erworben haben
 	 */
 	private void initPostRollDice() {
 		post("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
@@ -275,7 +275,7 @@ public class BoardRESTApi {
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
-	
+
 	/**
 	 * Befuellt einen dem Board zugeordnetem Feld mit Informationen das
 	 * zugeordnete Feld wird identifiziert durch die <code>gameid</code> und der
@@ -290,8 +290,8 @@ public class BoardRESTApi {
 	}
 
 	/**
-	 * TODO: Fragen
-	 * Weißt einer Figur ein neues Feld zu, z. B. nach wuerfeln und weiterbewegen
+	 * TODO: Fragen Weißt einer Figur ein neues Feld zu, z. B. nach wuerfeln und
+	 * weiterbewegen
 	 */
 	private void initPutPlaceAPawn() {
 		put("/boards/:gameid/pawns/:pawnid", CONTENT_TYPE, (req, resp) -> {
@@ -302,8 +302,7 @@ public class BoardRESTApi {
 	}
 
 	/**
-	 * Befuellt ein dem Game zugeteiltes Board mit Informationen
-	 * z. B.: Feldern
+	 * Befuellt ein dem Game zugeteiltes Board mit Informationen z. B.: Feldern
 	 */
 	private void initPutPlaceABoard() {
 		put("/boards/:gameid", CONTENT_TYPE, (req, resp) -> {
@@ -311,8 +310,8 @@ public class BoardRESTApi {
 			boardService.placeABoard(req.params(":gameid"), board);
 			return StatusCodes.SUCCESS + CLRF;
 		});
-	}	
-	
+	}
+
 	/**
 	 * Loescht eine bestimmte Spielfigur aus dem Spiel. Diese wird identfiziert
 	 * anhand der <code>gameid</code> und der <code>pawnid</code>
@@ -339,6 +338,12 @@ public class BoardRESTApi {
 	public BoardService getBoardService() {
 		return boardService;
 	}
-	
-	
+
+	private void initGetPlayersCurrent() {
+		get("/games/:gameId/players/current", (req, resp) -> {
+			System.out.println("Methode aufgerufen");
+			return "";
+		});
+	}
+
 }

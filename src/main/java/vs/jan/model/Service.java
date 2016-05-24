@@ -5,33 +5,27 @@ import com.google.gson.Gson;
 public class Service {
 
 	/**
-	 * EXAMPLE:
-	 * ==========================================
-	 * "_uri": "/services/164",
-   * "description": "Event service of group 7",
-   * "name": "bla",
-   * "service": "events",
-   * "status": "dead",
-   * "uri": "http://141.22.65.58:4567/events"
+	 * EXAMPLE: ========================================== "_uri":
+	 * "/services/164", "description": "Event service of group 7", "name": "bla",
+	 * "service": "events", "status": "dead", "uri":
+	 * "http://141.22.65.58:4567/events"
 	 * ==========================================
 	 */
-	
+
 	private String _uri;
 	private String description;
 	private String name;
 	private String service;
 	private String status;
 	private String uri;
-	
-	public Service(){
-		
+
+	public Service() {
+
 		this(null, null, null, null, null, null);
 	}
-	
-	public Service(String _uri, String description, 
-									String name, String service, 
-									String status, String uri) {
-		
+
+	public Service(String _uri, String description, String name, String service, String status, String uri) {
+
 		this._uri = _uri;
 		this.description = description;
 		this.name = name;
@@ -88,9 +82,8 @@ public class Service {
 		this.uri = uri;
 	}
 
-	public String toString(){
+	public String toString() {
 		return new Gson().toJson(this);
 	}
-	
 
 }

@@ -3,6 +3,7 @@ package vs.jan.services.run.boardservice;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.helper.boardservice.BoardServiceHelper;
 import vs.jan.json.JSONBoard;
+import vs.jan.json.JSONField;
 import vs.jan.json.JSONPawn;
 import vs.jan.json.JSONPawnList;
 import vs.jan.json.JSONPlace;
@@ -36,7 +38,7 @@ public class RunBoardExample {
 	private static final Gson GSON = new Gson();
 	private static final int TIMEOUT = 1000;
 	private static BoardRESTApi boardApi;
-	
+
 	@SuppressWarnings("unused")
 	private static DiceService diceApi;
 
@@ -73,11 +75,25 @@ public class RunBoardExample {
 		createBoard(boardID, gameUri);
 		setupUser(boardID, gameUri);
 		createPawns(boardID);
-		letPawnsRollDice(boardID);
-		updatePawns(boardID);
-		deletePawns(boardID);
-		putPlaces(boardID);
+		// letPawnsRollDice(boardID);
+		updateBoard(boardID);
+		// updatePawns(boardID);
+		// deletePawns(boardID);
+		// putPlaces(boardID);
 		getFinalBoardState(boardID);
+
+	}
+
+	private static void updateBoard(int boardID) {
+
+		JSONBoard board = new JSONBoard("" + boardID);
+
+		JSONField field = new JSONField("/boards/" + boardID + "/places/2");
+		JSONPawn pawn = new JSONPawn("/game/" + boardID + "/players/mario");
+		pawn.setId("/boards/" + boardID + "/pawns/mario");
+		field.getPawns().add(pawn.getId());
+		board.setFields(new ArrayList<>(Arrays.asList(field)));
+		HttpService.put("http://localhost:4567/boards/" + boardID, board, 200);
 
 	}
 
@@ -379,7 +395,6 @@ public class RunBoardExample {
 		System.out.println();
 
 	}
-
 
 	private static void checkBoardAdded(int boardID) throws InterruptedException {
 

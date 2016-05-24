@@ -10,6 +10,7 @@ import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
+import vs.malte.services.GamesService;
 
 public class RunBoardService {
 
@@ -18,12 +19,13 @@ public class RunBoardService {
 		Map<String, Service> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den
 																				// DiceService laufen
+		new GamesService();
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
-		//new GameServiceFixed();
+		// new GameServiceFixed();
 		new BoardRESTApi();
 	}
-	
+
 	private static Map<String, Service> getNeededServices(String type) {
 		Map<String, Service> services = new HashMap<>();
 

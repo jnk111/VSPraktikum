@@ -15,6 +15,10 @@ public class JSONBoard {
 		this(null, null);
 	}
 
+	public JSONBoard(String id) {
+		this(id, null);
+	}
+
 	public JSONBoard(String id, String players) {
 
 		this.id = id;
@@ -66,16 +70,15 @@ public class JSONBoard {
 	}
 
 	/**
-	 * Prueft ob das Ubergeben Board gueltig ist
-	 * Keines der Felder darf null sein.
-	 * Falls nicht alle benoetigt werden, sollte der entsprechende
-	 * Konstruktor aufgerufen werden.
+	 * Prueft ob das Ubergeben Board gueltig ist Keines der Felder darf null sein.
+	 * Falls nicht alle benoetigt werden, sollte der entsprechende Konstruktor
+	 * aufgerufen werden.
+	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	public boolean isValid() {
 
-		return this.getId() != null
-						&& this.getFields() != null;
+		return this.getId() != null && this.getFields() != null;
 
 	}
 

@@ -143,8 +143,8 @@ public class BoardService {
 		Pawn p = new Pawn();
 		String pawnUri = helper.getPawnUri(b, pawn.getPlayer());
 		p.setPawnUri(pawnUri);
-		p.setMovesUri(p.getPawnUri() + "/move"); 
-		p.setPlayerUri(pawn.getPlayer()); 				// Annahme required
+		p.setMovesUri(p.getPawnUri() + "/move");
+		p.setPlayerUri(pawn.getPlayer()); // Annahme required
 		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
@@ -496,7 +496,7 @@ public class BoardService {
 			updateBoard(key, board, gameid);
 		}
 	}
-	
+
 	private void initNewBoard(Board key, String gameid) {
 
 		List<Field> fields = new ArrayList<>();
@@ -511,28 +511,40 @@ public class BoardService {
 		}
 
 		key.setFields(fields);
-		key.setPlayers("/boards/" + gameid + "/players");
+		key.setPlayers("/games/" + gameid + "/players");
 	}
 
 	private void updateBoard(Board key, JSONBoard board, String gameid) {
+
+		List<String> placeUris = new ArrayList<>();
+		board.getFields().forEach(f -> placeUris.add(f.getPlace())); // Alle Uris im
+																																	// JSON
+																																	// speichern
+
 		for (int i = 0; i < board.getFields().size(); i++) {
 
 			JSONField field = board.getFields().get(i);
-			Place p = Place.values()[i];
+			String[] uri = field.getPlace().split("/");
+			int placeNum = Integer.parseInt(uri[uri.length - 1]);
+			Place p = Place.values()[placeNum];
 			Field f = helper.getField(key, p.getPlaceUri());
 			f.setPawns(new ArrayList<>());
 
 			for (String pawnUri : field.getPawns()) {
-				Pawn pawn = new Pawn();
-				pawn.setPawnUri(pawnUri);
+				Pawn pawn = helper.getPawn(key, pawnUri);
+				validator.checkPawnIsNotNull(pawnUri, gameid);
 				pawn.setPlaceUri(field.getPlace());
 				pawn.setMovesUri(pawnUri + "/move");
-				pawn.setPosition(i);
+				pawn.setPosition(placeNum);
 				pawn.setRollsUri(pawnUri + "/roll");
 				JSONPawn json = pawn.convert();
 				validator.checkPawnIsValid(json);
 				f.addPawn(pawn);
 			}
+
+			// Alle Fields loeschen die nicht im JSON waren
+			key.getFields().removeIf(f2 -> !placeUris.contains(f2.getPlace().getPlaceUri()));
+			key.reloadPositions();
 		}
 	}
 

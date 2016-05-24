@@ -1,11 +1,11 @@
 package vs.jan.json;
 
 public class JSONGameURI {
-	
+
 	private String game;
-	
-	public JSONGameURI(String gameUri){
-		
+
+	public JSONGameURI(String gameUri) {
+
 		this.game = gameUri;
 	}
 
@@ -18,8 +18,9 @@ public class JSONGameURI {
 	}
 
 	/**
-	 * Prueft ob die uebergebene GameUri gueltig ist
-	 * Die <code>gameid</code> darf nicht null sein
+	 * Prueft ob die uebergebene GameUri gueltig ist Die <code>gameid</code> darf
+	 * nicht null sein
+	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
 	public boolean isValid() {

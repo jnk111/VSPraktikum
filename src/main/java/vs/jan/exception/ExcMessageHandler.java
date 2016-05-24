@@ -1,12 +1,12 @@
 package vs.jan.exception;
 
 public class ExcMessageHandler {
-	
-	public static String getBoardNotFoundMsg(String gameid){
+
+	public static String getBoardNotFoundMsg(String gameid) {
 		return "Board with id: " + gameid + " not found!";
 	}
-	
-	public static String getGameUriNotValidMsg(){
+
+	public static String getGameUriNotValidMsg() {
 		return "No GameUri is not valid!";
 	}
 
@@ -23,7 +23,7 @@ public class ExcMessageHandler {
 	}
 
 	public static String getPawnNotFoundMsg(String pawnid, String gameid) {
-		
+
 		return "Pawn with pawnid: " + pawnid + " has not been found on board with gameid: " + gameid;
 	}
 
@@ -32,19 +32,17 @@ public class ExcMessageHandler {
 	}
 
 	public static String getPlaceIdIsNullMsg(String gameid) {
-		
+
 		return "The given place id is null, Game: " + gameid;
 	}
 
 	public static String getPawnIdIsNullMsg() {
-		
+
 		return "the given pawnid was null";
 	}
 
 	public static String getBoardInputNotValidMsg(String gameid) {
 		return "The Given Board Information for the board: " + gameid + " is not valid or incomplete!";
 	}
-	
-	
 
 }

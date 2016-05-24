@@ -3,16 +3,15 @@ package vs.jan.json;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONBoardList{
-	
+public class JSONBoardList {
+
 	List<String> boards;
-	
-	public JSONBoardList(){
+
+	public JSONBoardList() {
 		boards = new ArrayList<>();
 	}
-	
-	
-	public void addBoardURI(String uri){
+
+	public void addBoardURI(String uri) {
 		boards.add(uri);
 	}
 }

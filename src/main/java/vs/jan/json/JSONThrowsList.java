@@ -6,11 +6,11 @@ import java.util.List;
 import vs.jonas.services.model.Dice;
 
 public class JSONThrowsList {
-	
-	private List<Dice> rolls;	// throws identifier not allowed -> Keyword
-	
-	public JSONThrowsList(){
-		
+
+	private List<Dice> rolls; // throws identifier not allowed -> Keyword
+
+	public JSONThrowsList() {
+
 		setRolls(new ArrayList<>());
 	}
 
@@ -21,13 +21,9 @@ public class JSONThrowsList {
 	public void setRolls(List<Dice> rolls) {
 		this.rolls = rolls;
 	}
-	
-	
-	public void addThrow(Dice dice){
+
+	public void addThrow(Dice dice) {
 		rolls.add(dice);
 	}
-	
-	
-	
 
 }

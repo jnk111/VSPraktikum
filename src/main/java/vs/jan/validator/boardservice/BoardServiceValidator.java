@@ -14,7 +14,6 @@ import vs.jan.model.PlaceBkp;
 
 public class BoardServiceValidator {
 
-	
 	public void checkGameIsValid(JSONGameURI game) {
 		if (!game.isValid()) {
 			throw new InvalidInputException(ExcMessageHandler.getGameUriNotValidMsg());
@@ -74,25 +73,25 @@ public class BoardServiceValidator {
 			throw new InvalidInputException(ExcMessageHandler.getPawnInputNotValidMsg(p.getId()));
 		}
 	}
-	
+
 	public void checkPlaceIdIsNotNull(PlaceBkp p, String gameid) {
-		if(p == null){
+		if (p == null) {
 			throw new ResourceNotFoundException(ExcMessageHandler.getPlaceIdIsNullMsg(gameid));
 		}
 	}
 
 	public void checkPlaceIdIsNotNull(String placeid, String gameid) {
-		if(placeid == null){
+		if (placeid == null) {
 			throw new InvalidInputException(ExcMessageHandler.getPlaceIdIsNullMsg(gameid));
 		}
 	}
-	
+
 	public void checkPawnIdIsNotNull(String pawnid) {
-		if(pawnid == null){
+		if (pawnid == null) {
 			throw new ResourceNotFoundException(ExcMessageHandler.getPawnIdIsNullMsg());
 		}
 	}
-	
+
 	public void checkBoardIsValid(String gameid, JSONBoard board) {
 
 		if (!board.isValid()) {

@@ -9,25 +9,23 @@ import java.util.Map;
 import vs.jonas.services.model.Dice;
 
 public class Throws {
-	
+
 	private Map<Pawn, List<Dice>> throwMap;
-	
-	public Throws(){
+
+	public Throws() {
 		throwMap = new HashMap<>();
 	}
-	
-	
-	public void addThrow(Pawn pawn, Dice roll){
-		
-		if(throwMap.containsKey(pawn)){
+
+	public void addThrow(Pawn pawn, Dice roll) {
+
+		if (throwMap.containsKey(pawn)) {
 			throwMap.get(pawn).add(roll);
-		}else{
+		} else {
 			throwMap.put(pawn, new ArrayList<>(Arrays.asList(roll)));
 		}
 	}
 
-	
-	public List<Dice> getThrows(Pawn pawn){
+	public List<Dice> getThrows(Pawn pawn) {
 		return throwMap.get(pawn);
 	}
 
@@ -35,12 +33,8 @@ public class Throws {
 		return throwMap;
 	}
 
-
 	public void setThrowMap(Map<Pawn, List<Dice>> throwMap) {
 		this.throwMap = throwMap;
 	}
-	
-	
-	
 
 }

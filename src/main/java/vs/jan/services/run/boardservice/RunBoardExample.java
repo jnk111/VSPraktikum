@@ -75,7 +75,7 @@ public class RunBoardExample {
 		startGame(boardID);
 		letCurrPlayerRollDice(boardID);
 		// createPawns(boardID);
-		letPawnsRollDice(boardID);
+		//letPawnsRollDice(boardID);
 		// updateBoard(boardID);
 //		updatePawns(boardID);
 //		deletePawns(boardID);
@@ -91,6 +91,18 @@ public class RunBoardExample {
 		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/player/current", 200);
 		System.out.println("Got Player with mutex: " + json);
 		Player p = GSON.fromJson(json, Player.class);
+		String pawnUri = p.getPawn();
+		String [] u = pawnUri.split("/");
+		String id = u[u.length - 1];
+		String uri = "http://localhost:4567/boards/42/pawns/" + id;
+		p.setPawn(uri);
+		System.out.println("Get Pawn with uri: " + p.getPawn());
+		String json2 = HttpService.get(p.getPawn(), 200);
+		JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
+		System.out.println("Got Pawn: " + json2);
+		System.out.println("Pawn rolls dice: " + json2);
+		HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
+		
 		
 	}
 

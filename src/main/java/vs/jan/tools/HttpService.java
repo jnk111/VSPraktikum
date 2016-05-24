@@ -93,7 +93,7 @@ public class HttpService {
 		} catch (IOException ioe) {
 			throw new ConnectionRefusedException();
 		}
-		return null;
+		throw new ResourceNotFoundException();
 	}
 
 	public static HttpURLConnection connect(String method, String URL, Object body, int expResponseCode) {

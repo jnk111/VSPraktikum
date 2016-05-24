@@ -14,14 +14,11 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
-import vs.jan.helper.boardservice.BoardServiceHelper;
 import vs.jan.json.JSONBoard;
 import vs.jan.json.JSONField;
 import vs.jan.json.JSONPawn;
 import vs.jan.json.JSONPawnList;
 import vs.jan.json.JSONPlace;
-import vs.jan.model.Board;
-import vs.jan.model.Field;
 import vs.jan.model.Pawn;
 import vs.jan.model.PlaceBkp;
 import vs.jan.model.Service;
@@ -37,6 +34,7 @@ public class RunBoardExample {
 
 	private static final Gson GSON = new Gson();
 	private static final int TIMEOUT = 1000;
+	@SuppressWarnings("unused")
 	private static BoardRESTApi boardApi;
 
 	@SuppressWarnings("unused")
@@ -74,16 +72,37 @@ public class RunBoardExample {
 
 		createBoard(boardID, gameUri);
 		setupUser(boardID, gameUri);
-		createPawns(boardID);
-		// letPawnsRollDice(boardID);
-		updateBoard(boardID);
-		// updatePawns(boardID);
-		// deletePawns(boardID);
-		// putPlaces(boardID);
+		startGame(boardID);
+		letCurrPlayerRollDice(boardID);
+		// createPawns(boardID);
+		letPawnsRollDice(boardID);
+		// updateBoard(boardID);
+//		updatePawns(boardID);
+//		deletePawns(boardID);
+//		putPlaces(boardID);
 		getFinalBoardState(boardID);
 
 	}
 
+	private static void letCurrPlayerRollDice(int boardID) {
+		
+		System.out.println("Let Player with mutex roll the dice");
+		System.out.println("-------------------------------------------------------------------------------------------");
+		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/player/current", 200);
+		System.out.println("Got Player with mutex: " + json);
+		Player p = GSON.fromJson(json, Player.class);
+		
+	}
+
+	private static void startGame(int boardID) {
+		System.out.println("Start game: " + boardID);
+		System.out.println("-------------------------------------------------------------------------------------------");
+		HttpService.put("http://localhost:4567/games/" + boardID + "/status", null, 200);
+		System.out.println("SUCCESS");
+		System.out.println();
+	}
+
+	@SuppressWarnings("unused")
 	private static void updateBoard(int boardID) {
 
 		JSONBoard board = new JSONBoard("" + boardID);
@@ -116,7 +135,17 @@ public class RunBoardExample {
 		createUser(boardID, gamePlayerUri, p2);
 		createUser(boardID, gamePlayerUri, p3);
 		createUser(boardID, gamePlayerUri, p4);
+		
 		System.out.println("SUCCESS");
+		System.out.println();
+		
+		System.out.println("Set Users ready on Game: " + boardID);
+		System.out.println("-------------------------------------------------------------------------------------------");
+		setUserReady(p1, boardID);
+		setUserReady(p2, boardID);
+		setUserReady(p3, boardID);
+		setUserReady(p4, boardID);
+		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		checkPlayersAddedOnUserService();
 		System.out.println("SUCCESS");
@@ -124,6 +153,20 @@ public class RunBoardExample {
 		System.out.println();
 		System.out.println();
 
+	}
+
+
+	private static void setUserReady(Player p1, int boardID) throws InterruptedException {
+		
+		Thread.sleep(TIMEOUT);
+		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/players/" + p1.getUserName(), 200);
+		System.out.println("User is ready: " + json);
+		Player p = GSON.fromJson(json, Player.class);
+		String [] u = p.getId().split("/");
+		String id = u[u.length - 1];
+		HttpService.put( "http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
+		System.out.println("SUCCESS");
+		System.out.println();
 	}
 
 	private static void checkPlayersAddedOnUserService() {
@@ -135,7 +178,7 @@ public class RunBoardExample {
 	}
 
 	private static void createUser(int boardID, String gamePlayerUri, Player player) throws InterruptedException {
-		// Thread.sleep(TIMEOUT);
+		Thread.sleep(TIMEOUT);
 		HttpService.post(gamePlayerUri, player, HttpURLConnection.HTTP_CREATED);
 		System.out.println("Created Player: " + GSON.toJson(player));
 		System.out.println();
@@ -151,7 +194,6 @@ public class RunBoardExample {
 
 	}
 
-	@SuppressWarnings("unused")
 	private static void createPawns(int boardID) throws InterruptedException {
 		System.out.println("Create some Pawns on the board");
 		System.out.println("-------------------------------------------------------------------------------------------");

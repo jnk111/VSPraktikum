@@ -34,7 +34,6 @@ import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
 import vs.jan.model.Place;
-import vs.jan.model.PlaceBkp;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.User;
@@ -44,7 +43,7 @@ import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
 
 public class BoardService {
-
+	
 	private final Gson GSON = new Gson();
 	/*
 	 * Mapping Board -> GameUri
@@ -52,13 +51,13 @@ public class BoardService {
 	private Map<Board, JSONGameURI> boards;
 	private BoardServiceValidator validator;
 	private BoardServiceHelper helper;
-
+	
 	/*
 	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
 	 * gemachten Wuerfe JSONThrowsList -> die Werte der Wuerfel
 	 */
 	private Map<JSONThrowsURI, JSONThrowsList> throwMap;
-
+	
 	private Map<String, Service> neededServices;
 
 	/**
@@ -78,7 +77,6 @@ public class BoardService {
 	 * @return Liste der Board-Uris als JSON-DTO
 	 */
 	public JSONBoardList getAllBoardURIs() {
-
 		JSONBoardList boardURIs = new JSONBoardList();
 		boards.forEach((k, v) -> boardURIs.addBoardURI(k.getUri()));
 		return boardURIs;
@@ -94,9 +92,8 @@ public class BoardService {
 	 *           Json-Format der Uri ungueltig
 	 */
 	public synchronized void createNewBoard(JSONGameURI game) throws InvalidInputException {
-
 		validator.checkGameIsValid(game);
-		String gameId = game.getURI().split("/")[2];
+		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
@@ -133,13 +130,11 @@ public class BoardService {
 	 */
 	public synchronized void createNewPawnOnBoard(JSONPawn pawn, String gameid)
 			throws InvalidInputException, ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		Board b = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(b, gameid);
 		validator.checkBoardHasFields(b, gameid);
 		validator.checkPawnInputIsValid(pawn);
-
 		Pawn p = new Pawn();
 		String pawnUri = helper.getPawnUri(b, pawn.getPlayer());
 		p.setPawnUri(pawnUri);
@@ -153,7 +148,6 @@ public class BoardService {
 		JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
 		JSONThrowsList list = new JSONThrowsList();
 		throwMap.put(uri, list);
-
 	}
 
 	/**
@@ -166,7 +160,6 @@ public class BoardService {
 	 *           Board wurde nicht gefunden
 	 */
 	public JSONPawnList getPawnsOnBoard(String gameid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		Board b = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(b, gameid);
@@ -213,17 +206,14 @@ public class BoardService {
 	 *           Board oder Pawn nicht gefunden
 	 */
 	public JSONThrowsList getDiceThrows(String gameid, String pawnid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		Board b = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(b, gameid);
-
 		for (JSONThrowsURI uri : throwMap.keySet()) {
 			if (uri.getRollUri().contains(pawnid)) {
 				return throwMap.get(uri);
 			}
 		}
-
 		throw new ResourceNotFoundException(ExcMessageHandler.getPawnNotFoundMsg(pawnid, gameid));
 	}
 
@@ -238,11 +228,9 @@ public class BoardService {
 	 *           Das Board wurde nicht gefunden
 	 */
 	public List<String> getAllPlaces(String gameid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		Board b = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(b, gameid);
-
 		List<String> allPlaceURIs = new ArrayList<>();
 		for (Field f : b.getFields()) {
 			allPlaceURIs.add(f.getPlace().getPlaceUri());
@@ -265,7 +253,6 @@ public class BoardService {
 	 * 
 	 */
 	public JSONPlace getSpecificPlace(String gameid, String placeid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkPlaceIdIsNotNull(placeid, gameid);
 		Board b = helper.getBoard(this.boards, gameid);
@@ -291,18 +278,13 @@ public class BoardService {
 	 */
 	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
 			throws ResourceNotFoundException, InvalidInputException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkPawnIdIsNotNull(pawnid);
 		validator.checkRollValueIsValid(rollValue);
 		Board b = helper.getBoard(this.boards, gameid);
-
 		validator.checkBoardIsNotNull(b, gameid);
-
 		Pawn p = helper.getPawn(b, pawnid);
-
 		validator.checkPawnIsNotNull(pawnid, gameid);
-
 		int oldPos = p.getPosition(); // alte Position der Figur
 		int newPos = oldPos + rollValue; // Neue Position der Figur
 
@@ -313,15 +295,11 @@ public class BoardService {
 
 		b.getFields().get(oldPos).removePawn(p); // Figur von alter
 																							// Position entfernen
-
 		p.setPosition(newPos); // setze neue Pos-Nr.
-
 		b.getFields().get(newPos).addPawn(p); // Setze Figur auf neue
 																					// Position
-
 		b.updatePositions(oldPos, newPos); // markiere, dass auf Position
 																				// 'newPos' Figuren stehen
-
 		p.updatePlaceUri(newPos); // Update Placeuri to the new Place
 		helper.postEvent(gameid, "move", "move", p, this.neededServices);
 	}
@@ -341,21 +319,16 @@ public class BoardService {
 	 * 
 	 */
 	public synchronized List<Event> rollDice(String gameid, String pawnid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkPawnIdIsNotNull(pawnid);
+		validator.checkPlayerHasMutex(gameid, pawnid);
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);
 		validator.checkBoardIsNotNull(board, gameid);
 		validator.checkPawnIsNotNull(pawnid, gameid);
-
 		int rollValue = doDiceRollLocal(pawn, gameid); // Zum Testen Local
 		movePawn(gameid, pawnid, rollValue);
-
-		// placeAPawnRESTCall(gameid, pawn);
-
 		// weitere Aktionen...
-
 		return helper.retrieveEventList(pawn, gameid, new Date());
 
 	}
@@ -371,23 +344,16 @@ public class BoardService {
 	 * @return Der Int-Wert des gemachten Wurfes
 	 */
 	private int doDiceRollLocal(Pawn pawn, String gameid) {
-
-		// http://localhost:4567/dice
 		String playerUri = "http://localhost:4567/users/mario";
 		pawn.setPlayerUri(playerUri);
-
-		@SuppressWarnings("unused")
-		User user = getPlayer(pawn, gameid);
 		String json = HttpService.get("http://localhost:4567/dice?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
-
 		addThrowToPawnThrowList(pawn, roll);
 
 		if (roll != null)
 			return roll.getNumber();
 		return -1;
-
 	}
 
 	/**
@@ -404,7 +370,6 @@ public class BoardService {
 	 *           Service nicht erreichbar
 	 */
 	private User getPlayer(Pawn pawn, String gameid) {
-		// z. B.: 'http://localhost:4567/games/42/players/mario
 		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
 		User currPlayer = GSON.fromJson(json, User.class);
 		return currPlayer;
@@ -421,7 +386,6 @@ public class BoardService {
 	 *           Baord oder Figur nicht gefunden
 	 */
 	public synchronized void deletePawnFromBoard(String gameid, String pawnid) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkPawnIdIsNotNull(pawnid);
 		Board b = helper.getBoard(this.boards, gameid);
@@ -461,16 +425,12 @@ public class BoardService {
 	 */
 	public synchronized void updateAPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid)
 			throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkPlaceIsValid(place);
-
 		Board key = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(key, gameid);
-
 		Place p = helper.getPlaceWithPathInfo(place, key.getFields(), pathinfo);
 		validator.checkPlaceIsNotNull(p, pathinfo, gameid);
-
 	}
 
 	/**
@@ -484,25 +444,22 @@ public class BoardService {
 	 *           Das Board wurde nicht gefunden
 	 */
 	public synchronized void placeABoard(String gameid, JSONBoard board) throws ResourceNotFoundException {
-
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkBoardIsValid(gameid, board);
-		Board key = helper.getBoard(this.boards, gameid);
-		validator.checkBoardIsNotNull(key, gameid);
+		Board b = helper.getBoard(this.boards, gameid);
+		validator.checkBoardIsNotNull(b, gameid);
 
-		if (!key.hasFields()) {
-			initNewBoard(key, gameid);
+		if (!b.hasFields()) {
+			initNewBoard(b, gameid);
 		} else {
-			updateBoard(key, board, gameid);
+			updateBoard(b, board, gameid);
 		}
 	}
 
 	private void initNewBoard(Board key, String gameid) {
-
 		List<Field> fields = new ArrayList<>();
-
+		
 		for (int i = 0; i < Place.values().length; i++) {
-
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
 			p.setPlaceUri(placeUri);
@@ -515,17 +472,21 @@ public class BoardService {
 	}
 
 	private void updateBoard(Board key, JSONBoard board, String gameid) {
-
 		List<String> placeUris = new ArrayList<>();
 		board.getFields().forEach(f -> placeUris.add(f.getPlace())); // Alle Uris im
 																																	// JSON
 																																	// speichern
-
 		for (int i = 0; i < board.getFields().size(); i++) {
 
 			JSONField field = board.getFields().get(i);
-			String[] uri = field.getPlace().split("/");
-			int placeNum = Integer.parseInt(uri[uri.length - 1]);
+			int placeNum = -1;
+
+			try {
+				placeNum = Integer.parseInt(helper.getID(field.getPlace()));
+			} catch (NumberFormatException e) {
+				throw new InvalidPlaceIDException(ExcMessageHandler.getInvalidPlaceIDMsg());
+			};
+
 			Place p = Place.values()[placeNum];
 			Field f = helper.getField(key, p.getPlaceUri());
 			f.setPawns(new ArrayList<>());
@@ -560,7 +521,6 @@ public class BoardService {
 	 *           Das Board oder die Figur wurde nicht gefunden
 	 */
 	public synchronized void placeAPawn(String gameid, JSONPawn pawn) throws ResourceNotFoundException {
-
 		validator.checkPawnInputIsValid(pawn);
 		validator.checkGameIdIsNotNull(gameid);
 		Board b = helper.getBoard(this.boards, gameid);

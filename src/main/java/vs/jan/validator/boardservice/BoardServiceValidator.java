@@ -1,9 +1,14 @@
 package vs.jan.validator.boardservice;
 
+import java.net.HttpURLConnection;
+
+import com.google.gson.Gson;
+
 import vs.jan.exception.BoardNotInitiliazedException;
 import vs.jan.exception.ExcMessageHandler;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.exception.TurnMutexNotFreeException;
 import vs.jan.json.JSONBoard;
 import vs.jan.json.JSONGameURI;
 import vs.jan.json.JSONPawn;
@@ -11,8 +16,12 @@ import vs.jan.json.JSONPlace;
 import vs.jan.model.Board;
 import vs.jan.model.Place;
 import vs.jan.model.PlaceBkp;
+import vs.jan.model.Player;
+import vs.jan.tools.HttpService;
 
 public class BoardServiceValidator {
+
+	private final Gson GSON = new Gson();
 
 	public void checkGameIsValid(JSONGameURI game) {
 		if (!game.isValid()) {
@@ -97,6 +106,26 @@ public class BoardServiceValidator {
 		if (!board.isValid()) {
 			throw new InvalidInputException(ExcMessageHandler.getBoardInputNotValidMsg(gameid));
 		}
+	}
+
+	public void checkPlayerHasMutex(String gameid, String pawnid) {
+
+		String player = "http://localhost:4567/games/" + gameid + "/player/turn";
+		String json = HttpService.get(player, HttpURLConnection.HTTP_OK);
+		// Player current = GSON.fromJson(json, Player.class);
+		// if(!current.getPawn().contains(pawnid)){
+		// throw new
+		// TurnMutexNotFreeException(ExcMessageHandler.getTurnMutexNotFreeMsg(pawnid));
+		// }
+
+		if (!json.contains(pawnid)) {
+			throw new TurnMutexNotFreeException(ExcMessageHandler.getTurnMutexNotFreeMsg(pawnid));
+
+		}
+	}
+
+	public Gson getGSON() {
+		return GSON;
 	}
 
 }

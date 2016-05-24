@@ -68,14 +68,15 @@ public class StartLocalServices {
         neededServicesDice.put(ServiceNames.EVENT, yellowPages.getService(ServiceNames.EVENT));
         new DiceService(neededServicesDice).startService();
 
+        /*  Initializes GameService */
+        new GamesService();
+
         /*  Initializes UserService */
         new UserServiceRESTApi();
 
         /*  Initializes BoardService */
         boardApi = new BoardRESTApi();
 
-        /*  Initializes GameService */
-        new GamesService();
 
         // Initialize URIs
         gamesUri = yellowPages.getService(ServiceNames.GAME).getUri();//"http://localhost:4567/games";

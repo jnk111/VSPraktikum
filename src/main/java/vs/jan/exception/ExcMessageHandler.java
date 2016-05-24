@@ -45,4 +45,13 @@ public class ExcMessageHandler {
 		return "The Given Board Information for the board: " + gameid + " is not valid or incomplete!";
 	}
 
+	public static String getInvalidPlaceIDMsg() {
+		
+		return "The Place-ID has to be a number";
+	}
+
+	public static String getTurnMutexNotFreeMsg(String pawnid) {
+		return "the player with Pawn-ID: " + pawnid + " does not have the turn mutex!";
+	}
+
 }

@@ -20,9 +20,6 @@ import vs.jan.json.JSONPlace;
 import vs.jan.json.JSONThrowsList;
 import vs.jan.model.StatusCodes;
 import vs.jan.services.boardservice.BoardService;
-import vs.malte.json.CurrentPlayerDTO;
-import vs.malte.models.Game;
-import vs.malte.models.Player;
 
 /**
  * Restschnittstelle fuer den Boardservice
@@ -47,7 +44,6 @@ public class BoardRESTApi {
 		initPUT();
 		initDELETE();
 		initExeptions();
-		initGetPlayersCurrent();
 	}
 
 	/**
@@ -338,12 +334,4 @@ public class BoardRESTApi {
 	public BoardService getBoardService() {
 		return boardService;
 	}
-
-	private void initGetPlayersCurrent() {
-		get("/games/:gameId/players/current", (req, resp) -> {
-			System.out.println("Methode aufgerufen");
-			return "";
-		});
-	}
-
 }

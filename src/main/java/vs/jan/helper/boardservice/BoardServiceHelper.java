@@ -191,4 +191,9 @@ public class BoardServiceHelper {
 		}
 		return null;
 	}
+
+	public String getID(String uri) {
+		String [] u = uri.split("/");
+		return u[u.length - 1];
+	}
 }

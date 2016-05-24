@@ -494,7 +494,7 @@ public class GamesService
 
                     HttpService.post( game.getUserService(), userDTO );
 
-                    // createPawn( newPlayer, game );
+                     createPawn( newPlayer, game );
 
                     game.getPlayers().put( mapKey, newPlayer );
 
@@ -837,17 +837,13 @@ public class GamesService
 
     private void initGetPlayersTurn()
     {
-        get( "/games/:gameId/players/turn", ( req, resp ) ->
+        get( "/games/:gameId/player/turn", ( req, resp ) ->
         {
-            System.out.println( "Methode aufgerufen" );
-
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
-
-            System.out.println( new Gson().toJson( game ) );
 
             if ( game != null )
             {
@@ -866,17 +862,13 @@ public class GamesService
 
     private void initGetPlayersCurrent()
     {
-        get( "/games/:gameId/players/current", ( req, resp ) ->
+        get( "/games/:gameId/player/current", ( req, resp ) ->
         {
-            System.out.println( "Methode aufgerufen" );
-
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
-
-            System.out.println( new Gson().toJson( game ) );
 
             if ( game != null )
             {

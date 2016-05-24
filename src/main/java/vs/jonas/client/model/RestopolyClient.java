@@ -33,7 +33,7 @@ public class RestopolyClient {
 	private Service gameservice;
 	
 	public RestopolyClient(){
-		YellowPagesService yellowPages = new YellowPagesService(YellowPagesService.ONLINE_SERVICES);
+		YellowPagesService yellowPages = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
 		try {
 			gameservice = yellowPages.getService(ServiceNames.GAME);
 		} catch (ServiceUnavailableException e) {

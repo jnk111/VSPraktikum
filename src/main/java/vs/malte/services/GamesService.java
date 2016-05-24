@@ -288,18 +288,17 @@ public class GamesService
             {
                 Gson gson = new Gson();
                 GamesListDTO gameList = new GamesListDTO();
-                GameDTO gameDTO = new GameDTO();
+                GameDTO gameDTO;
 
                 for ( Game g : this.games.values() )
                 {
-                    System.out.println( g.getId() );
-
+                    gameDTO = new GameDTO();
+                    
                     gameDTO.setId( g.getId() );
                     gameDTO.setName( g.getName() );
                     gameDTO.setPlayers( g.getUserService() );
                     gameDTO.setServices( g.getServiceList() );
                     gameDTO.setComponents( g.getComponents() );
-
                     gameList.getGameList().add( gameDTO );
                 }
 
@@ -495,7 +494,7 @@ public class GamesService
 
                     HttpService.post( game.getUserService(), userDTO );
 
-//                    createPawn( newPlayer, game );
+                    // createPawn( newPlayer, game );
 
                     game.getPlayers().put( mapKey, newPlayer );
 
@@ -864,13 +863,13 @@ public class GamesService
             return result;
         } );
     }
-    
+
     private void initGetPlayersCurrent()
     {
         get( "/games/:gameId/players/current", ( req, resp ) ->
         {
             System.out.println( "Methode aufgerufen" );
-            
+
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
@@ -887,12 +886,12 @@ public class GamesService
                 String currentPlayerName = currentPlayerID.replaceAll( "/games/" + game.getName() + "/players/", "" );      // TODO
                 Player currentPlayer = game.getPlayers().get( currentPlayerName );
                 CurrentPlayerDTO currentPlayerDTO = new CurrentPlayerDTO();
-                
+
                 currentPlayerDTO.setId( currentPlayer.getId() );
                 currentPlayerDTO.setUser( currentPlayer.getUserName() ); // TODO soll die Uri sein
                 currentPlayerDTO.setPawn( currentPlayer.getPawn() );
                 currentPlayerDTO.setAccount( currentPlayer.getAccount() );
-                
+
                 result = new Gson().toJson( currentPlayerDTO );
             }
             else

@@ -32,7 +32,7 @@ import vs.malte.models.ServiceList;
 
 public class GamesService
 {
-    private final boolean DEBUG_MODE = true;
+    private final boolean DEBUG_MODE = false;
 
     private final String GAMEID_PREFIX = "/games/";
     private final String USERID_PREFIX = "/users/";
@@ -293,7 +293,7 @@ public class GamesService
                 for ( Game g : this.games.values() )
                 {
                     gameDTO = new GameDTO();
-                    
+
                     gameDTO.setId( g.getId() );
                     gameDTO.setName( g.getName() );
                     gameDTO.setPlayers( g.getUserService() );
@@ -494,7 +494,7 @@ public class GamesService
 
                     HttpService.post( game.getUserService(), userDTO );
 
-                     createPawn( newPlayer, game );
+                    createPawn( newPlayer, game );
 
                     game.getPlayers().put( mapKey, newPlayer );
 
@@ -520,7 +520,7 @@ public class GamesService
         if ( DEBUG_MODE )
         {
             System.out.println( "Pawn: " + new Gson().toJson( newPawn ) );
-            System.out.println( "playerPawnUri: " + game.getComponents().getBoard() + "/pawns/" + player.getUserName().replaceAll( "user/", "" ) );
+            System.out.println( "playerPawnUri: " + game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "user/", "" ) );
         }
 
         int responseCode = HttpService.post( game.getComponents().getBoard() + "/pawns", newPawn );

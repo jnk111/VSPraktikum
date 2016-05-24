@@ -83,8 +83,6 @@ public class JSONPawn implements Validable{
 	 */
 	@Override
 	public boolean isValid() {
-		
-		return  this.getPlace() != null
-								&& this.getPlayer() != null;
+		return  this.getPlayer() != null;
 	}
 }

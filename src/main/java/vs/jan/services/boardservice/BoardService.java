@@ -143,10 +143,9 @@ public class BoardService {
 		Pawn p = new Pawn();
 		String pawnUri = helper.getPawnUri(b, pawn.getPlayer());
 		p.setPawnUri(pawnUri);
-		p.setMovesUri(p.getPawnUri() + "/move");
-		p.setPlaceUri(pawn.getPlace()); // Annahme required
-		p.setPlayerUri(pawn.getPlayer()); // Annahme required
-		p.setPosition(pawn.getPosition()); // Annahme required
+		p.setMovesUri(p.getPawnUri() + "/move"); 
+		p.setPlayerUri(pawn.getPlayer()); 				// Annahme required
+		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
 

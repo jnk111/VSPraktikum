@@ -373,7 +373,6 @@ public class RunBoardExample {
 		Thread.sleep(TIMEOUT);
 		Pawn p = new Pawn();
 		p.setPlayerUri("/games/" + boardID + "/players/" + playerName);
-		p.setPlaceUri("/boards/" + boardID + "/places/0");
 		System.out.println("Create Pawn: " + GSON.toJson(p.convert()));
 		HttpService.post("http://localhost:4567/boards/" + boardID + "/pawns", p.convert(), HttpURLConnection.HTTP_OK);
 		System.out.println("SUCCESS");

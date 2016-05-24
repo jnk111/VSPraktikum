@@ -1,9 +1,8 @@
 import com.google.gson.Gson;
-import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.helper.boardservice.BoardServiceHelper;
-import vs.jan.model.*;
+import vs.jan.model.Service;
+import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -23,11 +22,16 @@ import java.util.Map;
  */
 public class StartLocalServices {
 
-    BoardRESTApi boardApi;
+    private final int TIMEOUT = 1000;
+    private BoardRESTApi boardApi;
     private Gson gson;
-    private static final int TIMEOUT = 1000;
 
+    private String boardUri;
+    private String gamesUri;
 
+    /**
+     * Run Main
+     */
     public static void main(String[] args) {
         try {
             new StartLocalServices().startServices();
@@ -40,6 +44,12 @@ public class StartLocalServices {
         }
     }
 
+    /**
+     * Starts All Services
+     * @throws ServiceUnavailableException
+     * @throws MalformedURLException
+     * @throws InterruptedException
+     */
     public void startServices() throws ServiceUnavailableException, MalformedURLException, InterruptedException {
 
         gson = new Gson();
@@ -66,54 +76,31 @@ public class StartLocalServices {
 
         /*  Initializes GameService */
         new GamesService();
-        setupGame();
 
-    }
+        // Initialize URIs
+        gamesUri = yellowPages.getService(ServiceNames.GAME).getUri();//"http://localhost:4567/games";
+        boardUri = yellowPages.getService(ServiceNames.BOARD).getUri();
 
-    private void setupGame() throws InterruptedException, MalformedURLException {
-        setupBoard();
+//        setupUser(boardID, gamesUri);
+//        setupBoard();
 
-    }
-
-    private void setupBoard() throws InterruptedException, MalformedURLException {
-        String gameUri = "http://localhost:4567/games";
-        int boardID = 42;
-
-        createBoard(boardID, gameUri);
-        placeBoard(boardID);
-        setupUser(boardID, gameUri);
-    }
-
-    private void createBoard(int boardID, String gameUri) throws InterruptedException {
-
-        Thread.sleep(TIMEOUT);
-        System.out.println("Create Game on: " + gameUri);
+        int boardID = 100;
         CreateGameExDTO g = new CreateGameExDTO();
         g.setName("" + boardID);
-        HttpService.post(gameUri, g, HttpURLConnection.HTTP_CREATED);
+        HttpService.post(gamesUri, g, HttpURLConnection.HTTP_CREATED);
+        System.out.println(HttpService.get(gamesUri, 200));
+
+        setupUser(boardID,gamesUri);
+        System.out.println(HttpService.get(gamesUri, 200));
+
     }
 
-    private void placeBoard(int boardID) throws InterruptedException {
-
-        System.out.println("Place the Board");
-
-        Board b = new BoardServiceHelper().getBoard(boardApi.getBoardService().getBoards(), "" + boardID);
-        b.setPlayers("http://localhost:4567/game/" + boardID + "/players");
-        for (int i = 0; i <= 10; i++) {
-            Field f = new Field();
-            Place p = new Place("/boards/42/places/" + i);
-            f.setPlace(p);
-            b.getFields().add(f);
-        }
-
-        Thread.sleep(TIMEOUT);
-
-        System.out.println("Fill Board with Information...");
-        HttpService.put("http://localhost:4567/boards/" + boardID, b.convert(), HttpURLConnection.HTTP_OK);
-        System.out.println("SUCCESS");
-        System.out.println("Placed Board: " + gson.toJson(b.convert()));
-    }
-
+    /**
+     * Creates the players
+     * @param boardID
+     * @param gameUri
+     * @throws InterruptedException
+     */
     private void setupUser(int boardID, String gameUri) throws InterruptedException {
 
         Thread.sleep(TIMEOUT);
@@ -127,16 +114,10 @@ public class StartLocalServices {
         p4.setUserName("donkeykong");
         String gamePlayerUri = gameUri + "/" + boardID + "/players";
         System.out.println("Create Some Users on Game: " + boardID);
-        createUser(boardID, gamePlayerUri, p1);
-        createUser(boardID, gamePlayerUri, p2);
-        createUser(boardID, gamePlayerUri, p3);
-        createUser(boardID, gamePlayerUri, p4);
+        HttpService.post(gamePlayerUri, p1, HttpURLConnection.HTTP_CREATED);
+        HttpService.post(gamePlayerUri, p2, HttpURLConnection.HTTP_CREATED);
+        HttpService.post(gamePlayerUri, p3, HttpURLConnection.HTTP_CREATED);
+        HttpService.post(gamePlayerUri, p4, HttpURLConnection.HTTP_CREATED);
         System.out.println("SUCCESS");
-    }
-
-    private void createUser(int boardID, String gamePlayerUri, Player player) throws InterruptedException {
-        // Thread.sleep(TIMEOUT);
-        HttpService.post(gamePlayerUri, player, HttpURLConnection.HTTP_CREATED);
-        System.out.println("Created Player: " + gson.toJson(player));
     }
 }

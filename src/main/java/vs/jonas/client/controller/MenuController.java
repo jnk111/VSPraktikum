@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.view.RestopolyMenuUI;
 
@@ -55,6 +56,8 @@ public class MenuController {
 							client.createANewGame(gameName);
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (UnirestException e1) {
 							e1.printStackTrace();
 						}
 					}

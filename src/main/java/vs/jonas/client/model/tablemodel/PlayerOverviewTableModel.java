@@ -18,7 +18,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	private String[] columnNames = { "Name", "Figur", "Kontostand", "Ready"};
 
 	/**
-	 * Die Daten, die angezeigt werden sollen: GameInformation
+	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
 	List<PlayerInformation> playerInformations;

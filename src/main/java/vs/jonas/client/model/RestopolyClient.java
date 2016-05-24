@@ -1,22 +1,22 @@
 package vs.jonas.client.model;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.naming.ServiceUnavailableException;
-
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
+import vs.jonas.client.json.CreateGame;
+import vs.jonas.client.json.GameResponse;
 import vs.jonas.services.services.YellowPagesService;
-import vs.malte.json.CreateGameDTO;
+
+import javax.naming.ServiceUnavailableException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Diese Klasse ist die Hauptkomponente fuer die Kommunikation mit den 
@@ -31,11 +31,12 @@ import vs.malte.json.CreateGameDTO;
 public class RestopolyClient {
 
 	private Service gameservice;
+	private Gson gson;
 	
-	public RestopolyClient(){
-		YellowPagesService yellowPages = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+	public RestopolyClient(YellowPagesService yellowPages){
 		try {
 			gameservice = yellowPages.getService(ServiceNames.GAME);
+			gson = new Gson();
 		} catch (ServiceUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,20 +45,27 @@ public class RestopolyClient {
 //		RunAllServices.run(); // TODO nur zum testen
 	}
 	/**
-	 * TODO Dummydata fuer Informationen ueber laufende Spiele
+	 * Laedt die aktuellen Spiele
 	 * @return
 	 * @throws IOException 
 	 * @throws UnirestException 
 	 */
-	public List<GameInformation> getGameInformations() throws IOException, UnirestException {
-		List<GameInformation> data = new ArrayList<>();
+	public List<GameResponse> getGameResponses() throws IOException, UnirestException {
+		List<GameResponse> data = new ArrayList<>();
 		
 		String uri = gameservice.getUri();
-		String gameListResponse = get(uri);
+		JsonObject gameListResponse = get(uri);
 		
-		System.out.println("Antwort auf " + uri + ":\n" +gameListResponse);
-		
-		data.add(new GameInformation("/game/idasd","Monopoly-Dummy-Data","4"));
+		System.out.println("Antwort auf " + uri + ":\n" +gameListResponse.toString());
+
+		JsonArray gamesList = gameListResponse.getAsJsonArray("games");
+
+		for (int i=0; i< gamesList.size(); i++){
+			GameResponse game = gson.fromJson(gamesList.get(i), GameResponse.class);
+			System.out.println(game);
+			System.out.println("TADAAAA:\n"+gamesList.get(i));
+            data.add(game);
+		}
 		return data;
 	}
 
@@ -82,13 +90,13 @@ public class RestopolyClient {
 		return 666;//dice.getNumber();
 	}
 	
-	public void createANewGame(String gameName) throws IOException{
+	public void createANewGame(String gameName) throws IOException, UnirestException {
 		String uri = gameservice.getUri();
-		CreateGameDTO game = new CreateGameDTO();
-		game.setName(gameName);
-		// TODO 
-//		String resBody = postData(game, uri);
-//		System.out.println("Antwort auf Post nach:" + uri + ": " + resBody );
+		CreateGame game = new CreateGame(gameName);
+
+		// TODO
+		JsonObject resBody = postData(game, uri);
+		System.out.println("Antwort auf Post nach:" + uri + ": " + resBody.toString());
 	}
 
 	/**
@@ -99,37 +107,14 @@ public class RestopolyClient {
 	 * @throws IOException
 	 * @throws UnirestException 
 	 */
-	public String postData(Object object, String serviceUri) throws IOException, UnirestException{
-        Gson gson = new Gson();
-        
+	public JsonObject postData(Object object, String serviceUri) throws IOException, UnirestException{
 		HttpResponse<JsonNode> jsonResponse = Unirest.post(serviceUri)
                 .header("accept", "application/json")
                 .body(gson.toJson(object))
                 .asJson();
 		
 		JsonObject responseObject = gson.fromJson(String.valueOf(jsonResponse.getBody()), JsonObject.class);
-		
-//		System.out.println(responseObject.toString());
-		
-//		
-//		URL url = new URL(serviceUri);
-//		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//		connection.setRequestMethod("POST");
-//		connection.setDoOutput(true);
-//		
-//		String body = new Gson().toJson(object);
-//
-//		if(body != null){
-//			connection.getOutputStream().write(body.getBytes());
-//		}
-//		
-//		connection.connect(); //do it
-//		
-//		//Get response
-//		int code = connection.getResponseCode();
-////		String resBody = code < 400 ? IOUtils.toString(connection.getInputStream()) 
-////				: IOUtils.toString(connection.getErrorStream());
-		return "";
+		return responseObject;
 	}
 	
 	/**
@@ -139,28 +124,12 @@ public class RestopolyClient {
 	 * @throws IOException
 	 * @throws UnirestException 
 	 */
-	public String get(String uri) throws IOException, UnirestException{
-		Gson gson = new Gson();
+	public JsonObject get(String uri) throws IOException, UnirestException{
 		HttpResponse<JsonNode> jsonResponse = Unirest.get(uri)
                 .header("accept", "application/json")
                 .asJson();
 		
 		JsonObject responseObject = gson.fromJson(String.valueOf(jsonResponse.getBody()), JsonObject.class);
-		
-//		URL url = new URL(uri);
-//		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//		conn.setRequestMethod("GET");
-//		conn.setDoInput(true);
-//		
-//		conn.setRequestProperty("Accept", "application/json");
-//		
-//		conn.connect(); //do it
-//		int code = conn.getResponseCode(); 
-//		String resBody = code < 400 ? IOUtils.toString(conn.getInputStream()) 
-//		: IOUtils.toString(conn.getErrorStream());
-////		System.out.println(resBody);
-//		conn.disconnect();
-		
-		return responseObject.toString();
+		return responseObject;
 	}
 }

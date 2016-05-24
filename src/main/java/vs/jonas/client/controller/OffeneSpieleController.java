@@ -12,7 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jonas.client.model.GameInformation;
+import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.tablemodel.GameInformationTableModel;
 import vs.jonas.client.view.OffeneSpieleUI;
@@ -62,7 +62,7 @@ public class OffeneSpieleController {
 	 */
 	private void ladeOffeneSpiele() throws IOException, UnirestException{
 		GameInformationTableModel model = (GameInformationTableModel) ui.getOffeneSpieleTable().getModel();
-		List<GameInformation> data = client.getGameInformations();
+		List<GameResponse> data = client.getGameResponses();
 		model.loadData(data);
 //		ui.getOffeneSpieleTable().updateUI();
 	}

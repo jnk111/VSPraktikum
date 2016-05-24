@@ -1,13 +1,12 @@
 package vs.jonas.client.model.tablemodel;
 
+import vs.jonas.client.json.GameResponse;
+import vs.jonas.client.model.comparator.GameNumberOfPlayerComparator;
+
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.table.DefaultTableModel;
-
-import vs.jonas.client.model.GameInformation;
-import vs.jonas.client.model.comparator.GameInformationComparator;
 
 @SuppressWarnings("serial")
 /**
@@ -22,16 +21,16 @@ public class GameInformationTableModel extends DefaultTableModel {
 	private String[] columnNames = { "ID", "Name", "# of Players"};
 
 	/**
-	 * Die Daten, die angezeigt werden sollen: GameInformation {id,name,numberOfPlayer}
+	 * Die Daten, die angezeigt werden sollen: GameResponse {id,name,numberOfPlayer}
 	 */
-	List<GameInformation> gameInformations;
+	List<GameResponse> gameResponses;
 
 	/**
 	 * Initialisiert das TableModel
 	 */
 	public GameInformationTableModel(){
 		super();
-		gameInformations = new ArrayList<GameInformation>();
+		gameResponses = new ArrayList<GameResponse>();
 	}
 	
     @Override
@@ -53,10 +52,10 @@ public class GameInformationTableModel extends DefaultTableModel {
 	 */
     @Override
 	public int getRowCount() {
-		if(gameInformations == null){
+		if(gameResponses == null){
 			return 0;
 		}
-		return gameInformations.size();
+		return gameResponses.size();
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class GameInformationTableModel extends DefaultTableModel {
 	 * @param col DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		GameInformation game = gameInformations.get(row);
+		GameResponse game = gameResponses.get(row);
 		Object ergebnis = null;
 		
 		switch(col){
@@ -88,12 +87,12 @@ public class GameInformationTableModel extends DefaultTableModel {
 	 * Laedt die Tabelle mit neuen Daten.
 	 * @param data Die neuen Daten.
 	 */
-	public void loadData(List<GameInformation> data){
+	public void loadData(List<GameResponse> data){
 		System.out.println("Load GameInformationTable ...");
 		if(data != null){
-			gameInformations = new ArrayList<>(data);
-			Collections.sort(gameInformations,new GameInformationComparator());
-			System.out.println(gameInformations);
+			gameResponses = new ArrayList<>(data);
+			Collections.sort(gameResponses,new GameNumberOfPlayerComparator());
+			System.out.println(gameResponses);
 			fireTableDataChanged();
 		}
 	}

@@ -82,8 +82,9 @@ public class OffeneSpieleController {
 				int row = table.getSelectedRow();
 				if(row >= 0){
 					GameInformationTableModel model = (GameInformationTableModel) table.getModel();
-					String id = (String) model.getValueAt(row, 0);
-					ui.getLblAuswahl().setText(id);
+
+					GameResponse response = model.getGameResponse(row);
+					ui.getLblAuswahl().setText(response.getName());
 				}
 			}
 		});

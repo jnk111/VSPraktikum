@@ -40,7 +40,7 @@ public class GameUI {
 	public GameUI() {
 		frame = new JFrame("Restopoly");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 650, 500);
+		frame.setBounds(100, 100, 850, 500);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

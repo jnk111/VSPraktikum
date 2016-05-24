@@ -8,7 +8,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import vs.jonas.client.model.PlayerInformation;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.view.GameUI;
@@ -58,9 +59,9 @@ public class GameController {
 		});
 	}
 	
-	private void ladeSpielerInformationen(){
+	private void ladeSpielerInformationen() throws IOException, UnirestException {
 		PlayerOverviewTableModel model = (PlayerOverviewTableModel) ui.getPlayerTable().getModel();
-		List<PlayerInformation> data = client.getPlayerInformations();
+		List<Player> data = client.getPlayerInformations(gameID);
 		model.loadData(data);
 	}
 }

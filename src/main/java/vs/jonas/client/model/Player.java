@@ -1,15 +1,16 @@
 package vs.jonas.client.model;
 
 import com.google.gson.Gson;
+import vs.jonas.client.json.PlayerResponse;
 
-public class PlayerInformation {
+public class Player {
 
 	String name;
 	String pawn;
 	String account;
-	boolean ready;
+	String ready;
 	
-	public PlayerInformation(String name, String pawn, String account, boolean ready) {
+	public Player(String name, String pawn, String account, String ready) {
 		super();
 		this.name = name;
 		this.pawn = pawn;
@@ -29,7 +30,7 @@ public class PlayerInformation {
 		return account;
 	}
 
-	public boolean isReady() {
+	public String isReady() {
 		return ready;
 	}
 	

@@ -21,12 +21,16 @@ public class YellowPagesService {
 
 	private Map<String, Service> services;
 
-	public static final String ONLINE_SERVICES = "online";
-	public static final String LOCAL_SERVICES = "local";
+	private boolean online;
 
-	public YellowPagesService(String service_herkunft) {
+	/**
+	 *
+	 * @param online True, if you want to use the container-network
+	 */
+	public YellowPagesService(boolean online) {
 		try {
-			initServices(service_herkunft);
+			this.online = online;
+			initServices(this.online);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -35,18 +39,18 @@ public class YellowPagesService {
 
 	public YellowPagesService() {
 		try {
-			initServices(ONLINE_SERVICES);
+			initServices(true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void initServices(String service_herkunft) throws IOException {
+	private void initServices(boolean online) throws IOException {
 		services = new HashMap<>();
 
 		// Je nachdem, ob local getestet werden soll oder im Docker-Container
-		if (service_herkunft.equals(ONLINE_SERVICES)) {
+		if (online) {
 			fetchAllServices();
 		} else {
 			fetchLocalServices();
@@ -138,6 +142,13 @@ public class YellowPagesService {
 
 	public static void main(String[] args) {
 
-		new YellowPagesService(ONLINE_SERVICES);
+		new YellowPagesService(true);
+	}
+
+	public String getBaseIP() {
+		if(online){
+			return YELLOW_SERVICE_IP;
+		}
+		else return "http://localhost:4567";
 	}
 }

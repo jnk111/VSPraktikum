@@ -1,5 +1,7 @@
 package vs.jonas.client.json;
 
+import com.google.gson.Gson;
+
 /**
  * Created by Jones on 24.05.2016.
  */
@@ -46,5 +48,9 @@ public class GameResponse {
 
     public int getNumberOfPlayers(){
         return numberOfPlayers;
+    }
+
+    public String toString(){
+        return new Gson().toJson(this);
     }
 }

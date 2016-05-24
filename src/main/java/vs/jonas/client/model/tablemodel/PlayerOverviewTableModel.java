@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.model.PlayerInformation;
+import vs.jonas.client.model.Player;
 import vs.jonas.client.model.comparator.PlayerInformationComparator;
 
 @SuppressWarnings("serial")
@@ -21,13 +21,13 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<PlayerInformation> playerInformations;
+	List<Player> players;
 
 	/**
 	 * Initialisiert das TableModel
 	 */
 	public PlayerOverviewTableModel() {
-		playerInformations = new ArrayList<>();
+		players = new ArrayList<>();
 	}
 
 	@Override
@@ -48,10 +48,10 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		if (playerInformations == null) {
+		if (players == null) {
 			return 0;
 		}
-		return playerInformations.size();
+		return players.size();
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		PlayerInformation player = playerInformations.get(row);
+		Player player = players.get(row);
 		Object ergebnis = null;
 
 		switch (col) {
@@ -95,12 +95,12 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<PlayerInformation> data) {
+	public void loadData(List<Player> data) {
 		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
-			playerInformations = new ArrayList<>(data);
-			Collections.sort(playerInformations, new PlayerInformationComparator());
-			System.out.println(playerInformations);
+			players = new ArrayList<>(data);
+			Collections.sort(players, new PlayerInformationComparator());
+			System.out.println(players);
 			fireTableDataChanged();
 		}
 	}

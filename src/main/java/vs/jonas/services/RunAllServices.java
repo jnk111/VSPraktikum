@@ -18,7 +18,7 @@ public class RunAllServices {
 	public static void run(){
 		
 
-		YellowPagesService start = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+		YellowPagesService start = new YellowPagesService(false);
 		
 		new GamesService();
 		new EventService().startService();

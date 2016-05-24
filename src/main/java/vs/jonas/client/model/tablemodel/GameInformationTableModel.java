@@ -82,7 +82,11 @@ public class GameInformationTableModel extends DefaultTableModel {
 		
 		return ergebnis;
 	}
-	
+
+	public GameResponse getGameResponse(int row){
+		return gameResponses.get(row);
+	}
+
 	/**
 	 * Laedt die Tabelle mit neuen Daten.
 	 * @param data Die neuen Daten.
@@ -95,6 +99,12 @@ public class GameInformationTableModel extends DefaultTableModel {
 			System.out.println(gameResponses);
 			fireTableDataChanged();
 		}
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int col)
+	{
+		return false;
 	}
 
 }

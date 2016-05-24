@@ -61,7 +61,7 @@ public class StartLocalServices {
         new EventService().startService();
 
         /* Initializes YellowPages - get local services */
-        YellowPagesService yellowPages = new YellowPagesService(YellowPagesService.LOCAL_SERVICES);
+        YellowPagesService yellowPages = new YellowPagesService(false);
 
         /*  Initializes DiceService (needs a running EventService)   */
         Map<String, Service> neededServicesDice = new HashMap<>();

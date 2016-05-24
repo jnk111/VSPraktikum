@@ -63,9 +63,8 @@ public class OffeneSpieleUI {
 		GameInformationTableModel model = new GameInformationTableModel();
 		offeneSpieleTable = new JTable(model);
 		offeneSpieleTable.setCellSelectionEnabled(true);
-	    ListSelectionModel cellSelectionModel = offeneSpieleTable.getSelectionModel();
-	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+//	    ListSelectionModel cellSelectionModel = offeneSpieleTable.getSelectionModel();
+//	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		offeneSpieleTable.setBackground(SystemColor.activeCaption);
 		JScrollPane scrollPane = new JScrollPane(offeneSpieleTable);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

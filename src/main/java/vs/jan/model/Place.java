@@ -2,79 +2,97 @@ package vs.jan.model;
 
 import vs.jan.json.JSONPlace;
 
-public class Place implements Convertable<JSONPlace>{
+public enum Place implements Convertable<JSONPlace>{
+	
+	Los("Los"), 
+	Bad("Badstrasse"), 
+	Gemeinschaft1("Gemeinschaftsfeld"), 
+	Turm("Turmstrasse"), 
+	EinkStr("Einkommenssteuer"), 
+	Suedbhf("Suedbahnhof"), 
+	Chaussee("Chaussestrasse"),
+	Ereignis1("Ereignisfeld"),
+	Elisen("Elisenstrasse"),
+	Post("Poststrasse"),
+	InJail("Gefaengnis"),
+	See("Seestrasse"),
+	EWerk("Elektrizitaetswerk"),
+	Hafen("Hafenstrasse"),
+	Neue("Neuestrasse"),
+	Westbhf("Westbahnhof"),
+	Muenchner("Muenchnerstrasse"),
+	Gemeinschaft2("Gemeinschaftsfeld"),
+	Wiener("Wienerstrasse"),
+	Berliner("Berlinerstrasse"),
+	FreiParken("Frei Parken"),
+	Theater("Theaterstrasse"),
+	Ereignis2("Ereignisfeld"),
+	Museum("Museumstrasse"),
+	Opern("Opernplatz"),
+	Nordbhf("Nordbahnhof"),
+	Lessing("Lessingstrasse"),
+	Schiller("Schillerstrasse"),
+	Wasser("Wasserwerk"),
+	Goethe("Goethestrasse"),
+	GoJail("Gehe ins Gefaengnis"),
+	Rathaus("Rathausplatz"),
+	Haupt("Hauptstrasse"),
+	Gemeinschaft3("Gemeinschaftsfeld"),
+	Bhf("Bahnhofstrasse"),
+	Hauptbhf("Hauptbahnhof"),
+	Ereignis3("Ereignisfeld"),
+	Park("Parkstrasse"),
+	ZusatzStr("Zusatzsteuer"),
+	Schloss("Schlossallee");
 	
 	private String name;
 	private String brokerUri;
 	private String placeUri; // Uri to the place on the board
-	
-	public Place(){
-		this(null);
-	}
-	
-	public Place(String placeUri){
 
-		this(placeUri, null, null);
-	}
-	
-	public Place(String placeUri, String name, String brokerUri){
+	private Place(){
 		
-		this.brokerUri = brokerUri;
+	}
+	
+	private Place(String name) {
+		
 		this.name = name;
-		this.placeUri = placeUri;
 	}
-
-	public String getPlaceUri() {
-		return placeUri;
-	}
-
-	public void setPlaceUri(String place) {
-		this.placeUri = place;
-	}
-
+	
+	
 	public String getName() {
 		return name;
 	}
+
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
+
 	public String getBrokerUri() {
 		return brokerUri;
 	}
+
 
 	public void setBrokerUri(String brokerUri) {
 		this.brokerUri = brokerUri;
 	}
 
+
+	public String getPlaceUri() {
+		return placeUri;
+	}
+
+
+	public void setPlaceUri(String placeUri) {
+		this.placeUri = placeUri;
+	}
+
+
 	@Override
 	public JSONPlace convert() {
 		
 		return new JSONPlace(this.name, this.brokerUri);
-	}
-
-	@Override
-	public int hashCode() {
-		
-		return	(this.getBrokerUri().hashCode()
-							+ this.getPlaceUri().hashCode()) * 42;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		
-		if(obj == null){
-			return false;
-		}
-		
-		if(obj instanceof Place){
-			Place p = (Place) obj;
-			
-			return this.getBrokerUri().equals(p.getBrokerUri())
-								&& this.getPlaceUri().equals(p.getPlaceUri());
-		}
-		return false;
 	}
 
 	@Override
@@ -84,5 +102,4 @@ public class Place implements Convertable<JSONPlace>{
 						+ this.placeUri + ", Broker: " 
 							+ this.brokerUri;
 	}
-
 }

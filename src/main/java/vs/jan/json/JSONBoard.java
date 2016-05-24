@@ -75,9 +75,8 @@ public class JSONBoard {
 	public boolean isValid() {
 
 		return this.getId() != null
-						&& this.getFields() != null
-							&& this.getPlayers() != null
-								&& this.getPositions() != null;
+						&& this.getFields() != null;
+
 	}
 
 }

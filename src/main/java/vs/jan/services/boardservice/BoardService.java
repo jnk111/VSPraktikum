@@ -34,6 +34,7 @@ import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
 import vs.jan.model.Place;
+import vs.jan.model.PlaceBkp;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.User;
@@ -95,8 +96,11 @@ public class BoardService {
 	public synchronized void createNewBoard(JSONGameURI game) throws InvalidInputException {
 
 		validator.checkGameIsValid(game);
-		String boardUri = "/boards/" + game.getURI().split("/")[2];
-		boards.put(new Board(boardUri), game);
+		String gameId = game.getURI().split("/")[2];
+		String boardUri = "/boards/" + gameId;
+		Board b = new Board(boardUri);
+		boards.put(b, game);
+		placeABoard(gameId, b.convert());
 	}
 
 	/**
@@ -486,39 +490,51 @@ public class BoardService {
 		validator.checkBoardIsValid(gameid, board);
 		Board key = helper.getBoard(this.boards, gameid);
 		validator.checkBoardIsNotNull(key, gameid);
-		List<Pawn> pawns = new ArrayList<>();
+
+		if (!key.hasFields()) {
+			initNewBoard(key, gameid);
+		} else {
+			updateBoard(key, board, gameid);
+		}
+	}
+	
+	private void initNewBoard(Board key, String gameid) {
+
 		List<Field> fields = new ArrayList<>();
-		Pawn pawn = null;
 
-		for (JSONField f : board.getFields()) {
-			Field field = new Field();
-			pawns = new ArrayList<>();
-			for (String pawnUri : f.getPawns()) {
-				pawn = new Pawn();
-				pawn.setPawnUri(pawnUri);
-				pawn.setPlaceUri(f.getPlace());
-				pawn.setMovesUri(pawnUri + "/move");
-				pawn.setPosition(0); // Startposition
-				pawn.setRollsUri(pawnUri + "/roll");
-				JSONPawn p = pawn.convert();
-				validator.checkPawnIsValid(p);
-				pawns.add(pawn);
-			}
+		for (int i = 0; i < Place.values().length; i++) {
 
-			Place place = new Place();
-			place.setPlaceUri(f.getPlace());
-			field.setPawns(pawns);
-			field.setPlace(place);
-			validator.checkPlaceIsValid(place.convert());
-			fields.add(field);
+			Place p = Place.values()[i];
+			String placeUri = "/boards/" + gameid + "/places/" + i;
+			p.setPlaceUri(placeUri);
+			Field f = new Field(p);
+			fields.add(f);
 		}
 
 		key.setFields(fields);
 		key.setPlayers("/boards/" + gameid + "/players");
-		key.setPositions(board.getPositions()); // TODO: nachfragen
+	}
 
-		JSONGameURI entry = boards.get(key);
-		boards.put(key, entry);
+	private void updateBoard(Board key, JSONBoard board, String gameid) {
+		for (int i = 0; i < board.getFields().size(); i++) {
+
+			JSONField field = board.getFields().get(i);
+			Place p = Place.values()[i];
+			Field f = helper.getField(key, p.getPlaceUri());
+			f.setPawns(new ArrayList<>());
+
+			for (String pawnUri : field.getPawns()) {
+				Pawn pawn = new Pawn();
+				pawn.setPawnUri(pawnUri);
+				pawn.setPlaceUri(field.getPlace());
+				pawn.setMovesUri(pawnUri + "/move");
+				pawn.setPosition(i);
+				pawn.setRollsUri(pawnUri + "/roll");
+				JSONPawn json = pawn.convert();
+				validator.checkPawnIsValid(json);
+				f.addPawn(pawn);
+			}
+		}
 	}
 
 	/**
@@ -685,11 +701,11 @@ public class BoardService {
 			throw new TurnMutexNotFreeException("Player: " + currPlayer + " does not have the Mutex!");
 		}
 	}
-	
-	/* 
+
+	/*
 	 * ===========================================================================
-	 * TODO: Spaeter entfernen
-	 * * ===========================================================================
+	 * TODO: Spaeter entfernen *
+	 * ===========================================================================
 	 */
 
 	public void setNeededServices(Map<String, Service> neededServices) {
@@ -711,12 +727,12 @@ public class BoardService {
 
 		return services;
 	}
-	
-/*
- * ===========================================================================
- * Default Getter
- * ===========================================================================
- */
+
+	/*
+	 * ===========================================================================
+	 * Default Getter
+	 * ===========================================================================
+	 */
 
 	public Map<Board, JSONGameURI> getBoards() {
 

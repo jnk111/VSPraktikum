@@ -11,6 +11,7 @@ import vs.jan.json.JSONPlace;
 import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
+import vs.jan.model.PlaceBkp;
 import vs.jan.model.Place;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
@@ -19,7 +20,7 @@ import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Event;
 
 public class BoardServiceHelper {
-	
+
 	/**
 	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
 	 * einem Wuerfelwurd zu einer neuen Position bewegen
@@ -32,7 +33,7 @@ public class BoardServiceHelper {
 	 *          Der Eventname
 	 * @param pawn
 	 *          Die Figur um die es sich handelt
-	 * @param neededServices2 
+	 * @param neededServices2
 	 */
 	public void postEvent(String gameid, String type, String name, Pawn pawn, Map<String, Service> neededServices) {
 
@@ -41,18 +42,17 @@ public class BoardServiceHelper {
 		String resource = null;
 
 		switch (type) {
-			case "move": {
-				reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
-				resource = pawn.getRollsUri();
-				break;
-			}
+		case "move": {
+			reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
+			resource = pawn.getRollsUri();
+			break;
+		}
 		}
 
 		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
 		HttpService.post(service.getUri(), event, HttpURLConnection.HTTP_OK);
 	}
-	
-	
+
 	/**
 	 * Holt alle Events des Spielers seit dem letzten Wurf
 	 * 
@@ -68,12 +68,12 @@ public class BoardServiceHelper {
 	public List<Event> retrieveEventList(Pawn pawn, String gameid, Date date) {
 		return new ArrayList<>();
 	}
-	
-	
+
 	/**
 	 * Liefert das Board zu einer Gameid, muss spaeter erweitert werden, falls
 	 * mehere Boards einem Spiel zugeteilt werden koennen.
-	 * @param boards2 
+	 * 
+	 * @param boards2
 	 * 
 	 * @param gameid
 	 *          Die Gameid des Boards
@@ -88,7 +88,7 @@ public class BoardServiceHelper {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * TODO: implementiere URI-Erzeugung Generiert die Pawn-Uri aus dem
 	 * GET-Response der PlayerUri
@@ -113,7 +113,7 @@ public class BoardServiceHelper {
 		}
 		return board.getUri() + "/pawns/" + id;
 	}
-	
+
 	private boolean hasSamePawnID(Field f, String pawnUri) {
 
 		for (Pawn p : f.getPawns()) {
@@ -123,8 +123,7 @@ public class BoardServiceHelper {
 		}
 		return false;
 	}
-	
-	
+
 	/**
 	 * Gibt die Figur, die zu der Pawnid gehoert zurueck
 	 * 
@@ -146,18 +145,19 @@ public class BoardServiceHelper {
 		return null;
 	}
 
-
 	public Place getPlace(List<Field> fields, String placeid) {
-		
-		for(Field f: fields){
+
+		for (Field f : fields) {
 			Place p = f.getPlace();
-			if(p.getPlaceUri().contains(placeid)){
-				return p; 
+			String[] uri = p.getPlaceUri().split("/");
+			String id = uri[uri.length - 1];
+			if (id.equals(placeid)) {
+				return p;
 			}
 		}
 		return null;
 	}
-	
+
 	public Place getPlaceWithPathInfo(JSONPlace place, List<Field> fields, String pathinfo) {
 
 		for (Field f : fields) {
@@ -166,6 +166,25 @@ public class BoardServiceHelper {
 				p.setName(place.getName());
 				p.setBrokerUri(place.getBroker());
 				return p;
+			}
+		}
+		return null;
+	}
+
+	// public void initBoardInformation(Board b) {
+	//
+	// for (Place p : Place.values()) {
+	// b.addField(new Field(p));
+	// }
+	//
+	// }
+
+	public Field getField(Board key, String placeUri) {
+
+		for (Field f : key.getFields()) {
+			Place p = f.getPlace();
+			if (p != null && p.getPlaceUri().equals(placeUri)) {
+				return f;
 			}
 		}
 		return null;

@@ -10,6 +10,7 @@ import vs.jan.json.JSONPawn;
 import vs.jan.json.JSONPlace;
 import vs.jan.model.Board;
 import vs.jan.model.Place;
+import vs.jan.model.PlaceBkp;
 
 public class BoardServiceValidator {
 
@@ -74,7 +75,7 @@ public class BoardServiceValidator {
 		}
 	}
 	
-	public void checkPlaceIdIsNotNull(Place p, String gameid) {
+	public void checkPlaceIdIsNotNull(PlaceBkp p, String gameid) {
 		if(p == null){
 			throw new ResourceNotFoundException(ExcMessageHandler.getPlaceIdIsNullMsg(gameid));
 		}

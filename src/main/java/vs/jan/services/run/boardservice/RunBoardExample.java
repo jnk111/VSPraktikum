@@ -21,7 +21,7 @@ import vs.jan.json.JSONPlace;
 import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
-import vs.jan.model.Place;
+import vs.jan.model.PlaceBkp;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
@@ -71,9 +71,8 @@ public class RunBoardExample {
 		int boardID = 42;
 
 		createBoard(boardID, gameUri);
-		placeBoard(boardID);
 		setupUser(boardID, gameUri);
-//		createPawns(boardID);
+		createPawns(boardID);
 		letPawnsRollDice(boardID);
 		updatePawns(boardID);
 		deletePawns(boardID);
@@ -94,6 +93,7 @@ public class RunBoardExample {
 		p3.setUserName("yoshi");
 		p4.setUserName("donkeykong");
 		String gamePlayerUri = gameUri + "/" + boardID + "/players";
+		System.out.println("GameplayerURI: " + gamePlayerUri);
 		System.out.println("Create Some Users on Game: " + boardID);
 		System.out.println("-------------------------------------------------------------------------------------------");
 		createUser(boardID, gamePlayerUri, p1);
@@ -107,19 +107,6 @@ public class RunBoardExample {
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		System.out.println();
-		// System.out.println("Create A User on Userservice");
-		//
-		//
-		// User user = new User("/users/mario", "Mario",
-		// "http://somehost:4567/client/mario");
-		// System.out.println("User that will be created: " + GSON.toJson(user));
-		// HttpService.post("http://localhost:4567/users", user,
-		// StatusCodes.CREATED);
-		// System.out.println("SUCCESS");
-		//
-		// System.out.println("-------------------------------------------------------------------------------------------");
-		// System.out.println();
-		// System.out.println();
 
 	}
 
@@ -171,7 +158,7 @@ public class RunBoardExample {
 		String pUri = places.get(index);
 		JSONPlace place = getPlace(pUri);
 		System.out.println("Place that will be updated: " + GSON.toJson(place));
-		Place p = new Place(pUri, place.getName(), place.getBroker());
+		PlaceBkp p = new PlaceBkp(pUri, place.getName(), place.getBroker());
 		p.setName("Los");
 		p.setBrokerUri("/broker/places/" + p.getName().toLowerCase());
 		HttpService.put("http://localhost:4567" + pUri, p.convert(), HttpURLConnection.HTTP_OK);
@@ -394,32 +381,6 @@ public class RunBoardExample {
 
 	}
 
-	private static void placeBoard(int boardID) throws InterruptedException {
-
-		System.out.println("Place the Board");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		checkBoardAdded(boardID);
-		
-		Board b = new BoardServiceHelper().getBoard(boardApi.getBoardService().getBoards(), "" + boardID);
-		b.setPlayers("http://localhost:4567/game/" + boardID + "/players");
-		for (int i = 0; i <= 10; i++) {
-			Field f = new Field();
-			Place p = new Place("/boards/42/places/" + i);
-			f.setPlace(p);
-			b.getFields().add(f);
-		}
-
-		Thread.sleep(TIMEOUT);
-
-		System.out.println("Fill Board with Information...");
-		HttpService.put("http://localhost:4567/boards/" + boardID, b.convert(), HttpURLConnection.HTTP_OK);
-		System.out.println("SUCCESS");
-		System.out.println("Placed Board: " + GSON.toJson(b.convert()));
-		System.out.println();
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-	}
 
 	private static void checkBoardAdded(int boardID) throws InterruptedException {
 
@@ -449,16 +410,6 @@ public class RunBoardExample {
 		checkBoardAdded(boardID);
 
 		System.out.println("-------------------------------------------------------------------------------------------");
-
-		// System.out.println("Create Board");
-		// System.out.println("-------------------------------------------------------------------------------------------");
-		// JSONGameURI gameid = new JSONGameURI("/games/" + boardID);
-		// HttpService.post("http://localhost:4567/boards", gameid,
-		// HttpURLConnection.HTTP_OK);
-		// System.out.println("SUCCESS");
-		// System.out.println("-------------------------------------------------------------------------------------------");
-		// System.out.println();
-		// System.out.println();
 
 	}
 

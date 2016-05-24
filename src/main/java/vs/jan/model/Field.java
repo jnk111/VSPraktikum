@@ -12,7 +12,17 @@ public class Field implements Convertable<JSONField>{
 	
 	public Field(){
 		
-		pawns = new ArrayList<>();
+		this(null, new ArrayList<>());
+
+	}
+	
+	public Field(Place p){
+		this(p, new ArrayList<>());
+	}
+	
+	public Field(Place p, List<Pawn> pawns){
+		this.place = p;
+		this.pawns = pawns;
 	}
 
 	public Place getPlace() {
@@ -69,8 +79,7 @@ public class Field implements Convertable<JSONField>{
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		return this.place.toString();
 	}
 	
 	public void removePawn(Pawn pawn){

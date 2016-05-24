@@ -119,7 +119,7 @@ public class Board implements Convertable<JSONBoard>{
 
 	public boolean hasFields() {
 		
-		return this.fields != null;
+		return this.fields != null && !this.fields.isEmpty();
 	}
 
 	public void removePawn(Pawn p) {
@@ -129,5 +129,9 @@ public class Board implements Convertable<JSONBoard>{
 			}
 		}
 		
+	}
+
+	public void addField(Field field) {
+		this.fields.add(field);
 	}	
 }

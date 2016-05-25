@@ -555,30 +555,6 @@ public class BoardService {
 	 * ===========================================================================
 	 * TODO: implemetieren folgende Funktionionen
 	 * ===========================================================================
-	 */
-	/**
-	 * TODO: implement REST-Aufruf um einer Figur ein neues Feld zuzuweisen,
-	 * nachdem sie bewegt wurde wird von rollDice() aufgerufen
-	 * 
-	 * @param gameid
-	 * @param pawn
-	 */
-	@SuppressWarnings("unused")
-	private void placeAPawnRESTCall(String gameid, Pawn pawn) {
-
-	}
-
-	/**
-	 * TODO: implement REST-Aufruf um einer Figur eine neue Position zuzuweisen,
-	 * nachdem sie bewegt wurde wird von rollDice() aufgerufen
-	 * 
-	 * @param gameid
-	 * @param pawn
-	 */
-	@SuppressWarnings("unused")
-	private void movePawnRESTCall(String gameid, String pawnid, int rollValue) {
-
-	}
 
 	/**
 	 * Fuehrt eine Wurfelaktion aus und fuegt den gemachten Wurd in die Wurfliste,

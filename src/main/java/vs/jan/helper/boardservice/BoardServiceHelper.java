@@ -68,6 +68,7 @@ public class BoardServiceHelper {
 	 * 
 	 */
 	public List<Event> retrieveEventList(Pawn pawn, String gameid, Date date) {
+		
 		return new ArrayList<>();
 	}
 

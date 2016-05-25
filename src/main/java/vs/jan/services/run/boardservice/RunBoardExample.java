@@ -20,7 +20,6 @@ import vs.jan.json.JSONPawn;
 import vs.jan.json.JSONPawnList;
 import vs.jan.json.JSONPlace;
 import vs.jan.model.Pawn;
-import vs.jan.model.PlaceBkp;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
@@ -56,7 +55,7 @@ public class RunBoardExample {
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
 		boardApi = new BoardRESTApi();
-		new GamesServiceFIXED();
+		new GamesService();
 		setupGame();
 
 	}
@@ -206,40 +205,6 @@ public class RunBoardExample {
 
 	}
 
-	private static void createPawns(int boardID) throws InterruptedException {
-		System.out.println("Create some Pawns on the board");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		createPawn(boardID, "mario");
-		createPawn(boardID, "wario");
-		createPawn(boardID, "yoshi");
-		createPawn(boardID, "donkeykong");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-	}
-
-	private static void putPlaces(int boardID) throws MalformedURLException, InterruptedException {
-		System.out.println("Update place information of a random place");
-		System.out.println("-------------------------------------------------------------------------------------------");
-
-		Thread.sleep(TIMEOUT);
-		List<String> places = getPlacesUris(boardID);
-		int index = (int) (Math.random() * places.size());
-		String pUri = places.get(index);
-		JSONPlace place = getPlace(pUri);
-		System.out.println("Place that will be updated: " + GSON.toJson(place));
-		PlaceBkp p = new PlaceBkp(pUri, place.getName(), place.getBroker());
-		p.setName("Los");
-		p.setBrokerUri("/broker/places/" + p.getName().toLowerCase());
-		HttpService.put("http://localhost:4567" + pUri, p.convert(), HttpURLConnection.HTTP_OK);
-		System.out.println("SUCCESS");
-		System.out.println("Updated Place: " + GSON.toJson(p.convert()));
-
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-
-	}
 
 	private static JSONPlace getPlace(String placeUri) {
 

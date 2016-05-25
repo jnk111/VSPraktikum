@@ -6,23 +6,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import vs.jan.exception.ExcMessageHandler;
+import com.google.gson.Gson;
+
+import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.JSONGameURI;
-import vs.jan.json.JSONPlace;
+import vs.jan.json.JSONThrowsList;
+import vs.jan.json.JSONThrowsURI;
 import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
-import vs.jan.model.PlaceBkp;
 import vs.jan.model.Place;
 import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
+import vs.jan.model.User;
+import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.json.EventData;
+import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
 
-public class BoardServiceHelper {
+public class BoardHelper {
 
+	private final Gson GSON = new Gson();
 	/**
 	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
 	 * einem Wuerfelwurd zu einer neuen Position bewegen
@@ -89,7 +95,7 @@ public class BoardServiceHelper {
 				return b;
 			}
 		}
-		return null;
+		throw new ResourceNotFoundException(Error.BOARD_NOT_FOUND.getMsg());
 	}
 
 	/**
@@ -145,7 +151,7 @@ public class BoardServiceHelper {
 				}
 			}
 		}
-		return null;
+		throw new ResourceNotFoundException(Error.PAWN_NOT_FOUND.getMsg());
 	}
 
 	public Place getPlace(List<Field> fields, String placeid) {
@@ -158,29 +164,9 @@ public class BoardServiceHelper {
 				return p;
 			}
 		}
-		return null;
+		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-	public Place getPlaceWithPathInfo(JSONPlace place, List<Field> fields, String pathinfo) {
-
-		for (Field f : fields) {
-			Place p = f.getPlace();
-			if (p.getPlaceUri().equals(pathinfo)) {
-				p.setName(place.getName());
-				p.setBrokerUri(place.getBroker());
-				return p;
-			}
-		}
-		return null;
-	}
-
-	// public void initBoardInformation(Board b) {
-	//
-	// for (Place p : Place.values()) {
-	// b.addField(new Field(p));
-	// }
-	//
-	// }
 
 	public Field getField(Board key, String placeUri) {
 
@@ -190,11 +176,47 @@ public class BoardServiceHelper {
 				return f;
 			}
 		}
-		return null;
+		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
 	public String getID(String uri) {
 		String [] u = uri.split("/");
 		return u[u.length - 1];
+	}
+
+	public void addThrow(Map<JSONThrowsURI, JSONThrowsList> throwMap, Pawn pawn, Dice roll) {
+		
+		for(JSONThrowsURI uri: throwMap.keySet()){
+			if(uri.getRollUri().contains(getID(pawn.getPawnUri()))){
+				throwMap.get(uri).addThrow(roll);
+			}
+		}
+	}
+	
+	/**
+	 * Ermittelt den Spieler zu der Figur vom Game-Service
+	 * 
+	 * @param pawn
+	 *          Die Figur des Spielers
+	 * @param gameid
+	 *          Die Gameid zum Spiel
+	 * @return User Der Spieler der wuerfeln moechte
+	 * @throws ResourceNotFoundException
+	 *           Spieler wurde nicht gefunden
+	 * @throws ConnectionRefusedException
+	 *           Service nicht erreichbar
+	 */
+	public User getPlayer(Pawn pawn, String gameid) {
+		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
+		User currPlayer = GSON.fromJson(json, User.class);
+		return currPlayer;
+	}
+
+	public void checkDiceNotNull(Dice roll) {
+		
+		if(roll == null){
+			
+		}
+		
 	}
 }

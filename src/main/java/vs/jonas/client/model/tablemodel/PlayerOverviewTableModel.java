@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.model.Player;
+import vs.jonas.client.json.Player;
 import vs.jonas.client.model.comparator.PlayerInformationComparator;
 
 @SuppressWarnings("serial")
@@ -103,6 +103,12 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 			System.out.println(players);
 			fireTableDataChanged();
 		}
+	}
+	
+	@Override
+	public boolean isCellEditable(int row, int col)
+	{
+		return false;
 	}
 
 }

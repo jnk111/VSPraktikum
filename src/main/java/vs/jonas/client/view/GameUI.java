@@ -29,10 +29,10 @@ public class GameUI {
 	private JButton btnHausVerkaufen;
 	private JButton btnWrfeln;
 	private JLabel lblKontostand;
-	private JPanel fieldPanel;
-	private JPanel haeuser;
-	private JPanel panel_2;
-	private JPanel panel_3;
+	private JSplitPane gameOverviewPanel;
+	private JScrollPane currentFieldPanel;
+	private JScrollPane gameFieldPanel;
+	private JLabel lblUsername;
 
 	/**
 	 * Create the frame.
@@ -57,7 +57,7 @@ public class GameUI {
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new GridLayout(8, 0, 0, 0));
 
-		JLabel lblUsername = new JLabel("Username");
+		lblUsername = new JLabel("Username");
 		lblUsername.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblUsername.setBackground(SystemColor.activeCaption);
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
@@ -89,25 +89,19 @@ public class GameUI {
 		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setRightComponent(splitPane_1);
 
-		JPanel board = new JPanel();
-		splitPane_1.setRightComponent(board);
-		board.setLayout(new GridLayout(2, 2, 0, 0));
-		
-		fieldPanel = new JPanel();
-		board.add(fieldPanel);
-		
-		haeuser = new JPanel();
-		board.add(haeuser);
-		
-		panel_2 = new JPanel();
-		board.add(panel_2);
-		
-		panel_3 = new JPanel();
-		board.add(panel_3);
-
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		JScrollPane playerOverview = new JScrollPane(playerTable);
 		splitPane_1.setLeftComponent(playerOverview);
+		
+		gameOverviewPanel = new JSplitPane();
+		splitPane_1.setRightComponent(gameOverviewPanel);
+		
+		currentFieldPanel = new JScrollPane();
+		gameOverviewPanel.setLeftComponent(currentFieldPanel);
+		
+		gameFieldPanel = new JScrollPane();
+		gameOverviewPanel.setRightComponent(gameFieldPanel);
+		gameOverviewPanel.setDividerLocation(200);
 		splitPane_1.setDividerLocation(150);
 		splitPane.setDividerLocation(150);
 	}
@@ -138,6 +132,10 @@ public class GameUI {
 
 	public JLabel getLblKontostand() {
 		return lblKontostand;
+	}
+	
+	public JLabel getUsername(){
+		return lblUsername;
 	}
 
 	public void showUI() {

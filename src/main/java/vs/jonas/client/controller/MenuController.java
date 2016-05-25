@@ -8,6 +8,8 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.view.RestopolyMenuUI;
 
@@ -16,7 +18,7 @@ public class MenuController {
 	private RestopolyMenuUI ui;
 	private RestopolyClient client;
 	
-	public MenuController(RestopolyClient client){
+	public MenuController(RestopolyClient client) throws Exception{
 		this.client = client;
 		initializeUI();
 	}

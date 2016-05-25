@@ -1,7 +1,6 @@
-package vs.jonas.client.model;
+package vs.jonas.client.json;
 
 import com.google.gson.Gson;
-import vs.jonas.client.json.PlayerResponse;
 
 public class Player {
 

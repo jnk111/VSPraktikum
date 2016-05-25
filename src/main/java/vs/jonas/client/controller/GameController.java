@@ -9,7 +9,9 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
-import vs.jonas.client.model.Player;
+
+import vs.jonas.client.json.User;
+import vs.jonas.client.json.Player;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.view.GameUI;
@@ -20,9 +22,10 @@ public class GameController {
 	RestopolyClient client;
 	String gameID;
 	
-	public GameController(RestopolyClient client, String gameID){
+	public GameController(RestopolyClient client, String gameID) throws IOException, UnirestException{
 		this.client = client;
 		this.gameID = gameID;
+		client.enterGame(gameID);
 		initialisiereUI();
 		
 	}
@@ -34,8 +37,10 @@ public class GameController {
 					ui = new GameUI();
 					registriereActionListener();
 					ladeSpielerInformationen();
+					ui.getUsername().setText(client.getUser().getName());
 					ui.showUI();
 				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
 					e.printStackTrace();
 				}
 			}
@@ -59,9 +64,9 @@ public class GameController {
 		});
 	}
 	
-	private void ladeSpielerInformationen() throws IOException, UnirestException {
+	private void ladeSpielerInformationen() throws Exception {
 		PlayerOverviewTableModel model = (PlayerOverviewTableModel) ui.getPlayerTable().getModel();
-		List<Player> data = client.getPlayerInformations(gameID);
+		List<Player> data = client.getPlayers(gameID);
 		model.loadData(data);
 	}
 }

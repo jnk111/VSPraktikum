@@ -2,7 +2,7 @@ package vs.jonas.client.model.comparator;
 
 import java.util.Comparator;
 
-import vs.jonas.client.model.Player;
+import vs.jonas.client.json.Player;
 
 public class PlayerInformationComparator implements Comparator<Player> {
 

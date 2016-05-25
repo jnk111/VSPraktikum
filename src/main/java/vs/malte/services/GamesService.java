@@ -32,7 +32,7 @@ import vs.malte.models.ServiceList;
 
 public class GamesService
 {
-    private final boolean DEBUG_MODE = true;
+    private final boolean DEBUG_MODE = false;
 
     private final String GAMEID_PREFIX = "/games/";
     private final String USERID_PREFIX = "/users/";
@@ -494,7 +494,7 @@ public class GamesService
 
                     HttpService.post( game.getUserService(), userDTO );
 
-                    // createPawn( newPlayer, game );
+                    createPawn( newPlayer, game );
 
                     game.getPlayers().put( mapKey, newPlayer );
 
@@ -837,7 +837,7 @@ public class GamesService
 
     private void initGetPlayersTurn()
     {
-        get( "/games/:gameId/players/turn", ( req, resp ) ->
+        get( "/games/:gameId/player/turn", ( req, resp ) ->
         {
             System.out.println( "Methode aufgerufen" );
 
@@ -866,7 +866,7 @@ public class GamesService
 
     private void initGetPlayersCurrent()
     {
-        get( "/games/:gameId/players/current", ( req, resp ) ->
+        get( "/games/:gameId/player/current", ( req, resp ) ->
         {
             System.out.println( "Methode aufgerufen" );
 

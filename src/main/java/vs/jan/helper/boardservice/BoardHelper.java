@@ -211,12 +211,5 @@ public class BoardHelper {
 		User currPlayer = GSON.fromJson(json, User.class);
 		return currPlayer;
 	}
-
-	public void checkDiceNotNull(Dice roll) {
-		
-		if(roll == null){
-			
-		}
-		
-	}
+	
 }

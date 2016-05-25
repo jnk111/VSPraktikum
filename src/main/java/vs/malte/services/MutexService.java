@@ -38,11 +38,12 @@ public class MutexService
     }
 
     /**
-     * Vergibt den Mutex an einen Spieler, sofern dieser Spieler die Erlaubnis dazu hat.
-     * Erlaubnis wird mit "assignMutexPermission" vergeben.
+     * Vergibt den Mutex an einen Spieler, sofern dieser Spieler die Erlaubnis dazu hat. Erlaubnis wird mit "assignMutexPermission" vergeben.
      * 
-     * @param GameID des jeweiligen Spiels
-     * @param PlayerID des Players
+     * @param GameID
+     *            des jeweiligen Spiels
+     * @param PlayerID
+     *            des Players
      * @return true falls Mutex erfolgreich uebergeben wurde ansonsten false
      */
     public boolean acquire( String gameId, String playerId )
@@ -58,17 +59,22 @@ public class MutexService
      */
     public void release( String gameId, String playerId )
     {
-        mutexMap.get( gameId ).acquire( playerId );
+        mutexMap.get( gameId ).release( playerId );
     }
 
     /**
      * Gibt die UserID des Users zurueck der momentan den Mutex haelt
      * 
      * @param gameId
-     * @return  userId
+     * @return userId
      */
     public String getMutexUser( String gameId )
     {
         return mutexMap.get( gameId ).getCurrentUser();
+    }
+
+    public String getMutexPermittedUser( String gameId )
+    {
+        return mutexMap.get( gameId ).getPermittedUser();
     }
 }

@@ -293,7 +293,7 @@ public class GamesService
                 for ( Game g : this.games.values() )
                 {
                     gameDTO = new GameDTO();
-                    
+
                     gameDTO.setId( g.getId() );
                     gameDTO.setName( g.getName() );
                     gameDTO.setPlayers( g.getUserService() );
@@ -471,34 +471,42 @@ public class GamesService
                 resp.status( 500 ); // Internal Server Error
 
                 Game game = getGame( req.params( ":gameId" ) );
-                String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
 
-                Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
-                String mapKey = newPlayer.getUserName();
-
-                // ================= Playerobjekt wird entsprechend der Spezi fuer GameService konfiguriert ================= //
-                newPlayer.setId( "/games/" + game.getName() + "/players/" + newPlayer.getUserName().toLowerCase() );
-                newPlayer.setUserName( "/user/" + newPlayer.getUserName().toLowerCase() );
-
-                if ( game != null && !game.getPlayers().containsKey( mapKey ) )
+                if ( !game.isRunning() )
                 {
-                    // ================= Post an UserService (User wird im UserService erstellt) ================= //
+                    String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
 
-                    CreateUserDTO userDTO = new CreateUserDTO();
-                    userDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
-                    userDTO.setName( newPlayer.getUserName().replaceAll( "user/", "" ) );
-                    userDTO.setUri( hostUri + "/client/" + userDTO.getName() );
+                    Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
+                    String mapKey = newPlayer.getUserName();
 
-                    if ( DEBUG_MODE )
-                        System.out.println( "NewPlayer: " + new Gson().toJson( userDTO ) );
+                    // ================= Playerobjekt wird entsprechend der Spezi fuer GameService konfiguriert ================= //
+                    newPlayer.setId( "/games/" + game.getName() + "/players/" + newPlayer.getUserName().toLowerCase() );
+                    newPlayer.setUserName( "/user/" + newPlayer.getUserName().toLowerCase() );
 
-                    HttpService.post( game.getUserService(), userDTO );
+                    if ( game != null && !game.getPlayers().containsKey( mapKey ) )
+                    {
+                        // ================= Post an UserService (User wird im UserService erstellt) ================= //
 
-                    createPawn( newPlayer, game );
+                        CreateUserDTO userDTO = new CreateUserDTO();
+                        userDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
+                        userDTO.setName( newPlayer.getUserName().replaceAll( "user/", "" ) );
+                        userDTO.setUri( hostUri + "/client/" + userDTO.getName() );
 
-                    game.getPlayers().put( mapKey, newPlayer );
+                        if ( DEBUG_MODE )
+                            System.out.println( "NewPlayer: " + new Gson().toJson( userDTO ) );
 
-                    resp.status( 201 ); // created
+                        HttpService.post( game.getUserService(), userDTO );
+
+                        createPawn( newPlayer, game );
+
+                        game.getPlayers().put( mapKey, newPlayer );
+
+                        resp.status( 201 ); // created
+                    }
+                    else
+                    {
+                        resp.status( 409 ); // Conflict
+                    }
                 }
                 else
                 {
@@ -620,14 +628,21 @@ public class GamesService
                 if ( player != null )
                 {
                     player.setReady( true );
+                    resp.status( 200 ); // ok
 
                     if ( game.isRunning() )
                     {
-                        initNextPlayersTurn( game );      // Erlaubnis fuer das Inanspruchnehmen des Mutex an naechsten Spieler weiter geben
+                        if ( !player.getId().equals( mutexService.getMutexUser( game.getId() ) ) )  // Falls der Spieler momentan nicht den Mutex hat, wird das ready
+                                                                                                    // nicht akzeptiert = conflict
+                        {
+                            resp.status( 409 ); // conflict
+                        }
+                        else
+                        {
+                            initNextPlayersTurn( game );      // Erlaubnis fuer das Inanspruchnehmen des Mutex an naechsten Spieler weiter geben
+                        }
                         player.setReady( false );
                     }
-
-                    resp.status( 200 ); // ok
                 }
                 else
                 {
@@ -657,14 +672,14 @@ public class GamesService
         {
             playerArray[i] = player;
 
-            if ( player.getId().equals( currentPlayerID ) && i < playerArray.length )
+            if ( player.getId().equals( currentPlayerID ) && i < ( playerArray.length - 1 ) )
                 nextPlayerIndex = ( i + 1 );
 
             i++;
         }
 
-        System.out.println( "nextPlayerIndex = " + nextPlayerIndex );
-        System.out.println( new Gson().toJson( playerArray ) );
+        if ( DEBUG_MODE )
+            System.out.println( "Next Player: " + new Gson().toJson( playerArray[nextPlayerIndex].getUserName() ) );
 
         mutexService.release( game.getId(), currentPlayerID );
         mutexService.assignMutexPermission( game.getId(), playerArray[nextPlayerIndex].getId() );
@@ -839,21 +854,27 @@ public class GamesService
     {
         get( "/games/:gameId/player/turn", ( req, resp ) ->
         {
-            System.out.println( "Methode aufgerufen" );
-
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
 
-            System.out.println( new Gson().toJson( game ) );
-
-            if ( game != null )
+            if ( game != null && !mutexService.getMutexUser( game.getId() ).equals( "" ) )
             {
                 resp.status( 200 ); // ok
 
-                result = new Gson().toJson( mutexService.getMutexUser( game.getId() ) );
+                String currentPlayerID = mutexService.getMutexUser( game.getId() );
+                String currentPlayerName = currentPlayerID.replaceAll( "/games/" + game.getName() + "/players/", "" );      // TODO
+                Player currentPlayer = game.getPlayers().get( currentPlayerName );
+                CurrentPlayerDTO currentPlayerDTO = new CurrentPlayerDTO();
+
+                currentPlayerDTO.setId( currentPlayer.getId() );
+                currentPlayerDTO.setUser( currentPlayer.getUserName() ); // TODO soll die Uri sein
+                currentPlayerDTO.setPawn( currentPlayer.getPawn() );
+                currentPlayerDTO.setAccount( currentPlayer.getAccount() );
+
+                result = new Gson().toJson( currentPlayerDTO );
             }
             else
             {
@@ -868,21 +889,17 @@ public class GamesService
     {
         get( "/games/:gameId/player/current", ( req, resp ) ->
         {
-            System.out.println( "Methode aufgerufen" );
-
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error
 
             String result = "";
             Game game = getGame( req.params( ":gameId" ) );
 
-            System.out.println( new Gson().toJson( game ) );
-
-            if ( game != null )
+            if ( game != null && !mutexService.getMutexPermittedUser( game.getId() ).equals( "" ) )
             {
                 resp.status( 200 ); // ok
 
-                String currentPlayerID = mutexService.getMutexUser( game.getId() );
+                String currentPlayerID = mutexService.getMutexPermittedUser( game.getId() );
                 String currentPlayerName = currentPlayerID.replaceAll( "/games/" + game.getName() + "/players/", "" );      // TODO
                 Player currentPlayer = game.getPlayers().get( currentPlayerName );
                 CurrentPlayerDTO currentPlayerDTO = new CurrentPlayerDTO();

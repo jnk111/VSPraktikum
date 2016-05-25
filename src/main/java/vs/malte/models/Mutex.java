@@ -1,19 +1,15 @@
 package vs.malte.models;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 public class Mutex
 {
     private String name;
     private String permittedUser; // Spieler der die Erlaubnis hat, den Mutex zu belegen
     private String currentUser; // Spieler der zur Zeit den Mutex hat
-    private ReentrantLock mutex;
 
-    private final boolean DEBUG_MODE = true;
+    private final boolean DEBUG_MODE = false;
 
     public Mutex()
     {
-        mutex = new ReentrantLock();
     }
 
     public String getName()
@@ -37,7 +33,6 @@ public class Mutex
 
         if ( playerId.equals( permittedUser ) )
         {
-            this.permittedUser = "";
             this.currentUser = playerId;
             result = true;
 
@@ -50,8 +45,11 @@ public class Mutex
 
     public void release( String playerId )
     {
-        if ( playerId.equals( permittedUser ) )
+        if ( playerId.equals( currentUser ) )
+        {
             this.currentUser = "";
+            this.permittedUser = "";
+        }
 
         if ( DEBUG_MODE )
             System.out.println( playerId + "hat Mutex abgegeben." );
@@ -60,6 +58,11 @@ public class Mutex
     public String getCurrentUser()
     {
         return this.currentUser;
+    }
+    
+    public String getPermittedUser()
+    {
+        return this.permittedUser;
     }
 
 }

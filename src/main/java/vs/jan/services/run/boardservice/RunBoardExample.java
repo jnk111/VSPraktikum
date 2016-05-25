@@ -56,7 +56,7 @@ public class RunBoardExample {
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
 		boardApi = new BoardRESTApi();
-		new GamesService();
+		new GamesServiceFIXED();
 		setupGame();
 
 	}

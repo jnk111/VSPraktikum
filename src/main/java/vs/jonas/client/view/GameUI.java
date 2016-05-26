@@ -2,6 +2,7 @@ package vs.jonas.client.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 
@@ -16,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import vs.jonas.client.model.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.tablemodel.PlayerOverviewTableModel;
 
 public class GameUI {
@@ -23,15 +25,13 @@ public class GameUI {
 	private JFrame frame;
 	private JPanel contentPane;
 	private JTable playerTable;
+	private JTable gameFieldTable;
 	private JButton btnSpielzugBeenden;
 	private JButton btnJailbreak;
 	private JButton btnHausKaufen;
 	private JButton btnHausVerkaufen;
 	private JButton btnWrfeln;
 	private JLabel lblKontostand;
-	private JSplitPane gameOverviewPanel;
-	private JScrollPane currentFieldPanel;
-	private JScrollPane gameFieldPanel;
 	private JLabel lblUsername;
 
 	/**
@@ -41,6 +41,7 @@ public class GameUI {
 		frame = new JFrame("Restopoly");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 850, 500);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -91,23 +92,34 @@ public class GameUI {
 
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		JScrollPane playerOverview = new JScrollPane(playerTable);
-		splitPane_1.setLeftComponent(playerOverview);
+		JPanel playerPanel = new JPanel(new BorderLayout());
+		JLabel playerHeader = new JLabel("********** Player Overview **********");
+		playerHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
+		playerHeader.setHorizontalAlignment(SwingConstants.CENTER);
+		playerPanel.add(playerHeader, BorderLayout.NORTH);
+		playerPanel.add(playerOverview, BorderLayout.CENTER);
+		splitPane_1.setLeftComponent(playerPanel);
 		
-		gameOverviewPanel = new JSplitPane();
-		splitPane_1.setRightComponent(gameOverviewPanel);
+		gameFieldTable = new JTable(new GameFieldTableModel());
+		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
+		JPanel gameFieldPanel = new JPanel(new BorderLayout());
+		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");
+		gameFieldHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
+		gameFieldHeader.setHorizontalAlignment(SwingConstants.CENTER);
+		gameFieldPanel.add(gameFieldHeader, BorderLayout.NORTH);
 		
-		currentFieldPanel = new JScrollPane();
-		gameOverviewPanel.setLeftComponent(currentFieldPanel);
-		
-		gameFieldPanel = new JScrollPane();
-		gameOverviewPanel.setRightComponent(gameFieldPanel);
-		gameOverviewPanel.setDividerLocation(200);
+		gameFieldPanel.add(gameFieldScrollPane, BorderLayout.CENTER);
+		splitPane_1.setRightComponent(gameFieldPanel);
 		splitPane_1.setDividerLocation(150);
 		splitPane.setDividerLocation(150);
 	}
 
 	public JTable getPlayerTable() {
 		return playerTable;
+	}
+	
+	public JTable getGameFIeldTable(){
+		return gameFieldTable;
 	}
 
 	public JButton getBtnSpielzugBeenden() {

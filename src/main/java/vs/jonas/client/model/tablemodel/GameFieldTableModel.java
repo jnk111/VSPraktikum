@@ -6,28 +6,29 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.json.Player;
-import vs.jonas.client.model.comparator.PlayerInformationComparator;
+import vs.jonas.client.json.Field;
+import vs.jonas.client.model.comparator.FieldsComparator;
 
-@SuppressWarnings("serial")
-public class PlayerOverviewTableModel extends DefaultTableModel {
+public class GameFieldTableModel extends DefaultTableModel{
+
 
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "Name", "Figur", "Kontostand", "Ready", "Turn"};
+	private String[] columnNames = { "ID", "Name", "Owner", "Value", 
+			"Rent", "Cost", "Houses", "Hypocredit", "Players"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<Player> players;
+	List<Field> fields;
 
 	/**
 	 * Initialisiert das TableModel
 	 */
-	public PlayerOverviewTableModel() {
-		players = new ArrayList<>();
+	public GameFieldTableModel() {
+		fields = new ArrayList<>();
 	}
 
 	@Override
@@ -48,10 +49,10 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		if (players == null) {
+		if (fields == null) {
 			return 0;
 		}
-		return players.size();
+		return fields.size();
 	}
 
 	/**
@@ -70,21 +71,19 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		Player player = players.get(row);
+		Field field = fields.get(row);
 		Object ergebnis = null;
-
+		
 		switch (col) {
-		case 0:
-			ergebnis = player.getName();
-			break;
-		case 1:
-			ergebnis = player.getPawn();
-			break;
-		case 2:
-			ergebnis = player.getAccount();
-			break;
-		case 3: 
-			ergebnis = player.isReady();
+		case 0: ergebnis = field.getID(); break;
+		case 1:	ergebnis = field.getName();	break;
+		case 2:	ergebnis = field.getOwner(); break;
+		case 3: ergebnis = field.getValue(); break;
+		case 4: ergebnis = field.getRent(); break;
+		case 5: ergebnis = field.getCost(); break;
+		case 6: ergebnis = field.getHouses(); break;
+		case 7: ergebnis = field.getHypocredit(); break;
+		case 8: ergebnis = field.getPlayers();
 		}
 		return ergebnis;
 	}
@@ -95,12 +94,12 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<Player> data) {
+	public void loadData(List<Field> data) {
 		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
-			players = new ArrayList<>(data);
-			Collections.sort(players, new PlayerInformationComparator());
-			System.out.println(players);
+			fields = new ArrayList<>(data);
+			Collections.sort(fields, new FieldsComparator());
+			System.out.println(fields);
 			fireTableDataChanged();
 		}
 	}

@@ -1,4 +1,4 @@
-package vs.jonas.client.model.tablemodel;
+package vs.jonas.client.model.table.tablemodel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,29 +6,28 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.json.Place;
-import vs.jonas.client.model.comparator.FieldsComparator;
+import vs.jonas.client.json.PlayerInformation;
+import vs.jonas.client.model.comparator.PlayerInformationComparator;
 
-public class GameFieldTableModel extends DefaultTableModel{
-
+@SuppressWarnings("serial")
+public class PlayerOverviewTableModel extends DefaultTableModel {
 
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "ID", "Name", "Owner", "Value", 
-			"Rent", "Cost", "Houses", "Hypocredit", "Players"};
+	private String[] columnNames = { "Spieler", "Kontostand", "Position", "Letzter Wurf", "Ready", "Turn"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<Place> fields;
+	List<PlayerInformation> players;
 
 	/**
 	 * Initialisiert das TableModel
 	 */
-	public GameFieldTableModel() {
-		fields = new ArrayList<>();
+	public PlayerOverviewTableModel() {
+		players = new ArrayList<>();
 	}
 
 	@Override
@@ -49,10 +48,10 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 */
 	@Override
 	public int getRowCount() {
-		if (fields == null) {
+		if (players == null) {
 			return 0;
 		}
-		return fields.size();
+		return players.size();
 	}
 
 	/**
@@ -71,19 +70,16 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		Place field = fields.get(row);
+		PlayerInformation player = players.get(row);
 		Object ergebnis = null;
-		
+
 		switch (col) {
-		case 0: ergebnis = field.getID(); break;
-		case 1:	ergebnis = field.getName();	break;
-		case 2:	ergebnis = field.getOwner(); break;
-		case 3: ergebnis = field.getValue(); break;
-		case 4: ergebnis = field.getRent(); break;
-		case 5: ergebnis = field.getCost(); break;
-		case 6: ergebnis = field.getHouses(); break;
-		case 7: ergebnis = field.getHypocredit(); break;
-		case 8: ergebnis = field.getPlayers();
+		case 0:	ergebnis = player.getPawn(); break;
+		case 1:	ergebnis = player.getAccount(); break;
+		case 2:	ergebnis = player.getPosition();	break;
+		case 3: ergebnis = player.LastRoll(); break;
+		case 4: ergebnis = player.isReady(); break;
+		case 5: ergebnis = player.hasTurnMutex();
 		}
 		return ergebnis;
 	}
@@ -94,12 +90,12 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<Place> data) {
+	public void loadData(List<PlayerInformation> data) {
 		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
-			fields = new ArrayList<>(data);
-			Collections.sort(fields, new FieldsComparator());
-			System.out.println(fields);
+			players = new ArrayList<>(data);
+			Collections.sort(players, new PlayerInformationComparator());
+			System.out.println(players);
 			fireTableDataChanged();
 		}
 	}

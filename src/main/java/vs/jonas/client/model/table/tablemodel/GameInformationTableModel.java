@@ -1,4 +1,4 @@
-package vs.jonas.client.model.tablemodel;
+package vs.jonas.client.model.table.tablemodel;
 
 import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.model.comparator.GameNumberOfPlayerComparator;

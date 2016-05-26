@@ -3,6 +3,8 @@ package vs.jonas.client.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComboBox;
+
 public class Place {
 
 	String id;
@@ -96,6 +98,11 @@ public class Place {
 	public List<String> getPlayers() {
 		// TODO Auto-generated method stub
 		return this.players;
+	}
+	
+	public JComboBox<Object> getPlayersAsComboBox(){
+		JComboBox<Object> players = new JComboBox<>(this.players.toArray());
+		return players;
 	}
 
 	public void setID(String id2) {

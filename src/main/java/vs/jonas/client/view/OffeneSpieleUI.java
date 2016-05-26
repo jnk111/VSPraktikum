@@ -16,7 +16,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import vs.jonas.client.model.tablemodel.GameInformationTableModel;
+import vs.jonas.client.model.table.tablemodel.GameInformationTableModel;
 
 /**
  * Diese Klasse beschreibt eine Benutzeroberfl�che, die daf�r da ist, dass sich

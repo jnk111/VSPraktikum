@@ -16,7 +16,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
-import vs.jonas.client.model.tablemodel.GameInformationTableModel;
+import vs.jonas.client.model.table.tablemodel.GameInformationTableModel;
 import vs.jonas.client.view.OffeneSpieleUI;
 
 /**

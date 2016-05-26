@@ -17,8 +17,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import vs.jonas.client.model.tablemodel.GameFieldTableModel;
-import vs.jonas.client.model.tablemodel.PlayerOverviewTableModel;
+import vs.jonas.client.model.table.GameFieldTable;
+import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
+import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 
 public class GameUI {
 
@@ -100,7 +101,8 @@ public class GameUI {
 		playerPanel.add(playerOverview, BorderLayout.CENTER);
 		splitPane_1.setLeftComponent(playerPanel);
 		
-		gameFieldTable = new JTable(new GameFieldTableModel());
+		gameFieldTable = new GameFieldTable(new GameFieldTableModel());
+		
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");

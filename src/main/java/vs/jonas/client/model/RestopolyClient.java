@@ -19,6 +19,7 @@ import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.Account;
 import vs.jonas.client.json.Board;
 import vs.jonas.client.json.CreateGame;
+import vs.jonas.client.json.DiceRolls;
 import vs.jonas.client.json.Field;
 import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.json.Pawn;
@@ -28,6 +29,7 @@ import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
 
 /**
@@ -48,6 +50,14 @@ public class RestopolyClient {
 	private Gson gson;
 	private User user;
 
+	/**
+	 * Initialisiert den Client
+	 * @param yellowPages Wird benötigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
+	 * @param user Der angemeldete User.
+	 * @throws IOException
+	 * @throws UnirestException
+	 * @throws Exception
+	 */
 	public RestopolyClient(YellowPagesService yellowPages, User user) throws IOException, UnirestException, Exception {
 		try {
 			BASE_URL = yellowPages.getBaseIP();
@@ -63,7 +73,7 @@ public class RestopolyClient {
 	/**
 	 * Laedt die aktuellen Spiele
 	 * 
-	 * @return
+	 * @return Eine Liste mit Game-Informationen.
 	 * @throws IOException
 	 * @throws UnirestException
 	 */
@@ -84,6 +94,14 @@ public class RestopolyClient {
 		return data;
 	}
 
+	/**
+	 * Liefert alle beim Game angemeldeten Spieler
+	 * @param gameID Die ID des Games
+	 * @return Eine Liste mit Informationen über alle Spieler. 
+	 * @throws IOException
+	 * @throws UnirestException
+	 * @throws Exception
+	 */
 	public List<PlayerInformation> getPlayers(String gameID) throws IOException, UnirestException, Exception {
 		System.out.println();
 		System.out.println("**************  Get Players **************");
@@ -142,6 +160,13 @@ public class RestopolyClient {
 		return data;
 	}
 
+	/**
+	 * Liefert alle Places des Spielfeldes.
+	 * @param gameID Die ID des Games
+	 * @return Eine Liste aller Places.
+	 * @throws IOException
+	 * @throws UnirestException
+	 */
 	public List<Place> getPlaces(String gameID) throws IOException, UnirestException {
 		System.out.println();
 		List<Place> data = new ArrayList<>();
@@ -178,6 +203,13 @@ public class RestopolyClient {
 		return data;
 	}
 
+	/**
+	 * Liefert eine Liste aller SPielfiguren.
+	 * @param gameID Die ID des games
+	 * @return Liste aller Spielfiguren
+	 * @throws UnirestException
+	 * @throws IOException
+	 */
 	public List<Pawn> getPawns(String gameID) throws UnirestException, IOException {
 		List<Pawn> data = new ArrayList<>();
 		System.out.println();
@@ -191,22 +223,55 @@ public class RestopolyClient {
 		}
 		return data;
 	}
+	
+	/**
+	 * Liefert die URI der Spielfigur des Users
+	 * @param gameID Die ID des Games
+	 * @return Die Uri des Pawn-Objektes des Users
+	 * @throws UnirestException
+	 * @throws IOException
+	 */
+	public String getPawnID(String gameID) throws UnirestException, IOException{
+		List<Pawn> data = getPawns(gameID);
+		String result = "";
+		for(Pawn pawn : data){
+			if(pawn.getPlayer().equals(user.getUri())){
+				result = pawn.getPlayer();
+			}
+		}		
+		return result;
+	}
 
 	/**
-	 * Liefert das Wï¿½rfelergebnis vom DiceService. Der DiceService muss
-	 * laufen, damit ein Ergebnis errechnet werden kann.
+	 * Wuerfelt fuer den angemeldeten User und liefert das Ergebnis zurueck.
+	 * Außerdem wird die Spielfigur verschoben.
 	 * 
 	 * @return Das Wurfergebnis
 	 * @throws IOException
+	 * @throws UnirestException 
 	 */
-	public int rollDice() throws IOException {
-		// String uri = diceService.getUri();
-		// String resBody = get(uri);
-		// Dice dice = new Gson().fromJson(resBody, Dice.class);
+	public int rollDice(String gameID) throws IOException, UnirestException {
+		System.out.println("**************  Roll Dice  **************");
+
+		String boardServiceUri = boardService.getUri();
+		String pawnID = getPawnID(gameID);
+		String boardsDiceRollUri = boardServiceUri + "/" + gameID + "/pawns/" + pawnID + "/roll";
 		
-		return 666;// dice.getNumber();
+		Unirest.post(boardsDiceRollUri);
+		
+		JsonObject diceRolls = get(boardsDiceRollUri);
+		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
+//		Board board = gson.fromJson(get(boardServiceUri + "/" + gameID), Board.class);
+		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
+		return lastThrown.getNumber();// dice.getNumber();
 	}
 
+	/**
+	 * Erstellt ein neues Spiel
+	 * @param gameName Der Name des Spiels
+	 * @throws IOException
+	 * @throws UnirestException
+	 */
 	public void createANewGame(String gameName) throws IOException, UnirestException {
 		System.out.println("************* Create New Game *************");
 		String uri = gameService.getUri();
@@ -226,6 +291,12 @@ public class RestopolyClient {
 	// "application/json").body(gson.toJson(user));
 	// }
 
+	/**
+	 * Meldet des User als Spieler bei einem Game an.
+	 * @param gameID Die ID des Games.
+	 * @throws IOException
+	 * @throws UnirestException
+	 */
 	public void enterGame(String gameID) throws IOException, UnirestException {
 		System.out.println("************* Enter Game *************");
 		String uri = gameService.getUri();
@@ -271,6 +342,11 @@ public class RestopolyClient {
 		return responseObject;
 	}
 
+	/**
+	 * Hilfsmethode: Prueft, ob das uebergebene Objekt not null ist.
+	 * @param object
+	 * @return
+	 */
 	private boolean checkNotNull(Object object) {
 		if (object == null) {
 			return false;
@@ -278,6 +354,10 @@ public class RestopolyClient {
 		return true;
 	}
 
+	/**
+	 * Liefert den angemeldeten User zurueck.
+	 * @return
+	 */
 	public User getUser() {
 		return user;
 	}

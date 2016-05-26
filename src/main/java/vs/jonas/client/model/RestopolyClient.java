@@ -257,7 +257,7 @@ public class RestopolyClient {
 
 		String boardServiceUri = boardService.getUri();
 		String pawnID = getPawnID(gameID);
-		String boardsDiceRollUri = boardServiceUri + "/" + gameID + "/pawns/" + pawnID + "/roll";
+		String boardsDiceRollUri = boardServiceUri + "/" + gameID + "/pawns" + pawnID + "/roll";
 		
 		Unirest.post(boardsDiceRollUri);
 		

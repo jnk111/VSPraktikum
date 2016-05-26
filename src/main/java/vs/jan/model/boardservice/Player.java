@@ -1,4 +1,4 @@
-package vs.jan.model;
+package vs.jan.model.boardservice;
 
 public class Player {
 	private String id;

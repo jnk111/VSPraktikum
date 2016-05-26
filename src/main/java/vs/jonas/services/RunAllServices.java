@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
-import vs.jan.json.JSONService;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;

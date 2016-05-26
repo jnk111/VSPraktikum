@@ -12,20 +12,20 @@ import com.google.gson.Gson;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.helper.boardservice.BoardHelper;
-import vs.jan.json.JSONBoard;
-import vs.jan.json.JSONBoardList;
-import vs.jan.json.JSONField;
-import vs.jan.json.JSONGameURI;
-import vs.jan.json.JSONPawn;
-import vs.jan.json.JSONPawnList;
-import vs.jan.json.JSONPlace;
-import vs.jan.json.JSONThrowsList;
-import vs.jan.json.JSONThrowsURI;
-import vs.jan.model.Board;
-import vs.jan.model.Field;
-import vs.jan.model.Pawn;
-import vs.jan.model.Place;
+import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONBoardList;
+import vs.jan.json.boardservice.JSONField;
+import vs.jan.json.boardservice.JSONGameURI;
+import vs.jan.json.boardservice.JSONPawn;
+import vs.jan.json.boardservice.JSONPawnList;
+import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.json.boardservice.JSONThrowsList;
+import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.model.ServiceList;
+import vs.jan.model.boardservice.Board;
+import vs.jan.model.boardservice.Field;
+import vs.jan.model.boardservice.Pawn;
+import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.model.exception.InvalidPlaceIDException;
 import vs.jan.services.allocator.ServiceAllocator;
@@ -91,7 +91,7 @@ public class BoardService {
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
-		placeABoard(gameId, b.convert());
+		//placeABoard(gameId, b.convert());
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class BoardService {
 		validator.checkPawnIdIsNotNull(pawnid);		
 		
 		// Temp
-		this.services = ServiceAllocator.initServices("localhost:4567", gameid);
+
 		validator.checkPlayerHasMutex(gameid, pawnid, "http://localhost:4567/games");
 		
 		Board board = helper.getBoard(this.boards, gameid);
@@ -401,6 +401,7 @@ public class BoardService {
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkBoardIsValid(board);
 		Board b = helper.getBoard(this.boards, gameid);
+		this.services = ServiceAllocator.initServices("localhost:4567", gameid);
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
 		} else {

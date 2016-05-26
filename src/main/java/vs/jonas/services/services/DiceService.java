@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import vs.jan.json.JSONService;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;

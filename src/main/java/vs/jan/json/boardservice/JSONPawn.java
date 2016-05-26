@@ -1,4 +1,4 @@
-package vs.jan.json;
+package vs.jan.json.boardservice;
 
 import vs.jan.model.Validable;
 

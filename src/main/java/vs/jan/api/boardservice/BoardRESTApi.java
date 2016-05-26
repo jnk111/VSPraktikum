@@ -12,12 +12,12 @@ import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.MutexPutException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.TurnMutexNotFreeException;
-import vs.jan.json.JSONBoard;
-import vs.jan.json.JSONGameURI;
-import vs.jan.json.JSONPawn;
-import vs.jan.json.JSONPawnList;
-import vs.jan.json.JSONPlace;
-import vs.jan.json.JSONThrowsList;
+import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONGameURI;
+import vs.jan.json.boardservice.JSONPawn;
+import vs.jan.json.boardservice.JSONPawnList;
+import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.model.StatusCodes;
 import vs.jan.services.boardservice.BoardService;
 

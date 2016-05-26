@@ -77,7 +77,7 @@ public abstract class VsApiBase extends ApiBase {
     }
 
     /**
-     * Loads the uri of the service that first matches the given filter
+     * Loads the uri of the service that first matches the given filter.
      *
      * @param filter
      *            Filter function.

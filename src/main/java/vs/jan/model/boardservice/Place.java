@@ -1,6 +1,7 @@
-package vs.jan.model;
+package vs.jan.model.boardservice;
 
-import vs.jan.json.JSONPlace;
+import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.model.Convertable;
 
 public enum Place implements Convertable<JSONPlace> {
 

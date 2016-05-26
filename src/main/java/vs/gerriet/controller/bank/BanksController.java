@@ -44,6 +44,10 @@ public class BanksController extends AbstractController implements GetController
     @Override
     public String post(final Request request, final Response response) {
         final GameIdContainer game = this.gson.fromJson(request.body(), GameIdContainer.class);
+        if (game == null) {
+            response.status(403);
+            return "";
+        }
         response.type(Controller.MIME_TYPE_JSON);
         final Bank bank = BanksContainer.createBank(game.createGameId());
         return this.gson.toJson(BankData.createFromBank(bank));

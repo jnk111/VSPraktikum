@@ -1,4 +1,4 @@
-package vs.jan.json;
+package vs.jan.json.boardservice;
 
 import java.util.ArrayList;
 import java.util.List;

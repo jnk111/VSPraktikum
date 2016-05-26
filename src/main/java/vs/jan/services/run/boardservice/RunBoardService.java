@@ -6,7 +6,7 @@ import java.util.Map;
 import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.json.JSONService;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;

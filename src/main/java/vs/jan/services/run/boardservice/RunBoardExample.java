@@ -14,14 +14,15 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
-import vs.jan.json.JSONBoard;
-import vs.jan.json.JSONField;
-import vs.jan.json.JSONPawn;
-import vs.jan.json.JSONPawnList;
-import vs.jan.json.JSONPlace;
-import vs.jan.json.JSONService;
-import vs.jan.model.Pawn;
+import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONField;
+import vs.jan.json.boardservice.JSONGameURI;
+import vs.jan.json.boardservice.JSONPawn;
+import vs.jan.json.boardservice.JSONPawnList;
+import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
+import vs.jan.model.boardservice.Pawn;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -72,11 +73,21 @@ public class RunBoardExample {
 		int boardID = 42;
 
 		createBoard(boardID, gameUri);
+		placeBoard(boardID);
+		checkBoardAdded(boardID);
 		setupUser(boardID, gameUri);
 		startGame(boardID);
 		letCurrPlayerRollDice(boardID);
 		getFinalBoardState(boardID);
 
+	}
+
+	private static void placeBoard(int boardID) {
+		
+		JSONBoard board = new JSONBoard("" + boardID);
+		
+		HttpService.put("http://localhost:4567/boards/" + boardID, board, 200);
+		
 	}
 
 	private static void letCurrPlayerRollDice(int boardID) {
@@ -445,7 +456,7 @@ public class RunBoardExample {
 		checkGameAdded(boardID, gameUri);
 		System.out.println();
 		System.out.println("Added Board");
-		checkBoardAdded(boardID);
+
 
 		System.out.println("-------------------------------------------------------------------------------------------");
 

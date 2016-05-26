@@ -1,4 +1,4 @@
-package vs.jan.model;
+package vs.jan.model.boardservice;
 
 import java.util.ArrayList;
 import java.util.Arrays;

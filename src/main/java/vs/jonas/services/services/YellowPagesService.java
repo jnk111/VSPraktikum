@@ -8,7 +8,7 @@ import javax.naming.ServiceUnavailableException;
 
 import com.google.gson.Gson;
 
-import vs.jan.json.JSONService;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.GetRestClient;
 import vs.malte.json.ServiceArray;

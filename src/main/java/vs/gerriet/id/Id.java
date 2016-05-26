@@ -21,7 +21,7 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
 
     /**
      * Creates a new ID container from the given request parameter.
-     * 
+     *
      * @param request
      *            Request to load the parameter from.
      * @param param
@@ -87,9 +87,8 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
      */
     public String getUri() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(this.getUri());
+        builder.append(this.getUriPrefix());
         builder.append(this.data.toString());
-        builder.append('/');
         return builder.toString();
     }
 

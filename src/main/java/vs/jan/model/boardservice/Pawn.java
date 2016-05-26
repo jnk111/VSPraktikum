@@ -1,6 +1,7 @@
-package vs.jan.model;
+package vs.jan.model.boardservice;
 
-import vs.jan.json.JSONPawn;
+import vs.jan.json.boardservice.JSONPawn;
+import vs.jan.model.Convertable;
 
 public class Pawn implements Convertable<JSONPawn> {
 

@@ -33,7 +33,7 @@ public class ServiceId extends Id<Integer> {
 
     @Override
     protected Integer fromUriSuffix(final String suffix) {
-        return Integer.getInteger(suffix);
+        return Integer.decode(suffix);
     }
 
     @Override

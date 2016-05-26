@@ -14,7 +14,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jan.json.JSONService;
+import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.Account;
 import vs.jonas.client.json.Board;

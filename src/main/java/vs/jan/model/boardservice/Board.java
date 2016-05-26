@@ -1,10 +1,11 @@
-package vs.jan.model;
+package vs.jan.model.boardservice;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.jan.json.JSONBoard;
-import vs.jan.json.JSONField;
+import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONField;
+import vs.jan.model.Convertable;
 
 public class Board implements Convertable<JSONBoard> {
 

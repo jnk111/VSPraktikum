@@ -88,6 +88,7 @@ public class RestopolyClient {
 		for (int i = 0; i < gamesList.size(); i++) {
 			GameResponse game = gson.fromJson(gamesList.get(i), GameResponse.class);
 			System.out.println(gamesList.get(i));
+			
 			game.setNumberOfPlayers(5);
 			data.add(game);
 		}
@@ -283,14 +284,6 @@ public class RestopolyClient {
 		JsonObject resBody = postData(game, uri);
 		System.out.println("Antwort auf Post nach:" + uri + ": " + resBody.toString());
 	}
-
-	// public void createNewUser(User user) throws IOException,
-	// UnirestException, Exception {
-	// System.out.println("************* Create New User *************");
-	// String uri = userservice.getUri();
-	// Unirest.post(uri).header("accept",
-	// "application/json").body(gson.toJson(user));
-	// }
 
 	/**
 	 * Meldet des User als Spieler bei einem Game an.

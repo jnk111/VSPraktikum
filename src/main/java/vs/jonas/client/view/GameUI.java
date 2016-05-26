@@ -101,8 +101,7 @@ public class GameUI {
 		playerPanel.add(playerOverview, BorderLayout.CENTER);
 		splitPane_1.setLeftComponent(playerPanel);
 		
-		gameFieldTable = new GameFieldTable(new GameFieldTableModel());
-		
+		gameFieldTable = new JTable(new GameFieldTableModel());
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");

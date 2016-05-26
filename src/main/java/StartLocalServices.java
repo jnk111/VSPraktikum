@@ -7,7 +7,6 @@ import javax.naming.ServiceUnavailableException;
 
 import com.google.gson.Gson;
 
-import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
@@ -18,7 +17,7 @@ import vs.jonas.services.services.EventService;
 import vs.jonas.services.services.YellowPagesService;
 import vs.malte.example.json.CreateGameExDTO;
 import vs.malte.models.Player;
-import vs.malte.services.GamesService;
+import vs.malte.services.GamesServiceAPI;
 
 /**
  * Created by Jones on 24.05.2016.
@@ -58,7 +57,7 @@ public class StartLocalServices {
         gson = new Gson();
 
         /*  Initializes BankService  */
-        BankService.run();
+//        BankService.run();
 
         /*  Initializes EventService */
         new EventService().startService();
@@ -72,7 +71,7 @@ public class StartLocalServices {
         new DiceService(neededServicesDice).startService();
 
         /*  Initializes GameService */
-        new GamesService();
+        new GamesServiceAPI();
 
         /*  Initializes UserService */
         new UserServiceRESTApi();

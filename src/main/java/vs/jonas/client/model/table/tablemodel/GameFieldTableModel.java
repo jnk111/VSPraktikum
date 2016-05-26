@@ -88,7 +88,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 		case 5: ergebnis = field.getCost(); break;
 		case 6: ergebnis = field.getHouses(); break;
 		case 7: ergebnis = field.getHypocredit(); break;
-		case 8: ergebnis = field.getPlayersAsComboBox();
+		case 8: ergebnis = field.getPlayers();
 		}
 		return ergebnis;
 	}

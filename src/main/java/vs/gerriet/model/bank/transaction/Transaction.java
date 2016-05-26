@@ -1,5 +1,8 @@
 package vs.gerriet.model.bank.transaction;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.SortedSet;
 import java.util.Stack;
@@ -148,6 +151,11 @@ public class Transaction extends LockProvider {
     private final SortedSet<AccountId> confirmed;
 
     /**
+     * List containing all transfers for this transaction.
+     */
+    private final List<Transfer> transfers;
+
+    /**
      * Contains the bank instance for this transaction. This is required so only
      * operations to be performed on that bank can be added.
      */
@@ -169,6 +177,7 @@ public class Transaction extends LockProvider {
         this.doneOperations = new Stack<>();
         this.accounts = new ConcurrentSkipListSet<>();
         this.confirmed = new ConcurrentSkipListSet<>();
+        this.transfers = Collections.synchronizedList(new LinkedList<>());
     }
 
     /**
@@ -213,6 +222,7 @@ public class Transaction extends LockProvider {
         if (!res) {
             this.operations.removeAll(operation.operations);
         }
+        this.transfers.add(operation);
         return res;
     }
 
@@ -279,6 +289,7 @@ public class Transaction extends LockProvider {
             }
         }
         // if everything is successful
+        this.addTransfersToBank();
         this.createEvents();
         this.status = Status.COMMITTED;
         return true;
@@ -359,12 +370,31 @@ public class Transaction extends LockProvider {
         this.status = Status.ROLLED_BACK;
     }
 
+    /**
+     * Adds all transfers from this transaction to the bank.
+     */
+    private void addTransfersToBank() {
+        this.transfers.forEach(transfer -> {
+            this.bank.addTransfer(transfer);
+        });
+    }
+
+    /**
+     * Creates events for all done operations.
+     */
     private void createEvents() {
         while (!this.doneOperations.isEmpty()) {
             this.doneOperations.pop().createEvent();
         }
     }
 
+    /**
+     * Checks if the given operation is valid.
+     *
+     * @param operation
+     *            Operation to check.
+     * @return <code>true</code> if it's valid, <code>false</code> otherwise.
+     */
     private boolean isOperationValid(final AtomicOperation operation) {
         return !this.isLocked() && operation.getBank().equals(this.bank);
     }

@@ -48,7 +48,7 @@ public class RunBoardExample {
 	 */
 	public static void main(String[] args) throws InterruptedException, MalformedURLException {
 
-		BankService.run();
+		//BankService.run();
 		new GamesService();
 		Map<String, JSONService> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den

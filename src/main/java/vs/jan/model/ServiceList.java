@@ -50,6 +50,40 @@ public class ServiceList {
 	public String getEvents() {
 		return events;
 	}
+	
+	
+
+	public String getGames() {
+		return games;
+	}
+
+	public void setGames(String games) {
+		this.games = games;
+	}
+
+	public void setDice(String dice) {
+		this.dice = dice;
+	}
+
+	public void setBoard(String board) {
+		this.board = board;
+	}
+
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+
+	public void setBroker(String broker) {
+		this.broker = broker;
+	}
+
+	public void setDecks(String decks) {
+		this.decks = decks;
+	}
+
+	public void setEvents(String events) {
+		this.events = events;
+	}
 
 	@Override
 	public String toString() {

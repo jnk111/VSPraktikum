@@ -12,10 +12,12 @@ public class ServiceAllocator {
 	
 	public static ServiceList initServices(String host, String gameid){
 		
-		String gameServiceUri = "http://" + host;
-		gameServiceUri += "/games/" + gameid + "/services";
-		String list = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
-		return GSON.fromJson(list, ServiceList.class);
+//		String gameServiceUri = "http://" + host;
+//		gameServiceUri += "/games/" + gameid + "/services";
+//		String list = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
+		ServiceList list = new ServiceList();
+		list.setGames("http://localhost:4567/games");
+		return list;
 	};
 	
 }

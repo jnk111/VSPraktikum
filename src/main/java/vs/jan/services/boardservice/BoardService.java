@@ -92,6 +92,7 @@ public class BoardService {
 		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
+		placeABoard(gameId, b.convert());
 		boards.put(b, game);
 	}
 
@@ -402,7 +403,7 @@ public class BoardService {
 		validator.checkGameIdIsNotNull(gameid);
 		validator.checkBoardIsValid(board);
 		Board b = helper.getBoard(this.boards, gameid);
-		this.services = ServiceAllocator.initServices("localhost:4567", gameid);
+		//this.services = ServiceAllocator.initServices("localhost:4567", gameid);
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
 		} else {

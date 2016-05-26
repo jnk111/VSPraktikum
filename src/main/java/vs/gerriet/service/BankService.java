@@ -1,10 +1,16 @@
 package vs.gerriet.service;
 
+import java.net.InetAddress;
+
 import com.google.gson.JsonSyntaxException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.stuff42.error.ExceptionUtils;
 import de.stuff42.error.ThreadExceptionHandler;
 import spark.Spark;
+import vs.gerriet.api.VsApiBase;
+import vs.gerriet.api.YellowPages;
+import vs.gerriet.controller.ServiceOnlineController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.controller.bank.BanksController;
 import vs.gerriet.controller.bank.account.AccountsController;
@@ -16,6 +22,7 @@ import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
 import vs.gerriet.controller.bank.transfer.TransfersController;
+import vs.gerriet.json.yellowpages.Service;
 import vs.gerriet.utils.ServiceUtils;
 
 /**
@@ -36,11 +43,31 @@ public class BankService {
         ExceptionUtils.setFilters(new String[] { "vs.gerriet", "de.stuff42" });
         // register global error handling (if something goes horribly wrong)
         ThreadExceptionHandler.registerDefault();
-        // setup listen properties
-        Spark.ipAddress("0.0.0.0");
-        Spark.port(4567);
-        // start bank service
-        BankService.run();
+
+        // do required initialization stuff
+        try {
+            // setup listen properties
+            Spark.ipAddress("0.0.0.0");
+            Spark.port(4567);
+            // start bank service
+            BankService.run();
+
+            // register online controller for yellow pages online state
+            ServiceUtils.registerController(
+                    new ServiceOnlineController(VsApiBase.GROUP_NAME + " Bank Service"));
+            // register within yellow pages
+            final String ip = InetAddress.getLocalHost().getHostAddress();
+            final Service bankService =
+                    new Service(VsApiBase.GROUP_NAME, "Bank service", "bank", ip);
+            if (new YellowPages().registerService(bankService) == null) {
+                throw new Exception("Failed to register within yellow pages.");
+            }
+        } catch (final Throwable ex) {
+            // if we get startup errors, we terminate spark and exit
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "STARTUP"));
+            Spark.stop();
+            System.exit(-1);
+        }
     }
 
     /**
@@ -70,16 +97,12 @@ public class BankService {
             res.status(400);
             res.body(msg);
         });
-
-        // register within yellow pages
-        // TODO @gerriet-hinrichs: register
-        // try {
-        // new YellowPages().registerService(new Service(VsApiBase.GROUP_NAME,
-        // "Bank service",
-        // "bank", InetAddress.getLocalHost().getHostAddress()));
-        // } catch (final UnknownHostException ex) {
-        // System.err.println(ExceptionUtils.getExceptionInfo(ex, "STARTUP"));
-        // }
+        Spark.exception(UnirestException.class, (ex, req, res) -> {
+            final String msg = ExceptionUtils.getExceptionInfo(ex, "SERVICE");
+            System.err.println(msg);
+            res.status(504);
+            res.body(msg);
+        });
     }
 
     /**

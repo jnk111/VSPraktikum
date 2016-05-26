@@ -58,7 +58,7 @@ public class BankService {
             // register within yellow pages
             final String ip = InetAddress.getLocalHost().getHostAddress();
             final Service bankService =
-                    new Service(VsApiBase.GROUP_NAME, "Bank service", "bank", ip);
+                    new Service(VsApiBase.GROUP_NAME, "Bank service", "banks", ip);
             if (new YellowPages().registerService(bankService) == null) {
                 throw new Exception("Failed to register within yellow pages.");
             }

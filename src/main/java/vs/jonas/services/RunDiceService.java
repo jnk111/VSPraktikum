@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
-import vs.jan.model.Service;
+import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.YellowPagesService;
@@ -21,7 +21,7 @@ public class RunDiceService {
 		YellowPagesService start = new YellowPagesService(true);
 		
 		System.out.println("Created YellowPagesService succesfully");
-		Map<String, Service> neededServicesDice = new HashMap<>();
+		Map<String, JSONService> neededServicesDice = new HashMap<>();
 		
 		try {
 			neededServicesDice.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));

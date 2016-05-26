@@ -25,9 +25,10 @@ import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
 import vs.jan.model.Place;
-import vs.jan.model.Service;
-import vs.jan.model.ServiceNames;
+import vs.jan.model.ServiceList;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.InvalidPlaceIDException;
+import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.boardservice.BoardValidator;
 import vs.jonas.services.model.Dice;
@@ -36,7 +37,6 @@ import vs.jonas.services.model.Event;
 public class BoardService {
 
 	private final Gson GSON = new Gson();
-
 	/*
 	 * Mapping Board -> GameUri
 	 */
@@ -44,6 +44,7 @@ public class BoardService {
 
 	private BoardValidator validator;
 	private BoardHelper helper;
+	private ServiceList services;
 
 	/*
 	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
@@ -51,14 +52,11 @@ public class BoardService {
 	 */
 	private Map<JSONThrowsURI, JSONThrowsList> throwMap;
 
-	private Map<String, Service> neededServices;
-
 	/**
 	 * Defaultkonstruktor
 	 */
 	public BoardService() {
 
-		this.neededServices = getNeededServices(ServiceNames.BOARD);
 		boards = new HashMap<>();
 		throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
@@ -82,6 +80,8 @@ public class BoardService {
 	 * 
 	 * @param game
 	 *          Das Spiel, fuer das ein Board erzeugt werden soll
+	 * @param host
+	 * 					Client-IP von der das Board erstellt wird
 	 * @throws InvalidInputException
 	 *           Json-Format der Uri ungueltig
 	 */
@@ -283,7 +283,7 @@ public class BoardService {
 		b.updatePositions(oldPos, newPos); // markiere, dass auf Position
 																				// 'newPos' Figuren stehen
 		p.updatePlaceUri(newPos); // Update Placeuri to the new Place
-		helper.postEvent(gameid, "move", "move", p, this.neededServices);
+		helper.postEvent(gameid, "move", "move", p, this.services.getEvents());
 	}
 
 	/**
@@ -302,8 +302,12 @@ public class BoardService {
 	 */
 	public synchronized List<Event> rollDice(String gameid, String pawnid) throws ResourceNotFoundException {
 		validator.checkGameIdIsNotNull(gameid);
-		validator.checkPawnIdIsNotNull(pawnid);
-		validator.checkPlayerHasMutex(gameid, pawnid);
+		validator.checkPawnIdIsNotNull(pawnid);		
+		
+		// Temp
+		this.services = ServiceAllocator.initServices("localhost:4567", gameid);
+		validator.checkPlayerHasMutex(gameid, pawnid, "http://localhost:4567/games");
+		
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);
 		Dice roll = rollDice(pawn, gameid); // Zum Testen Local
@@ -314,7 +318,6 @@ public class BoardService {
 	}
 
 	/**
-	 * TODO: remove local roll Fuehrt eine Wurfelaktion aus und fuegt den
 	 * gemachten Wurd in die Wurfliste, die zu der Figur gehoert hinzu
 	 * 
 	 * @param pawn
@@ -325,7 +328,7 @@ public class BoardService {
 	 */
 	private Dice rollDice(Pawn pawn, String gameid) {
 
-		String json = HttpService.get("http://localhost:4567/dice?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
+		String json = HttpService.get(this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
 		validator.checkRollValueIsValid(roll);
@@ -483,37 +486,37 @@ public class BoardService {
 
 	// ----------------------------------------------------------------------------------------
 
-	/*
-	 * ===========================================================================
-	 * TODO: Spaeter entfernen *
-	 * ===========================================================================
-	 */
-
-	public void setNeededServices(Map<String, Service> neededServices) {
-		this.neededServices = neededServices;
-	}
-
-	public Map<String, Service> getNeededServices(String type) {
-		Map<String, Service> services = new HashMap<>();
-
-		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
-		// ... weitere
-
-		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
-			Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
-					"http://localhost:4567/events");
-
-			services.put(ServiceNames.EVENT, s);
-		}
-
-		return services;
-	}
-
-	/*
-	 * ===========================================================================
-	 * Default Getter
-	 * ===========================================================================
-	 */
+//	/*
+//	 * ===========================================================================
+//	 * TODO: Spaeter entfernen *
+//	 * ===========================================================================
+//	 */
+//
+//	public void setNeededServices(Map<String, JSONService> neededServices) {
+//		this.neededServices = neededServices;
+//	}
+//
+//	public Map<String, JSONService> getNeededServices(String type) {
+//		Map<String, JSONService> services = new HashMap<>();
+//
+//		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
+//		// ... weitere
+//
+//		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
+//			JSONService s = new JSONService("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
+//					"http://localhost:4567/events");
+//
+//			services.put(ServiceNames.EVENT, s);
+//		}
+//
+//		return services;
+//	}
+//
+//	/*
+//	 * ===========================================================================
+//	 * Default Getter
+//	 * ===========================================================================
+//	 */
 
 	public Map<Board, JSONGameURI> getBoards() {
 

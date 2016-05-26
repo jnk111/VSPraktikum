@@ -8,7 +8,7 @@ import javax.naming.ServiceUnavailableException;
 
 import com.google.gson.Gson;
 
-import vs.jan.model.Service;
+import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.GetRestClient;
 import vs.malte.json.ServiceArray;
@@ -19,7 +19,7 @@ public class YellowPagesService {
 	private final String YELLOW_SERVICE_URL = "http://172.18.0.5:4567/services";
 	private final String OF_NAME = "/of/name/JJMG";
 
-	private Map<String, Service> services;
+	private Map<String, JSONService> services;
 
 	private boolean online;
 
@@ -75,19 +75,19 @@ public class YellowPagesService {
 		// Jeden Service anhand der uri von den YellowPages abfragen
 		for (String uri : services.getServices()) {
 			String body = client.get(YELLOW_SERVICE_IP + uri);
-			Service service = new Gson().fromJson(body, Service.class);
+			JSONService service = new Gson().fromJson(body, JSONService.class);
 			this.services.put(service.getService(), service);
 		}
 		
 		System.out.println(this.services);
 	}
 
-	public Map<String, Service> getAllServices() {
+	public Map<String, JSONService> getAllServices() {
 		return services;
 	}
 
-	public Service getService(String key) throws ServiceUnavailableException {
-		Service result = null;
+	public JSONService getService(String key) throws ServiceUnavailableException {
+		JSONService result = null;
 		if(this.services.containsKey(key)){
 			result = this.services.get(key);
 		} else{
@@ -97,24 +97,24 @@ public class YellowPagesService {
 	}
 
 	private void fetchLocalServices() {
-		Service games = new Service("/services/380", "FancyGameService", "JJMG", ServiceNames.GAME, "running",
+		JSONService games = new JSONService("/services/380", "FancyGameService", "JJMG", ServiceNames.GAME, "running",
 				"http://localhost:4567/games");
 		services.put(ServiceNames.GAME, games);
 		//
-		Service events = new Service("/services/381", "freshe events", "JJMG", ServiceNames.EVENT, "running",
+		JSONService events = new JSONService("/services/381", "freshe events", "JJMG", ServiceNames.EVENT, "running",
 				"http://localhost:4567/events");
 		services.put(ServiceNames.EVENT, events);
 		//
 		// // Description fehlerhaft
-		Service users = new Service("/services/382", "user service", "JJMG", ServiceNames.USER, "running",
+		JSONService users = new JSONService("/services/382", "user service", "JJMG", ServiceNames.USER, "running",
 				"http://localhost:4567/users");
 		services.put(ServiceNames.USER, users);
 		//
-		Service dice = new Service("/services/383", "dice service", "JJMG", ServiceNames.DICE, "running",
+		JSONService dice = new JSONService("/services/383", "dice service", "JJMG", ServiceNames.DICE, "running",
 				"http://localhost:4567/dice");
 		services.put(ServiceNames.DICE, dice);
 
-		Service board = new Service("/services/384", "board service", "JJMG", ServiceNames.BOARD, "running",
+		JSONService board = new JSONService("/services/384", "board service", "JJMG", ServiceNames.BOARD, "running",
 				"http://localhost:4567/boards");
 		services.put(ServiceNames.BOARD, board);
 	}
@@ -122,20 +122,20 @@ public class YellowPagesService {
 	@SuppressWarnings("unused")
 	private void fetchHardcodedServices() {
 		// Manuell eingef�gte uris
-		Service games = new Service("/services/386", "FancyGameService", "JJMG", ServiceNames.GAME, "running",
+		JSONService games = new JSONService("/services/386", "FancyGameService", "JJMG", ServiceNames.GAME, "running",
 				"http://172.18.0.48:4567/games");
 		services.put(ServiceNames.GAME, games);
 
-		Service events = new Service("/services/382", "freshe events", "JJMG", ServiceNames.EVENT, "running",
+		JSONService events = new JSONService("/services/382", "freshe events", "JJMG", ServiceNames.EVENT, "running",
 				"http://172.18.0.32:4567/events");
 		services.put(ServiceNames.EVENT, events);
 
 		// Description fehlerhaft
-		Service users = new Service("/services/383", "dice service", "JJMG", ServiceNames.USER, "running",
+		JSONService users = new JSONService("/services/383", "dice service", "JJMG", ServiceNames.USER, "running",
 				"http://172.18.0.60:4567/users");
 		services.put(ServiceNames.USER, users);
 
-		Service dice = new Service("/services/385", "dice service", "JJMG", ServiceNames.DICE, "running",
+		JSONService dice = new JSONService("/services/385", "dice service", "JJMG", ServiceNames.DICE, "running",
 				"http://172.18.0.59:4567/dice");
 		services.put(ServiceNames.DICE, dice);
 	}

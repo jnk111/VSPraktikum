@@ -1,7 +1,7 @@
 import com.google.gson.Gson;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.model.Service;
+import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
@@ -64,7 +64,7 @@ public class StartLocalServices {
         YellowPagesService yellowPages = new YellowPagesService(false);
 
         /*  Initializes DiceService (needs a running EventService)   */
-        Map<String, Service> neededServicesDice = new HashMap<>();
+        Map<String, JSONService> neededServicesDice = new HashMap<>();
         neededServicesDice.put(ServiceNames.EVENT, yellowPages.getService(ServiceNames.EVENT));
         new DiceService(neededServicesDice).startService();
 

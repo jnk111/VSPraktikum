@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import vs.jan.model.Service;
+import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
@@ -16,10 +16,10 @@ public class DiceService {
 
 	public final String SLASH_DICE = "/dice";
 	private Gson gson;
-	private Map<String, Service> neededServices;
+	private Map<String, JSONService> neededServices;
 	
 	
-	public DiceService(Map<String, Service> neededServices){
+	public DiceService(Map<String, JSONService> neededServices){
 		gson = new Gson();
 		this.setNeededServices(neededServices);
 	}
@@ -42,7 +42,7 @@ public class DiceService {
 				
 				EventData event = new EventData(gameUri,"DiceRoll","DiceRoll",playerUri+" has rolled the dice.", SLASH_DICE,playerUri);
 				RestClient client = new RestClient();
-				Service service = neededServices.get(ServiceNames.EVENT);
+				JSONService service = neededServices.get(ServiceNames.EVENT);
 				if(service != null){
 					String eventServiceUri = service.getUri(); 
 					System.out.println("EventService-Uri: " + eventServiceUri);
@@ -54,11 +54,11 @@ public class DiceService {
 		}, gson::toJson);
 	}
 
-	public Map<String, Service> getNeededServices() {
+	public Map<String, JSONService> getNeededServices() {
 		return neededServices;
 	}
 
-	public void setNeededServices(Map<String, Service> neededServices) {
+	public void setNeededServices(Map<String, JSONService> neededServices) {
 		this.neededServices = neededServices;
 	}
 

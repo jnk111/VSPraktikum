@@ -14,7 +14,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jan.model.Service;
+import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.CreateGame;
 import vs.jonas.client.json.GameResponse;
@@ -36,8 +36,8 @@ import vs.jonas.services.services.YellowPagesService;
  */
 public class RestopolyClient {
 
-	private Service gameservice;
-	private Service userservice;
+	private JSONService gameservice;
+	private JSONService userservice;
     private String BASE_URL;
 	private Gson gson;
 	private User user;

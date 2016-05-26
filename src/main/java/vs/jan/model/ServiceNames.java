@@ -1,6 +1,7 @@
 package vs.jan.model;
 
 public class ServiceNames {
+	
 	public static final String DICE = "dice";
 	public static final String EVENT = "events";
 	public static final String USER = "users";

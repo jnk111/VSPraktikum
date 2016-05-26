@@ -1,4 +1,4 @@
-package vs.jan.services.boardservice;
+package vs.jan.model.exception;
 
 public class InvalidPlaceIDException extends IllegalArgumentException {
 

@@ -1,53 +1,46 @@
 package vs.jan.model;
 
-import com.google.gson.Gson;
-
-public class Service {
-
-	/**
-	 * EXAMPLE: ========================================== "_uri":
-	 * "/services/164", "description": "Event service of group 7", "name": "bla",
-	 * "service": "events", "status": "dead", "uri":
-	 * "http://141.22.65.58:4567/events"
-	 * ==========================================
-	 */
-
-	private String _uri;
-	private String description;
+public class Service{
+	
+	private String relUri;
+	private String desciption;
 	private String name;
 	private String service;
 	private String status;
-	private String uri;
-
-	public Service() {
-
+	private String fullUri;
+	
+	public Service(){
+		
 		this(null, null, null, null, null, null);
+		
 	}
-
-	public Service(String _uri, String description, String name, String service, String status, String uri) {
-
-		this._uri = _uri;
-		this.description = description;
+	
+	public Service(String relUri, String desciption, 
+								 String name, String service, 
+								 String status, String fullUri) {
+		
+		this.relUri = relUri;
+		this.desciption = desciption;
 		this.name = name;
 		this.service = service;
 		this.status = status;
-		this.uri = uri;
+		this.fullUri = fullUri;
 	}
 
-	public String get_uri() {
-		return _uri;
+	public String getRelUri() {
+		return relUri;
 	}
 
-	public void set_uri(String _uri) {
-		this._uri = _uri;
+	public void setRelUri(String relUri) {
+		this.relUri = relUri;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDesciption() {
+		return desciption;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDesciption(String desciption) {
+		this.desciption = desciption;
 	}
 
 	public String getName() {
@@ -74,16 +67,54 @@ public class Service {
 		this.status = status;
 	}
 
-	public String getUri() {
-		return uri;
+	public String getFullUri() {
+		return fullUri;
 	}
 
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setFullUri(String fullUri) {
+		this.fullUri = fullUri;
 	}
 
+	@Override
+	public int hashCode() {
+		
+		return (this.getName().hashCode() 
+						+ this.getFullUri().hashCode() 
+							+ this.getService().hashCode()) * 2; 
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj == this){
+			return true;
+		}
+		
+		if(obj instanceof Service){
+			Service s = (Service) obj;
+			
+			return this.getName().equals(s.getName())
+							&& this.getService().equals(s.getService())
+								&& this.getFullUri().equals(s.getFullUri());
+		}
+		
+		return false;
+	}
+
+	@Override
 	public String toString() {
-		return new Gson().toJson(this);
+		
+		return "service: " + this.getService() 
+						+ ", full uri: " + this.getFullUri() 
+							+ ", name " + this.getName() 
+								+", status: " + this.getStatus();
 	}
-
+	
+	
 }
+
+

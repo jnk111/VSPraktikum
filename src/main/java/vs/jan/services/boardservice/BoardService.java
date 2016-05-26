@@ -91,8 +91,7 @@ public class BoardService {
 		validator.checkGameIsValid(game);
 		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
-		Board b = new Board();
-		b.setId(boardUri);
+		Board b = new Board(boardUri);
 		boards.put(b, game);
 		placeABoard(gameId, b.convert());
 	}

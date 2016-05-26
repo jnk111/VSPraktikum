@@ -19,8 +19,8 @@ import vs.jan.json.JSONField;
 import vs.jan.json.JSONPawn;
 import vs.jan.json.JSONPawnList;
 import vs.jan.json.JSONPlace;
+import vs.jan.json.JSONService;
 import vs.jan.model.Pawn;
-import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
@@ -32,7 +32,7 @@ import vs.malte.services.GamesService;
 public class RunBoardExample {
 
 	private static final Gson GSON = new Gson();
-	private static final int TIMEOUT = 1000;
+	private static final int TIMEOUT = 500;
 	@SuppressWarnings("unused")
 	private static BoardRESTApi boardApi;
 
@@ -49,13 +49,15 @@ public class RunBoardExample {
 	public static void main(String[] args) throws InterruptedException, MalformedURLException {
 
 		BankService.run();
-		Map<String, Service> neededServicesDice = getNeededServices(ServiceNames.DICE);
+		new GamesService();
+		Map<String, JSONService> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den
 																				// DiceService laufen
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
+
 		boardApi = new BoardRESTApi();
-		new GamesService();
+		
 		setupGame();
 
 	}
@@ -73,35 +75,38 @@ public class RunBoardExample {
 		setupUser(boardID, gameUri);
 		startGame(boardID);
 		letCurrPlayerRollDice(boardID);
-		// createPawns(boardID);
-		//letPawnsRollDice(boardID);
-		// updateBoard(boardID);
-//		updatePawns(boardID);
-//		deletePawns(boardID);
-//		putPlaces(boardID);
 		getFinalBoardState(boardID);
 
 	}
 
 	private static void letCurrPlayerRollDice(int boardID) {
 		
-		System.out.println("Let Player with mutex roll the dice");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/player/current", 200);
-		System.out.println("Got Player with mutex: " + json);
-		Player p = GSON.fromJson(json, Player.class);
-		String pawnUri = p.getPawn();
-		String [] u = pawnUri.split("/");
-		String id = u[u.length - 1];
-		String uri = "http://localhost:4567/boards/42/pawns/" + id;
-		p.setPawn(uri);
-		System.out.println("Get Pawn with uri: " + p.getPawn());
-		String json2 = HttpService.get(p.getPawn(), 200);
-		JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
-		System.out.println("Got Pawn: " + json2);
-		System.out.println("Pawn rolls dice: " + json2);
-		HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
-		
+		for(int i = 0; i < 4; i++){
+			System.out.println("Let Player with mutex roll the dice");
+			System.out.println("-------------------------------------------------------------------------------------------");
+			String json = HttpService.get("http://localhost:4567/games/" + boardID + "/player/current", 200);
+
+			Player p = GSON.fromJson(json, Player.class);
+			HttpService.put("http://localhost:4567/games/" + boardID + "/player/turn", p, 201);
+			
+
+			String pawnUri = p.getPawn();
+			String [] u = pawnUri.split("/");
+			String id = u[u.length - 1];
+			String uri = "http://localhost:4567/boards/42/pawns/" + id;
+			p.setPawn(uri);
+			System.out.println("Get Pawn with uri: " + p.getPawn());
+			String json2 = HttpService.get(p.getPawn(), 200);
+			JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
+			System.out.println("Got Pawn: " + json2);
+			System.out.println("Pawn rolls dice: " + json2);
+			HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
+			System.out.println();
+			System.out.println("Player: " + json + " releases the Mutex");
+			System.out.println("ID: " + id);
+			//HttpService.put("http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
+		}
+
 		
 	}
 
@@ -453,14 +458,14 @@ public class RunBoardExample {
 
 	}
 
-	private static Map<String, Service> getNeededServices(String type) {
-		Map<String, Service> services = new HashMap<>();
+	private static Map<String, JSONService> getNeededServices(String type) {
+		Map<String, JSONService> services = new HashMap<>();
 
 		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
 		// ... weitere
 
 		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
-			Service s = new Service("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
+			JSONService s = new JSONService("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
 					"http://localhost:4567/events");
 
 			services.put(ServiceNames.EVENT, s);

@@ -88,9 +88,9 @@ public class BoardValidator {
 	 * @param gameid
 	 * @param pawnid
 	 */
-	public void checkPlayerHasMutex(String gameid, String pawnid) {
+	public void checkPlayerHasMutex(String gameid, String pawnid, String gameServiceUri) {
 
-		String player = "http://localhost:4567/games/" + gameid + "/player/turn";
+		String player = gameServiceUri + "/" + gameid + "/player/turn";
 		String json = HttpService.get(player, HttpURLConnection.HTTP_OK);
 		Player current = GSON.fromJson(json, Player.class);
 		

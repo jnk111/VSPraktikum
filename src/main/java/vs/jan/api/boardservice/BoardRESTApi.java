@@ -101,7 +101,7 @@ public class BoardRESTApi {
 		exception(JsonSyntaxException.class, (exception, request, response) -> {
 
 			response.status(StatusCodes.BAD_REQ);
-			response.body(StatusCodes.BAD_REQ + ": Invalid Json Input!");
+			response.body(StatusCodes.BAD_REQ + ": invalid json input");
 			exception.printStackTrace();
 		});
 
@@ -233,6 +233,7 @@ public class BoardRESTApi {
 	private void initPostCreateNewBoard() {
 		post("/boards", CONTENT_TYPE, (req, resp) -> {
 			JSONGameURI uri = GSON.fromJson(req.body(), JSONGameURI.class);
+			System.out.println(req.host());
 			boardService.createNewBoard(uri);
 			return StatusCodes.CREATED + CLRF;
 		});

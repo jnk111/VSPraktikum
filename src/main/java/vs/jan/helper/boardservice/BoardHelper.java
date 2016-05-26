@@ -11,13 +11,13 @@ import com.google.gson.Gson;
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.JSONGameURI;
+import vs.jan.json.JSONService;
 import vs.jan.json.JSONThrowsList;
 import vs.jan.json.JSONThrowsURI;
 import vs.jan.model.Board;
 import vs.jan.model.Field;
 import vs.jan.model.Pawn;
 import vs.jan.model.Place;
-import vs.jan.model.Service;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.User;
 import vs.jan.model.exception.Error;
@@ -43,9 +43,8 @@ public class BoardHelper {
 	 *          Die Figur um die es sich handelt
 	 * @param neededServices2
 	 */
-	public void postEvent(String gameid, String type, String name, Pawn pawn, Map<String, Service> neededServices) {
+	public void postEvent(String gameid, String type, String name, Pawn pawn, String uri) {
 
-		Service service = neededServices.get(ServiceNames.EVENT);
 		String reas = null;
 		String resource = null;
 
@@ -58,7 +57,7 @@ public class BoardHelper {
 		}
 
 		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
-		HttpService.post(service.getUri(), event, HttpURLConnection.HTTP_OK);
+		HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
 	}
 
 	/**

@@ -6,10 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.table.TableColumn;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 

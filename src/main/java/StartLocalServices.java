@@ -1,4 +1,13 @@
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.naming.ServiceUnavailableException;
+
 import com.google.gson.Gson;
+
+import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
@@ -10,12 +19,6 @@ import vs.jonas.services.services.YellowPagesService;
 import vs.malte.example.json.CreateGameExDTO;
 import vs.malte.models.Player;
 import vs.malte.services.GamesService;
-
-import javax.naming.ServiceUnavailableException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Jones on 24.05.2016.
@@ -55,7 +58,7 @@ public class StartLocalServices {
         gson = new Gson();
 
         /*  Initializes BankService  */
-//        BankService.run();
+        BankService.run();
 
         /*  Initializes EventService */
         new EventService().startService();

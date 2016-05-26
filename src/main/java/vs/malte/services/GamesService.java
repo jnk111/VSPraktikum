@@ -822,7 +822,7 @@ public class GamesService
      */
     private void initPutPlayersTurn()
     {
-        put( "/games/:gameId/players/turn", ( req, resp ) ->
+        put( "/games/:gameId/player/turn", ( req, resp ) ->
         {
             resp.header( "Content-Type", "application/json" );
             resp.status( 500 ); // Internal Server Error

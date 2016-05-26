@@ -9,20 +9,35 @@ import javax.swing.JOptionPane;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.view.RestopolyMenuUI;
 
+/**
+ * Diese Klasse implementiert einen Controller für die MenuUI.
+ * Sie ist der Hauptcontroller und Startpunkt der Anwendung.
+ * Von hier aus werden alle weiteren Controller gestartet.
+ * 
+ * @author Jones
+ *
+ */
 public class MenuController {
 	
 	private RestopolyMenuUI ui;
 	private RestopolyClient client;
 	
+	/**
+	 * Initialisiert den Controller
+	 * @param client
+	 * @throws Exception
+	 */
 	public MenuController(RestopolyClient client) throws Exception{
 		this.client = client;
 		initializeUI();
 	}
 
+	/**
+	 * Initialisiert die UI.
+	 */
 	private void initializeUI() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -38,6 +53,9 @@ public class MenuController {
 		
 	}
 
+	/**
+	 * Registriert die Listener an der UI.
+	 */
 	private void registerActionListener() {
 		ui.getBtnOffeneSpiele().addActionListener(new ActionListener() {
 			

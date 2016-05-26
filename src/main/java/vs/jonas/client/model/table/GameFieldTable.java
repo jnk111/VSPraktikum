@@ -22,7 +22,7 @@ public class GameFieldTable extends JTable{
 	   Object value = super.getValueAt(row, column);
 	   if(value != null) {
 	      if(value instanceof JComboBox) {
-	           return new DefaultCellEditor((JComboBox)value);
+	           return new DefaultCellEditor((JComboBox<?>)value);
 	      }
 	            return getDefaultEditor(value.getClass());
 	   }

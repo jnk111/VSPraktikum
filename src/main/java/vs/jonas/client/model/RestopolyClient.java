@@ -219,8 +219,9 @@ public class RestopolyClient {
 		JsonObject json = get(boardsPawnsUri);
 		PawnList pawnList = gson.fromJson(json, PawnList.class);
 		for (String pawnUri : pawnList.getPawns()) {
-
+			System.out.println(pawnUri);
 		}
+		// TODO
 		return data;
 	}
 	

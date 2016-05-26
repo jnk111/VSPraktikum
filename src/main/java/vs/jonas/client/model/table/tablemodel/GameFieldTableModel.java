@@ -13,6 +13,11 @@ public class GameFieldTableModel extends DefaultTableModel{
 
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Die Spalten-Namen
 	 */
 	private String[] columnNames = { "ID", "Name", "Owner", "Value", 

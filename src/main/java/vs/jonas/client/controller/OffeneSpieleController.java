@@ -14,14 +14,13 @@ import javax.swing.event.ListSelectionListener;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import vs.jonas.client.json.GameResponse;
-import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameInformationTableModel;
 import vs.jonas.client.view.OffeneSpieleUI;
 
 /**
  * Diese Klasse kontrolliert die Aktionen auf der OffeneSpieleUI,
- * verarbeitet die Aktivit�ten des Users und kann ein neues Spiel starten.
+ * verarbeitet die Aktivitaeten des Users und kann ein neues Spiel starten.
  * @author Jones
  */
 public class OffeneSpieleController {
@@ -59,7 +58,7 @@ public class OffeneSpieleController {
 	}
 	
 	/**
-	 * L�dt die aktuellen offenen Spiele in die Tabelle
+	 * Laedt die aktuellen offenen Spiele in die Tabelle
 	 * @throws IOException 
 	 * @throws UnirestException 
 	 */

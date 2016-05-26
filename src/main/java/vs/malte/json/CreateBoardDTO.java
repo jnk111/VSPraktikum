@@ -1,15 +1,15 @@
 package vs.malte.json;
 
-public class BoardDTO
+public class CreateBoardDTO
 {
     private String game;
 
-    public BoardDTO( String game )
+    public CreateBoardDTO( String game )
     {
         this.game = game;
     }
 
-    public BoardDTO()
+    public CreateBoardDTO()
     {
     }
 

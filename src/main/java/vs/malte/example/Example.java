@@ -14,8 +14,8 @@ public class Example
         CreateGameExDTO cg = new CreateGameExDTO();
         cg.setName( "game01" );
         HttpService.post( GameServiceIP + "/games", cg );
-        cg.setName( "game02" );
-        HttpService.post( GameServiceIP + "/games", cg );
+//        cg.setName( "game02" );
+//        HttpService.post( GameServiceIP + "/games", cg );
         UserDTO user = new UserDTO();
 
         user.setUser( "klaus" );

@@ -6,14 +6,16 @@ import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.malte.example.Example;
 import vs.malte.services.GamesService;
+import vs.malte.services.GamesServiceAPI;
 
 public class StartUpProject
 {
     public static void main( String[] args )
     {
         new BoardRESTApi();
-        new GamesService();
         new UserServiceRESTApi();
+        
+        new GamesServiceAPI();
         
         try
         {

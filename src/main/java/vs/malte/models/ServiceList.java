@@ -165,8 +165,14 @@ public class ServiceList
     @Override
     public String toString()
     {
-        return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker=" + broker + ", decks=" + decks + ", events="
-                + events + "]";
+        return "ServiceList [game=" + games + ",\n"
+                + " dice=" + dice + ",\n"
+                        + " board=" + board + ",\n"
+                                + " bank=" + bank + ",\n"
+                                        + " broker=" + broker + ",\n"
+                                                + " decks=" + decks + ",\n"
+                                                        + " events=" + events + "]";
+                
     }
 
     /**

@@ -17,6 +17,11 @@ public class HttpService
     {
         return connect( "PUT", URL, body );
     }
+    
+    public static int get( String URL)
+    {
+        return connect( "GET", URL, null);
+    }
 
     private static int connect( String method, String URL, Object body )
     {
@@ -31,14 +36,18 @@ public class HttpService
 
             connection.setDoOutput( true );
 
-            String json = new Gson().toJson( body );
-
-            if ( json != null )
+            if ( body != null )
             {
+                String json = new Gson().toJson( body );
                 connection.getOutputStream().write( json.getBytes() );
+            }
+            else
+            {
+                connection.getOutputStream();
             }
 
             connection.connect();
+            
             result = connection.getResponseCode();
         }
         catch ( IOException e )

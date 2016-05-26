@@ -40,6 +40,8 @@ public class HttpService
             {
                 String json = new Gson().toJson( body );
                 connection.getOutputStream().write( json.getBytes() );
+                
+                System.out.println( "HTTPService: " + json );
             }
             else
             {

@@ -67,9 +67,9 @@ public class GamesService
         {
             if ( !games.containsKey( game.getId() ) )
             {
+                this.games.put( game.getId(), game );
                 game = initGameServices( game );
                 game = initGameComponents( game );
-                this.games.put( game.getId(), game );
 
                 resp.status( 201 ); // Created
             }
@@ -216,7 +216,7 @@ public class GamesService
             System.out.println( "With DTO: " + new Gson().toJson( initBoardDTO ) );
         }
 
-//        responseCode = HttpService.put( boardsUrl, initBoardDTO );
+        responseCode = HttpService.put( boardsUrl, initBoardDTO );
 
         if ( responseCode == 200 )
         {

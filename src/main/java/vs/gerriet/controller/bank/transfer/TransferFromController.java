@@ -13,7 +13,7 @@ import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 
 /**
  * Controller for transfers from a specific account.
- * 
+ *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class TransferFromController extends AbstractController implements PostController {
@@ -21,7 +21,7 @@ public class TransferFromController extends AbstractController implements PostCo
     /**
      * Uri for transfers from a specific account.
      */
-    public static final String URI = BankController.URI + "transfer/from/:from/:amount/";
+    public static final String URI = BankController.URI + "/transfer/from/:from/:amount";
 
     @Override
     public String getUri() {

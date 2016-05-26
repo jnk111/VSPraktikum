@@ -21,7 +21,7 @@ public class BankController extends AbstractController implements GetController,
     /**
      * Uri to access a specific bank.
      */
-    public static final String URI = BanksController.URI + ":bankid/";
+    public static final String URI = BanksController.URI + "/:bankid";
 
     /**
      * Loads bank instance from query parameter.

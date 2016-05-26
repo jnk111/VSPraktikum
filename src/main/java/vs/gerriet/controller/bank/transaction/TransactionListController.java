@@ -11,14 +11,14 @@ import vs.gerriet.model.bank.transaction.Transaction.Type;
 
 /**
  * Controller for generic transaction access.
- * 
+ *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class TransactionListController extends AbstractController implements PostController {
     /**
      * Generic transaction uri.
      */
-    public static final String URI = BankController.URI + "transaction/";
+    public static final String URI = BankController.URI + "/transaction";
 
     @Override
     public String getUri() {

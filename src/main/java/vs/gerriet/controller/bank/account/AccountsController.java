@@ -18,7 +18,7 @@ public class AccountsController extends AbstractController implements GetControl
     /**
      * Uri for a specific account.
      */
-    public static final String URI = AccountsListController.URI + ":accountid/";
+    public static final String URI = AccountsListController.URI + "/:accountid";
 
     /**
      * Returns info about the selected account.

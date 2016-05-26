@@ -22,7 +22,7 @@ public class BanksController extends AbstractController implements GetController
     /**
      * Basic uri for banks.
      */
-    public static final String URI = "/banks/";
+    public static final String URI = "/banks";
 
     /**
      * Returns a list with all bank URIs.

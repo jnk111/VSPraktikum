@@ -16,7 +16,7 @@ import vs.gerriet.model.bank.transaction.Transaction.Status;
 
 /**
  * Controller for specific transaction access.
- * 
+ *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class TransactionController extends AbstractController
@@ -25,7 +25,7 @@ public class TransactionController extends AbstractController
     /**
      * Uri to a specific transaction.
      */
-    public static final String URI = TransactionListController.URI + ":transactionId/";
+    public static final String URI = TransactionListController.URI + "/:transactionId";
 
     /**
      * Returns the transaction id for the current request.
@@ -67,7 +67,7 @@ public class TransactionController extends AbstractController
 
     /**
      * Sends the status of the transaction.
-     * 
+     *
      * @see Status#name()
      * @see Status#fromName(String)
      */

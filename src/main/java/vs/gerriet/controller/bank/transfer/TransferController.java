@@ -10,7 +10,7 @@ import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for specific access on a transfer.
- * 
+ *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class TransferController extends AbstractController implements GetController {
@@ -18,7 +18,7 @@ public class TransferController extends AbstractController implements GetControl
     /**
      * Uri to access a specific transfer on the selected bank.
      */
-    public static final String URI = TransfersController.URI + ":transferid/";
+    public static final String URI = TransfersController.URI + "/:transferid";
 
     /**
      * Returns information about the selected transfer.

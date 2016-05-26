@@ -12,14 +12,14 @@ import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for transfers involving two accounts.
- * 
+ *
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class TransferFromToController extends AbstractController implements PostController {
     /**
      * Uri for transfers involving two accounts.
      */
-    public static final String URI = BankController.URI + "transfer/from/:from/to/:to/:amount/";
+    public static final String URI = BankController.URI + "/transfer/from/:from/to/:to/:amount";
 
     @Override
     public String getUri() {

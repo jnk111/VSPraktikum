@@ -22,7 +22,7 @@ public class AccountsListController extends AbstractController
     /**
      * Generic account access uri.
      */
-    public static final String URI = BanksController.URI + "accounts/";
+    public static final String URI = BanksController.URI + "/accounts";
 
     /**
      * Returns a list of all accounts on the selected bank.

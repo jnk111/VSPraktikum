@@ -9,7 +9,7 @@ import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller to access the transfer list.
- * 
+ *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class TransfersController extends AbstractController implements GetController {
@@ -17,7 +17,7 @@ public class TransfersController extends AbstractController implements GetContro
     /**
      * Uri for the transfer list.
      */
-    public static final String URI = BankController.URI + "transfers/";
+    public static final String URI = BankController.URI + "/transfers";
 
     /**
      * Returns a list with all transfer IDs.

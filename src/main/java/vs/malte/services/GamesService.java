@@ -558,7 +558,7 @@ public class GamesService
 
         if ( responseCode == 200 )
         {
-            player.setPawn( game.getComponents().getBoard() + "/pawns/" + player.getUserName().replaceAll( "user/", "" ) );
+            player.setPawn( game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "user/", "" ) );
 
             if ( DEBUG_MODE )
                 System.out.println( "New Pawn URI : " + player.getPawn() );

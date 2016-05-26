@@ -1,5 +1,7 @@
 package vs.gerriet.service;
 
+import com.google.gson.JsonSyntaxException;
+
 import de.stuff42.error.ExceptionUtils;
 import de.stuff42.error.ThreadExceptionHandler;
 import spark.Spark;
@@ -60,6 +62,24 @@ public class BankService {
         // register accounts controllers
         ServiceUtils.registerController(new AccountsListController());
         ServiceUtils.registerController(new AccountsController());
+
+        // register default error handlers
+        Spark.exception(JsonSyntaxException.class, (ex, req, res) -> {
+            final String msg = ExceptionUtils.getExceptionInfo(ex, "JSON");
+            System.err.println(msg);
+            res.status(400);
+            res.body(msg);
+        });
+
+        // register within yellow pages
+        // TODO @gerriet-hinrichs: register
+        // try {
+        // new YellowPages().registerService(new Service(VsApiBase.GROUP_NAME,
+        // "Bank service",
+        // "bank", InetAddress.getLocalHost().getHostAddress()));
+        // } catch (final UnknownHostException ex) {
+        // System.err.println(ExceptionUtils.getExceptionInfo(ex, "STARTUP"));
+        // }
     }
 
     /**

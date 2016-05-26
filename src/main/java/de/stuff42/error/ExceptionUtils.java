@@ -32,7 +32,7 @@ public final class ExceptionUtils {
     /**
      * Contains filters for stack trace simplification.
      */
-    private static String[] filters;
+    private static String[] filters = {};
 
     /**
      * <p>

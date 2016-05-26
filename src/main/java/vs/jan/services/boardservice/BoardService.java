@@ -37,6 +37,8 @@ import vs.jonas.services.model.Event;
 public class BoardService {
 
 	private final Gson GSON = new Gson();
+	
+	
 	/*
 	 * Mapping Board -> GameUri
 	 */

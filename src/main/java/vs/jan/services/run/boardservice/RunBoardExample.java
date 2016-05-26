@@ -16,7 +16,6 @@ import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONField;
-import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONPlace;
@@ -73,12 +72,12 @@ public class RunBoardExample {
 		int boardID = 42;
 
 		createBoard(boardID, gameUri);
-		placeBoard(boardID);
-		checkBoardAdded(boardID);
-		setupUser(boardID, gameUri);
-		startGame(boardID);
-		letCurrPlayerRollDice(boardID);
-		getFinalBoardState(boardID);
+//		placeBoard(boardID);
+//		checkBoardAdded(boardID);
+//		setupUser(boardID, gameUri);
+//		startGame(boardID);
+//		letCurrPlayerRollDice(boardID);
+//		getFinalBoardState(boardID);
 
 	}
 
@@ -115,7 +114,7 @@ public class RunBoardExample {
 			System.out.println();
 			System.out.println("Player: " + json + " releases the Mutex");
 			System.out.println("ID: " + id);
-			//HttpService.put("http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
+			HttpService.put("http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
 		}
 
 		

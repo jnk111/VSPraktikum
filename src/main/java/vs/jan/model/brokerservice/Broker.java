@@ -1,5 +1,6 @@
 package vs.jan.model.brokerservice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vs.jan.json.brokerservice.JSONBroker;
@@ -20,7 +21,7 @@ public class Broker implements Convertable<JSONBroker> {
 	}
 
 	public Broker(String uri, String gameUri) {
-		this(uri, gameUri, null);
+		this(uri, gameUri, new ArrayList<>());
 	}
 
 	public Broker(String uri, String gameUri, List<Place> places) {

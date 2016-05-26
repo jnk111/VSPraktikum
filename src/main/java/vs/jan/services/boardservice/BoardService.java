@@ -91,7 +91,6 @@ public class BoardService {
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
-		//placeABoard(gameId, b.convert());
 	}
 
 	/**

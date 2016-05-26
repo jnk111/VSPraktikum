@@ -20,7 +20,7 @@ public class Start {
 		
 		while(username != null && username.equals("")){
 			username = JOptionPane.showInputDialog(null, "Bitte wählen Sie einen Usernamen.");
-			if(username != null && username.equals("") ){
+			if(username != null && username.equals("") && username.equals("user")){
 				JOptionPane.showMessageDialog(null, "Dieser Username ist nicht gültig. Der Username darf nicht leer sein.");
 			}
 		}

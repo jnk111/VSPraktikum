@@ -31,7 +31,7 @@ public class MenuController {
 					registerActionListener();
 					ui.showUI();
 				} catch (Exception e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Fehler. Der Service konnte nicht erreicht werden.");
 				}
 			}
 		});

@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -50,6 +51,7 @@ public class OffeneSpieleController {
 					registriereActionListener();
 					ui.showUI();
 				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Fehler. Es gibt Probleme mit der Kommunikation zwischen unseren Services.");
 					e.printStackTrace();
 				}
 			}

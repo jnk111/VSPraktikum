@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import de.stuff42.error.ExceptionUtils;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
@@ -17,6 +16,7 @@ import vs.gerriet.json.TransferInfo;
 import vs.gerriet.model.bank.transaction.AtomicOperation;
 import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 import vs.gerriet.model.bank.transaction.Transaction;
+import vs.gerriet.model.bank.transaction.Transaction.Status;
 import vs.gerriet.model.bank.transaction.Transfer;
 import vs.gerriet.utils.IdUtils;
 
@@ -73,20 +73,6 @@ public class Bank {
     }
 
     /**
-     * Adds the given transaction to this bank.
-     *
-     * @param transaction
-     *            Transaction to be added.
-     * @return New transaction id for the added transaction.
-     */
-    public TransactionId addTransaction(final Transaction transaction) {
-        final TransactionId transactionId =
-                new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
-        this.transactions.put(transactionId, transaction);
-        return transactionId;
-    }
-
-    /**
      * Adds performed transfer.
      *
      * @param transfer
@@ -94,6 +80,38 @@ public class Bank {
      */
     public void addTransfer(final Transfer transfer) {
         this.transfers.put(transfer.getId(), transfer.getInfo());
+    }
+
+    /**
+     * Commits the given transaction.
+     *
+     * @param transactionId
+     *            Transaction id.
+     * @return <code>true</code> on success, <code>false</code> otherwise.
+     * @throws TransactionException
+     *             If something went horribly wrong.
+     */
+    public boolean commitTransaction(final TransactionId transactionId)
+            throws TransactionException {
+        if (!this.hasTransaction(transactionId)) {
+            return false;
+        }
+        return this.transactions.get(transactionId).commit();
+    }
+
+    /**
+     * Confirms the given transaction for the given account.
+     *
+     * @param transactionId
+     *            Transaction id.
+     * @param account
+     *            Account id.
+     */
+    public void confirmTransaction(final TransactionId transactionId, final AccountId account) {
+        if (!this.hasTransaction(transactionId)) {
+            return;
+        }
+        this.transactions.get(transactionId).confirm(account);
     }
 
     /**
@@ -121,6 +139,22 @@ public class Bank {
      */
     public boolean createAccount(final UserId userId, final int balance) {
         return this.accounts.createAccount(userId, new Account(userId, balance));
+    }
+
+    /**
+     * Adds a new transaction to this bank.
+     *
+     * @param type
+     *            Transaction type.
+     * @return New transaction id for the added transaction.
+     */
+    public TransactionId
+            createTransaction(final vs.gerriet.model.bank.transaction.Transaction.Type type) {
+        final Transaction transaction = new Transaction(type, this);
+        final TransactionId transactionId =
+                new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
+        this.transactions.put(transactionId, transaction);
+        return transactionId;
     }
 
     /**
@@ -189,6 +223,20 @@ public class Bank {
     }
 
     /**
+     * Returns the status for the transaction with the given id.
+     *
+     * @param transactionId
+     *            Transaction id.
+     * @return Transaction status.
+     */
+    public Status getTransactionStatus(final TransactionId transactionId) {
+        if (this.hasTransaction(transactionId)) {
+            return this.transactions.get(transactionId).getStatus();
+        }
+        return Status.INVALID;
+    }
+
+    /**
      * Returns the transfer info for the transfer with the given id.
      *
      * @param transferId
@@ -217,6 +265,18 @@ public class Bank {
      */
     public String getTransferUrl() {
         return this.transferUrl;
+    }
+
+    /**
+     * Checks if the given transaction id is valid.
+     *
+     * @param transactionId
+     *            Transaction id.
+     * @return <code>true</code> if the transaction is active,
+     *         <code>false</code> otherwise.
+     */
+    public boolean hasTransaction(final TransactionId transactionId) {
+        return this.transactions.containsKey(transactionId);
     }
 
     /**
@@ -259,9 +319,11 @@ public class Bank {
      *            Transfer reason.
      *
      * @return <code>true</code> on success, <code>false</code> otherwise.
+     * @throws TransactionException
+     *             If something went horribly wrong.
      */
     public boolean performTransfer(final AccountId from, final AccountId to, final int amount,
-            final String reason) {
+            final String reason) throws TransactionException {
         return this.runTransfer(new Transfer(this, from, to, amount, reason));
     }
 
@@ -301,9 +363,11 @@ public class Bank {
      * @param reason
      *            Transfer reason.
      * @return <code>true</code> on success, <code>false</code> otherwise.
+     * @throws TransactionException
+     *             If something went horribly wrong.
      */
     public boolean performTransfer(final AccountId player, final Type type, final int amount,
-            final String reason) {
+            final String reason) throws TransactionException {
         return this.runTransfer(new Transfer(this, type, player, amount, reason));
     }
 
@@ -342,6 +406,21 @@ public class Bank {
     }
 
     /**
+     * Rolls back the transaction with the given id.
+     *
+     * @param transactionId
+     *            Transaction id.
+     * @throws TransactionException
+     *             If something went horribly wrong.
+     */
+    public void rollBackTransaction(final TransactionId transactionId) throws TransactionException {
+        if (!this.hasTransaction(transactionId)) {
+            return;
+        }
+        this.transactions.get(transactionId).rollback();
+    }
+
+    /**
      * Sets the accounts url.
      *
      * @param url
@@ -367,16 +446,12 @@ public class Bank {
      * @param transfer
      *            Transfer to be run.
      * @return <code>true</code> on success, <code>false</code> otherwise.
+     * @throws TransactionException
+     *             If something went horribly wrong.
      */
-    private boolean runTransfer(final Transfer transfer) {
+    private boolean runTransfer(final Transfer transfer) throws TransactionException {
         final Transaction transaction = new Transaction(Transaction.Type.SIMPLE, this);
         transaction.addOperation(transfer);
-        try {
-            return transaction.commit();
-        } catch (final TransactionException ex) {
-            // should never happen
-            System.err.println(ExceptionUtils.getExceptionInfo(ex, "ERROR"));
-        }
-        return false;
+        return transaction.commit();
     }
 }

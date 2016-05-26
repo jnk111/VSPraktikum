@@ -19,6 +19,75 @@ import vs.gerriet.utils.LockProvider;
  */
 public class Transaction extends LockProvider {
     /**
+     * Contains transaction status types.
+     *
+     * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
+     */
+    public enum Status {
+        /**
+         * Default status, operations can be added.
+         */
+        ACTIVE,
+        /**
+         * There was at least one confirmation, waiting for others. If an
+         * operation is added, returns to active state.
+         */
+        WAITING_FOR_CONFIRMATION,
+        /**
+         * Confirmation completed. If an operation is added, returns to active
+         * state.
+         */
+        CONFIRMED,
+        /**
+         * {@link Transaction#commit()} or {@link Transaction#rollback()} is
+         * currently running.
+         */
+        RUNNING,
+        /**
+         * The state of this transaction is invalid and
+         * {@link Transaction#commit()} will always fail.
+         */
+        INVALID,
+        /**
+         * This transaction was committed.
+         */
+        COMMITTED,
+        /**
+         * This transaction was rolled back.
+         */
+        ROLLED_BACK;
+
+        /**
+         * Transforms the given status enum name into the matching enum element.
+         *
+         * @param name
+         *            Status enum name.
+         * @return Matching enum element.
+         */
+        public static Status fromName(final String name) {
+            if (name.equals(ACTIVE.name())) {
+                return ACTIVE;
+            }
+            if (name.equals(WAITING_FOR_CONFIRMATION.name())) {
+                return WAITING_FOR_CONFIRMATION;
+            }
+            if (name.equals(CONFIRMED.name())) {
+                return CONFIRMED;
+            }
+            if (name.equals(RUNNING.name())) {
+                return RUNNING;
+            }
+            if (name.equals(COMMITTED.name())) {
+                return Status.COMMITTED;
+            }
+            if (name.equals(ROLLED_BACK.name())) {
+                return Status.ROLLED_BACK;
+            }
+            return INVALID;
+        }
+    }
+
+    /**
      * Contains transaction types.
      *
      * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
@@ -33,6 +102,13 @@ public class Transaction extends LockProvider {
          */
         CHECKED;
     }
+
+    /**
+     * Status flag. If <code>null</code>, the status is either
+     * {@link Status#ACTIVE}, {@value Status#WAITING_FOR_CONFIRMATION} or
+     * {@value Status#CONFIRMED}.
+     */
+    private Status status;
 
     /**
      * Contains the transaction type.
@@ -69,7 +145,6 @@ public class Transaction extends LockProvider {
     /**
      * Contains confirmation status for accounts.
      */
-    // TODO @gerriet-hinrichs: Missing parameter within RAML specification?
     private final SortedSet<AccountId> confirmed;
 
     /**
@@ -155,9 +230,19 @@ public class Transaction extends LockProvider {
      *             If something went horribly wrong.
      */
     public synchronized boolean commit() throws TransactionException {
-        // check if the transaction is confirmed
-        if (!this.isConfirmed()) {
-            return false;
+        final Status prevStatus = this.getStatus();
+        this.status = Status.RUNNING;
+        // check transaction status
+        switch (prevStatus) {
+            case CONFIRMED:
+                break;
+            case ACTIVE:
+                if (this.type == Type.SIMPLE) {
+                    break;
+                }
+                return false;
+            default:
+                return false;
         }
         // lock this instance and all user accounts first
         try {
@@ -167,6 +252,7 @@ public class Transaction extends LockProvider {
             // locking this transaction failed or at least one account we
             // processed does not exist
             this.unlock();
+            this.status = Status.INVALID;
             return false;
         }
         // perform operations and keep track of all successful ones
@@ -192,6 +278,9 @@ public class Transaction extends LockProvider {
                 this.unlock();
             }
         }
+        // if everything is successful
+        this.createEvents();
+        this.status = Status.COMMITTED;
         return true;
     }
 
@@ -203,6 +292,27 @@ public class Transaction extends LockProvider {
      */
     public void confirm(final AccountId account) {
         this.confirmed.add(account);
+    }
+
+    /**
+     * Returns the status for this transaction.
+     *
+     * @return Transaction status.
+     */
+    public Status getStatus() {
+        if (this.status != null) {
+            return this.status;
+        }
+        if (this.isConfirmed()) {
+            if (this.type == Type.CHECKED) {
+                return Status.CONFIRMED;
+            }
+            return Status.ACTIVE;
+        }
+        if (this.confirmed.isEmpty()) {
+            return Status.ACTIVE;
+        }
+        return Status.WAITING_FOR_CONFIRMATION;
     }
 
     /**
@@ -232,8 +342,26 @@ public class Transaction extends LockProvider {
      *             If something went horribly wrong.
      */
     public synchronized void rollback() throws TransactionException {
+        final Status prevStatus = this.getStatus();
+        // check status
+        switch (prevStatus) {
+            case COMMITTED:
+            case INVALID:
+            case ROLLED_BACK:
+                return;
+            default:
+                break;
+        }
+        this.status = Status.RUNNING;
         while (!this.doneOperations.isEmpty()) {
             this.doneOperations.pop().undo();
+        }
+        this.status = Status.ROLLED_BACK;
+    }
+
+    private void createEvents() {
+        while (!this.doneOperations.isEmpty()) {
+            this.doneOperations.pop().createEvent();
         }
     }
 

@@ -59,13 +59,14 @@ public class Transfer {
      */
     public Transfer(final Bank bank, final AccountId from, final AccountId to, final int amount,
             final String reason) {
-        this.operations.add(new AtomicOperation(bank, Type.WITHDRAW, from, amount, reason));
-        this.operations.add(new AtomicOperation(bank, Type.DEPOSIT, to, amount, reason));
+        this.id = new TransferId(bank.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
+        this.operations
+                .add(new AtomicOperation(bank, Type.WITHDRAW, from, amount, reason, this.id));
+        this.operations.add(new AtomicOperation(bank, Type.DEPOSIT, to, amount, reason, this.id));
         this.from = from;
         this.to = to;
         this.amount = amount;
         this.reason = reason;
-        this.id = new TransferId(bank.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
     }
 
     /**

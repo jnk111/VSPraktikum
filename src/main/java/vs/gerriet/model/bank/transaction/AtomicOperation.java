@@ -3,6 +3,7 @@ package vs.gerriet.model.bank.transaction;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
+import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.model.bank.Bank;
 
 /**
@@ -69,6 +70,37 @@ public class AtomicOperation implements Cloneable {
      * Message for this operation.
      */
     private final String message;
+    /**
+     * Transfer for this operation.
+     */
+    private final TransferId transfer;
+
+    /**
+     * Creates a new atomic operation from the given arguments. This does not
+     * perform any action.
+     *
+     * @param bank
+     *            Bank this operation belongs to.
+     * @param type
+     *            Type of this operation.
+     * @param account
+     *            Account this operation belongs to.
+     * @param amount
+     *            Amount for this operation.
+     * @param message
+     *            Message for this operation.
+     * @param transfer
+     *            Transfer id of the transfer this operation belongs to.
+     */
+    public AtomicOperation(final Bank bank, final Type type, final AccountId account,
+            final int amount, final String message, final TransferId transfer) {
+        this.account = account;
+        this.amount = amount;
+        this.type = type;
+        this.bank = bank;
+        this.message = message;
+        this.transfer = transfer;
+    }
 
     /**
      * Creates a new atomic operation from the given arguments. This does not
@@ -87,11 +119,7 @@ public class AtomicOperation implements Cloneable {
      */
     AtomicOperation(final Bank bank, final Type type, final AccountId account, final int amount,
             final String message) {
-        this.account = account;
-        this.amount = amount;
-        this.type = type;
-        this.bank = bank;
-        this.message = message;
+        this(bank, type, account, amount, message, null);
     }
 
     /**
@@ -131,12 +159,28 @@ public class AtomicOperation implements Cloneable {
     }
 
     /**
+     * Returns the transfer id for this operation.
+     *
+     * @return Transfer id.
+     */
+    public TransferId getTransfer() {
+        return this.transfer;
+    }
+
+    /**
      * Returns the type of this operation.
      *
      * @return Operation type.
      */
     public Type getType() {
         return this.type;
+    }
+
+    /**
+     * Creates an event for this operation.
+     */
+    void createEvent() {
+        // TODO @gerriet-hinrichs: implement
     }
 
     /**

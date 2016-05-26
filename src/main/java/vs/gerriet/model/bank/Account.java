@@ -131,7 +131,7 @@ public class Account extends LockProvider {
      */
     synchronized int withdraw(final int amount) throws AccountAccessException {
         if (this.balance - amount < 0) {
-            throw new AccountAccessException("Unsufficiant balance for user '" + this.user + "'");
+            throw new AccountAccessException("Unsufficiant fonds for user '" + this.user + "'");
         }
         return this.balance -= amount;
     }

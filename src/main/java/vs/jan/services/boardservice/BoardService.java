@@ -82,17 +82,19 @@ public class BoardService {
 	 * 
 	 * @param game
 	 *          Das Spiel, fuer das ein Board erzeugt werden soll
+	 * @param host 
 	 * @param host
 	 * 					Client-IP von der das Board erstellt wird
 	 * @throws InvalidInputException
 	 *           Json-Format der Uri ungueltig
 	 */
-	public synchronized void createNewBoard(JSONGameURI game) throws InvalidInputException {
+	public synchronized void createNewBoard(JSONGameURI game, String host) throws InvalidInputException {
 		validator.checkGameIsValid(game);
 		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
+		this.services = ServiceAllocator.initServices(host, gameId);
 		placeABoard(gameId, b.convert());
 	}
 
@@ -307,7 +309,6 @@ public class BoardService {
 		validator.checkPawnIdIsNotNull(pawnid);		
 		
 		// Temp
-
 		validator.checkPlayerHasMutex(gameid, pawnid, "http://localhost:4567/games");
 		
 		Board board = helper.getBoard(this.boards, gameid);
@@ -329,7 +330,9 @@ public class BoardService {
 	 * @return Der Int-Wert des gemachten Wurfes
 	 */
 	private Dice rollDice(Pawn pawn, String gameid) {
-
+		System.out.println("DICE URL: " + this.services.getDice());
+		String url = this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid;
+		
 		String json = HttpService.get(this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);

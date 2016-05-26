@@ -15,9 +15,8 @@ public class ServiceAllocator {
 		String gameServiceUri = "http://" + host;
 		gameServiceUri += "/games/" + gameid + "/services";
 		String list = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
-//		ServiceList list = new ServiceList();
-//		list.setGames("http://localhost:4567/games")
-//		return list;
+		System.out.println("LIST: " + list.toString());
+		
 		return GSON.fromJson(list, ServiceList.class);
 	};
 	

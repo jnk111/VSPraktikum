@@ -75,9 +75,9 @@ public class RunBoardExample {
 //		placeBoard(boardID);
 //		checkBoardAdded(boardID);
 		setupUser(boardID, gameUri);
-//		startGame(boardID);
-//		letCurrPlayerRollDice(boardID);
-//		getFinalBoardState(boardID);
+		startGame(boardID);
+		letCurrPlayerRollDice(boardID);
+		getFinalBoardState(boardID);
 
 	}
 

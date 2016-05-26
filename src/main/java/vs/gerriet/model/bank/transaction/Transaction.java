@@ -14,6 +14,7 @@ import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.model.bank.Bank;
 import vs.gerriet.utils.LockProvider;
+import vs.jonas.services.json.EventData;
 
 /**
  * Class for bank transactions.
@@ -383,9 +384,19 @@ public class Transaction extends LockProvider {
      * Creates events for all done operations.
      */
     private void createEvents() {
+        // create event queue
+        final Queue<EventData> eventData = new ConcurrentLinkedQueue<>();
+        // fill event queue with events from this transaction
         while (!this.doneOperations.isEmpty()) {
-            this.doneOperations.pop().createEvent();
+            eventData.add(this.doneOperations.pop().getEventData());
         }
+        // start new thread to add events from the queue to the event service
+        (new Thread(() -> {
+            while (!eventData.isEmpty()) {
+                final EventData current = eventData.poll();
+                // TODO @gerriet-hinrichs: API?
+            }
+        })).start();
     }
 
     /**

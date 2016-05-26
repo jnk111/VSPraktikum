@@ -2,9 +2,12 @@ package vs.gerriet.model.bank.transaction;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
+import vs.gerriet.id.GameId;
+import vs.gerriet.id.UserId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.model.bank.Bank;
+import vs.jonas.services.json.EventData;
 
 /**
  * <p>
@@ -177,10 +180,14 @@ public class AtomicOperation implements Cloneable {
     }
 
     /**
-     * Creates an event for this operation.
+     * Returns an event data object for this operation.
+     *
+     * @return Event data object.
      */
-    void createEvent() {
-        // TODO @gerriet-hinrichs: implement
+    EventData getEventData() {
+        return new EventData(new GameId(this.bank.getId().getBaseData()).getUri(), "TRANSFER",
+                this.type.name(), this.message, this.transfer.getUri(),
+                new UserId(this.account.getBaseData()).getUri());
     }
 
     /**

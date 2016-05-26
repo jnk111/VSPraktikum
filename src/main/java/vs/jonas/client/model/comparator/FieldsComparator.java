@@ -2,12 +2,12 @@ package vs.jonas.client.model.comparator;
 
 import java.util.Comparator;
 
-import vs.jonas.client.json.Field;
+import vs.jonas.client.json.Place;
 
-public class FieldsComparator implements Comparator<Field>{
+public class FieldsComparator implements Comparator<Place>{
 
 	@Override
-	public int compare(Field arg0, Field arg1) {
+	public int compare(Place arg0, Place arg1) {
 		// TODO Auto-generated method stub
 		int field1 = 0;
 		int field2 = 0;

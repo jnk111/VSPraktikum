@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.json.Player;
+import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.model.comparator.PlayerInformationComparator;
 
 @SuppressWarnings("serial")
@@ -15,13 +15,13 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "Name", "Figur", "Kontostand", "Ready", "Turn"};
+	private String[] columnNames = { "Spieler", "Kontostand", "Position", "Letzter Wurf", "Ready", "Turn"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<Player> players;
+	List<PlayerInformation> players;
 
 	/**
 	 * Initialisiert das TableModel
@@ -70,21 +70,16 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		Player player = players.get(row);
+		PlayerInformation player = players.get(row);
 		Object ergebnis = null;
 
 		switch (col) {
-		case 0:
-			ergebnis = player.getName();
-			break;
-		case 1:
-			ergebnis = player.getPawn();
-			break;
-		case 2:
-			ergebnis = player.getAccount();
-			break;
-		case 3: 
-			ergebnis = player.isReady();
+		case 0:	ergebnis = player.getPawn(); break;
+		case 1:	ergebnis = player.getAccount(); break;
+		case 2:	ergebnis = player.getPosition();	break;
+		case 3: ergebnis = player.LastRoll(); break;
+		case 4: ergebnis = player.isReady(); break;
+		case 5: ergebnis = player.hasTurnMutex();
 		}
 		return ergebnis;
 	}
@@ -95,7 +90,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<Player> data) {
+	public void loadData(List<PlayerInformation> data) {
 		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
 			players = new ArrayList<>(data);

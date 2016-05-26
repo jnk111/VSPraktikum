@@ -4,16 +4,13 @@ import java.util.List;
 
 public class FieldList {
 
-	List<String> places;
-
-	public FieldList(List<String> places) {
-		super();
-		this.places = places;
-	}
-
-	public List<String> getPlaces() {
-		return places;
+	List<Field> fields;
+	
+	public FieldList(List<Field> fields){
+		this.fields = fields;
 	}
 	
-	
+	public List<Field> getFields(){
+		return fields;
+	}
 }

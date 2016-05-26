@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.json.Field;
+import vs.jonas.client.json.Place;
 import vs.jonas.client.model.comparator.FieldsComparator;
 
 public class GameFieldTableModel extends DefaultTableModel{
@@ -22,7 +22,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<Field> fields;
+	List<Place> fields;
 
 	/**
 	 * Initialisiert das TableModel
@@ -71,7 +71,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		Field field = fields.get(row);
+		Place field = fields.get(row);
 		Object ergebnis = null;
 		
 		switch (col) {
@@ -94,7 +94,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<Field> data) {
+	public void loadData(List<Place> data) {
 		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
 			fields = new ArrayList<>(data);

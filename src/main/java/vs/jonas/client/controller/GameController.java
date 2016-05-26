@@ -10,8 +10,8 @@ import javax.swing.JOptionPane;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jonas.client.json.Field;
-import vs.jonas.client.json.Player;
+import vs.jonas.client.json.Place;
+import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.tablemodel.PlayerOverviewTableModel;
@@ -68,14 +68,14 @@ public class GameController {
 	
 	private void ladeSpielerInformationen() throws Exception {
 		PlayerOverviewTableModel model = (PlayerOverviewTableModel) ui.getPlayerTable().getModel();
-		List<Player> data = client.getPlayers(gameID);
+		List<PlayerInformation> data = client.getPlayers(gameID);
 		model.loadData(data);
 	}
 	
 
 	private void ladeGameFieldInformationen() throws IOException, UnirestException {
 		GameFieldTableModel model = (GameFieldTableModel) ui.getGameFIeldTable().getModel();
-		List<Field> data = client.getFields(gameID);
+		List<Place> data = client.getPlaces(gameID);
 		model.loadData(data);
 		
 	}

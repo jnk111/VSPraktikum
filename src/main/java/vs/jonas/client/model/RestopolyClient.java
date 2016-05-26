@@ -17,12 +17,14 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import vs.jan.json.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.Account;
+import vs.jonas.client.json.Board;
 import vs.jonas.client.json.CreateGame;
 import vs.jonas.client.json.Field;
 import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.json.Pawn;
 import vs.jonas.client.json.PawnList;
-import vs.jonas.client.json.Player;
+import vs.jonas.client.json.Place;
+import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
@@ -64,6 +66,7 @@ public class RestopolyClient {
 	 * @throws UnirestException 
 	 */
 	public List<GameResponse> getGames() throws IOException, UnirestException {
+		System.out.println();
 		System.out.println("************* Get Games *************");
 		List<GameResponse> data = new ArrayList<>();
 		
@@ -83,9 +86,10 @@ public class RestopolyClient {
 		return data;
 	}
 
-	public List<Player> getPlayers(String gameID) throws IOException, UnirestException, Exception{
-        System.out.println("**************  Get Players **************");
-		List<Player> data = new ArrayList<>();
+	public List<PlayerInformation> getPlayers(String gameID) throws IOException, UnirestException, Exception{
+		System.out.println();
+		System.out.println("**************  Get Players **************");
+		List<PlayerInformation> data = new ArrayList<>();
 		
 		String gameServiceUri = gameService.getUri();
         String gamesPlayersUri = gameServiceUri + "/" + gameID + "/players";
@@ -115,7 +119,8 @@ public class RestopolyClient {
             String ready = "";
 
             if(checkNotNull(player.getId())){
-                name = gson.fromJson(get(BASE_URL + player.getId()).get("id"), String.class);
+//            	System.out.println("PlayerID: " + get(BASE_URL + player.getId()));
+                name = player.getId();// TODO Eigentlich: gson.fromJson(get(BASE_URL + player.getId()).get("id"), String.class);
             }
 //
             if(checkNotNull(player.getPawn())){
@@ -134,31 +139,38 @@ public class RestopolyClient {
             if(checkNotNull(player.getReady())){
                 ready = player.getReady();
             }
-			data.add(new Player(name, pawn, account, ready));
+            
+            PlayerInformation playerInformation = new PlayerInformation(name, pawn, account, ready);
+            
+            
+            
+            
+			data.add(playerInformation);
         }
 		return data;
 	}
 
-	public List<Field> getFields(String gameID) throws IOException, UnirestException {
-		List<Field> data = new ArrayList<>();
+	public List<Place> getPlaces(String gameID) throws IOException, UnirestException {
+		System.out.println();
+		List<Place> data = new ArrayList<>();
 		
 		System.out.println("**************  Get Fields **************");
 		
 		String boardServiceUri = boardService.getUri();
-        String boardsPlacesUri = boardServiceUri + "/" + gameID + "/places";
+//        String boardsPlacesUri = boardServiceUri + "/" + gameID + "/places";
+		System.out.println(boardServiceUri);
+		
+        Board board = gson.fromJson(get(boardServiceUri+"/" + gameID), Board.class);
         
-		HttpResponse<JsonNode> fieldListResponse = Unirest.get(boardsPlacesUri)
-                .header("accept", "application/json")
-                .asJson();
+        System.out.println("Board: " + gson.toJson(board));
         
-        @SuppressWarnings("unchecked")
-		List<String> fields = gson.fromJson(fieldListResponse.getBody().toString(), List.class);
-        
-        for(String fieldUri : fields){
-//        	System.out.println(fieldUri);
-            JsonObject fieldRessource = get(BASE_URL+fieldUri);
-            System.out.println("Antwort auf " + BASE_URL+fieldUri + ":\n" +fieldRessource.toString());
-        	String id = fieldUri;
+        List<Field> fields = board.getFields();
+        for(Field field : fields){
+        	System.out.println(gson.toJson(field));
+        	String placeUri = field.getPlace();
+            JsonObject fieldRessource = get(BASE_URL+placeUri);
+//            System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n" +fieldRessource.toString());
+        	String id = placeUri;
 //        	String name = "";
 //        	String owner = "";
 //        	String value = "";
@@ -168,16 +180,17 @@ public class RestopolyClient {
 //        	String hypocredit = "";
 //        	List<Player> players = null;
             
-            Field field = gson.fromJson(fieldRessource.toString(),Field.class);
-            field.setID(id);
-            data.add(field);        	
+            Place place = gson.fromJson(fieldRessource.toString(),Place.class);
+            place.setPlayers(field.getPawns());
+            place.setID(id);
+            data.add(place); 
         }
 		return data;
 	}
 	
 	public List<Pawn> getPawns(String gameID) throws UnirestException, IOException{
 		List<Pawn> data = new ArrayList<>();
-		
+		System.out.println();
 		System.out.println("**************  Get Pawns **************");
 		
 		String boardServiceUri = boardService.getUri();

@@ -53,8 +53,7 @@ public class GameController {
 				try {
 					ui = new GameUI();
 					registriereActionListener();
-					ladeSpielerInformationen();
-					ladeGameFieldInformationen();
+					updateGame();
 					ui.getUsername().setText(client.getUser().getName());
 					ui.showUI();
 				} catch (Exception e) {
@@ -76,6 +75,8 @@ public class GameController {
 				try {
 					int number = client.rollDice(gameID);
 					JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
+					updateGame();
+					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					JOptionPane.showMessageDialog(null, "Service Offline");
@@ -83,9 +84,17 @@ public class GameController {
 				} catch (UnirestException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		});
+	}
+	
+	private void updateGame() throws Exception{
+		ladeSpielerInformationen();
+		ladeGameFieldInformationen();
 	}
 	
 	/**

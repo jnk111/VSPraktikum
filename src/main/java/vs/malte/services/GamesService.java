@@ -191,7 +191,6 @@ public class GamesService
         else
         {
             System.err.println( "Fehler beim erstellen eines Boards" );
-            // TODO throw Component not available Exception
         }
 
         
@@ -218,14 +217,9 @@ public class GamesService
 
         responseCode = HttpService.put( boardsUrl, initBoardDTO );
 
-        if ( responseCode == 200 )
-        {
-            game.getComponents().setBoard( boardsUrl + "/" + game.getName() );
-        }
-        else
+        if ( responseCode != 200 )
         {
             System.err.println( "Fehler beim initialisieren eines Boards" );
-            // TODO throw Component not available Exception
         }
 
         return game;

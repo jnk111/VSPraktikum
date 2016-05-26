@@ -21,7 +21,7 @@ public class GameId extends Id<Integer> {
 
     /**
      * Creates a new game id container.
-     * 
+     *
      * @param request
      *            Request to load the id from.
      * @param param
@@ -33,7 +33,7 @@ public class GameId extends Id<Integer> {
 
     @Override
     protected Integer fromUriSuffix(final String suffix) {
-        return Integer.getInteger(suffix);
+        return Integer.decode(suffix);
     }
 
     @Override

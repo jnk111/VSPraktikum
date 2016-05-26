@@ -69,8 +69,12 @@ public class BanksContainer {
      * @return Bank instance IDs.
      */
     public static String[] getBanks() {
-        String[] res = new String[BanksContainer.banks.size()];
-        res = BanksContainer.banks.keySet().toArray(res);
+        final String[] res = new String[BanksContainer.banks.size()];
+        BankId[] ids = new BankId[res.length];
+        ids = BanksContainer.banks.keySet().toArray(ids);
+        for (int i = 0; i < res.length; i++) {
+            res[i] = ids[i].getUri();
+        }
         return res;
     }
 

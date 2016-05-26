@@ -75,11 +75,6 @@ public class RunBoardExample {
 		setupUser(boardID, gameUri);
 		startGame(boardID);
 		letCurrPlayerRollDice(boardID);
-		//letPawnsRollDice(boardID);
-		// updateBoard(boardID);
-//		updatePawns(boardID);
-//		deletePawns(boardID);
-//		putPlaces(boardID);
 		getFinalBoardState(boardID);
 
 	}

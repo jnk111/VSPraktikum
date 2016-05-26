@@ -272,7 +272,7 @@ public class BoardService {
 
 		// Eine Runde rumgelaufen?
 		if (newPos >= b.getFields().size() - 1) {
-			newPos = ((b.getFields().size() - 1) % newPos);
+			newPos = ((newPos % b.getFields().size()));
 		}
 
 		b.getFields().get(oldPos).removePawn(p); // Figur von alter
@@ -484,39 +484,6 @@ public class BoardService {
 		p.setRollsUri(pawn.getRoll());
 	}
 
-	// ----------------------------------------------------------------------------------------
-
-//	/*
-//	 * ===========================================================================
-//	 * TODO: Spaeter entfernen *
-//	 * ===========================================================================
-//	 */
-//
-//	public void setNeededServices(Map<String, JSONService> neededServices) {
-//		this.neededServices = neededServices;
-//	}
-//
-//	public Map<String, JSONService> getNeededServices(String type) {
-//		Map<String, JSONService> services = new HashMap<>();
-//
-//		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
-//		// ... weitere
-//
-//		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
-//			JSONService s = new JSONService("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",
-//					"http://localhost:4567/events");
-//
-//			services.put(ServiceNames.EVENT, s);
-//		}
-//
-//		return services;
-//	}
-//
-//	/*
-//	 * ===========================================================================
-//	 * Default Getter
-//	 * ===========================================================================
-//	 */
 
 	public Map<Board, JSONGameURI> getBoards() {
 

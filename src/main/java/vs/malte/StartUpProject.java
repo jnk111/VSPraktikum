@@ -26,6 +26,6 @@ public class StartUpProject
             e.printStackTrace();
         }
         
-        Example.runExample01("http://localhost:4567");
+//        Example.runExample01("http://localhost:4567");
     }
 }

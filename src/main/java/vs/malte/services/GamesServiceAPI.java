@@ -1,8 +1,13 @@
 package vs.malte.services;
 
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
+
+import com.google.gson.JsonSyntaxException;
+
+import vs.jan.model.StatusCodes;
 
 public class GamesServiceAPI
 {
@@ -32,6 +37,8 @@ public class GamesServiceAPI
         initPutPlayerReady();
         initPutGameStatus();
         initPutPlayersTurn();
+        
+//        initExceptions();
     }
 
     /**
@@ -112,7 +119,7 @@ public class GamesServiceAPI
     }
 
     /**
-     * Initialisiert die Post-Methode zum erstellen eines neuen Spielers. Greift auf Userservice zu und Speichert den Spieler dort (kA wozu TODO).
+     * Initialisiert die Post-Methode zum erstellen eines neuen Spielers. Greift auf Userservice zu und Speichert den Spieler dort.
      * 
      * return nur Statuscodes ( 201 falls Spieler erfolgreich erstellt wurde; 409 falls Spieler bereits vorhanden )
      */
@@ -217,4 +224,14 @@ public class GamesServiceAPI
             return gameService.getPlayersCurrent( req, resp );
         } );
     }
+    
+//    private void initExceptions()
+//    {
+//        exception(JsonSyntaxException.class, (exception, request, response) -> {
+//
+//            response.status(StatusCodes.BAD_REQ);
+//            response.body(StatusCodes.BAD_REQ + ": Invalid Json Input!");
+//            exception.printStackTrace();
+//        });
+//    }
 }

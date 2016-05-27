@@ -33,7 +33,7 @@ import vs.malte.models.ServiceList;
 
 public class GamesService
 {
-    private final boolean DEBUG_MODE = true;
+    private final boolean DEBUG_MODE = false;
 
     private final String GAMEID_PREFIX = "/games/";
     private final String YELLOW_PAGE = "http://172.18.0.5:4567";
@@ -84,7 +84,6 @@ public class GamesService
         }
 
         return "";
-
     }
 
     private Game createGame( String body )
@@ -193,7 +192,6 @@ public class GamesService
             System.err.println( "Fehler beim erstellen eines Boards" );
         }
 
-        
         // ***************** Wartezeit zur Reaktion der anderen Systeme ***************** //
         try
         {

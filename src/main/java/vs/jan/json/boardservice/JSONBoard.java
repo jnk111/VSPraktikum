@@ -3,7 +3,9 @@ package vs.jan.json.boardservice;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSONBoard {
+import vs.jan.model.Validable;
+
+public class JSONBoard implements Validable{
 
 	private String id; // Uri zum Board
 	private List<JSONField> fields; // Uris to Places on the Board
@@ -76,6 +78,7 @@ public class JSONBoard {
 	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
+	@Override
 	public boolean isValid() {
 
 		return this.getId() != null;

@@ -1,6 +1,8 @@
 package vs.jan.json.brokerservice;
 
-public class JSONGameURI {
+import vs.jan.model.Validable;
+
+public class JSONGameURI implements Validable{
 
 	private String game;
 

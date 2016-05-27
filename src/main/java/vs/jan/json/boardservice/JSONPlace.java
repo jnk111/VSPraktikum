@@ -1,5 +1,7 @@
 package vs.jan.json.boardservice;
 
+import vs.jan.model.Validable;
+
 /**
  * Place - JSON-Objekt -> {'name':'Los', 'broker': '/broker/places/{placeid}']}
  * RESTopoly-Spezifikation: /boards/{gameid}/places/{place}
@@ -7,7 +9,7 @@ package vs.jan.json.boardservice;
  * @author jan
  *
  */
-public class JSONPlace {
+public class JSONPlace implements Validable{
 
 	private String name; // Place-Name
 	private String broker; // URI to the Place at the Broker
@@ -41,6 +43,7 @@ public class JSONPlace {
 	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
+	@Override
 	public boolean isValid() {
 
 		return true;

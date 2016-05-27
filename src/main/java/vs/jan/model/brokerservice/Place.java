@@ -19,7 +19,7 @@ public class Place implements Convertable<JSONPlace> {
 	
 	
 	public Place(){
-		this(null,null,null,-1,null,null,-1,null,null);
+		this(null, null, null,-1,null,null,-1,null,null);
 	}
 	
 	public Place(String uri, String placeUri){

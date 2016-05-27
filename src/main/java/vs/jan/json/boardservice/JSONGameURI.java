@@ -1,6 +1,8 @@
 package vs.jan.json.boardservice;
 
-public class JSONGameURI {
+import vs.jan.model.Validable;
+
+public class JSONGameURI implements Validable{
 
 	private String game;
 
@@ -23,6 +25,7 @@ public class JSONGameURI {
 	 * 
 	 * @return <code>true</code> : gueltig, <code>false</code> unguelitg
 	 */
+	@Override
 	public boolean isValid() {
 		return this.getURI() != null;
 	}

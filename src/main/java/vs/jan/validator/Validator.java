@@ -1,4 +1,4 @@
-package vs.jan.validator.boardservice;
+package vs.jan.validator;
 
 import java.net.HttpURLConnection;
 
@@ -13,37 +13,33 @@ import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.model.Validable;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Player;
 import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.model.Dice;
 
-public class BoardValidator {
+public class Validator {
 
 	private final Gson GSON = new Gson();
 
-	public void checkGameIsValid(JSONGameURI game) {
-		if (!game.isValid()) {
-			throw new InvalidInputException(Error.JSON_GAME_URI.getMsg());
+	public void checkJsonIsValid(Validable json, String msg) {
+		if (!json.isValid()) {
+			throw new InvalidInputException(msg);
+		}
+	}
+	
+	public void checkIdIsNotNull(String placeid, String msg) {
+		if (placeid == null) {
+			throw new InvalidInputException(msg);
 		}
 	}
 
-	public void checkPawnInputIsValid(JSONPawn pawn) {
-		if (!pawn.isValid()) {
-			throw new InvalidInputException(Error.JSON_PAWN.getMsg());
-		}
-	}
 
 	public void checkBoardHasFields(Board b) {
 		if (!b.hasFields()) {
 			throw new BoardNotInitiliazedException(Error.BOARD_INIT.getMsg());
-		}
-	}
-
-	public void checkGameIdIsNotNull(String gameid) {
-		if (gameid == null) {
-			throw new InvalidInputException(Error.GAME_ID.getMsg());
 		}
 	}
 
@@ -63,25 +59,6 @@ public class BoardValidator {
 		
 	}
 
-	public void checkPlaceIdIsNotNull(String placeid) {
-		if (placeid == null) {
-			throw new InvalidInputException(Error.PLACE_ID.getMsg());
-		}
-	}
-
-	public void checkPawnIdIsNotNull(String pawnid) {
-
-		if (pawnid == null) {
-			throw new ResourceNotFoundException(Error.PAWN_ID.getMsg());
-		}
-	}
-
-	public void checkBoardIsValid(JSONBoard board) {
-
-		if (!board.isValid()) {
-			throw new InvalidInputException(Error.JSON_BOARD.getMsg());
-		}
-	}
 
 	/**
 	 * TODO: local
@@ -99,12 +76,6 @@ public class BoardValidator {
 		}
 	}
 
-	public void checkPlaceInputIsValid(JSONPlace place) {
-
-		if (!place.isValid()) {
-			throw new InvalidInputException(Error.JSON_PLACE.getMsg());
-		}
-	}
 
 	public Gson getGSON() {
 		return GSON;

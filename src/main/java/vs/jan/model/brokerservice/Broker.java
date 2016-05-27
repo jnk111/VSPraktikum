@@ -66,6 +66,7 @@ public class Broker implements Convertable<JSONBroker> {
 		JSONBroker broker = new JSONBroker();
 		broker.setId(this.getUri());
 		broker.setEstates(this.getEstateUri());
+		broker.setGame(this.getGameUri());
 		return null;
 	}
 

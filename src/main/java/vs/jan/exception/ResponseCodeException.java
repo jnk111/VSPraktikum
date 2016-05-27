@@ -1,6 +1,6 @@
 package vs.jan.exception;
 
-public class ResponseCodeException extends Exception {
+public class ResponseCodeException extends IllegalStateException {
 
 	/**
 	 * 

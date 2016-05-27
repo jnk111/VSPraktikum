@@ -32,6 +32,8 @@ public class RentTransaction extends Transaction {
 			String idTo = getID(this.to.getAccUri());
 			String url = this.bankUri + "/" + gameid + "/transfer/from/" + idFrom + "/to/" + idTo + "/" + amount
 					+ "?transaction=/transactions/" + gameid;
+			this.from.setSaldo(this.from.getSaldo() - this.amount);
+			this.to.setSaldo(this.to.getSaldo() + this.amount);
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 
 		} catch (Exception e) {

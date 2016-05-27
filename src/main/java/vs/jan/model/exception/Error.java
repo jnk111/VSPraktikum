@@ -10,7 +10,9 @@ public enum Error {
 													"place not found"), ROLL_FAIL(
 															"dice roll has failed, there was no valid response"), JSON_Broker(
 																	"broker input is not valid"), BROKER_NOT_FOUND("broker not found"), PLAYER_URI(
-																			"the playeruri must not be null"), NOT_IMPL("not yet implemented");
+																			"the playeruri must not be null"), NOT_IMPL("not yet implemented"), ACC_URI(
+																					"account uri was null"), TRANS_FAIL(
+																							"transaction failed, all actions are rolled back");
 
 	private String msg;
 

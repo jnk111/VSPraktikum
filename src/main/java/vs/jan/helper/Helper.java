@@ -8,6 +8,7 @@ import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.model.User;
 import vs.jan.model.boardservice.Pawn;
+import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
 
 public abstract class Helper {
@@ -22,8 +23,8 @@ public abstract class Helper {
 	/**
 	 * Ermittelt den Spieler zu der Figur vom Game-Service
 	 * 
-	 * @param pawn
-	 *          Die Figur des Spielers
+	 * @param playeruri
+	 *          Die Uri des Spielers
 	 * @param gameid
 	 *          Die Gameid zum Spiel
 	 * @return User Der Spieler der wuerfeln moechte
@@ -33,10 +34,10 @@ public abstract class Helper {
 	 * @throws ConnectionRefusedException
 	 *           Service nicht erreichbar
 	 */
-	public User getPlayer(Pawn pawn, String gameid) 
+	public Player getPlayer(String playerUri, String gameid) 
 			throws ResponseCodeException {
-		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
-		User currPlayer = GSON.fromJson(json, User.class);
+		String json = HttpService.get(playerUri, HttpURLConnection.HTTP_OK);
+		Player currPlayer = GSON.fromJson(json, Player.class);
 		return currPlayer;
 	}
 }

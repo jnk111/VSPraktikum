@@ -13,14 +13,16 @@ import com.google.gson.JsonSyntaxException;
 
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.NotImplementedException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
 import vs.jan.json.brokerservice.JSONGameURI;
-import vs.jan.json.brokerservice.JSONOwner;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
+import vs.jan.model.boardservice.Player;
 import vs.jan.services.broker.BrokerService;
+import vs.jan.services.broker.transaction.TransactionFailedException;
 import vs.jan.model.exception.Error;
 
 public class BrokerAPI {
@@ -95,7 +97,7 @@ public class BrokerAPI {
 
 	private void initGetOwner() {
 		get(" /broker/places/:placeid/owner ", "application/json", (req, resp) -> {
-			JSONOwner owner = service.getOwner(req.params(":placeid"));
+			Player owner = service.getOwner(req.params(":placeid"));
 			return GSON.toJson(owner);
 		});
 		
@@ -199,6 +201,13 @@ public class BrokerAPI {
 
 			response.status(HttpURLConnection.HTTP_BAD_METHOD);
 			response.body(HttpURLConnection.HTTP_BAD_METHOD + ": " + exception.getMessage());
+			exception.printStackTrace();
+		});
+		
+		exception(TransactionFailedException.class, (exception, request, response) -> {
+
+			response.status(HttpURLConnection.HTTP_CONFLICT);
+			response.body(HttpURLConnection.HTTP_CONFLICT + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
 	}

@@ -6,12 +6,13 @@ import java.util.List;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.Convertable;
 import vs.jan.model.Updatable;
+import vs.jan.model.boardservice.Player;
 
 public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	
 	private String uri;
 	private String placeUri;
-	private Owner owner;
+	private Player owner;
 	private int price;
 	private List<Integer> rent;
 	private List<Integer> cost;
@@ -29,7 +30,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this(uri, placeUri, null, -1, new ArrayList<>(), new ArrayList<>(), -1, null, null);
 	}
 	
-	public Place(String uri, String placeUri, Owner owner, int price, List<Integer> rent, List<Integer> cost,
+	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
 			int housesPrice, String visitUri, String hypoCreditUri) {
 		
 		this.uri = uri;
@@ -59,11 +60,11 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.placeUri = placeUri;
 	}
 
-	public Owner getOwner() {
+	public Player getOwner() {
 		return owner;
 	}
 
-	public void setOwner(Owner owner) {
+	public void setOwner(Player owner) {
 		this.owner = owner;
 	}
 
@@ -203,7 +204,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		place.setHouses(this.getHousesPrice());
 		place.setHypocredit(this.getHypoCreditUri());
 		place.setId(this.getUri());
-		place.setOwner(this.owner.getUri());
+		place.setOwner(this.owner.getId());
 		place.setPlace(this.getPlaceUri());
 		place.setRent(this.getRent());
 		place.setValue(this.getPrice());

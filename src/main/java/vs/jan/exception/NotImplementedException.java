@@ -1,4 +1,4 @@
-package vs.jan.api.broker;
+package vs.jan.exception;
 
 public class NotImplementedException extends Exception {
 

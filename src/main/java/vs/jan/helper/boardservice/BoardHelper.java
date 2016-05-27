@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.Gson;
-
-import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.helper.Helper;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
-import vs.jan.model.User;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
@@ -25,9 +21,8 @@ import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
 
-public class BoardHelper {
+public class BoardHelper extends Helper{
 
-	private final Gson GSON = new Gson();
 	/**
 	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
 	 * einem Wuerfelwurd zu einer neuen Position bewegen
@@ -179,10 +174,6 @@ public class BoardHelper {
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-	public String getID(String uri) {
-		String [] u = uri.split("/");
-		return u[u.length - 1];
-	}
 
 	public void addThrow(Map<JSONThrowsURI, JSONThrowsList> throwMap, Pawn pawn, Dice roll) {
 		
@@ -191,27 +182,5 @@ public class BoardHelper {
 				throwMap.get(uri).addThrow(roll);
 			}
 		}
-	}
-	
-	/**
-	 * Ermittelt den Spieler zu der Figur vom Game-Service
-	 * 
-	 * @param pawn
-	 *          Die Figur des Spielers
-	 * @param gameid
-	 *          Die Gameid zum Spiel
-	 * @return User Der Spieler der wuerfeln moechte
-	 * @throws ResponseCodeException 
-	 * @throws ResourceNotFoundException
-	 *           Spieler wurde nicht gefunden
-	 * @throws ConnectionRefusedException
-	 *           Service nicht erreichbar
-	 */
-	public User getPlayer(Pawn pawn, String gameid) 
-			throws ResponseCodeException {
-		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
-		User currPlayer = GSON.fromJson(json, User.class);
-		return currPlayer;
-	}
-	
+	}	
 }

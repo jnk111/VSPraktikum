@@ -1,5 +1,7 @@
 package vs.jan.json.brokerservice;
 
+import java.util.List;
+
 import vs.jan.model.Validable;
 
 public class JSONPlace implements Validable{
@@ -8,13 +10,22 @@ public class JSONPlace implements Validable{
 	private String place;
 	private String owner;
 	private int value;
-	private int [] rent;
-	private int [] cost;
+	private List<Integer> rent;
+	private List<Integer> cost;
 	private int houses;
 	private String visit;
 	private String hypocredit;
 	
-	public JSONPlace(String id, String place, String owner, int value, int[] rent, int[] cost, int houses, String visit,
+
+	public JSONPlace() {
+		this(null);
+	}
+
+	public JSONPlace(String place){
+		this(null, place, null, 0,  null, null, 0, null, null);
+	}
+	
+	public JSONPlace(String id, String place, String owner, int value, List<Integer> rent, List<Integer> cost, int houses, String visit,
 			String hypocredit) {
 		
 		this.id = id;
@@ -27,6 +38,7 @@ public class JSONPlace implements Validable{
 		this.visit = visit;
 		this.hypocredit = hypocredit;
 	}
+
 
 	public String getId() {
 		return id;
@@ -60,19 +72,19 @@ public class JSONPlace implements Validable{
 		this.value = value;
 	}
 
-	public int[] getRent() {
+	public List<Integer> getRent() {
 		return rent;
 	}
 
-	public void setRent(int[] rent) {
+	public void setRent(List<Integer> rent) {
 		this.rent = rent;
 	}
 
-	public int[] getCost() {
+	public List<Integer> getCost() {
 		return cost;
 	}
 
-	public void setCost(int[] cost) {
+	public void setCost(List<Integer> cost) {
 		this.cost = cost;
 	}
 
@@ -103,8 +115,18 @@ public class JSONPlace implements Validable{
 	@Override
 	public boolean isValid() {
 		
-		return this.id != null && this.place != null;
+		return this.place != null;
 	}
+
+	@Override
+	public String toString() {
+		return "JSONPlace [id=" + id + ", place=" + place + ", owner=" + owner + ", value=" + value + ", rent=" + rent
+				+ ", cost=" + cost + ", houses=" + houses + ", visit=" + visit + ", hypocredit=" + hypocredit + "]";
+	}
+	
+	
+	
+	
 	
 	
 	

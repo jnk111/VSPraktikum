@@ -1,15 +1,17 @@
 package vs.jan.model.brokerservice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.Convertable;
+import vs.jan.model.Updatable;
 
-public class Place implements Convertable<JSONPlace> {
+public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	
 	private String uri;
 	private String placeUri;
-	private String ownerUri;
+	private Owner owner;
 	private int price;
 	private List<Integer> rent;
 	private List<Integer> cost;
@@ -18,21 +20,21 @@ public class Place implements Convertable<JSONPlace> {
 	private String hypoCreditUri;
 	
 	
-	public Place(){
-		this(null, null, null,-1,null,null,-1,null,null);
+	public Place(String placeUri){
+		this(null, placeUri, null,-1, new ArrayList<>(), new ArrayList<>(),-1,null,null);
 	}
 	
 	public Place(String uri, String placeUri){
 		
-		this(uri, placeUri, null, -1, null, null, -1, null, null);
+		this(uri, placeUri, null, -1, new ArrayList<>(), new ArrayList<>(), -1, null, null);
 	}
 	
-	public Place(String uri, String placeUri, String ownerUri, int price, List<Integer> rent, List<Integer> cost,
+	public Place(String uri, String placeUri, Owner owner, int price, List<Integer> rent, List<Integer> cost,
 			int housesPrice, String visitUri, String hypoCreditUri) {
 		
 		this.uri = uri;
 		this.placeUri = placeUri;
-		this.ownerUri = ownerUri;
+		this.owner = owner;
 		this.price = price;
 		this.rent = rent;
 		this.cost = cost;
@@ -57,12 +59,12 @@ public class Place implements Convertable<JSONPlace> {
 		this.placeUri = placeUri;
 	}
 
-	public String getOwnerUri() {
-		return ownerUri;
+	public Owner getOwner() {
+		return owner;
 	}
 
-	public void setOwnerUri(String ownerUri) {
-		this.ownerUri = ownerUri;
+	public void setOwner(Owner owner) {
+		this.owner = owner;
 	}
 
 	public int getPrice() {
@@ -113,6 +115,10 @@ public class Place implements Convertable<JSONPlace> {
 		this.hypoCreditUri = hypoCreditUri;
 	}
 
+
+
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -120,7 +126,7 @@ public class Place implements Convertable<JSONPlace> {
 		result = prime * result + ((cost == null) ? 0 : cost.hashCode());
 		result = prime * result + housesPrice;
 		result = prime * result + ((hypoCreditUri == null) ? 0 : hypoCreditUri.hashCode());
-		result = prime * result + ((ownerUri == null) ? 0 : ownerUri.hashCode());
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		result = prime * result + ((placeUri == null) ? 0 : placeUri.hashCode());
 		result = prime * result + price;
 		result = prime * result + ((rent == null) ? 0 : rent.hashCode());
@@ -150,10 +156,10 @@ public class Place implements Convertable<JSONPlace> {
 				return false;
 		} else if (!hypoCreditUri.equals(other.hypoCreditUri))
 			return false;
-		if (ownerUri == null) {
-			if (other.ownerUri != null)
+		if (owner == null) {
+			if (other.owner != null)
 				return false;
-		} else if (!ownerUri.equals(other.ownerUri))
+		} else if (!owner.equals(other.owner))
 			return false;
 		if (placeUri == null) {
 			if (other.placeUri != null)
@@ -179,24 +185,63 @@ public class Place implements Convertable<JSONPlace> {
 			return false;
 		return true;
 	}
+	
+	
 
 	@Override
 	public String toString() {
-		return "Place [uri=" + uri + ", placeUri=" + placeUri + ", ownerUri=" + ownerUri + ", price=" + price + ", rent="
-				+ rent + ", cost=" + cost + ", housesPrice=" + housesPrice + ", visitUri=" + visitUri + ", hypoCreditUri="
+		return "Place [uri=" + uri + ", placeUri=" + placeUri + ", owner=" + owner + ", price=" + price + ", rent=" + rent
+				+ ", cost=" + cost + ", housesPrice=" + housesPrice + ", visitUri=" + visitUri + ", hypoCreditUri="
 				+ hypoCreditUri + "]";
 	}
 
 	@Override
 	public JSONPlace convert() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		JSONPlace place = new JSONPlace(this.getPlaceUri());
+		place.setCost(this.getCost());
+		place.setHouses(this.getHousesPrice());
+		place.setHypocredit(this.getHypoCreditUri());
+		place.setId(this.getUri());
+		place.setOwner(this.owner.getUri());
+		place.setPlace(this.getPlaceUri());
+		place.setRent(this.getRent());
+		place.setValue(this.getPrice());
+		place.setVisit(this.getVisitUri());
+		
+		return place;
 	}
-	
-	
-	
-	
-	
-	
 
+
+	@Override
+	public void update(JSONPlace place) {
+		
+		if (place.getCost() != null) {
+			this.setCost(place.getCost());
+		}
+		
+		if(place.getHouses() > 0){
+			this.setHousesPrice(0);
+		}
+		
+		if(place.getHypocredit() != null){
+			this.setHypoCreditUri(place.getHypocredit());
+		}
+		
+		if(place.getOwner() != null){
+			// TODO: get Owner
+		}
+		
+		if(place.getValue() > 0){
+			this.setPrice(place.getValue());
+		}
+		
+		if(place.getRent() != null){
+			this.setRent(place.getRent());
+		}
+		
+		if(place.getVisit() != null){
+			this.setVisitUri(place.getVisit());
+		}
+	}
 }

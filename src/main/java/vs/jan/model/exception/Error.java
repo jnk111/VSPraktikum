@@ -9,7 +9,8 @@ public enum Error {
 											"board not found"), PAWN_NOT_FOUND("pawn not found"), PLACE_NOT_FOUND(
 													"place not found"), ROLL_FAIL(
 															"dice roll has failed, there was no valid response"), JSON_Broker(
-																	"broker input is not valid");
+																	"broker input is not valid"), BROKER_NOT_FOUND("broker not found"), PLAYER_URI(
+																			"the playeruri must not be null"), NOT_IMPL("not yet implemented");
 
 	private String msg;
 

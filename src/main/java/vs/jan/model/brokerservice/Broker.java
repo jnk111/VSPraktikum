@@ -3,13 +3,17 @@ package vs.jan.model.brokerservice;
 import java.util.ArrayList;
 import java.util.List;
 
+import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.Convertable;
+import vs.jan.model.exception.Error;
 
 public class Broker implements Convertable<JSONBroker> {
 
 	private String uri;
 	private String gameUri;
+	private String name;
+	private String estateUri;
 	private List<Place> places;
 
 	public Broker() {
@@ -58,14 +62,22 @@ public class Broker implements Convertable<JSONBroker> {
 
 	@Override
 	public JSONBroker convert() {
+		
+		JSONBroker broker = new JSONBroker();
+		broker.setId(this.getUri());
+		broker.setEstates(this.getEstateUri());
 		return null;
 	}
+
+	
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((estateUri == null) ? 0 : estateUri.hashCode());
 		result = prime * result + ((gameUri == null) ? 0 : gameUri.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((places == null) ? 0 : places.hashCode());
 		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
 		return result;
@@ -80,10 +92,20 @@ public class Broker implements Convertable<JSONBroker> {
 		if (getClass() != obj.getClass())
 			return false;
 		Broker other = (Broker) obj;
+		if (estateUri == null) {
+			if (other.estateUri != null)
+				return false;
+		} else if (!estateUri.equals(other.estateUri))
+			return false;
 		if (gameUri == null) {
 			if (other.gameUri != null)
 				return false;
 		} else if (!gameUri.equals(other.gameUri))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
 			return false;
 		if (places == null) {
 			if (other.places != null)
@@ -97,10 +119,48 @@ public class Broker implements Convertable<JSONBroker> {
 			return false;
 		return true;
 	}
+	
+	
 
 	@Override
 	public String toString() {
-		return "Broker [uri=" + uri + ", gameUri=" + gameUri + ", places=" + places + "]";
+		return "Broker [uri=" + uri + ", gameUri=" + gameUri + ", name=" + name + ", estateUri=" + estateUri + ", places="
+				+ places + "]";
 	}
 
+	public void addPlace(Place p) {
+		if(this.places.contains(p)){
+			this.places.add(p);
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
+
+	public String getEstateUri() {
+		return estateUri;
+	}
+
+	public void setEstateUri(String estateUri) {
+		this.estateUri = estateUri;
+	}
+
+	public Place getPlace(String placeid) {
+		
+		for(Place p: this.places){
+			if(this.places.contains(placeid)){
+				return p;
+			}
+		}
+		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
+	}
+	
+	
 }

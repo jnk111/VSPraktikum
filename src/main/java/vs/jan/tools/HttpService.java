@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.InvalidInputException;
-import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.model.exception.ResponseCodeException;
 
 public class HttpService {

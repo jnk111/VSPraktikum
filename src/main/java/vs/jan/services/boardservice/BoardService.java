@@ -31,7 +31,7 @@ import vs.jan.model.exception.InvalidPlaceIDException;
 import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
-import vs.jan.validator.Validator;
+import vs.jan.validator.BoardValidator;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.model.Event;
 
@@ -45,7 +45,7 @@ public class BoardService {
 	 */
 	private Map<Board, JSONGameURI> boards;
 
-	private Validator validator;
+	private BoardValidator validator;
 	private BoardHelper helper;
 	private ServiceList services;
 
@@ -62,7 +62,7 @@ public class BoardService {
 
 		boards = new HashMap<>();
 		throwMap = new HashMap<>();
-		this.validator = new Validator();
+		this.validator = new BoardValidator();
 		this.helper = new BoardHelper();
 	}
 

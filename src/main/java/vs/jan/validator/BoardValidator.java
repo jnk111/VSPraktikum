@@ -5,11 +5,11 @@ import java.net.HttpURLConnection;
 import vs.jan.exception.BoardNotInitiliazedException;
 import vs.jan.exception.DiceRollFailedException;
 import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.ResponseCodeException;
 import vs.jan.exception.TurnMutexNotFreeException;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Player;
 import vs.jan.model.exception.Error;
-import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.model.Dice;
 

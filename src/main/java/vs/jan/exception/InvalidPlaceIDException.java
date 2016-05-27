@@ -1,4 +1,4 @@
-package vs.jan.model.exception;
+package vs.jan.exception;
 
 public class InvalidPlaceIDException extends IllegalArgumentException {
 

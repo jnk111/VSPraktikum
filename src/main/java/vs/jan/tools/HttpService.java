@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.InvalidInputException;
-import vs.jan.model.exception.ResponseCodeException;
+import vs.jan.exception.ResponseCodeException;
 
 public class HttpService {
 

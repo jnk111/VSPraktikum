@@ -10,7 +10,9 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.InvalidPlaceIDException;
 import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.boardservice.BoardHelper;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONBoardList;
@@ -27,8 +29,6 @@ import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
-import vs.jan.model.exception.InvalidPlaceIDException;
-import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.BoardValidator;

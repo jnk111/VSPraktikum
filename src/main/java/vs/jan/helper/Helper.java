@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.exception.ResponseCodeException;
 import vs.jan.model.User;
 import vs.jan.model.boardservice.Pawn;
-import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 
 public abstract class Helper {

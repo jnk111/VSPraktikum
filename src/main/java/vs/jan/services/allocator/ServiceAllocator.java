@@ -3,8 +3,8 @@ package vs.jan.services.allocator;
 import java.net.HttpURLConnection;
 import com.google.gson.Gson;
 
+import vs.jan.exception.ResponseCodeException;
 import vs.jan.model.ServiceList;
-import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 
 public class ServiceAllocator {

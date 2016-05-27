@@ -2,6 +2,7 @@ package vs.jan.services.broker;
 
 import java.util.Map;
 
+import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.brokerservice.BrokerHelper;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
@@ -12,7 +13,6 @@ import vs.jan.model.ServiceList;
 import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.Error;
-import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.validator.BrokerValidator;
 import vs.jan.validator.Validator;

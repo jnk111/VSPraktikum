@@ -19,6 +19,7 @@ import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
@@ -40,8 +41,10 @@ public class BoardHelper {
 	 * @param pawn
 	 *          Die Figur um die es sich handelt
 	 * @param neededServices2
+	 * @throws ResponseCodeException 
 	 */
-	public void postEvent(String gameid, String type, String name, Pawn pawn, String uri) {
+	public void postEvent(String gameid, String type, String name, Pawn pawn, String uri) 
+			throws ResponseCodeException {
 
 		String reas = null;
 		String resource = null;
@@ -198,12 +201,14 @@ public class BoardHelper {
 	 * @param gameid
 	 *          Die Gameid zum Spiel
 	 * @return User Der Spieler der wuerfeln moechte
+	 * @throws ResponseCodeException 
 	 * @throws ResourceNotFoundException
 	 *           Spieler wurde nicht gefunden
 	 * @throws ConnectionRefusedException
 	 *           Service nicht erreichbar
 	 */
-	public User getPlayer(Pawn pawn, String gameid) {
+	public User getPlayer(Pawn pawn, String gameid) 
+			throws ResponseCodeException {
 		String json = HttpService.get(pawn.getPlayerUri(), HttpURLConnection.HTTP_OK);
 		User currPlayer = GSON.fromJson(json, User.class);
 		return currPlayer;

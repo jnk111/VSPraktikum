@@ -69,7 +69,7 @@ public class BrokerAPI {
 
 	private void initPOSTCreateBroker() {
 		post("/brokers", CONTENT_TYPE, (req, resp) -> {
-			service.createBroker(GSON.fromJson(req.body(), JSONGameURI.class));
+			service.createBroker(GSON.fromJson(req.body(), JSONGameURI.class), req.host());
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}

@@ -28,6 +28,7 @@ import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.model.exception.InvalidPlaceIDException;
+import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.Validator;
@@ -87,8 +88,10 @@ public class BoardService {
 	 * 					Client-IP von der das Board erstellt wird
 	 * @throws InvalidInputException
 	 *           Json-Format der Uri ungueltig
+	 * @throws ResponseCodeException 
 	 */
-	public synchronized void createNewBoard(JSONGameURI game, String host) throws InvalidInputException {
+	public synchronized void createNewBoard(JSONGameURI game, String host) 
+			throws InvalidInputException, ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
@@ -263,9 +266,10 @@ public class BoardService {
 	 *           Board oder Figur nicht gefunden
 	 * @throws InvalidInputException
 	 *           Es wurde keine gueltiger Wurf uebergeben
+	 * @throws ResponseCodeException 
 	 */
 	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
-			throws ResourceNotFoundException, InvalidInputException {
+			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 		Board b = helper.getBoard(this.boards, gameid);
@@ -301,9 +305,11 @@ public class BoardService {
 	 *         haben
 	 * @throws ResourceNotFoundException
 	 *           Board oder Figur nicht gefunden
+	 * @throws ResponseCodeException 
 	 * 
 	 */
-	public synchronized List<Event> rollDice(String gameid, String pawnid) throws ResourceNotFoundException {
+	public synchronized List<Event> rollDice(String gameid, String pawnid) 
+			throws ResourceNotFoundException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());		
 		
@@ -327,8 +333,10 @@ public class BoardService {
 	 * @param gameid
 	 *          Die ID des Games
 	 * @return Der Int-Wert des gemachten Wurfes
+	 * @throws ResponseCodeException 
 	 */
-	private Dice rollDice(Pawn pawn, String gameid) {
+	private Dice rollDice(Pawn pawn, String gameid) 
+			throws ResponseCodeException {
 		
 		String json = HttpService.get(this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);

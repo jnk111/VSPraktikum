@@ -21,6 +21,7 @@ import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.boardservice.Pawn;
+import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -45,8 +46,9 @@ public class RunBoardExample {
 	 * @param args
 	 * @throws InterruptedException
 	 * @throws MalformedURLException
+	 * @throws ResponseCodeException 
 	 */
-	public static void main(String[] args) throws InterruptedException, MalformedURLException {
+	public static void main(String[] args) throws InterruptedException, MalformedURLException, ResponseCodeException {
 
 		//BankService.run();
 		new GamesServiceAPI();
@@ -62,12 +64,12 @@ public class RunBoardExample {
 
 	}
 
-	private static void setupGame() throws InterruptedException, MalformedURLException {
+	private static void setupGame() throws InterruptedException, MalformedURLException, ResponseCodeException {
 		setupBoard();
 
 	}
 
-	private static void setupBoard() throws InterruptedException, MalformedURLException {
+	private static void setupBoard() throws InterruptedException, MalformedURLException, ResponseCodeException {
 		String gameUri = "http://localhost:4567/games";
 		int boardID = 42;
 
@@ -81,7 +83,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void placeBoard(int boardID) {
+	private static void placeBoard(int boardID) throws ResponseCodeException {
 		
 		JSONBoard board = new JSONBoard("" + boardID);
 		
@@ -89,7 +91,7 @@ public class RunBoardExample {
 		
 	}
 
-	private static void letCurrPlayerRollDice(int boardID) {
+	private static void letCurrPlayerRollDice(int boardID) throws ResponseCodeException {
 		
 		for(int i = 0; i < 4; i++){
 			System.out.println("Let Player with mutex roll the dice");
@@ -120,7 +122,7 @@ public class RunBoardExample {
 		
 	}
 
-	private static void startGame(int boardID) {
+	private static void startGame(int boardID) throws ResponseCodeException {
 		System.out.println("Start game: " + boardID);
 		System.out.println("-------------------------------------------------------------------------------------------");
 		HttpService.put("http://localhost:4567/games/" + boardID + "/status", null, 200);
@@ -129,7 +131,7 @@ public class RunBoardExample {
 	}
 
 	@SuppressWarnings("unused")
-	private static void updateBoard(int boardID) {
+	private static void updateBoard(int boardID) throws ResponseCodeException {
 
 		JSONBoard board = new JSONBoard("" + boardID);
 
@@ -142,7 +144,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void setupUser(int boardID, String gameUri) throws InterruptedException {
+	private static void setupUser(int boardID, String gameUri) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		Player p1 = new Player();
@@ -182,7 +184,7 @@ public class RunBoardExample {
 	}
 
 
-	private static void setUserReady(Player p1, int boardID) throws InterruptedException {
+	private static void setUserReady(Player p1, int boardID) throws InterruptedException, ResponseCodeException {
 		
 		Thread.sleep(TIMEOUT);
 		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/players/" + p1.getUserName(), 200);
@@ -195,7 +197,7 @@ public class RunBoardExample {
 		System.out.println();
 	}
 
-	private static void checkPlayersAddedOnUserService() {
+	private static void checkPlayersAddedOnUserService() throws ResponseCodeException {
 
 		System.out.println("Check players added to Userservice...");
 		String userServUri = "http://localhost:4567/users";
@@ -203,14 +205,14 @@ public class RunBoardExample {
 
 	}
 
-	private static void createUser(int boardID, String gamePlayerUri, Player player) throws InterruptedException {
+	private static void createUser(int boardID, String gamePlayerUri, Player player) throws InterruptedException, ResponseCodeException {
 		Thread.sleep(TIMEOUT);
 		HttpService.post(gamePlayerUri, player, HttpURLConnection.HTTP_CREATED);
 		System.out.println("Created Player: " + GSON.toJson(player));
 		System.out.println();
 	}
 
-	private static void getFinalBoardState(int boardID) throws InterruptedException {
+	private static void getFinalBoardState(int boardID) throws InterruptedException, ResponseCodeException {
 		System.out.println("FINAL BOARD STATE: ");
 		System.out.println("-------------------------------------------------------------------------------------------");
 		checkBoardAdded(boardID);
@@ -240,7 +242,7 @@ public class RunBoardExample {
 		throw new InvalidInputException();
 	}
 
-	private static List<String> getPlacesUris(int boardID) {
+	private static List<String> getPlacesUris(int boardID) throws ResponseCodeException {
 
 		System.out.println("Get Places Uris...");
 		String json = HttpService.get("http://localhost:4567/boards/" + boardID + "/places", HttpURLConnection.HTTP_OK);
@@ -257,7 +259,7 @@ public class RunBoardExample {
 		throw new InvalidInputException();
 	}
 
-	private static void deletePawns(int boardID) throws InterruptedException {
+	private static void deletePawns(int boardID) throws InterruptedException, ResponseCodeException {
 		System.out.println("Delete a random pawn on the board...");
 		System.out.println("-------------------------------------------------------------------------------------------");
 		JSONPawnList list = null;
@@ -306,7 +308,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void updatePawns(int boardID) {
+	private static void updatePawns(int boardID) throws ResponseCodeException {
 		System.out.println("Update Pawninformation of pawns on the board...");
 		System.out.println("-------------------------------------------------------------------------------------------");
 
@@ -333,7 +335,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void updatePawn(JSONPawn pawn, int boardID) {
+	private static void updatePawn(JSONPawn pawn, int boardID) throws ResponseCodeException {
 
 		System.out.println("Pawn that will be updated: " + GSON.toJson(pawn));
 		System.out.println("Update PlayerUri...");
@@ -344,7 +346,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void letPawnsRollDice(int boardID) throws InterruptedException {
+	private static void letPawnsRollDice(int boardID) throws InterruptedException, ResponseCodeException {
 		System.out.println("Ĺet Pawns roll the dice on the Board: " + boardID);
 		System.out.println("-------------------------------------------------------------------------------------------");
 
@@ -374,7 +376,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void rollDice(JSONPawn p) throws InterruptedException {
+	private static void rollDice(JSONPawn p) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		String diceUri = "http://localhost:4567" + p.getRoll();
@@ -386,7 +388,7 @@ public class RunBoardExample {
 
 	}
 
-	private static JSONPawn getPawn(int boardID, String pawnUri) throws InterruptedException {
+	private static JSONPawn getPawn(int boardID, String pawnUri) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		System.out.println("Get Pawn from Board with URI " + pawnUri + "...");
@@ -403,7 +405,7 @@ public class RunBoardExample {
 
 	}
 
-	private static JSONPawnList getPawnsOnBoard(int boardID) throws InterruptedException {
+	private static JSONPawnList getPawnsOnBoard(int boardID) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		System.out.println("Get Pawns from Board with id " + boardID + "...");
@@ -418,7 +420,7 @@ public class RunBoardExample {
 		throw new InvalidInputException();
 	}
 
-	private static void createPawn(int boardID, String playerName) throws InterruptedException {
+	private static void createPawn(int boardID, String playerName) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		Pawn p = new Pawn();
@@ -430,7 +432,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void checkBoardAdded(int boardID) throws InterruptedException {
+	private static void checkBoardAdded(int boardID) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		System.out.println("Get Board with id " + boardID + "...");
@@ -442,7 +444,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void createBoard(int boardID, String gameUri) throws InterruptedException {
+	private static void createBoard(int boardID, String gameUri) throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		System.out.println("Create Game on: " + gameUri);
@@ -461,7 +463,7 @@ public class RunBoardExample {
 
 	}
 
-	private static void checkGameAdded(int boardID, String gameUri2) {
+	private static void checkGameAdded(int boardID, String gameUri2) throws ResponseCodeException {
 
 		String json = HttpService.get(gameUri2, HttpURLConnection.HTTP_OK);
 		System.out.println(json);

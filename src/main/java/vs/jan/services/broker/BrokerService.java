@@ -1,29 +1,40 @@
 package vs.jan.services.broker;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
+
+import com.google.gson.Gson;
 
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
 import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.json.brokerservice.JSONPlace;
+import vs.jan.model.ServiceList;
 import vs.jan.model.brokerservice.Broker;
-import vs.jan.validator.Validator;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.ResponseCodeException;
+import vs.jan.services.allocator.ServiceAllocator;
+import vs.jan.tools.HttpService;
+import vs.jan.validator.Validator;
 
 public class BrokerService {
 	
+	private final Gson GSON = new Gson();
 	private Validator validator;
 	private Map<Broker, JSONGameURI> brokers;
+	private ServiceList services;
+	
 	
 	public BrokerService(){
-		validator = new Validator();
+		this.validator = new Validator();
 	};
 
-	public void createBroker(JSONGameURI game) {
+	public void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 		Broker b = new Broker("/broker/" + getID(game.getURI()));
 		b.setGameUri(game.getURI());
 		brokers.put(b, game);
+		this.services = ServiceAllocator.initServices(host, host);
 	}
 
 	private String getID(String uri) {
@@ -56,6 +67,15 @@ public class BrokerService {
 		
 		
 		
+		
+	}
+
+	public ServiceList getServices() {
+		return services;
+	}
+
+	public void setServices(ServiceList services) {
+		this.services = services;
 	}
 
 }

@@ -4,13 +4,15 @@ import java.net.HttpURLConnection;
 import com.google.gson.Gson;
 
 import vs.jan.model.ServiceList;
+import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 
 public class ServiceAllocator {
 	
 	private final static Gson GSON = new Gson();	
 	
-	public static ServiceList initServices(String host, String gameid){
+	public static ServiceList initServices(String host, String gameid) 
+			throws ResponseCodeException{
 		
 		String gameServiceUri = "http://" + host;
 		gameServiceUri += "/games/" + gameid + "/services";

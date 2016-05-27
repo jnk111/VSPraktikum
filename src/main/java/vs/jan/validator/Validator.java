@@ -17,6 +17,7 @@ import vs.jan.model.Validable;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Player;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.ResponseCodeException;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.model.Dice;
 
@@ -64,8 +65,10 @@ public class Validator {
 	 * TODO: local
 	 * @param gameid
 	 * @param pawnid
+	 * @throws ResponseCodeException 
 	 */
-	public void checkPlayerHasMutex(String gameid, String pawnid, String gameServiceUri) {
+	public void checkPlayerHasMutex(String gameid, String pawnid, String gameServiceUri) 
+			throws ResponseCodeException {
 
 		String player = gameServiceUri + "/" + gameid + "/player/turn";
 		String json = HttpService.get(player, HttpURLConnection.HTTP_OK);

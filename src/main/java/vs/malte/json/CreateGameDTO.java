@@ -25,4 +25,9 @@ public class CreateGameDTO
         this.name = name;
     }
 
+    public boolean isValid()
+    {
+        return name.matches( "[a-zA-Z0-9]*" );
+    }
+
 }

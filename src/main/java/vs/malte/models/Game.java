@@ -9,10 +9,10 @@ public class Game
     private String name;
     private String players;
     private boolean started;
+    private String status;
     private ServiceList services;
     private Components components;
     private Map<String, Player> joinedPlayers;  // TODO playerMap soll nich in JSON angezeigt werden
-    private String status;
 
     public Game()
     {
@@ -122,7 +122,8 @@ public class Game
 
     public boolean isValid()
     {
-        return true;                        // TODO isValid fuer Game-Klasse anpassen
+        return this.name != null &&
+                this.id != null;
     }
 
     public boolean allPlayersReady()
@@ -135,8 +136,7 @@ public class Game
 
         return true;
     }
-    
-    
+
     public boolean isFinished()
     {
         return false;
@@ -151,4 +151,24 @@ public class Game
                 ", Services: " + getServiceList() +
                 ", Player List: " + getUserService() );
     }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object that )
+    {
+        Game otherGame = new Game();
+        if ( that instanceof Game )
+            otherGame = (Game) that;
+
+        return this.name.toLowerCase().equals( otherGame.getName().toLowerCase() );
+    }
+
 }

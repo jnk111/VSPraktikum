@@ -6,7 +6,7 @@ public class CurrentPlayerDTO
     private String user;
     private String pawn;
     private String account;
-    private boolean ready;
+    private String ready;
     
     public CurrentPlayerDTO()
     {
@@ -52,12 +52,12 @@ public class CurrentPlayerDTO
         this.account = account;
     }
 
-    public boolean isReady()
+    public String isReady()
     {
         return ready;
     }
 
-    public void setReady( boolean ready )
+    public void setReady( String ready )
     {
         this.ready = ready;
     }

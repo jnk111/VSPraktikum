@@ -23,9 +23,11 @@ import vs.malte.json.GameDTO;
 import vs.malte.json.GamesListDTO;
 import vs.malte.json.InitBoardDTO;
 import vs.malte.json.PawnDTO;
-import vs.malte.json.PlayerDTO;
+import vs.malte.json.AllPlayersArrayDTO;
+import vs.malte.json.AllPlayersDTO;
 import vs.malte.json.ServiceArray;
 import vs.malte.json.ServiceDTO;
+import vs.malte.json.SpecificPlayerDTO;
 import vs.malte.models.Components;
 import vs.malte.models.Game;
 import vs.malte.models.Player;
@@ -33,14 +35,35 @@ import vs.malte.models.ServiceList;
 
 public class GamesService
 {
-    private final boolean DEBUG_MODE = false;
+    // ************************CODE CONFIGS************************ //
+
+    private final boolean DEBUG_MODE = false; // Zu Testzwecken: Konsolenausgaben aktivieren
+    private final boolean LOCAL = true;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
+
+    // **************************PREFIXES************************** //
 
     private final String GAMEID_PREFIX = "/games/";
+    private final String PLAYERID_INFIX = "/players/";
+    private final String USER_NAME_PREFIX = "/user/";
+    private final String ID_PREFIX_FOR_INIT_BOARDS = "/boards/";
+
+    // ********************YELLOW PAGE CONFIGS********************* //
+
     private final String YELLOW_PAGE = "http://172.18.0.5:4567";
     private final String YP_GROUP_CMD = "/services/of/name/";
     private final String YP_GROUP_NAME = "JJMG";
 
-    private final boolean LOCAL = true;     // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen
+    // ***********************RESPONSE CODES*********************** //
+
+    private final int CREATE_GAME_RESP_CODE = 201;
+    private final int CREATE_BOARD_RESP_CODE = 200;
+    private final int INIT_BOARD_RESP_CODE = 200;
+
+    private final int INVALID_PARAMS_RESP_CODE = 400;
+    private final int GAME_ALREADY_EXCITS_RESP_CODE = 409;
+    private final int SERVER_ERR_RESP_CODE = 500;
+
+    // ************************************************************ //
 
     private Map<String, Game> games;
     private final MutexService mutexService;
@@ -59,28 +82,36 @@ public class GamesService
     public synchronized String postNewGame( Request req, Response resp )
     {
         resp.header( "Content-Type", "application/json" );
-        resp.status( 500 ); // Internal Server Error
+        resp.status( SERVER_ERR_RESP_CODE ); // Internal Server Error
 
-        Game game = createGame( req.body() );   // TODO Fehlerbehandlung: kein Game name angegeben
+        Game game = createGame( req.body() );
 
         if ( game != null && game.isValid() )
         {
-            if ( !games.containsKey( game.getId() ) )
+            if ( !games.containsKey( game.getId().toLowerCase() ) )
             {
-                this.games.put( game.getId(), game );
+                this.games.put( game.getId().toLowerCase(), game );
+
                 game = initGameServices( game );
                 game = initGameComponents( game );
 
-                resp.status( 201 ); // Created
+                resp.status( CREATE_GAME_RESP_CODE ); // Created: Spiel erstellt
             }
             else
             {
-                resp.status( 409 ); // Conflict
+                if ( DEBUG_MODE )
+                {
+                    System.out.println( "Game erstellen fehlgeschlagen: Game bereits vorhanden." );
+                }
+                resp.status( GAME_ALREADY_EXCITS_RESP_CODE ); // Conflict: Spiel mit selben Namen bereits vorhanden
             }
         }
         else
         {
-            resp.status( 400 ); // Bad Request
+            if ( DEBUG_MODE )
+                System.out.println( "Game erstellen fehlgeschlagen" );
+
+            resp.status( INVALID_PARAMS_RESP_CODE ); // Bad Request: ungueltige Eingaben
         }
 
         return "";
@@ -89,46 +120,58 @@ public class GamesService
     private Game createGame( String body )
     {
         CreateGameDTO gameDTO = new Gson().fromJson( body, CreateGameDTO.class );
-        Game newGame = new Game();
-        newGame.setName( gameDTO.getName() );
-        newGame.setId( GAMEID_PREFIX + gameDTO.getName() );
 
-        // Erstelle Mutex
-        mutexService.newGameMutex( newGame.getId() );
+        Game newGame = null;
+
+        if ( gameDTO.isValid() )
+        {
+            if ( DEBUG_MODE )
+            {
+                System.out.println( "********************CREATE GAME********************" );
+                System.out.println( "NAME: " + gameDTO.getName() );
+            }
+
+            newGame = new Game();
+
+            newGame.setName( gameDTO.getName() );
+            newGame.setId( GAMEID_PREFIX + gameDTO.getName() );
+            mutexService.newGameMutex( newGame.getId() );   // Erstelle Mutex
+        }
 
         return newGame;
     }
 
     private Game initGameServices( Game newGame )
     {
-        Map<String, String> newServices = new HashMap<>();
+        Map<String, String> newServices = new HashMap<>();  // Map zum Speichern und anschliessendem Uebertragen in die ServiceList des Games
 
         if ( !LOCAL )
         {
             try
             {
-                HttpResponse<JsonNode> response = Unirest.get( YELLOW_PAGE + YP_GROUP_CMD + YP_GROUP_NAME ).asJson();
-                ServiceArray servicesOfGroup = new Gson().fromJson( response.getBody().toString(), ServiceArray.class );
+                HttpResponse<JsonNode> response = Unirest.get( YELLOW_PAGE + YP_GROUP_CMD + YP_GROUP_NAME ).asJson();       // Service-Adressen von YP holen
+                ServiceArray servicesOfGroup = new Gson().fromJson( response.getBody().toString(), ServiceArray.class );    // Service-Adressen in Array schreiben
 
-                for ( String s : servicesOfGroup.getServices() )
+                for ( String service : servicesOfGroup.getServices() )
                 {
-                    response = Unirest.get( YELLOW_PAGE + s ).asJson();
+                    response = Unirest.get( YELLOW_PAGE + service ).asJson();
                     ServiceDTO serviceDTO = new Gson().fromJson( response.getBody().toString(), ServiceDTO.class );
                     newServices.put( serviceDTO.getService(), serviceDTO.getUri() );
                 }
 
-                newGame.getServiceList().setAllServices( newServices );
-                newGame.setPlayers( newServices.get( "users" ) ); // TODO: Userservice ( Da Userservice laut Spezi nicht unter Services gespeichert ist )
+                newGame.getServiceList().setAllServices( newServices ); // Services in neuem Spiel speichern
+                newGame.setPlayers( newServices.get( "users" ) );       // TODO: Userservice ( Da Userservice laut Spezi nicht unter Services gespeichert ist )
             }
             catch ( UnirestException e )
             {
-                e.printStackTrace();    // TODO: Fehlerbehanldung
+                System.err.println( "Initialisieren der Serviceliste fehlgeschlagen." );
             }
         }
         else
         {
             // ======================== Manuelle Service-Einstellungen ======================== //
 
+            newServices.put( "games", "http://localhost:4567/games" );
             newServices.put( "dice", "http://localhost:4567/dice" );
             newServices.put( "board", "http://localhost:4567/boards" );
             newServices.put( "bank", "http://localhost:4567/banks" );
@@ -138,13 +181,13 @@ public class GamesService
             newServices.put( "users", "http://localhost:4567/users" );
 
             newGame.getServiceList().setAllServices( newServices );
-            newGame.setPlayers( newServices.get( "users" ) );
+            newGame.setPlayers( newGame.getServiceList().getGame() + "/" + newGame.getName() + "/players" );
         }
         return newGame;
     }
 
     /**
-     * TODO Components
+     * Legt Komponenten fuer das Spiel an.
      * 
      * @param game
      * @return
@@ -153,8 +196,8 @@ public class GamesService
     {
         game = createBoard( game );
         // game = createBank( game );
-        game = createBroker( game );
-        game = createDecks( game );
+        // game = createBroker( game );
+        // game = createDecks( game );
 
         // initialize dice
         game.getComponents().setDice( game.getServiceList().getDice() );
@@ -162,12 +205,16 @@ public class GamesService
         // initialize events
         game.getComponents().setEvents( game.getServiceList().getEvents() );
 
+        // initialize game
+        game.getComponents().setGame( game.getServiceList().getGame() + "/" + game.getName() );
+
         return game;
     }
 
     private Game createBoard( Game game )
     {
         String boardsUrl = game.getServiceList().getBoard();
+
         CreateBoardDTO createBoardDTO = new CreateBoardDTO();
         createBoardDTO.setGame( game.getId() );
 
@@ -175,12 +222,12 @@ public class GamesService
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************CREATE BOARD********************" );
+            System.out.println( "\n********************CREATE BOARD FOR " + game.getName() + "********************" );
             System.out.println( "TO: " + boardsUrl );
             System.out.println( "With DTO: " + new Gson().toJson( createBoardDTO ) );
         }
 
-        if ( responseCode == 200 )
+        if ( responseCode == CREATE_BOARD_RESP_CODE )
         {
             game.getComponents().setBoard( boardsUrl + "/" + game.getName() );
 
@@ -189,7 +236,7 @@ public class GamesService
         }
         else
         {
-            System.err.println( "Fehler beim erstellen eines Boards" );
+            System.err.println( "Fehler beim erstellen eines Boards." );
         }
 
         // ***************** Wartezeit zur Reaktion der anderen Systeme ***************** //
@@ -199,23 +246,24 @@ public class GamesService
         }
         catch ( InterruptedException e )
         {
-            e.printStackTrace();
+            System.err.println( "Prozess hat in der Wartephase zwischen Erstellen und Initialisieren eines Boards ein Interrupt empfangen." );
         }
+        // ****************************************************************************** //
 
-        boardsUrl = ( boardsUrl + "/" + game.getName() );
+        boardsUrl = ( boardsUrl + "/" + game.getName() );   // Spiele-Namen an Boards-URL anfuegen
         InitBoardDTO initBoardDTO = new InitBoardDTO();
-        initBoardDTO.setId( "/boards/" + game.getName() );
+        initBoardDTO.setId( ID_PREFIX_FOR_INIT_BOARDS + game.getName() );
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************Initiate BOARD********************" );
+            System.out.println( "\n********************Initiate BOARD FOR " + game.getName() + "********************" );
             System.out.println( "TO: " + boardsUrl );
             System.out.println( "With DTO: " + new Gson().toJson( initBoardDTO ) );
         }
 
         responseCode = HttpService.put( boardsUrl, initBoardDTO );
 
-        if ( responseCode != 200 )
+        if ( responseCode != INIT_BOARD_RESP_CODE )
         {
             System.err.println( "Fehler beim initialisieren eines Boards" );
         }
@@ -233,7 +281,8 @@ public class GamesService
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************CREATE BANK ACCOUNT********************" );
+            System.out.println( "\n********************CREATE BANK ACCOUNT FOR " + game.getName() + "********************" );
+            System.out.println( "TO: " + bankUrl );
             System.out.println( "With DTO: " + new Gson().toJson( bankDTO ) );
         }
 
@@ -243,7 +292,7 @@ public class GamesService
         }
         else
         {
-            // TODO throw Component not available Exception
+            System.err.println( "Bank erstellen fehlgeschlagen." );
         }
 
         return game;
@@ -259,7 +308,7 @@ public class GamesService
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************CREATE BROKER********************" );
+            System.out.println( "\n********************CREATE BROKER FOR " + game.getName() + "********************" );
             System.out.println( "With DTO: " + new Gson().toJson( brokerDTO ) );
         }
 
@@ -285,7 +334,7 @@ public class GamesService
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************CREATE DECK********************" );
+            System.out.println( "\n********************CREATE DECK FOR " + game.getName() + "********************" );
             System.out.println( "With DTO: " + new Gson().toJson( decksDTO ) );
         }
 
@@ -319,15 +368,15 @@ public class GamesService
             GamesListDTO gameList = new GamesListDTO();
             GameDTO gameDTO;
 
-            for ( Game g : this.games.values() )
+            for ( Game game : this.games.values() )
             {
                 gameDTO = new GameDTO();
+                gameDTO.setId( game.getId() );
+                gameDTO.setName( game.getName() );
+                gameDTO.setPlayers( game.getServiceList().getGame() + "/" + game.getName() + "/players" );
+                gameDTO.setServices( game.getServiceList() );
+                gameDTO.setComponents( game.getComponents() );
 
-                gameDTO.setId( g.getId() );
-                gameDTO.setName( g.getName() );
-                gameDTO.setPlayers( g.getUserService() );
-                gameDTO.setServices( g.getServiceList() );
-                gameDTO.setComponents( g.getComponents() );
                 gameList.getGameList().add( gameDTO );
             }
 
@@ -336,33 +385,6 @@ public class GamesService
         else
         {
             resp.status( 204 ); // No Content
-        }
-
-        return result;
-    }
-
-    /**
-     * Initialisiert die GET-Methode zur Abfrage der im Spiel verwendeten Services
-     * 
-     * URI: /games/:gameid/services
-     */
-    public String getGameServices( Request req, Response resp )
-    {
-        resp.header( "Content-Type", "application/json" );
-        resp.status( 500 );
-        String result = "";
-
-        Game game = getGame( req.params( ":gameId" ) );
-
-        if ( game != null )
-        {
-            resp.status( 200 ); // Created
-
-            result = new Gson().toJson( game.getServiceList() );
-        }
-        else
-        {
-            resp.status( 404 ); // Resource could not be found
         }
 
         return result;
@@ -386,6 +408,33 @@ public class GamesService
             resp.status( 200 ); // Created
 
             result = new Gson().toJson( game );
+        }
+        else
+        {
+            resp.status( 404 ); // Resource could not be found
+        }
+
+        return result;
+    }
+
+    /**
+     * Initialisiert die GET-Methode zur Abfrage der im Spiel verwendeten Services
+     * 
+     * URI: /games/:gameid/services
+     */
+    public String getGameServices( Request req, Response resp )
+    {
+        resp.header( "Content-Type", "application/json" );
+        resp.status( 500 );
+        String result = "";
+
+        Game game = getGame( req.params( ":gameId" ) );
+
+        if ( game != null )
+        {
+            resp.status( 200 ); // Created
+
+            result = new Gson().toJson( game.getServiceList() );
         }
         else
         {
@@ -461,7 +510,7 @@ public class GamesService
         String result = "";
         Game game = getGame( req.params( ":gameId" ) );
 
-        if ( game != null )
+        if ( game != null && game.getComponents().hasComponents() )
         {
             resp.status( 200 ); // Created
 
@@ -492,31 +541,35 @@ public class GamesService
 
         if ( !game.isRunning() )
         {
-            String hostUri = req.host();                                                           // TODO: Host-URI so richtig???
+            String hostUri = req.host();
 
-            Player newPlayer = new Gson().fromJson( req.body(), Player.class );                   // Erstellt Playerobjekt mit Namen
-            String mapKey = newPlayer.getUserName();
+            Player newPlayer = new Gson().fromJson( req.body(), Player.class );   // Erstellt Playerobjekt mit Namen
+            String mapKey = newPlayer.getUserName().toLowerCase();
 
             // ================= Playerobjekt wird entsprechend der Spezi fuer GameService konfiguriert ================= //
-            newPlayer.setId( "/games/" + game.getName() + "/players/" + newPlayer.getUserName().toLowerCase() );
-            newPlayer.setUserName( "/user/" + newPlayer.getUserName().toLowerCase() );
+
+            newPlayer.setId( GAMEID_PREFIX + game.getName() + PLAYERID_INFIX + newPlayer.getUserName().toLowerCase() );
+            newPlayer.setUserName( USER_NAME_PREFIX + newPlayer.getUserName().toLowerCase() );
 
             if ( game != null && !game.getPlayers().containsKey( mapKey ) )
             {
-                // ================= Post an UserService (User wird im UserService erstellt) ================= //
 
-                CreateUserDTO userDTO = new CreateUserDTO();
-                userDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
-                userDTO.setName( newPlayer.getUserName().replaceAll( "user/", "" ) );
-                userDTO.setUri( hostUri + "/client" + userDTO.getName() );
+                // ================= Playerobjekt wird entsprechend der Spezi fuer UserService konfiguriert ================= //
+
+                CreateUserDTO userServiceDTO = new CreateUserDTO();
+                userServiceDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
+                userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/user/", "" ) );
+                userServiceDTO.setUri( hostUri + "/client" + userServiceDTO.getName() );
 
                 if ( DEBUG_MODE )
                 {
                     System.out.println( "\n********************CREATE NEW PLAYER********************" );
-                    System.out.println( "NewPlayer: " + new Gson().toJson( userDTO ) );
+                    System.out.println( "NewPlayer: " + new Gson().toJson( userServiceDTO ) );
                 }
 
-                HttpService.post( game.getUserService(), userDTO );
+                // ================= Post an UserService (User wird im UserService erstellt) ================= //
+
+                HttpService.post( game.getServiceList().getUsers(), userServiceDTO );
 
                 createPawn( newPlayer, game );
 
@@ -547,7 +600,8 @@ public class GamesService
 
         if ( DEBUG_MODE )
         {
-            System.out.println( "\n********************CREATE NEW PAWN********************" );
+            System.out.println( "\n********************CREATE NEW PAWN FOR " + player.getUserName() + "********************" );
+            System.out.println( "FOR GAME : " + game.getName() );
             System.out.println( "TO : " + game.getComponents().getBoard() + "/pawns" );
             System.out.println( "With DTO : " + new Gson().toJson( newPawn ) );
         }
@@ -584,11 +638,16 @@ public class GamesService
 
         if ( game != null )
         {
-            PlayerDTO players = new PlayerDTO();
+            AllPlayersArrayDTO players = new AllPlayersArrayDTO( game.getPlayers().values().size() );
 
+            AllPlayersDTO playerDTO = new AllPlayersDTO();
+            int i = 0;
             for ( Player player : game.getPlayers().values() )
             {
-                players.getPlayers().add( "/games/" + game.getName() + "/players" + player.getUserName().replaceAll( "/user", "" ) );
+                playerDTO = new AllPlayersDTO();
+                playerDTO.setId( player.getId() );
+                players.getPlayers()[i] = playerDTO;
+                i++;
             }
 
             result = new Gson().toJson( players );
@@ -635,7 +694,7 @@ public class GamesService
      * 
      * URI: /games/:gameid/players/:playerid/ready
      */
-    public String putPlayerReady( Request req, Response resp )
+    public String putPlayerReadyness( Request req, Response resp )
     {
         resp.header( "Content-Type", "application/json" );
         resp.status( 500 ); // Internal Server Error
@@ -720,15 +779,23 @@ public class GamesService
 
         String result = "";
         Game game = getGame( req.params( ":gameId" ) );
-        String mapKey = ( req.params( ":playerId" ).toLowerCase() );
+        String playerMapKey = ( req.params( ":playerId" ).toLowerCase() );
 
-        Player player = game.getPlayers().get( mapKey );
+        Player player = game.getPlayers().get( playerMapKey );
 
         if ( player != null )
         {
             resp.status( 200 ); // created
 
-            result = new Gson().toJson( player );
+            SpecificPlayerDTO specificPlayerDTO = new SpecificPlayerDTO();
+
+            specificPlayerDTO.setUserName( player.getUserName() );
+            specificPlayerDTO.setAccount( player.getAccount() );
+            specificPlayerDTO.setId( player.getId() );
+            specificPlayerDTO.setPawn( player.getPawn() );
+            specificPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + player.getUserName().replaceAll( "/user/", "" ) + "/ready" );
+
+            result = new Gson().toJson( specificPlayerDTO );
         }
         else
         {
@@ -783,7 +850,7 @@ public class GamesService
 
         Game game = getGame( req.params( ":gameId" ) );
 
-        if ( game != null )
+        if ( game != null && !game.getPlayers().isEmpty() )
         {
             if ( game.allPlayersReady() && !game.isRunning() )
             {
@@ -857,7 +924,7 @@ public class GamesService
         Game game = getGame( req.params( ":gameId" ) );
         Player player = new Gson().fromJson( req.body(), Player.class );
 
-        if ( game != null && player != null )       // TODO Fehlercode falls der Spieler den Mutex bereits hat
+        if ( game != null && game.isRunning() && player != null )       // TODO Fehlercode falls der Spieler den Mutex bereits hat
         {
             if ( mutexService.acquire( game.getId(), player.getId() ) )
             {
@@ -891,7 +958,7 @@ public class GamesService
         String result = "";
         Game game = getGame( req.params( ":gameId" ) );
 
-        if ( game != null && !mutexService.getMutexUser( game.getId() ).equals( "" ) )
+        if ( game != null && game.isRunning() && !mutexService.getMutexUser( game.getId() ).equals( "" ) )
         {
             resp.status( 200 ); // ok
 
@@ -904,7 +971,8 @@ public class GamesService
             currentPlayerDTO.setUser( currentPlayer.getUserName() ); // TODO soll die Uri sein
             currentPlayerDTO.setPawn( currentPlayer.getPawn() );
             currentPlayerDTO.setAccount( currentPlayer.getAccount() );
-
+            currentPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + currentPlayerDTO.getUser().replaceAll( "/user/", "" ) + "/ready" );
+            
             result = new Gson().toJson( currentPlayerDTO );
         }
         else
@@ -930,7 +998,7 @@ public class GamesService
         String result = "";
         Game game = getGame( req.params( ":gameId" ) );
 
-        if ( game != null && !mutexService.getMutexPermittedUser( game.getId() ).equals( "" ) )
+        if ( game != null && game.isRunning() && !mutexService.getMutexPermittedUser( game.getId() ).equals( "" ) )
         {
             resp.status( 200 ); // ok
 
@@ -943,6 +1011,7 @@ public class GamesService
             currentPlayerDTO.setUser( currentPlayer.getUserName() ); // TODO soll die Uri sein
             currentPlayerDTO.setPawn( currentPlayer.getPawn() );
             currentPlayerDTO.setAccount( currentPlayer.getAccount() );
+            currentPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + currentPlayerDTO.getUser().replaceAll( "/user/", "" ) + "/ready" );
 
             result = new Gson().toJson( currentPlayerDTO );
         }
@@ -956,7 +1025,10 @@ public class GamesService
 
     private Game getGame( String gameId )
     {
-        return games.get( GAMEID_PREFIX + gameId );
+        String gameMapKey = GAMEID_PREFIX + gameId;
+        gameMapKey.toLowerCase();
+
+        return games.get( gameMapKey );
     }
 
 }

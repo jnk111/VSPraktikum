@@ -6,7 +6,7 @@ import java.util.Map;
 public class Components
 {
 
-    private String games;
+    private String game;
     private String dice;
     private String board;
     private String bank;
@@ -16,7 +16,7 @@ public class Components
 
     public Components( String games, String dice, String board, String bank, String broker, String decks, String events )
     {
-        this.games = games;
+        this.game = games;
         this.dice = dice;
         this.board = board;
         this.bank = bank;
@@ -29,9 +29,9 @@ public class Components
     {
     }
 
-    public String getgames()
+    public String getGame()
     {
-        return games;
+        return game;
     }
 
     public String getDice()
@@ -72,64 +72,65 @@ public class Components
     public Map<String, String> getAllComponents()
     {
         Map<String, String> components = new HashMap<>();
-        
-        if(games != null)
-        components.put( "games", games );
-        
-        if(dice != null)
-        components.put( "dice", dice );
-        
-        if(board != null)
-        components.put( "board", board );
-        
-        if(bank != null)
-        components.put( "bank", bank );
-        
-        if(broker != null)
-        components.put( "broker", broker );
-        
-        if(decks != null)
-        components.put( "decks", decks );
-        
-        if(events != null)
-        components.put( "events", events );
-        
+
+        if ( game != null )
+            components.put( "game", game );
+
+        if ( dice != null )
+            components.put( "dice", dice );
+
+        if ( board != null )
+            components.put( "board", board );
+
+        if ( bank != null )
+            components.put( "bank", bank );
+
+        if ( broker != null )
+            components.put( "broker", broker );
+
+        if ( decks != null )
+            components.put( "decks", decks );
+
+        if ( events != null )
+            components.put( "events", events );
+
         return components;
     }
-    
+
     /**
      * Methode zu Setzen von neuen Komponenten in die Service-Klasse.
      * 
-     * @param HashMap mit neuen Services
+     * @param HashMap
+     *            mit neuen Services
      */
-    public void setAllComponents(Map<String, String> newComponents)
+    public void setAllComponents( Map<String, String> newComponents )
     {
-        if(newComponents.containsKey( "games" ))
-            this.games = newComponents.get( "games" );
+        if ( newComponents.containsKey( "game" ) )
+            this.game = newComponents.get( "game" );
 
-        if(newComponents.containsKey( "dice" ))
+        if ( newComponents.containsKey( "dice" ) )
             this.dice = newComponents.get( "dice" );
 
-        if(newComponents.containsKey( "board" ))
+        if ( newComponents.containsKey( "board" ) )
             this.board = newComponents.get( "board" );
 
-        if(newComponents.containsKey( "bank" ))
+        if ( newComponents.containsKey( "bank" ) )
             this.bank = newComponents.get( "bank" );
 
-        if(newComponents.containsKey( "broker" ))
+        if ( newComponents.containsKey( "broker" ) )
             this.broker = newComponents.get( "broker" );
 
-        if(newComponents.containsKey( "decks" ))
+        if ( newComponents.containsKey( "decks" ) )
             this.decks = newComponents.get( "decks" );
 
-        if(newComponents.containsKey( "events" ))
+        if ( newComponents.containsKey( "events" ) )
             this.events = newComponents.get( "events" );
-        
+
     }
 
-    public void setGames( String games )
+    public void setGame( String game )
     {
-        this.games = games;
+        this.game = game;
     }
 
     public void setDice( String dice )
@@ -165,7 +166,7 @@ public class Components
     @Override
     public String toString()
     {
-        return "ServiceList [games=" + games + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker=" + broker + ", decks=" + decks + ", events="
+        return "ServiceList [games=" + game + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker=" + broker + ", decks=" + decks + ", events="
                 + events + "]";
     }
 
@@ -185,12 +186,23 @@ public class Components
         // && ( getDecks() == null || ServiceTest.isValidService( getDecks() ) )
         // && ( getEvents() == null || ServiceTest.isValidService( getEvents() ) );
 
-        return ( getgames() == null || getgames().matches( "/games" ) )
+        return ( getGame() == null || getGame().matches( "/games" ) )
                 && ( getDice() == null || getDice().matches( "/dice" ) )
                 && ( getBoard() == null || getBoard().matches( "/board" ) )
                 && ( getBank() == null || getBank().matches( "/bank" ) )
                 && ( getBroker() == null || getBroker().matches( "/broker" ) )
                 && ( getDecks() == null || getDecks().matches( "/decks" )
                         && ( getEvents() == null || getEvents().matches( "/events" ) ) );
+    }
+
+    public boolean hasComponents()
+    {
+        return this.bank != null ||
+                this.board != null ||
+                this.broker != null ||
+                this.decks != null ||
+                this.dice != null ||
+                this.events != null ||
+                this.game != null;
     }
 }

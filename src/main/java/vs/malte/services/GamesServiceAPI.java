@@ -1,13 +1,8 @@
 package vs.malte.services;
 
-import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
-
-import com.google.gson.JsonSyntaxException;
-
-import vs.jan.model.StatusCodes;
 
 public class GamesServiceAPI
 {
@@ -160,7 +155,7 @@ public class GamesServiceAPI
     {
         put( "/games/:gameid/players/:playerid/ready", ( req, resp ) ->
         {
-            return gameService.putPlayerReady( req, resp );
+            return gameService.putPlayerReadyness( req, resp );
         } );
     }
 

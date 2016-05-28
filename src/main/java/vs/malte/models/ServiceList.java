@@ -12,6 +12,7 @@ public class ServiceList
     private String broker;
     private String decks;
     private String events;
+    private String users;
 
     public ServiceList( String game, String dice, String board, String bank, String broker, String decks, String events )
     {
@@ -92,6 +93,9 @@ public class ServiceList
 
         if ( events != null )
             services.put( "events", events );
+        
+        if ( events != null )
+            services.put( "users", users );
 
         return services;
     }
@@ -104,26 +108,29 @@ public class ServiceList
      */
     public void setAllServices( Map<String, String> newServices )
     {
-        if ( newServices.containsKey( "games" ) )
+        if ( newServices.containsKey( "games" ) && this.games == null )
             setGame( newServices.get( "games" ) );
 
-        if ( newServices.containsKey( "dice" ) )
+        if ( newServices.containsKey( "dice" ) && this.dice == null )
             setDice( newServices.get( "dice" ) );
 
-        if ( newServices.containsKey( "board" ) )
+        if ( newServices.containsKey( "board" ) && this.board == null )
             setBoard( newServices.get( "board" ) );
 
-        if ( newServices.containsKey( "bank" ) )
+        if ( newServices.containsKey( "bank" ) && this.bank == null )
             setBank( newServices.get( "bank" ) );
 
-        if ( newServices.containsKey( "broker" ) )
+        if ( newServices.containsKey( "broker" ) && this.broker == null )
             setBroker( newServices.get( "broker" ) );
 
-        if ( newServices.containsKey( "decks" ) )
+        if ( newServices.containsKey( "decks" ) && this.decks == null )
             setDecks( newServices.get( "decks" ) );
 
-        if ( newServices.containsKey( "events" ) )
+        if ( newServices.containsKey( "events" ) && this.events == null )
             setEvents( newServices.get( "events" ) );
+        
+        if ( newServices.containsKey( "users" ) && this.users == null )
+            setUsers( newServices.get( "users" ) );
 
     }
 
@@ -167,12 +174,12 @@ public class ServiceList
     {
         return "ServiceList [game=" + games + ",\n"
                 + " dice=" + dice + ",\n"
-                        + " board=" + board + ",\n"
-                                + " bank=" + bank + ",\n"
-                                        + " broker=" + broker + ",\n"
-                                                + " decks=" + decks + ",\n"
-                                                        + " events=" + events + "]";
-                
+                + " board=" + board + ",\n"
+                + " bank=" + bank + ",\n"
+                + " broker=" + broker + ",\n"
+                + " decks=" + decks + ",\n"
+                + " events=" + events + "]";
+
     }
 
     /**
@@ -199,5 +206,27 @@ public class ServiceList
                 && ( getDecks() == null || getDecks().matches( "/decks" )
                         && ( getEvents() == null || getEvents().matches( "/events" ) ) );
     }
+
+    public String getGames()
+    {
+        return games;
+    }
+
+    public void setGames( String games )
+    {
+        this.games = games;
+    }
+
+    public String getUsers()
+    {
+        return users;
+    }
+
+    public void setUsers( String users )
+    {
+        this.users = users;
+    }
+    
+    
 
 }

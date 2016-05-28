@@ -2,10 +2,10 @@ package vs.malte;
 
 import java.util.concurrent.TimeUnit;
 
+import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.malte.example.Example;
-import vs.malte.services.GamesService;
 import vs.malte.services.GamesServiceAPI;
 
 public class StartUpProject
@@ -14,9 +14,10 @@ public class StartUpProject
     {
         new BoardRESTApi();
         new UserServiceRESTApi();
-        
+        BankService.run();
+
         new GamesServiceAPI();
-        
+
         try
         {
             TimeUnit.SECONDS.sleep( 1 );
@@ -25,7 +26,7 @@ public class StartUpProject
         {
             e.printStackTrace();
         }
-        
-//        Example.runExample01("http://localhost:4567");
+
+        // Example.runExample01("http://localhost:4567");
     }
 }

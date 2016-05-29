@@ -7,17 +7,7 @@ import spark.Request;
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class GameId extends Id<Integer> {
-
-    /**
-     * Creates a new game id container.
-     *
-     * @param data
-     *            Internal game id.
-     */
-    public GameId(final Integer data) {
-        super(data);
-    }
+public class GameId extends Id<String> {
 
     /**
      * Creates a new game id container.
@@ -31,9 +21,19 @@ public class GameId extends Id<Integer> {
         super(request, param);
     }
 
+    /**
+     * Creates a new game id container.
+     *
+     * @param data
+     *            Internal game id.
+     */
+    public GameId(final String data) {
+        super(data);
+    }
+
     @Override
-    protected Integer fromUriSuffix(final String suffix) {
-        return Integer.decode(suffix);
+    protected String fromUriSuffix(final String suffix) {
+        return suffix;
     }
 
     @Override

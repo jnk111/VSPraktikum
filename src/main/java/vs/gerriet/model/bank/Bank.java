@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
+import vs.gerriet.id.GameId;
 import vs.gerriet.id.UserId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
@@ -36,12 +37,14 @@ public class Bank {
      * Contains the bank's id.
      */
     private final BankId id;
-
+    /**
+     * Contains the id of the game this bank is associated to.
+     */
+    private final GameId gameId;
     /**
      * Contains the account url for this bank.
      */
     private String accountsUrl;
-
     /**
      * Contains the transfer url for this bank.
      */
@@ -65,8 +68,9 @@ public class Bank {
     /**
      * Creates a new bank without any accounts.
      */
-    public Bank(final BankId id) {
+    public Bank(final BankId id, final GameId gameId) {
         this.id = id;
+        this.gameId = gameId;
         this.accounts = new AccountsContainer();
         this.transactions = new ConcurrentSkipListMap<>();
         this.transfers = new ConcurrentSkipListMap<>();
@@ -183,6 +187,15 @@ public class Bank {
      */
     public String getAccountsUrl() {
         return this.accountsUrl;
+    }
+
+    /**
+     * Returns the id of the game this bank is associated to.
+     * 
+     * @return Game id.
+     */
+    public GameId getGameId() {
+        return this.gameId;
     }
 
     /**

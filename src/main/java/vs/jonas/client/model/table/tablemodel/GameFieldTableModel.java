@@ -100,11 +100,9 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 *            Die neuen Daten.
 	 */
 	public void loadData(List<Place> data) {
-		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
 			fields = new ArrayList<>(data);
 			Collections.sort(fields, new FieldsComparator());
-			System.out.println(fields);
 			fireTableDataChanged();
 		}
 	}

@@ -104,7 +104,6 @@ public class GameController {
 	private void ladeSpielerInformationen() throws Exception {
 		PlayerOverviewTableModel model = (PlayerOverviewTableModel) ui.getPlayerTable().getModel();
 		List<PlayerInformation> data = client.getPlayers(gameID);
-		System.out.println(data);
 		model.loadData(data);
 	}
 	

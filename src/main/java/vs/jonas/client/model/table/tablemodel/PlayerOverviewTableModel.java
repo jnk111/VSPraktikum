@@ -77,7 +77,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 		case 0:	ergebnis = player.getPawn(); break;
 		case 1:	ergebnis = player.getAccount(); break;
 		case 2:	ergebnis = player.getPosition();	break;
-		case 3: ergebnis = player.LastRoll(); break;
+		case 3: ergebnis = player.getLastRoll(); break;
 		case 4: ergebnis = player.isReady(); break;
 		case 5: ergebnis = player.hasTurnMutex();
 		}
@@ -91,11 +91,9 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	 *            Die neuen Daten.
 	 */
 	public void loadData(List<PlayerInformation> data) {
-		System.out.println("Load PlayerInformationTable ...");
 		if (data != null) {
 			players = new ArrayList<>(data);
 			Collections.sort(players, new PlayerInformationComparator());
-			System.out.println(players);
 			fireTableDataChanged();
 		}
 	}

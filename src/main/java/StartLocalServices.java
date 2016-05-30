@@ -5,8 +5,6 @@ import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
-import com.google.gson.Gson;
-
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
@@ -25,10 +23,6 @@ import vs.malte.services.GamesServiceAPI;
 public class StartLocalServices {
 
     private final int TIMEOUT = 1000;
-    private BoardRESTApi boardApi;
-    private Gson gson;
-
-    private String boardUri;
     private String gamesUri;
 
     /**
@@ -54,8 +48,6 @@ public class StartLocalServices {
      */
     public void startServices() throws ServiceUnavailableException, MalformedURLException, InterruptedException {
 
-        gson = new Gson();
-
         /*  Initializes BankService  */
 //        BankService.run();
 
@@ -77,15 +69,11 @@ public class StartLocalServices {
         new UserServiceRESTApi();
 
         /*  Initializes BoardService */
-        boardApi = new BoardRESTApi();
+        new BoardRESTApi();
 
 
         // Initialize URIs
         gamesUri = yellowPages.getService(ServiceNames.GAME).getUri();//"http://localhost:4567/games";
-        boardUri = yellowPages.getService(ServiceNames.BOARD).getUri();
-
-//        setupUser(boardID, gamesUri);
-//        setupBoard();
 
         int boardID = 100;
         CreateGameExDTO g = new CreateGameExDTO();

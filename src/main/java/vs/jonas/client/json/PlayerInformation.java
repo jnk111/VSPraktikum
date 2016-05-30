@@ -4,53 +4,64 @@ import com.google.gson.Gson;
 
 public class PlayerInformation {
 
-	String name;
 	String pawn;
 	String account;
-	String ready;
-	
-	public PlayerInformation(String name, String pawn, String account, String ready) {
-		super();
-		this.name = name;
-		this.pawn = pawn;
-		this.account = account;
-		this.ready = ready;
-	}
-
-	public String getName() {
-		return name;
-	}
+	String position;
+	String lastRoll;
+	boolean isReady;
+	boolean hasTurn;
 
 	public String getPawn() {
 		return pawn;
+	}
+
+	public void setPawn(String pawn) {
+		this.pawn = pawn;
 	}
 
 	public String getAccount() {
 		return account;
 	}
 
-	public String isReady() {
-		return ready;
-	}
-	
-	@Override
-	public String toString(){
-		return new Gson().toJson(this);
+	public void setAccount(String account) {
+		this.account = account;
 	}
 
 	public String getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return position;
 	}
 
-	public String LastRoll() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
-	public String hasTurnMutex() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getLastRoll() {
+		return lastRoll;
 	}
-	
+
+	public void setLastRoll(String lastRoll) {
+		this.lastRoll = lastRoll;
+	}
+
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
+
+	public boolean hasTurnMutex() {
+		return hasTurn;
+	}
+
+	public void setHasTurn(boolean hasTurn) {
+		this.hasTurn = hasTurn;
+	}
+
+	@Override
+	public String toString() {
+		return new Gson().toJson(this);
+	}
+
 }

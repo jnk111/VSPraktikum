@@ -25,6 +25,7 @@ import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.json.Pawn;
 import vs.jonas.client.json.PawnList;
 import vs.jonas.client.json.Place;
+import vs.jonas.client.json.PlayerID;
 import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
@@ -78,10 +79,10 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 */
 	public List<GameResponse> getGames() throws IOException, UnirestException {
-		System.out.println();
-		System.out.println("************* Get Games *************");
+		System.out.println("\n************* Get Games *************");
 		List<GameResponse> data = new ArrayList<>();
 		String uri = gameService.getUri();
+		System.out.println(uri);
 		JsonObject gameListResponse = get(uri);
 		JsonArray gamesList = gameListResponse.getAsJsonArray("games");
 
@@ -104,57 +105,44 @@ public class RestopolyClient {
 	 * @throws Exception
 	 */
 	public List<PlayerInformation> getPlayers(String gameID) throws IOException, UnirestException, Exception {
-		System.out.println();
-		System.out.println("**************  Get Players **************");
+		System.out.println("\n**************  Get Players **************");
 		List<PlayerInformation> data = new ArrayList<>();
 
 		String gameServiceUri = gameService.getUri();
 		String gamesPlayersUri = gameServiceUri + "/" + gameID + "/players";
 		JsonObject playerListResponse = get(gamesPlayersUri);
 
-		System.out.println(
-				"Antwort-PlayerList durch die URL: " + gamesPlayersUri + ":\n" + playerListResponse.toString());
+		System.out.println(gamesPlayersUri);
+		System.out.println("\n" + playerListResponse.toString());
 
-		PlayerList playerList = gson.fromJson(playerListResponse, PlayerList.class);
-		for (String playerUri : playerList.getPlayers()) {
+		PlayerList playerList = gson.fromJson(playerListResponse.toString(), PlayerList.class);
+		for (PlayerID playerID : playerList.getPlayers()) {
 
 			// {"ready":false,"id":"/games/100/players/wario","user":"/user/wario"}
-			JsonObject playerRessource = get(BASE_URL + playerUri);
+			JsonObject playerRessource = get(BASE_URL + playerID.getId());
 			PlayerResponse player = gson.fromJson(playerRessource, PlayerResponse.class);
 			System.out.println("PlayerResponse: " + gson.toJson(player));
 
-			String name = "";
-			String pawn = "";
-			String account = "";
-			String ready = "";
+			PlayerInformation playerInformation = new PlayerInformation();
 
-			if (checkNotNull(player.getId())) {
-				// System.out.println("PlayerID: " + get(BASE_URL +
-				// player.getId()));
-				name = player.getId();// TODO Eigentlich:
-										// gson.fromJson(get(BASE_URL +
-										// player.getId()).get("id"),
-										// String.class);
-			}
-			//
 			if (checkNotNull(player.getPawn())) {
 				JsonObject pawnResponse = get(player.getPawn());
 				Pawn pawnObject = gson.fromJson(pawnResponse, Pawn.class);
-				pawn = pawnObject.getId();
+				playerInformation.setPawn(pawnObject.getId());
 			}
-			//
 			if (checkNotNull(player.getAccount())) {
 				System.out.println(player.getAccount());
 				JsonObject accountResponse = get(player.getAccount());
 				Account accountObject = gson.fromJson(accountResponse, Account.class);
-				account = accountObject.getSaldo() + "";
+				playerInformation.setAccount(accountObject.getSaldo() + "");
 			}
-			//
 			if (checkNotNull(player.getReady())) {
-				ready = player.getReady();
+				System.out.println("Ready: " + player.getReady());
+//				JsonObject readyResponse = get(player.getReady());
+//				System.out.println(readyResponse.toString());
+//				playerInformation.setReady(player.getReady());
 			}
 
-			PlayerInformation playerInformation = new PlayerInformation(name, pawn, account, ready);
 
 			data.add(playerInformation);
 		}
@@ -169,10 +157,9 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 */
 	public List<Place> getPlaces(String gameID) throws IOException, UnirestException {
-		System.out.println();
+		System.out.println("\n**************  Get Fields **************");
 		List<Place> data = new ArrayList<>();
 
-		System.out.println("**************  Get Fields **************");
 
 		String boardServiceUri = boardService.getUri();
 		// String boardsPlacesUri = boardServiceUri + "/" + gameID + "/places";
@@ -212,9 +199,8 @@ public class RestopolyClient {
 	 * @throws IOException
 	 */
 	public List<Pawn> getPawns(String gameID) throws UnirestException, IOException {
+		System.out.println("\n**************  Get Pawns **************");
 		List<Pawn> data = new ArrayList<>();
-		System.out.println();
-		System.out.println("**************  Get Pawns **************");
 		String boardServiceUri = boardService.getUri();
 		String boardsPawnsUri = boardServiceUri + "/" + gameID + "/pawns";
 		JsonObject json = get(boardsPawnsUri);
@@ -234,6 +220,7 @@ public class RestopolyClient {
 	 * @throws IOException
 	 */
 	public String getPawnID(String gameID) throws UnirestException, IOException{
+		System.out.println("\n************** Get PawnID **************");
 		List<Pawn> data = getPawns(gameID);
 		String result = "";
 		for(Pawn pawn : data){
@@ -253,7 +240,7 @@ public class RestopolyClient {
 	 * @throws UnirestException 
 	 */
 	public int rollDice(String gameID) throws IOException, UnirestException {
-		System.out.println("**************  Roll Dice  **************");
+		System.out.println("\n**************  Roll Dice  **************");
 
 		String boardServiceUri = boardService.getUri();
 		String pawnID = getPawnID(gameID);
@@ -275,14 +262,12 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 */
 	public void createANewGame(String gameName) throws IOException, UnirestException {
-		System.out.println("************* Create New Game *************");
+		System.out.println("\n************* Create New Game *************");
 		String uri = gameService.getUri();
 		CreateGame game = new CreateGame(gameName);
-
 		System.out.println(uri);
 		System.out.println(game);
-		JsonObject resBody = postData(game, uri);
-		System.out.println("Antwort auf Post nach:" + uri + ": " + resBody.toString());
+		postData(game, uri);
 	}
 
 	/**
@@ -292,14 +277,13 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 */
 	public void enterGame(String gameID) throws IOException, UnirestException {
-		System.out.println("************* Enter Game *************");
+		System.out.println("\n************* Enter Game *************");
 		String uri = gameService.getUri();
 		String gamesPlayersUri = uri + "/" + gameID + "/players";
 
-		System.out.println(uri);
-		System.out.println(gson.toJson(user));
-		JsonObject resBody = postData(user, gamesPlayersUri);
-		System.out.println("Antwort auf Post nach:" + gamesPlayersUri + ": " + resBody.toString());
+		System.out.println(gamesPlayersUri);
+		postData(user, gamesPlayersUri);
+		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
 	}
 
 	/**

@@ -3,7 +3,7 @@ package vs.jonas.client.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComboBox;
+import com.google.gson.Gson;
 
 public class Place {
 
@@ -99,15 +99,13 @@ public class Place {
 		// TODO Auto-generated method stub
 		return this.players;
 	}
-	
-	public JComboBox<Object> getPlayersAsComboBox(){
-		JComboBox<Object> players = new JComboBox<>(this.players.toArray());
-		return players;
-	}
 
 	public void setID(String id2) {
 		this.id = id2;
 	}
 	
-	
+	@Override
+	public String toString(){
+		return new Gson().toJson(this);
+	}
 }

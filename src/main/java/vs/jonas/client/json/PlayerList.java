@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class PlayerList {
 
-    List<String> players;
+    List<PlayerID> players;
 
-    public PlayerList(List<String> players) {
+    public PlayerList(List<PlayerID> players) {
         this.players = players;
     }
 
-    public List<String> getPlayers() {
+    public List<PlayerID> getPlayers() {
         return players;
     }
 

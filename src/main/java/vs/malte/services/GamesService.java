@@ -37,7 +37,7 @@ public class GamesService
 {
     // ************************CODE CONFIGS************************ //
 
-    private final boolean DEBUG_MODE = false; // Zu Testzwecken: Konsolenausgaben aktivieren
+    private final boolean DEBUG_MODE = true; // Zu Testzwecken: Konsolenausgaben aktivieren
     private final boolean LOCAL = true;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
 
     // **************************PREFIXES************************** //
@@ -680,6 +680,7 @@ public class GamesService
         if ( player != null )
         {
             result = new Gson().toJson( player.getReadyness() );
+            resp.status( 200 );
         }
         else
         {

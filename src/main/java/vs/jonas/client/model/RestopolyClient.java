@@ -19,6 +19,7 @@ import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.Account;
 import vs.jonas.client.json.Board;
 import vs.jonas.client.json.CreateGame;
+import vs.jonas.client.json.DiceRolls;
 import vs.jonas.client.json.Field;
 import vs.jonas.client.json.GameResponse;
 import vs.jonas.client.json.Pawn;
@@ -29,6 +30,7 @@ import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
 
 /**
@@ -162,7 +164,7 @@ public class RestopolyClient {
 		boolean bool = true;
 		List<PlayerInformation> players = getPlayers(gameID);
 		for(PlayerInformation player : players){
-			System.out.println("Player: " + player);
+//			System.out.println("Player: " + player);
 			if(!player.isReady()){
 				bool = false;
 				break;
@@ -192,7 +194,6 @@ public class RestopolyClient {
 		System.out.println("\n" + playerListResponse.toString());
 		
 		PlayerResponse playerWithMutex = getPlayerWithMutex(gameID);
-		System.out.println(playerWithMutex);
 
 		PlayerList playerList = gson.fromJson(playerListResponse.toString(), PlayerList.class);
 		for (PlayerID playerID : playerList.getPlayers()) {
@@ -200,7 +201,7 @@ public class RestopolyClient {
 			// {"ready":false,"id":"/games/100/players/wario","user":"/user/wario"}
 			JsonObject playerRessource = get(BASE_URL + playerID.getId());
 			PlayerResponse player = gson.fromJson(playerRessource, PlayerResponse.class);
-			System.out.println("PlayerResponse: " + player);
+//			System.out.println("PlayerResponse: " + player);
 
 			PlayerInformation playerInformation = new PlayerInformation();
 
@@ -268,7 +269,7 @@ public class RestopolyClient {
 
 		List<Field> fields = board.getFields();
 		for (Field field : fields) {
-			System.out.println(gson.toJson(field));
+//			System.out.println(gson.toJson(field));
 			String placeUri = field.getPlace();
 			JsonObject fieldRessource = get(BASE_URL + placeUri);
 			// System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n"
@@ -320,7 +321,13 @@ public class RestopolyClient {
 	 */
 	public String getPawnID(String gameID) throws UnirestException, IOException{
 		System.out.println("\n************** Get PawnID **************");
+		
+		
+		
 		List<Pawn> data = getPawns(gameID);
+		
+		// TODO getPawns liefert bisher noch nichts zurück
+		
 		String result = "";
 		for(Pawn pawn : data){
 			if(pawn.getPlayer().equals(user.getName())){
@@ -348,12 +355,10 @@ public class RestopolyClient {
 		
 		HttpResponse<String> result = Unirest.post(boardsDiceRollUri).asString();
 		System.out.println(result.getBody());
-//		JsonObject diceRolls = get(boardsDiceRollUri);
-//		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
-////		Board board = gson.fromJson(get(boardServiceUri + "/" + gameID), Board.class);
-//		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
-//		return lastThrown.getNumber();// dice.getNumber();
-		return 555;
+		JsonObject diceRolls = get(boardsDiceRollUri);
+		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
+		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
+		return lastThrown.getNumber();
 	}
 
 	/**

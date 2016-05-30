@@ -54,7 +54,7 @@ public class GameController {
 					ui = new GameUI();
 					registriereActionListener();
 					updateGame();
-					ui.getUsername().setText(client.getUser().getName());
+					ui.getUserLabel().setText(client.getUser().getName());
 					ui.showUI();
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
@@ -75,11 +75,11 @@ public class GameController {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					client.setReady(gameID);
-					updateGame();
-					
 					if(client.allPlayersReady(gameID)){
 						client.startGame(gameID);
 					}
+					updateGame();
+					
 					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

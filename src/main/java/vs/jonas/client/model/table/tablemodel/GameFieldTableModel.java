@@ -20,8 +20,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "ID", "Name", "Owner", "Value", 
-			"Rent", "Cost", "Houses", "Hypocredit", "Players"};
+	private String[] columnNames = { "ID", "Name","Players"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
@@ -82,13 +81,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 		switch (col) {
 		case 0: ergebnis = field.getID(); break;
 		case 1:	ergebnis = field.getName();	break;
-		case 2:	ergebnis = field.getOwner(); break;
-		case 3: ergebnis = field.getValue(); break;
-		case 4: ergebnis = field.getRent(); break;
-		case 5: ergebnis = field.getCost(); break;
-		case 6: ergebnis = field.getHouses(); break;
-		case 7: ergebnis = field.getHypocredit(); break;
-		case 8: ergebnis = field.getPlayers();
+		case 2: ergebnis = field.getPlayers();
 		}
 		return ergebnis;
 	}
@@ -105,6 +98,10 @@ public class GameFieldTableModel extends DefaultTableModel{
 			Collections.sort(fields, new FieldsComparator());
 			fireTableDataChanged();
 		}
+	}
+	
+	public Place getPlace(int row){
+		return fields.get(row);
 	}
 	
 	@Override

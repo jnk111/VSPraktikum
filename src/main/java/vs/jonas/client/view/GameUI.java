@@ -145,7 +145,7 @@ public class GameUI {
 		return btnStarten;
 	}
 	
-	public JLabel getUsername(){
+	public JLabel getUserLabel(){
 		return lblUsername;
 	}
 

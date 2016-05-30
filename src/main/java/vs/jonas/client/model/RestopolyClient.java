@@ -53,6 +53,7 @@ public class RestopolyClient {
 	private String SLASH_READY;
 	private String SLASH_CURRENT;
 	private String SLASH_TURN;
+	private String SLASH_STATUS;
 	private Gson gson;
 	private User user;
 
@@ -73,6 +74,7 @@ public class RestopolyClient {
 			SLASH_READY = "/ready";
 			SLASH_CURRENT = "/current";
 			SLASH_TURN = "/turn";
+			SLASH_STATUS = "/status";
 			BASE_URL = yellowPages.getBaseIP();
 			gameService = yellowPages.getService(ServiceNames.GAME);
 			boardService = yellowPages.getService(ServiceNames.BOARD);
@@ -140,17 +142,36 @@ public class RestopolyClient {
 		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
 	}
 	
-	public void setReady(String gameID) throws UnirestException{
+	public void setReady(String gameID) throws IOException, Exception{
 		System.out.println("\n************** SetReady ************** ");
 		String readyUri = gameService.getUri() + SLASH + gameID + SLASH_PLAYERS + SLASH + user.getName() + SLASH_READY;
 		System.out.println(readyUri);
-		HttpResponse<String> response = Unirest.put(readyUri).asString();
-		System.out.println(response.getStatus());
-		System.out.println(response.getBody());
+		Unirest.put(readyUri).asString();
 	}
 
+	public void startGame(String gameID) throws UnirestException {
+		System.out.println("\n************* Start Game *************");
+		HttpResponse<String> res = Unirest.put(gameService.getUri() + SLASH + gameID + SLASH_STATUS).asString();
+		System.out.println(res.getStatus());
+	}
 	/* ************************************ PlayerServices ***************************************** */
 	
+
+	public boolean allPlayersReady(String gameID) throws IOException, UnirestException, Exception {
+		System.out.println("\n********** Players Ready? ************");
+		boolean bool = true;
+		List<PlayerInformation> players = getPlayers(gameID);
+		for(PlayerInformation player : players){
+			System.out.println("Player: " + player);
+			if(!player.isReady()){
+				bool = false;
+				break;
+			}
+		}
+		System.out.println(bool);
+		return bool;
+	}
+
 	/**
 	 * Liefert alle beim Game angemeldeten Spieler
 	 * @param gameID Die ID des Games
@@ -210,7 +231,7 @@ public class RestopolyClient {
 	public String getCurrentlyActivePlayer(String gameID) throws IOException, UnirestException{
 		System.out.println("\n************** Get currently active player **************");
 		String gameServiceUri = gameService.getUri();
-		String gamesPlayersUri = gameServiceUri + SLASH + gameID + SLASH_PLAYERS + SLASH_CURRENT;
+		String gamesPlayersUri = gameServiceUri + SLASH + gameID + "/player" + SLASH_CURRENT;
 		JsonObject currentPlayerResponse = get(gamesPlayersUri);
 		System.out.println(currentPlayerResponse.toString());
 		
@@ -219,7 +240,7 @@ public class RestopolyClient {
 	
 	public PlayerResponse getPlayerWithMutex(String gameID) throws IOException, UnirestException{
 		System.out.println("\n ************** Get Player With Mutex **************");
-		String playerUri = gameService.getUri() + SLASH + gameID + SLASH_PLAYERS + SLASH_TURN;
+		String playerUri = gameService.getUri() + SLASH + gameID + "/player" + SLASH_TURN;
 		System.out.println(playerUri);
 		JsonObject playerRessource = get(playerUri);
 		return gson.fromJson(playerRessource, PlayerResponse.class);

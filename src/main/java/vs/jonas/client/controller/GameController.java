@@ -75,8 +75,12 @@ public class GameController {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					client.setReady(gameID);
-					
 					updateGame();
+					
+					if(client.allPlayersReady(gameID)){
+						client.startGame(gameID);
+					}
+					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

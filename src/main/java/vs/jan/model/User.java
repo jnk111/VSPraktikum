@@ -50,7 +50,7 @@ public class User implements Validable {
 
 	@Override
 	public boolean isValid() {
-		return this.getId().matches("/users/[a-z]+") && this.getName() != null && this.getUri() != null;
+		return this.getName() != null && this.getUri() != null;
 	}
 
 }

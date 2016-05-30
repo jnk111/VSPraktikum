@@ -71,6 +71,39 @@ public class RestopolyClient {
 		}
 	}
 
+	/* ************************************ GameServices ***************************************** */
+	
+	/**
+	 * Erstellt ein neues Spiel
+	 * @param gameName Der Name des Spiels
+	 * @throws IOException
+	 * @throws UnirestException
+	 */
+	public void createANewGame(String gameName) throws IOException, UnirestException {
+		System.out.println("\n************* Create New Game *************");
+		String uri = gameService.getUri();
+		CreateGame game = new CreateGame(gameName);
+		System.out.println(uri);
+		System.out.println(game);
+		postData(game, uri);
+	}
+
+	/**
+	 * Meldet des User als Spieler bei einem Game an.
+	 * @param gameID Die ID des Games.
+	 * @throws IOException
+	 * @throws UnirestException
+	 */
+	public void enterGame(String gameID) throws IOException, UnirestException {
+		System.out.println("\n************* Enter Game *************");
+		String uri = gameService.getUri();
+		String gamesPlayersUri = uri + "/" + gameID + "/players";
+
+		System.out.println(gamesPlayersUri);
+		postData(user, gamesPlayersUri);
+		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
+	}
+	
 	/**
 	 * Laedt die aktuellen Spiele
 	 * 
@@ -96,6 +129,8 @@ public class RestopolyClient {
 		return data;
 	}
 
+	/* ************************************ PlayerServices ***************************************** */
+	
 	/**
 	 * Liefert alle beim Game angemeldeten Spieler
 	 * @param gameID Die ID des Games
@@ -138,9 +173,10 @@ public class RestopolyClient {
 			}
 			if (checkNotNull(player.getReady())) {
 				System.out.println("Ready: " + player.getReady());
-//				JsonObject readyResponse = get(player.getReady());
-//				System.out.println(readyResponse.toString());
-//				playerInformation.setReady(player.getReady());
+				HttpResponse<String> ready = Unirest.get(player.getReady()).asString();
+				if(ready.equals("true")){
+					playerInformation.setReady(true);
+				}
 			}
 
 
@@ -148,7 +184,9 @@ public class RestopolyClient {
 		}
 		return data;
 	}
-
+	
+	/* ************************************ BoardServices ***************************************** */
+	
 	/**
 	 * Liefert alle Places des Spielfeldes.
 	 * @param gameID Die ID des Games
@@ -253,37 +291,6 @@ public class RestopolyClient {
 //		Board board = gson.fromJson(get(boardServiceUri + "/" + gameID), Board.class);
 		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
 		return lastThrown.getNumber();// dice.getNumber();
-	}
-
-	/**
-	 * Erstellt ein neues Spiel
-	 * @param gameName Der Name des Spiels
-	 * @throws IOException
-	 * @throws UnirestException
-	 */
-	public void createANewGame(String gameName) throws IOException, UnirestException {
-		System.out.println("\n************* Create New Game *************");
-		String uri = gameService.getUri();
-		CreateGame game = new CreateGame(gameName);
-		System.out.println(uri);
-		System.out.println(game);
-		postData(game, uri);
-	}
-
-	/**
-	 * Meldet des User als Spieler bei einem Game an.
-	 * @param gameID Die ID des Games.
-	 * @throws IOException
-	 * @throws UnirestException
-	 */
-	public void enterGame(String gameID) throws IOException, UnirestException {
-		System.out.println("\n************* Enter Game *************");
-		String uri = gameService.getUri();
-		String gamesPlayersUri = uri + "/" + gameID + "/players";
-
-		System.out.println(gamesPlayersUri);
-		postData(user, gamesPlayersUri);
-		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
 	}
 
 	/**

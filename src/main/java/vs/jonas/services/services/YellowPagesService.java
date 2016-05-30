@@ -7,10 +7,12 @@ import java.util.Map;
 import javax.naming.ServiceUnavailableException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
-import vs.jonas.GetRestClient;
+import vs.jonas.RestClient;
 import vs.malte.json.ServiceArray;
 
 public class YellowPagesService {
@@ -34,19 +36,25 @@ public class YellowPagesService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	public YellowPagesService() {
-		try {
-			initServices(true);
-		} catch (IOException e) {
+		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void initServices(boolean online) throws IOException {
+	public YellowPagesService(){
+		try {
+			initServices(true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void initServices(boolean online) throws IOException, UnirestException {
 		services = new HashMap<>();
 
 		// Je nachdem, ob local getestet werden soll oder im Docker-Container
@@ -62,20 +70,20 @@ public class YellowPagesService {
 	 * Holt sich alle angemeldeten Services
 	 * 
 	 * @throws IOException
+	 * @throws UnirestException 
 	 */
-	private void fetchAllServices() throws IOException {
+	private void fetchAllServices() throws IOException, UnirestException {
 		System.out.println("*** Fetch all Services ***");
 
-		GetRestClient client = new GetRestClient();
-		String resBody = client.get(YELLOW_SERVICE_URL + OF_NAME);
+		JsonObject resBody = RestClient.get(YELLOW_SERVICE_URL + OF_NAME);
 
 		// Die Liste aller Services (Uris) von uns
-		ServiceArray services = new Gson().fromJson(resBody, ServiceArray.class);
+		ServiceArray services = new Gson().fromJson(resBody.toString(), ServiceArray.class);
 
 		// Jeden Service anhand der uri von den YellowPages abfragen
 		for (String uri : services.getServices()) {
-			String body = client.get(YELLOW_SERVICE_IP + uri);
-			JSONService service = new Gson().fromJson(body, JSONService.class);
+			JsonObject body = RestClient.get(YELLOW_SERVICE_IP + uri);
+			JSONService service = new Gson().fromJson(body.toString(), JSONService.class);
 			this.services.put(service.getService(), service);
 		}
 		

@@ -17,7 +17,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import vs.jonas.client.model.table.GameFieldTable;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 
@@ -32,8 +31,8 @@ public class GameUI {
 	private JButton btnHausKaufen;
 	private JButton btnHausVerkaufen;
 	private JButton btnWrfeln;
-	private JLabel lblKontostand;
 	private JLabel lblUsername;
+	private JButton btnStarten;
 
 	/**
 	 * Create the frame.
@@ -64,10 +63,9 @@ public class GameUI {
 		lblUsername.setBackground(SystemColor.activeCaption);
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblUsername);
-
-		lblKontostand = new JLabel("Kontostand:");
-		lblKontostand.setHorizontalAlignment(SwingConstants.CENTER);
-		panel.add(lblKontostand);
+		
+		btnStarten = new JButton("Starten");
+		panel.add(btnStarten);
 
 		btnWrfeln = new JButton("W\u00FCrfeln");
 		panel.add(btnWrfeln);
@@ -143,8 +141,8 @@ public class GameUI {
 		return btnWrfeln;
 	}
 
-	public JLabel getLblKontostand() {
-		return lblKontostand;
+	public JButton getBtnStarten() {
+		return btnStarten;
 	}
 	
 	public JLabel getUsername(){

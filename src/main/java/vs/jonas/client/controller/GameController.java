@@ -68,6 +68,14 @@ public class GameController {
 	 * Registriert die Listener an der UI
 	 */
 	private void registriereActionListener() {
+		ui.getBtnStarten().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		
 		ui.getBtnWrfeln().addActionListener(new ActionListener() {
 			
 			@Override

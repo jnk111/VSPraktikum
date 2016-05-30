@@ -59,10 +59,9 @@ public class OffeneSpieleController {
 	
 	/**
 	 * Laedt die aktuellen offenen Spiele in die Tabelle
-	 * @throws IOException 
-	 * @throws UnirestException 
+	 * @throws Exception 
 	 */
-	private void ladeOffeneSpiele() throws IOException, UnirestException{
+	private void ladeOffeneSpiele() throws Exception{
 		GameInformationTableModel model = (GameInformationTableModel) ui.getOffeneSpieleTable().getModel();
 		List<GameResponse> data = client.getGames();
 		model.loadData(data);

@@ -68,16 +68,25 @@ public class GameController {
 	 * Registriert die Listener an der UI
 	 */
 	private void registriereActionListener() {
+		
 		ui.getBtnStarten().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					client.setReady(gameID);
+					
+					updateGame();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		
 		ui.getBtnWrfeln().addActionListener(new ActionListener() {
 			
+			int i=0;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -85,17 +94,16 @@ public class GameController {
 					JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
 					updateGame();
 					
-				} catch (IOException e1) {
+				} catch (Exception ex) {
 					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(null, "Service Offline");
-//					e1.printStackTrace();
-				} catch (UnirestException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+					if(i==0){
+						JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
+						i++;
+					} else{
+						JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");
+					}
+					ex.printStackTrace();
+				} 
 			}
 		});
 	}

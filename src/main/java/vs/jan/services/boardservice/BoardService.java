@@ -16,6 +16,8 @@ import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.boardservice.BoardHelper;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONBoardList;
+import vs.jan.json.boardservice.JSONEvent;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.boardservice.JSONField;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
@@ -33,7 +35,6 @@ import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.BoardValidator;
 import vs.jonas.services.model.Dice;
-import vs.jonas.services.model.Event;
 
 public class BoardService {
 
@@ -290,7 +291,10 @@ public class BoardService {
 		b.updatePositions(oldPos, newPos); // markiere, dass auf Position
 																				// 'newPos' Figuren stehen
 		p.updatePlaceUri(newPos); // Update Placeuri to the new Place
-		helper.postEvent(gameid, "move", "move", p, this.services.getEvents());
+		String reas = p.getPlayerUri() + " has moved the pawn: " + p.getPawnUri() + " to: " + p.getPlaceUri();
+		String resource = p.getRollsUri();
+		JSONEvent event = new JSONEvent(gameid, "move", "move", reas, resource, p.getPlayerUri());
+		helper.postEvent(event, this.services.getEvents());
 	}
 
 	/**
@@ -308,7 +312,7 @@ public class BoardService {
 	 * @throws ResponseCodeException 
 	 * 
 	 */
-	public synchronized List<Event> rollDice(String gameid, String pawnid) 
+	public synchronized JSONEventList rollDice(String gameid, String pawnid) 
 			throws ResourceNotFoundException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());		
@@ -322,7 +326,7 @@ public class BoardService {
 		movePawn(gameid, pawnid, roll.getNumber());
 		helper.addThrow(this.throwMap, pawn, roll);
 
-		return helper.retrieveEventList(pawn, gameid, new Date());
+		return helper.retrieveEventList(this.services.getEvents(), pawn, gameid, new Date());
 	}
 
 	/**
@@ -393,8 +397,10 @@ public class BoardService {
 	public synchronized void updateAPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
-		// Board key = helper.getBoard(this.boards, gameid);
-		// Place p = helper.getPlace(key.getFields(), helper.getID(pathinfo));
+		 Board key = helper.getBoard(this.boards, gameid);
+		 Place p = helper.getPlace(key.getFields(), helper.getID(pathinfo));
+		 p.setBrokerUri(place.getBroker());
+		 p.setName(place.getName());
 	}
 
 	/**
@@ -411,7 +417,7 @@ public class BoardService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(board, Error.JSON_BOARD.getMsg());
 		Board b = helper.getBoard(this.boards, gameid);
-		//this.services = ServiceAllocator.initServices("localhost:4567", gameid);
+		
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
 		} else {

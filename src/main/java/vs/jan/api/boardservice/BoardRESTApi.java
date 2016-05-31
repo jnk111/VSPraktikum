@@ -13,6 +13,7 @@ import vs.jan.exception.MutexPutException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.TurnMutexNotFreeException;
 import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
@@ -244,8 +245,8 @@ public class BoardRESTApi {
 	 */
 	private void initPostRollDice() {
 		post("/boards/:gameid/pawns/:pawnid/roll", CONTENT_TYPE, (req, resp) -> {
-			boardService.rollDice(req.params(":gameid"), req.params(":pawnid"));
-			return StatusCodes.SUCCESS + CLRF;
+			JSONEventList list = boardService.rollDice(req.params(":gameid"), req.params(":pawnid"));
+			return GSON.toJson(list);
 		});
 
 	}

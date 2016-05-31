@@ -1,13 +1,14 @@
 package vs.jan.helper.boardservice;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.Helper;
+import vs.jan.json.boardservice.JSONEvent;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
@@ -17,9 +18,7 @@ import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
-import vs.jonas.services.json.EventData;
 import vs.jonas.services.model.Dice;
-import vs.jonas.services.model.Event;
 
 public class BoardHelper extends Helper{
 
@@ -38,26 +37,15 @@ public class BoardHelper extends Helper{
 	 * @param neededServices2
 	 * @throws ResponseCodeException 
 	 */
-	public void postEvent(String gameid, String type, String name, Pawn pawn, String uri) 
+	public void postEvent(JSONEvent event, String uri) 
 			throws ResponseCodeException {
 
-		String reas = null;
-		String resource = null;
-
-		switch (type) {
-		case "move": {
-			reas = pawn.getPlayerUri() + " has moved the pawn: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
-			resource = pawn.getRollsUri();
-			break;
-		}
-		}
-
-		EventData event = new EventData(gameid, type, name, reas, resource, pawn.getPlayerUri());
 		HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
 	}
 
 	/**
 	 * Holt alle Events des Spielers seit dem letzten Wurf
+	 * @param eventServiceUri 
 	 * 
 	 * @param pawn
 	 *          Die Figur
@@ -68,9 +56,12 @@ public class BoardHelper extends Helper{
 	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
 	 * 
 	 */
-	public List<Event> retrieveEventList(Pawn pawn, String gameid, Date date) {
-		
-		return new ArrayList<>();
+	public JSONEventList retrieveEventList(String eventServiceUri, Pawn pawn, String gameid, Date date) {
+//		
+		String url = eventServiceUri + "?game=" + gameid + "&player=" + pawn.getPlayerUri();
+		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
+		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
+		return list;
 	}
 
 	/**

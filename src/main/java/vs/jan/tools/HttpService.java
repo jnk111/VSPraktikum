@@ -18,14 +18,14 @@ public class HttpService {
 
 	private static final Gson GSON = new Gson();
 
-	public static void put(String URL, Object body, int expResponseCode) throws ResponseCodeException {
+	public static String put(String URL, Object body, int expResponseCode) throws ResponseCodeException {
 		HttpURLConnection connection = connect("PUT", URL, body, expResponseCode);
-		update(connection, body, expResponseCode);
+		return update(connection, body, expResponseCode);
 	}
 
-	public static void post(String URL, Object body, int expResponseCode) throws ResponseCodeException {
+	public static String post(String URL, Object body, int expResponseCode) throws ResponseCodeException {
 		HttpURLConnection connection = connect("POST", URL, body, expResponseCode);
-		update(connection, body, expResponseCode);
+		return update(connection, body, expResponseCode);
 	}
 
 	public static void delete(String URL, int expResponseCode) throws ResponseCodeException {
@@ -53,7 +53,7 @@ public class HttpService {
 		return doGet(connection, URL, expResponseCode);
 	}
 
-	private static void update(HttpURLConnection connection, Object body, int expResponseCode) 
+	private static String update(HttpURLConnection connection, Object body, int expResponseCode) 
 			throws ResponseCodeException {
 
 		try {
@@ -68,11 +68,22 @@ public class HttpService {
 
 			int respCode = connection.getResponseCode();
 			System.out.println("GOT RESPONSE CODE: " + respCode);
-			if (respCode != expResponseCode) {
+			if (respCode == expResponseCode) {
+				
+				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				String line = null;
+				StringBuffer response = new StringBuffer();
+				while ((line = in.readLine()) != null) {
+					response.append(line);
+				}
+				in.close();
+				return response.toString();
+				
+			}else{
 				throw new ResponseCodeException(getResponseCodeMsg(expResponseCode, respCode));
 			}
 		} catch (IOException ioe) {
-			throw new InvalidInputException();
+			throw new ConnectionRefusedException();
 		}
 	}
 

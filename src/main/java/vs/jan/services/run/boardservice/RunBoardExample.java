@@ -15,6 +15,7 @@ import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.json.boardservice.JSONBoard;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.boardservice.JSONField;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
@@ -112,14 +113,16 @@ public class RunBoardExample {
 			JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
 			System.out.println("Got Pawn: " + json2);
 			System.out.println("Pawn rolls dice: " + json2);
-			HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
+			String list = HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
+			System.out.println();
+			System.out.println("RECEIVED EVENTLIST: ");
+			System.out.println(list);
+			System.out.println();
 			System.out.println();
 			System.out.println("Player: " + json + " releases the Mutex");
 			System.out.println("ID: " + id);
 			HttpService.put("http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
 		}
-
-		
 	}
 
 	private static void startGame(int boardID) throws ResponseCodeException {

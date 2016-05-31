@@ -53,7 +53,7 @@ public class HttpService {
 		return doGet(connection, URL, expResponseCode);
 	}
 
-	private static String update(HttpURLConnection connection, Object body, int expResponseCode) 
+	private static String update(HttpURLConnection connection, Object body, int expResponseCode)
 			throws ResponseCodeException {
 
 		try {
@@ -69,7 +69,7 @@ public class HttpService {
 			int respCode = connection.getResponseCode();
 			System.out.println("GOT RESPONSE CODE: " + respCode);
 			if (respCode == expResponseCode) {
-				
+
 				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String line = null;
 				StringBuffer response = new StringBuffer();
@@ -78,8 +78,8 @@ public class HttpService {
 				}
 				in.close();
 				return response.toString();
-				
-			}else{
+
+			} else {
 				throw new ResponseCodeException(getResponseCodeMsg(expResponseCode, respCode));
 			}
 		} catch (IOException ioe) {
@@ -87,7 +87,7 @@ public class HttpService {
 		}
 	}
 
-	private static String doGet(HttpURLConnection connection, String uRL, int expResponseCode) 
+	private static String doGet(HttpURLConnection connection, String uRL, int expResponseCode)
 			throws ResponseCodeException {
 		int responseCode = -1;
 		try {
@@ -107,7 +107,7 @@ public class HttpService {
 			throw new ResponseCodeException(getResponseCodeMsg(expResponseCode, responseCode));
 		} catch (IOException ioe) {
 			throw new ConnectionRefusedException();
-		}		
+		}
 	}
 
 	public static HttpURLConnection connect(String method, String URL, Object body, int expResponseCode) {

@@ -20,7 +20,7 @@ import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.model.Dice;
 
-public class BoardHelper extends Helper{
+public class BoardHelper extends Helper {
 
 	/**
 	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
@@ -35,17 +35,17 @@ public class BoardHelper extends Helper{
 	 * @param pawn
 	 *          Die Figur um die es sich handelt
 	 * @param neededServices2
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 */
-	public void postEvent(JSONEvent event, String uri) 
-			throws ResponseCodeException {
+	public void postEvent(JSONEvent event, String uri) throws ResponseCodeException {
 
 		HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
 	}
 
 	/**
 	 * Holt alle Events des Spielers seit dem letzten Wurf
-	 * @param eventServiceUri 
+	 * 
+	 * @param eventServiceUri
 	 * 
 	 * @param pawn
 	 *          Die Figur
@@ -57,7 +57,7 @@ public class BoardHelper extends Helper{
 	 * 
 	 */
 	public JSONEventList retrieveEventList(String eventServiceUri, Pawn pawn, String gameid, Date date) {
-//		
+		//
 		String url = eventServiceUri + "?game=" + gameid + "&player=" + pawn.getPlayerUri();
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
@@ -153,7 +153,6 @@ public class BoardHelper extends Helper{
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-
 	public Field getField(Board key, String placeUri) {
 
 		for (Field f : key.getFields()) {
@@ -165,13 +164,12 @@ public class BoardHelper extends Helper{
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-
 	public void addThrow(Map<JSONThrowsURI, JSONThrowsList> throwMap, Pawn pawn, Dice roll) {
-		
-		for(JSONThrowsURI uri: throwMap.keySet()){
-			if(uri.getRollUri().contains(getID(pawn.getPawnUri()))){
+
+		for (JSONThrowsURI uri : throwMap.keySet()) {
+			if (uri.getRollUri().contains(getID(pawn.getPawnUri()))) {
 				throwMap.get(uri).addThrow(roll);
 			}
 		}
-	}	
+	}
 }

@@ -20,7 +20,7 @@ public class GameFieldTableModel extends DefaultTableModel{
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "ID", "Name","Players"};
+	private String[] columnNames = {"Name","Players"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
@@ -79,9 +79,8 @@ public class GameFieldTableModel extends DefaultTableModel{
 		Object ergebnis = null;
 		
 		switch (col) {
-		case 0: ergebnis = field.getID(); break;
-		case 1:	ergebnis = field.getName();	break;
-		case 2: ergebnis = field.getPlayers();
+		case 0:	ergebnis = field.getName();	break;
+		case 1: ergebnis = field.getPlayers();
 		}
 		return ergebnis;
 	}

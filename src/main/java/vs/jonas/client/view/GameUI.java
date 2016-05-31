@@ -17,8 +17,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import vs.jonas.client.model.table.GameFieldTableCellRenderer;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
+import javax.swing.JComboBox;
 
 public class GameUI {
 
@@ -26,6 +28,7 @@ public class GameUI {
 	private JPanel contentPane;
 	private JTable playerTable;
 	private JTable gameFieldTable;
+	// Wir brauchen folgende Aktionen: Wuerfeln, Jailbreak, Haus kaufen, Haus verkaufen, Handeln, Hypothek aufnehmen, 
 	private JButton btnSpielzugBeenden;
 	private JButton btnJailbreak;
 	private JButton btnHausKaufen;
@@ -100,6 +103,9 @@ public class GameUI {
 		splitPane_1.setLeftComponent(playerPanel);
 		
 		gameFieldTable = new JTable(new GameFieldTableModel());
+		gameFieldTable.setRowHeight(80);
+		GameFieldTableCellRenderer cellRenderer = new GameFieldTableCellRenderer();
+		gameFieldTable.setDefaultRenderer(Object.class, cellRenderer);
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");

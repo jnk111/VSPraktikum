@@ -272,8 +272,9 @@ public class RestopolyClient {
 //			System.out.println(gson.toJson(field));
 			String placeUri = field.getPlace();
 			JsonObject fieldRessource = get(BASE_URL + placeUri);
-			// System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n"
-			// +fieldRessource.toString());
+//			 System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n"
+//			 +fieldRessource.toString());
+			System.out.println(fieldRessource.get("name"));
 			String id = placeUri;
 			// String name = "";
 			// String owner = "";

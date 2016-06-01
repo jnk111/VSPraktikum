@@ -15,12 +15,13 @@ import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.AccountInfo;
+import vs.gerriet.json.TransactionInfo;
+import vs.gerriet.json.TransactionList;
 import vs.gerriet.json.TransferInfo;
 import vs.gerriet.json.TransferList;
 import vs.gerriet.model.bank.transaction.AtomicOperation;
 import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 import vs.gerriet.model.bank.transaction.Transaction;
-import vs.gerriet.model.bank.transaction.Transaction.Status;
 import vs.gerriet.model.bank.transaction.Transfer;
 import vs.gerriet.utils.IdUtils;
 
@@ -82,7 +83,7 @@ public class Bank {
     }
 
     /**
-     * Adds performed transfer.
+     * Adds transfer.
      *
      * @param transfer
      *            Transfer to be added.
@@ -159,9 +160,9 @@ public class Bank {
      */
     public TransactionId
             createTransaction(final vs.gerriet.model.bank.transaction.Transaction.Type type) {
-        final Transaction transaction = new Transaction(type, this);
         final TransactionId transactionId =
                 new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
+        final Transaction transaction = new Transaction(transactionId, type, this);
         this.transactions.put(transactionId, transaction);
         return transactionId;
     }
@@ -241,17 +242,27 @@ public class Bank {
     }
 
     /**
-     * Returns the status for the transaction with the given id.
+     * Returns transaction info for the given transaction.
      *
      * @param transactionId
-     *            Transaction id.
-     * @return Transaction status.
+     *            Id of the transaction
+     * @return Transaction info.
      */
-    public Status getTransactionStatus(final TransactionId transactionId) {
+    public TransactionInfo getTransactionInfo(final TransactionId transactionId) {
         if (this.hasTransaction(transactionId)) {
-            return this.transactions.get(transactionId).getStatus();
+            return this.transactions.get(transactionId).getInfo();
         }
-        return Status.INVALID;
+        return null;
+    }
+
+    /**
+     * Returns list with all transactions.
+     *
+     * @return Transaction list.
+     */
+    public TransactionList getTransactions() {
+        final Set<TransactionId> keys = this.transactions.keySet();
+        return new TransactionList(keys.toArray(new String[keys.size()]));
     }
 
     /**
@@ -267,12 +278,12 @@ public class Bank {
     }
 
     /**
-     * Returns all successful transfer uris.
+     * Returns all transfer uris.
      *
      * @return Transfer list.
      */
     public TransferList getTransfers() {
-        final Set<?> keys = this.transfers.keySet();
+        final Set<TransferId> keys = this.transfers.keySet();
         return new TransferList(keys.toArray(new String[keys.size()]));
     }
 
@@ -454,7 +465,8 @@ public class Bank {
      *             If something went horribly wrong.
      */
     private boolean runTransfer(final Transfer transfer) throws TransactionException {
-        final Transaction transaction = new Transaction(Transaction.Type.SIMPLE, this);
+        final TransactionId transactionId = this.createTransaction(Transaction.Type.SIMPLE);
+        final Transaction transaction = this.transactions.get(transactionId);
         transaction.addOperation(transfer);
         return transaction.commit();
     }

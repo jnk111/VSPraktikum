@@ -16,7 +16,8 @@ import vs.gerriet.json.BankList;
  * Bank map API class.
  * </p>
  * <p>
- * Modification of this map does not affect the remove list.
+ * Changes via this map's map interface method will not change the list within
+ * the service itself.
  * </p>
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
@@ -34,7 +35,7 @@ public class BankMap extends BankBase implements LazyMap<BankId, Bank> {
      *
      * @return Bank map.
      */
-    public static BankMap getInstance() {
+    public static synchronized BankMap getInstance() {
         if (BankMap.instance == null) {
             BankMap.instance = new BankMap();
         }
@@ -55,14 +56,14 @@ public class BankMap extends BankBase implements LazyMap<BankId, Bank> {
 
     /**
      * Creates or loads a bank for the given game.
-     * 
+     *
      * @param game
      *            Id of the game.
      * @return Bank API.
      * @throws ApiException
      *             Id bank list loading failed.
      */
-    public Bank createOrLoad(final GameId game) throws ApiException {
+    public synchronized Bank createOrLoad(final GameId game) throws ApiException {
         this.load();
         BankId found = null;
         for (final Entry<BankId, Bank> entry : this.map.entrySet()) {
@@ -85,24 +86,25 @@ public class BankMap extends BankBase implements LazyMap<BankId, Bank> {
     }
 
     @Override
-    public void load() throws ApiException {
+    public synchronized void load() throws ApiException {
         if (this.map == null) {
             this.refresh();
         }
     }
 
     @Override
-    public void refresh() throws ApiException {
+    public synchronized void refresh() throws ApiException {
         final HttpResponse<BankList> result = this.requestGetBankList();
         if (result == null || result.getStatus() != 200) {
             throw new ApiException("Failed to load bank list from service.");
         }
         // create Bank map from bank uri array
-        this.map = new ConcurrentSkipListMap<>();
+        final Map<BankId, Bank> bankMap = new ConcurrentSkipListMap<>();
         for (final String uri : result.getBody().banks) {
             final BankId id = new BankId(null);
             id.loadUri(uri);
-            this.map.put(id, new Bank(id));
+            bankMap.put(id, new Bank(id));
         }
+        this.map = bankMap;
     }
 }

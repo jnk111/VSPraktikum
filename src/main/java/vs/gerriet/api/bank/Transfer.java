@@ -7,6 +7,7 @@ import vs.gerriet.exception.ApiException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.TransferInfo;
+import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 
 /**
  * Transfer API class.
@@ -17,7 +18,7 @@ public class Transfer extends BankBase implements Lazy {
     /**
      * Flag used for loading.
      */
-    private final boolean loaded = false;
+    private boolean loaded = false;
     /**
      * Bank this transfer belongs to.
      */
@@ -58,6 +59,68 @@ public class Transfer extends BankBase implements Lazy {
     private boolean failed;
 
     /**
+     * Creates a new transfer on the server with the given data.
+     *
+     * @param bank
+     *            Bank this transfer will be performed on.
+     * @param map
+     *            Map that will belong to this transfer.
+     * @param from
+     *            Account money is withdrawn from (may be <code>null</code> for
+     *            the bank itself).
+     * @param to
+     *            Account money is deposited on (may be <code>null</code> for
+     *            the bank itself).
+     * @param amount
+     *            Amount to transfer.
+     * @param reason
+     *            Transfer reason.
+     * @param transaction
+     *            Transaction to add this transfer to (may be <code>null</code>
+     *            for no transaction).
+     * @throws ApiException
+     *             If transfer creation failed.
+     */
+    Transfer(final Bank bank, final TransferMap map, final Account from, final Account to,
+            final int amount, final String reason, final Transaction transaction)
+            throws ApiException {
+        this.bank = bank;
+        this.map = map;
+        HttpResponse<TransferInfo> result = null;
+        if (transaction != null) {
+            // transfer with transaction
+            if (from == null && to != null) {
+                result = this.requestPerformTransfer(to.getId(), Type.DEPOSIT, amount, reason,
+                        transaction.getId());
+            } else if (from != null && to != null) {
+                result = this.requestPerformTransfer(from.getId(), Type.WITHDRAW, amount, reason,
+                        transaction.getId());
+            } else if (from != null && to != null) {
+                result = this.requestPerformTransfer(from.getId(), to.getId(), amount, reason,
+                        transaction.getId());
+            }
+        } else {
+            // transfer without transaction
+            if (from == null && to != null) {
+                result = this.requestPerformTransfer(to.getId(), Type.DEPOSIT, amount, reason);
+            } else if (from != null && to != null) {
+                result = this.requestPerformTransfer(from.getId(), Type.WITHDRAW, amount, reason);
+            } else if (from != null && to != null) {
+                result = this.requestPerformTransfer(from.getId(), to.getId(), amount, reason);
+            }
+        }
+        if (result == null || (result.getStatus() != 201 && result.getStatus() != 403)) {
+            throw new ApiException("Failed to create transfer.");
+        }
+        // load id of the new created transfer
+        this.id = new TransferId(bank.getId(), null);
+        this.id.loadUri(result.getBody().uri);
+        // load data from created instance
+        this.loadData(result.getBody());
+        this.loaded = true;
+    }
+
+    /**
      * Creates a new Transfer lazy from the given data.
      *
      * @param bank
@@ -77,8 +140,11 @@ public class Transfer extends BankBase implements Lazy {
      * Returns the transfer amount.
      *
      * @return Transfer amount.
+     * @throws ApiException
+     *             If loading failed.
      */
-    public int getAmount() {
+    public int getAmount() throws ApiException {
+        this.load();
         return this.amount;
     }
 
@@ -96,8 +162,11 @@ public class Transfer extends BankBase implements Lazy {
      *
      * @return Account this transfer withdraws money from. Will be
      *         <code>null</code> for the bank itself.
+     * @throws ApiException
+     *             If loading failed.
      */
-    public Account getFrom() {
+    public Account getFrom() throws ApiException {
+        this.load();
         return this.from;
     }
 
@@ -114,8 +183,11 @@ public class Transfer extends BankBase implements Lazy {
      * Returns the reason for this transfer.
      *
      * @return Transfer reason.
+     * @throws ApiException
+     *             If loading failed.
      */
-    public String getReason() {
+    public String getReason() throws ApiException {
+        this.load();
         return this.reason;
     }
 
@@ -124,8 +196,12 @@ public class Transfer extends BankBase implements Lazy {
      *
      * @return Account this transfer deposits money to. Will be
      *         <code>null</code> for the bank itself.
+     * @throws ApiException
+     *             If loading failed.
+     * 
      */
-    public Account getTo() {
+    public Account getTo() throws ApiException {
+        this.load();
         return this.to;
     }
 
@@ -134,7 +210,7 @@ public class Transfer extends BankBase implements Lazy {
      *
      * @return Transfer map. May be <code>null</code>.
      */
-    public TransferMap getTransferMap() {
+    public TransferMap getTransfers() {
         return this.map;
     }
 
@@ -144,8 +220,11 @@ public class Transfer extends BankBase implements Lazy {
      * actual cause.
      *
      * @return Failed flag.
+     * @throws ApiException
+     *             If loading failed.
      */
-    public boolean isFailed() {
+    public boolean isFailed() throws ApiException {
+        this.load();
         return this.failed;
     }
 
@@ -154,25 +233,29 @@ public class Transfer extends BankBase implements Lazy {
      * still running).
      *
      * @return Pending flag.
+     * @throws ApiException
+     *             If loading failed.
      */
-    public boolean isPending() {
+    public boolean isPending() throws ApiException {
+        this.load();
         return this.pending;
     }
 
     @Override
-    public void load() throws ApiException {
+    public synchronized void load() throws ApiException {
         if (!this.loaded) {
             this.refresh();
         }
     }
 
     @Override
-    public void refresh() throws ApiException {
+    public synchronized void refresh() throws ApiException {
         final HttpResponse<TransferInfo> result = this.requestGetTransferInfo(this.id);
         if (result == null || result.getStatus() != 200) {
             throw new ApiException("Failed to load Transfer details from bank service.");
         }
         this.loadData(result.getBody());
+        this.loaded = true;
     }
 
     /**
@@ -199,6 +282,4 @@ public class Transfer extends BankBase implements Lazy {
             this.to = this.bank.getAccounts().get(accountId);
         }
     }
-
-    // TODO @gerriet-hinrichs: create transfer.
 }

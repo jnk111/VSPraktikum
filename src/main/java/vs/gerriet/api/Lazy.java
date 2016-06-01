@@ -3,7 +3,14 @@ package vs.gerriet.api;
 import vs.gerriet.exception.ApiException;
 
 /**
+ * <p>
  * Base interface for lazy API components.
+ * </p>
+ * <p>
+ * Classes implementing this interface will load data only if required and will
+ * not update automatically if associated remote data changes. Use
+ * {@link #refresh()} to refresh the internal data.
+ * </p>
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */

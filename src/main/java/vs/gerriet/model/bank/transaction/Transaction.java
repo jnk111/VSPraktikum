@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
+import vs.gerriet.id.bank.TransactionId;
+import vs.gerriet.json.TransactionInfo;
 import vs.gerriet.model.bank.Bank;
 import vs.gerriet.utils.LockProvider;
 import vs.jonas.services.json.EventData;
@@ -130,6 +132,10 @@ public class Transaction extends LockProvider {
     private final Queue<AtomicOperation> operations;
 
     /**
+     * Contains the id of this transaction.
+     */
+    private final TransactionId id;
+    /**
      * <p>
      * Stack containing already done operations used for roll back.
      * </p>
@@ -170,7 +176,8 @@ public class Transaction extends LockProvider {
      * @param bank
      *            Bank instance for this transaction.
      */
-    public Transaction(final Type type, final Bank bank) {
+    public Transaction(final TransactionId id, final Type type, final Bank bank) {
+        this.id = id;
         this.type = type;
         this.bank = bank;
         this.operations = new ConcurrentLinkedQueue<>();
@@ -211,7 +218,6 @@ public class Transaction extends LockProvider {
      *         otherwise.
      */
     public synchronized boolean addOperation(final Transfer operation) {
-        this.bank.addTransfer(operation);
         for (final AtomicOperation op : operation.operations) {
             if (!this.isOperationValid(op)) {
                 return false;
@@ -223,8 +229,10 @@ public class Transaction extends LockProvider {
         }
         if (!res) {
             this.operations.removeAll(operation.operations);
+        } else {
+            this.bank.addTransfer(operation);
+            this.transfers.add(operation);
         }
-        this.transfers.add(operation);
         return res;
     }
 
@@ -305,6 +313,34 @@ public class Transaction extends LockProvider {
      */
     public void confirm(final AccountId account) {
         this.confirmed.add(account);
+    }
+
+    /**
+     * Returns the id of this Transaction.
+     *
+     * @return Transaction id.
+     */
+    public TransactionId getId() {
+        return this.id;
+    }
+
+    /**
+     * Returns info about the given transaction.
+     *
+     * @return Transaction info.
+     */
+    public TransactionInfo getInfo() {
+        String typeString = "";
+        switch (this.type) {
+            case CHECKED:
+                typeString = "2-phase";
+                break;
+            case SIMPLE:
+            default:
+                typeString = "1-phase";
+                break;
+        }
+        return new TransactionInfo(typeString, this.id.getUri(), this.status.name());
     }
 
     /**
@@ -410,7 +446,6 @@ public class Transaction extends LockProvider {
         this.transfers.forEach(transfer -> {
             transfer.failed = true;
             transfer.pending = false;
-            this.bank.addTransfer(transfer);
         });
     }
 
@@ -421,7 +456,6 @@ public class Transaction extends LockProvider {
         this.transfers.forEach(transfer -> {
             transfer.failed = false;
             transfer.pending = false;
-            this.bank.addTransfer(transfer);
         });
     }
 }

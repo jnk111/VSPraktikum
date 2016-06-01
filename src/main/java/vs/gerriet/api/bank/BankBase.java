@@ -22,9 +22,10 @@ import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.BankData;
 import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
+import vs.gerriet.json.TransactionInfo;
+import vs.gerriet.json.TransactionList;
 import vs.gerriet.json.TransferInfo;
 import vs.gerriet.json.TransferList;
-import vs.gerriet.model.bank.transaction.Transaction.Status;
 
 /**
  * Base class for bank data API classes.
@@ -36,6 +37,42 @@ abstract class BankBase extends VsApiBase {
     @Override
     public String getType() {
         return "bank";
+    }
+
+    /**
+     * API call to commit a transaction.
+     *
+     * @param transaction
+     *            Transaction to be committed.
+     * @return Empty response or <code>null</code> if the request failed.
+     */
+    public HttpResponse<String> requestCommitTransaction(final TransactionId transaction) {
+        try {
+            return Unirest.put(this.getServiceUri() + transaction.getUri()).asString();
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
+     * API call to confirm a transaction.
+     *
+     * @param transaction
+     *            Transaction to be confirmed.
+     * @param account
+     *            Account that confirms the transaction.
+     * @return Empty response or <code>null</code> if the request failed.
+     */
+    public HttpResponse<String> requestConfirmTransaction(final TransactionId transaction,
+            final AccountId account) {
+        try {
+            return Unirest.put(this.getServiceUri() + transaction.getUri()).body(account.getUri())
+                    .asString();
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
     }
 
     /**
@@ -133,16 +170,36 @@ abstract class BankBase extends VsApiBase {
     }
 
     /**
+     * API call to load a list with all transactions.
+     *
+     * @param bank
+     *            Id of the bank to load the transactions from.
+     * @return Response with list of transactions for the given bank or
+     *         <code>null</code> if the request failed.
+     */
+    public HttpResponse<TransactionList> requestGetTransactionList(final BankId bank) {
+        try {
+            return Unirest.get(this.getServiceUri() + bank.getUri())
+                    .asObject(TransactionList.class);
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
      * Returns the status of the given transaction.
      *
      * @param transaction
      *            Transaction id.
-     * @return Response containing the state of the transaction as string.
-     * @see Status#fromName(String)
+     * @return Response containing transaction info or <code>null</code> if the
+     *         request failed.
      */
-    public HttpResponse<String> requestGetTransaction(final TransactionId transaction) {
+    public HttpResponse<TransactionInfo>
+            requestGetTransactionStatus(final TransactionId transaction) {
         try {
-            return Unirest.get(this.getServiceUri() + transaction.getUri()).asString();
+            return Unirest.get(this.getServiceUri() + transaction.getUri())
+                    .asObject(TransactionInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -360,6 +417,22 @@ abstract class BankBase extends VsApiBase {
             // cast to object to use object mapper
             request.body((Object) reason);
             return request.asObject(TransferInfo.class);
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
+     * API call to roll back a transaction.
+     *
+     * @param transaction
+     *            Transaction to be rolled back.
+     * @return Empty response or <code>null</code> if the request failed.
+     */
+    public HttpResponse<String> requestRollBackTransaction(final TransactionId transaction) {
+        try {
+            return Unirest.delete(this.getServiceUri() + transaction.getUri()).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;

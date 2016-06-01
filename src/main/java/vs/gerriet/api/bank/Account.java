@@ -24,6 +24,11 @@ public class Account extends BankBase implements Lazy {
         this.id = id;
     }
 
+    public AccountId getId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     @Override
     public void load() throws ApiException {
         // TODO Auto-generated method stub

@@ -1,10 +1,15 @@
 package vs.gerriet.api.bank;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
+
+import com.mashape.unirest.http.HttpResponse;
 
 import vs.gerriet.api.LazyMap;
 import vs.gerriet.exception.ApiException;
 import vs.gerriet.id.bank.TransactionId;
+import vs.gerriet.json.TransactionList;
+import vs.gerriet.model.bank.transaction.Transaction.Type;
 
 /**
  * <p>
@@ -36,6 +41,33 @@ public class TransactionMap extends BankBase implements LazyMap<TransactionId, T
     }
 
     /**
+     * Creates a new simple (1-phase) transaction.
+     * 
+     * @return Created transaction.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transaction createTransaction() throws ApiException {
+        return this.createTransaction(Type.SIMPLE);
+    }
+
+    /**
+     * Creates a new transaction of the given type.
+     * 
+     * @param type
+     *            Transaction type.
+     * @return Created transaction.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public synchronized Transaction createTransaction(final Type type) throws ApiException {
+        this.load();
+        final Transaction transaction = new Transaction(this.bank, this, type);
+        this.map.put(transaction.getId(), transaction);
+        return transaction;
+    }
+
+    /**
      * Returns the bank that belongs to this transfer map.
      *
      * @return Bank for this transfer map.
@@ -50,29 +82,26 @@ public class TransactionMap extends BankBase implements LazyMap<TransactionId, T
     }
 
     @Override
-    public void load() throws ApiException {
+    public synchronized void load() throws ApiException {
         if (this.map == null) {
             this.refresh();
         }
     }
 
     @Override
-    public void refresh() throws ApiException {
-        // TODO @gerriet-hinrichs: loading
-        // final HttpResponse<vs.gerriet.json.TransferList> result =
-        // this.requestGetTransferList(this.bank.getId());
-        // if (result == null || result.getStatus() != 200) {
-        // throw new ApiException("Failed to load bank list from service.");
-        // }
-        // // create Bank map from bank uri array
-        // final Map<TransferId, Transfer> transferMap = new
-        // ConcurrentSkipListMap<>();
-        // for (final String uri : result.getBody().transfers) {
-        // final TransferId id = new TransferId(this.bank.getId(), null);
-        // id.loadUri(uri);
-        // transferMap.put(id, new Transfer(this.bank, this, id));
-        // }
-        // // make list read only
-        // this.map = transferMap;
+    public synchronized void refresh() throws ApiException {
+        final HttpResponse<TransactionList> result =
+                this.requestGetTransactionList(this.bank.getId());
+        if (result == null || result.getStatus() != 200) {
+            throw new ApiException("Failed to load transaction list from bank service.");
+        }
+        // create transaction map from transaction uri array
+        final Map<TransactionId, Transaction> transactionMap = new ConcurrentSkipListMap<>();
+        for (final String uri : result.getBody().transactions) {
+            final TransactionId id = new TransactionId(this.bank.getId(), null);
+            id.loadUri(uri);
+            transactionMap.put(id, new Transaction(this.bank, this, id));
+        }
+        this.map = transactionMap;
     }
 }

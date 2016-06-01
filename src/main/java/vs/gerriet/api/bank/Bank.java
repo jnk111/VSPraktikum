@@ -94,7 +94,7 @@ public class Bank extends BankBase implements Lazy {
 
     /**
      * Returns the game this bank belongs to.
-     * 
+     *
      * @return Game id.
      */
     public GameId getGame() {
@@ -131,7 +131,7 @@ public class Bank extends BankBase implements Lazy {
     }
 
     @Override
-    public void load() throws ApiException {
+    public synchronized void load() throws ApiException {
         if (this.loaded) {
             return;
         }
@@ -140,7 +140,7 @@ public class Bank extends BankBase implements Lazy {
     }
 
     @Override
-    public void refresh() throws ApiException {
+    public synchronized void refresh() throws ApiException {
         final HttpResponse<BankData> result = this.requestGetBankData(this.id);
         if (result == null || result.getStatus() != 200) {
             throw new ApiException("Bank data for bank '" + this.id.getUri()

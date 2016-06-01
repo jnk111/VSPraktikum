@@ -58,7 +58,7 @@ public class TransferFromController extends AbstractController implements PostCo
                 transfer = bank.performTransfer(player, Type.WITHDRAW, amount, reason);
             } catch (final TransactionException ex) {
                 // something went horribly wrong
-                AbstractController.handleFatalError(ex, response);
+                return AbstractController.handleFatalError(ex, response);
             }
         } else {
             final TransactionId transactionId = new TransactionId(bank.getId(), null);

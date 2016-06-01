@@ -30,6 +30,10 @@ public class TransferInfo {
      * Transfer pending status.
      */
     public boolean pending;
+    /**
+     * Transfer uri.
+     */
+    public String uri;
 
     /**
      * Creates a new transfer info instance.
@@ -48,12 +52,13 @@ public class TransferInfo {
      *            Transfer pending status.
      */
     public TransferInfo(final String from, final String to, final int amount, final String reason,
-            final boolean failed, final boolean pending) {
+            final boolean failed, final boolean pending, final String uri) {
         this.from = from;
         this.to = to;
         this.amount = amount;
         this.reason = reason;
         this.failed = failed;
         this.pending = pending;
+        this.uri = uri;
     }
 }

@@ -1,6 +1,5 @@
 package vs.gerriet.api.bank;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -16,7 +15,8 @@ import vs.gerriet.json.TransferList;
  * Transfer map API class.
  * </p>
  * <p>
- * This map is not modifiable. Except when calling {@link #refresh()}.
+ * Changes via this map's map interface method will not change the list within
+ * the service itself.
  * </p>
  */
 public class TransferMap extends BankBase implements LazyMap<TransferId, Transfer> {
@@ -41,6 +41,128 @@ public class TransferMap extends BankBase implements LazyMap<TransferId, Transfe
     }
 
     /**
+     * Creates a new transfer.
+     *
+     * @param from
+     *            Account to withdraw money from.
+     * @param to
+     *            Account to deposit money to.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transfer createTransfer(final Account from, final Account to, final int amount,
+            final String reason) throws ApiException {
+        return this.createTransfer(from, to, amount, reason, null);
+    }
+
+    /**
+     * Creates a new transfer.
+     *
+     * @param from
+     *            Account to withdraw money from.
+     * @param to
+     *            Account to deposit money to.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @param transaction
+     *            Transaction this transfer will be added to.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public synchronized Transfer createTransfer(final Account from, final Account to,
+            final int amount, final String reason, final Transaction transaction)
+            throws ApiException {
+        final Transfer transfer =
+                new Transfer(this.bank, this, from, to, amount, reason, transaction);
+        this.put(transfer.getId(), transfer);
+        return transfer;
+    }
+
+    /**
+     * Creates a new transfer that will remove money from the given account.
+     *
+     * @param account
+     *            Account to withdraw money from.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transfer createTransferFrom(final Account account, final int amount, final String reason)
+            throws ApiException {
+        return this.createTransfer(account, null, amount, reason, null);
+    }
+
+    /**
+     * Creates a new transfer that will remove money from the given account.
+     *
+     * @param account
+     *            Account to withdraw money from.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @param transaction
+     *            Transaction this transfer will be added to.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transfer createTransferFrom(final Account account, final int amount, final String reason,
+            final Transaction transaction) throws ApiException {
+        return this.createTransfer(account, null, amount, reason, transaction);
+    }
+
+    /**
+     * Creates a new transfer that will add money to the given account.
+     *
+     * @param account
+     *            Account to deposit money to.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transfer createTransferTo(final Account account, final int amount, final String reason)
+            throws ApiException {
+        return this.createTransfer(null, account, amount, reason, null);
+    }
+
+    /**
+     * Creates a new transfer that will add money to the given account.
+     *
+     * @param account
+     *            Account to deposit money to.
+     * @param amount
+     *            Transfer amount.
+     * @param reason
+     *            Transfer reason.
+     * @param transaction
+     *            Transaction this transfer will be added to.
+     * @return Created transfer.
+     * @throws ApiException
+     *             If creation failed.
+     */
+    public Transfer createTransferTo(final Account account, final int amount, final String reason,
+            final Transaction transaction) throws ApiException {
+        return this.createTransfer(null, account, amount, reason, transaction);
+    }
+
+    /**
      * Returns the bank that belongs to this transfer map.
      *
      * @return Bank for this transfer map.
@@ -55,28 +177,25 @@ public class TransferMap extends BankBase implements LazyMap<TransferId, Transfe
     }
 
     @Override
-    public void load() throws ApiException {
+    public synchronized void load() throws ApiException {
         if (this.map == null) {
             this.refresh();
         }
     }
 
     @Override
-    public void refresh() throws ApiException {
+    public synchronized void refresh() throws ApiException {
         final HttpResponse<TransferList> result = this.requestGetTransferList(this.bank.getId());
         if (result == null || result.getStatus() != 200) {
             throw new ApiException("Failed to load transfer list from bank service.");
         }
-        // create Bank map from bank uri array
+        // create transfer map from transfer uri array
         final Map<TransferId, Transfer> transferMap = new ConcurrentSkipListMap<>();
         for (final String uri : result.getBody().transfers) {
             final TransferId id = new TransferId(this.bank.getId(), null);
             id.loadUri(uri);
             transferMap.put(id, new Transfer(this.bank, this, id));
         }
-        // make list read only
-        this.map = Collections.unmodifiableMap(transferMap);
+        this.map = transferMap;
     }
-
-    // TODO @gerriet-hinrichs: create transfer
 }

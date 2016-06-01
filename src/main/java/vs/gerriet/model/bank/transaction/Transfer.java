@@ -129,12 +129,12 @@ public class Transfer {
     public TransferInfo getInfo() {
         return new TransferInfo(this.from == null ? null : this.from.getUri(),
                 this.to == null ? null : this.to.getUri(), this.amount, this.reason, this.failed,
-                this.pending);
+                this.pending, this.id.getUri());
     }
 
     /**
      * Returns failed flag.
-     * 
+     *
      * @return Failed flag.
      */
     public boolean isFailed() {

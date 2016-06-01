@@ -12,7 +12,6 @@ import vs.gerriet.id.UserId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.model.bank.Bank;
-import vs.gerriet.model.bank.transaction.Transaction.Status;
 
 /**
  * Controller for specific transaction access.
@@ -67,9 +66,6 @@ public class TransactionController extends AbstractController
 
     /**
      * Sends the status of the transaction.
-     *
-     * @see Status#name()
-     * @see Status#fromName(String)
      */
     @Override
     public String get(final Request request, final Response response) {
@@ -79,8 +75,7 @@ public class TransactionController extends AbstractController
             response.status(404);
             return "";
         }
-        // we use the name as string representation
-        return bank.getTransactionStatus(id).name();
+        return this.gson.toJson(bank.getTransactionInfo(id));
     }
 
     @Override

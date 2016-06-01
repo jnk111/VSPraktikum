@@ -6,8 +6,8 @@ import vs.gerriet.api.Lazy;
 import vs.gerriet.exception.ApiException;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.json.TransactionInfo;
-import vs.gerriet.model.bank.transaction.Transaction.Status;
-import vs.gerriet.model.bank.transaction.Transaction.Type;
+import vs.gerriet.model.transaction.Transaction.Status;
+import vs.gerriet.model.transaction.Transaction.Type;
 
 /**
  * Transaction API class.

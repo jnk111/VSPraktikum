@@ -103,7 +103,7 @@ abstract class BankBase extends VsApiBase {
      */
     public HttpResponse<String> requestCreateTransaction(final BankId bank) {
         return this.requestCreateTransaction(bank,
-                vs.gerriet.model.bank.transaction.Transaction.Type.SIMPLE);
+                vs.gerriet.model.transaction.Transaction.Type.SIMPLE);
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class BankBase extends VsApiBase {
      *         body or <code>null</code> if the request failed.
      */
     public HttpResponse<String> requestCreateTransaction(final BankId bank,
-            final vs.gerriet.model.bank.transaction.Transaction.Type type) {
+            final vs.gerriet.model.transaction.Transaction.Type type) {
         try {
             String phases = "";
             switch (type) {
@@ -341,7 +341,7 @@ abstract class BankBase extends VsApiBase {
      *         request failed.
      */
     public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
-            final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
+            final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason) {
         try {
             String uri = "";
@@ -393,7 +393,7 @@ abstract class BankBase extends VsApiBase {
      *         request failed.
      */
     public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
-            final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
+            final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason, final TransactionId transaction) {
         try {
             String uri = "";

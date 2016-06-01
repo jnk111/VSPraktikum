@@ -1,6 +1,6 @@
 package vs.gerriet.json;
 
-import vs.gerriet.model.bank.transaction.Transaction.Status;
+import vs.gerriet.model.transaction.Transaction.Status;
 
 /**
  * JSON data object for transaction status.

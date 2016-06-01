@@ -7,7 +7,7 @@ import vs.gerriet.exception.ApiException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.TransferInfo;
-import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
+import vs.gerriet.model.transaction.AtomicOperation.Type;
 
 /**
  * Transfer API class.

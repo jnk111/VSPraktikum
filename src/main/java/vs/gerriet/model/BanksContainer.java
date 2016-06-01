@@ -1,4 +1,4 @@
-package vs.gerriet.model.bank;
+package vs.gerriet.model;
 
 import java.util.Collections;
 import java.util.HashMap;

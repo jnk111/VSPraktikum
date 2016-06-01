@@ -9,7 +9,7 @@ import vs.gerriet.api.LazyMap;
 import vs.gerriet.exception.ApiException;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.json.TransactionList;
-import vs.gerriet.model.bank.transaction.Transaction.Type;
+import vs.gerriet.model.transaction.Transaction.Type;
 
 /**
  * <p>

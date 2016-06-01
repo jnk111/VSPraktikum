@@ -7,7 +7,7 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.bank.AccountId;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 
 /**
  * Controller for account access.

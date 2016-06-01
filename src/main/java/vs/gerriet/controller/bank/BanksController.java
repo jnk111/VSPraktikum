@@ -9,8 +9,8 @@ import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.json.BankData;
 import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
-import vs.gerriet.model.bank.Bank;
-import vs.gerriet.model.bank.BanksContainer;
+import vs.gerriet.model.Bank;
+import vs.gerriet.model.BanksContainer;
 
 /**
  * Controller for generic bank access (bank list and bank creation).

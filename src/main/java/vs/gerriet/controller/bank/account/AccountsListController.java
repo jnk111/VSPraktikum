@@ -8,7 +8,7 @@ import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.id.UserId;
 import vs.gerriet.json.AccountInfo;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 
 /**
  * Controller for generic account access (account list and account creation).

@@ -8,8 +8,8 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PutController;
 import vs.gerriet.id.BankId;
 import vs.gerriet.json.BankData;
-import vs.gerriet.model.bank.Bank;
-import vs.gerriet.model.bank.BanksContainer;
+import vs.gerriet.model.Bank;
+import vs.gerriet.model.BanksContainer;
 
 /**
  * Controller for access on a specific bank instance.

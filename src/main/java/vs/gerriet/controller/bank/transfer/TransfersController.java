@@ -5,7 +5,7 @@ import spark.Response;
 import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 
 /**
  * Controller to access the transfer list.

@@ -1,4 +1,4 @@
-package vs.gerriet.model.bank;
+package vs.gerriet.model;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,10 +19,10 @@ import vs.gerriet.json.TransactionInfo;
 import vs.gerriet.json.TransactionList;
 import vs.gerriet.json.TransferInfo;
 import vs.gerriet.json.TransferList;
-import vs.gerriet.model.bank.transaction.AtomicOperation;
-import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
-import vs.gerriet.model.bank.transaction.Transaction;
-import vs.gerriet.model.bank.transaction.Transfer;
+import vs.gerriet.model.transaction.AtomicOperation;
+import vs.gerriet.model.transaction.Transaction;
+import vs.gerriet.model.transaction.Transfer;
+import vs.gerriet.model.transaction.AtomicOperation.Type;
 import vs.gerriet.utils.IdUtils;
 
 /**
@@ -159,7 +159,7 @@ public class Bank {
      * @return New transaction id for the added transaction.
      */
     public TransactionId
-            createTransaction(final vs.gerriet.model.bank.transaction.Transaction.Type type) {
+            createTransaction(final vs.gerriet.model.transaction.Transaction.Type type) {
         final TransactionId transactionId =
                 new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
         final Transaction transaction = new Transaction(transactionId, type, this);

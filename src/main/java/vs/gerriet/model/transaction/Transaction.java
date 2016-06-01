@@ -1,4 +1,4 @@
-package vs.gerriet.model.bank.transaction;
+package vs.gerriet.model.transaction;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.json.TransactionInfo;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 import vs.gerriet.utils.LockProvider;
 import vs.jonas.services.json.EventData;
 

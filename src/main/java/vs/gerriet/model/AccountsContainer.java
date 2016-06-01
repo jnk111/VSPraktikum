@@ -1,4 +1,4 @@
-package vs.gerriet.model.bank;
+package vs.gerriet.model;
 
 import java.util.ArrayList;
 import java.util.List;

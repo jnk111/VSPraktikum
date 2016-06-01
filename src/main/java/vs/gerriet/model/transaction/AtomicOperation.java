@@ -1,11 +1,11 @@
-package vs.gerriet.model.bank.transaction;
+package vs.gerriet.model.transaction;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.UserId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 import vs.jonas.services.json.EventData;
 
 /**

@@ -6,7 +6,7 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.json.TransferInfo;
-import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.Bank;
 
 /**
  * Controller for specific access on a transfer.

@@ -15,9 +15,13 @@ import vs.gerriet.model.bank.Bank;
 public class TransfersController extends AbstractController implements GetController {
 
     /**
+     * Uri part after bank uri (extra because used within bank).
+     */
+    public static final String URI_PART = "/transfers";
+    /**
      * Uri for the transfer list.
      */
-    public static final String URI = BankController.URI + "/transfers";
+    public static final String URI = BankController.URI + TransfersController.URI_PART;
 
     /**
      * Returns a list with all transfer IDs.

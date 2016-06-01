@@ -394,7 +394,7 @@ public class Transaction extends LockProvider {
         (new Thread(() -> {
             while (!eventData.isEmpty()) {
                 final EventData current = eventData.poll();
-                // TODO @gerriet-hinrichs: API?
+                // TODO @gerriet-hinrichs: API
             }
         })).start();
     }

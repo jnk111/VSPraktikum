@@ -30,7 +30,7 @@ public abstract class VsApiBase extends ApiBase {
     private String uriCache;
 
     /**
-     * Yellow pages instance for url lookup.
+     * Yellow pages instance for uri lookup.
      */
     protected YellowPages yellowPages = new YellowPages();
 
@@ -46,10 +46,10 @@ public abstract class VsApiBase extends ApiBase {
 
     /**
      * <p>
-     * Loads the url for the service from the yellow pages service.
+     * Loads the i for the service from the yellow pages service.
      * </p>
      * <p>
-     * May return <code>null</code> if the service url could not be loaded from
+     * May return <code>null</code> if the service uri could not be loaded from
      * yellow pages service.
      * </p>
      */
@@ -109,7 +109,7 @@ public abstract class VsApiBase extends ApiBase {
      */
     protected String loadUriForService(final String groupName, final String type) {
         return this.loadUriForService((element) -> {
-            // TODO @gerriet-hinrichs: check for status field?
+            // TODO @gerriet-hinrichs: check for status field
             return Boolean.valueOf(element.name.equals(groupName) && element.service.equals(type));
         });
     }

@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import vs.gerriet.controller.bank.account.AccountsListController;
+import vs.gerriet.controller.bank.transfer.TransfersController;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
@@ -42,13 +44,13 @@ public class Bank {
      */
     private final GameId gameId;
     /**
-     * Contains the account url for this bank.
+     * Contains the account uri for this bank.
      */
-    private String accountsUrl;
+    private final String accountsUri;
     /**
-     * Contains the transfer url for this bank.
+     * Contains the transfer uri for this bank.
      */
-    private String transferUrl;
+    private final String transferUri;
 
     /**
      * Contains the bank accounts.
@@ -74,6 +76,8 @@ public class Bank {
         this.accounts = new AccountsContainer();
         this.transactions = new ConcurrentSkipListMap<>();
         this.transfers = new ConcurrentSkipListMap<>();
+        this.accountsUri = this.id.getUri() + AccountsListController.URI_PART;
+        this.transferUri = this.id.getUri() + TransfersController.URI_PART;
     }
 
     /**
@@ -181,17 +185,17 @@ public class Bank {
     }
 
     /**
-     * Gets the accounts url.
+     * Gets the accounts uri.
      *
-     * @return Accounts url.
+     * @return Accounts uri.
      */
-    public String getAccountsUrl() {
-        return this.accountsUrl;
+    public String getAccountsUri() {
+        return this.accountsUri;
     }
 
     /**
      * Returns the id of the game this bank is associated to.
-     * 
+     *
      * @return Game id.
      */
     public GameId getGameId() {
@@ -272,12 +276,12 @@ public class Bank {
     }
 
     /**
-     * Gets the transfer url.
+     * Gets the transfer uri.
      *
-     * @return Transfer url.
+     * @return Transfer uri.
      */
-    public String getTransferUrl() {
-        return this.transferUrl;
+    public String getTransferUri() {
+        return this.transferUri;
     }
 
     /**
@@ -431,26 +435,6 @@ public class Bank {
             return;
         }
         this.transactions.get(transactionId).rollback();
-    }
-
-    /**
-     * Sets the accounts url.
-     *
-     * @param url
-     *            New accounts url.
-     */
-    public void setAccountsUrl(final String url) {
-        this.accountsUrl = url;
-    }
-
-    /**
-     * Sets the transfer url.
-     *
-     * @param url
-     *            New transfer url.
-     */
-    public void setTransferUrl(final String url) {
-        this.transferUrl = url;
     }
 
     /**

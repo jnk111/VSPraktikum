@@ -67,19 +67,21 @@ public class BankController extends AbstractController implements GetController,
     }
 
     /**
-     * Updates the selected bank with new urls for accounts and transfers.
+     * Updates the selected bank with new uris for accounts and transfers.
      */
     @Override
     public String put(final Request request, final Response response) {
         final BankId bankId = BankController.getBankId(request);
-        final BankData data = this.gson.fromJson(request.body(), BankData.class);
+        // only load data to ensure the body itself is correct
+        this.gson.fromJson(request.body(), BankData.class);
         final Bank bank = BanksContainer.getBank(bankId);
         if (bank == null) {
             response.status(404);
             return "";
         }
-        bank.setAccountsUrl(data.accounts);
-        bank.setTransferUrl(data.transfers);
+        // we do not update the bank urls because we do not want to change
+        // routes within spark
+        response.status(403);
         return "";
     }
 }

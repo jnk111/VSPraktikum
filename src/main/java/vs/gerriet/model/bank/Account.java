@@ -26,7 +26,7 @@ public class Account extends LockProvider {
      * have balance <code>0</code>.
      *
      * @param user
-     *            User url.
+     *            User id.
      */
     Account(final UserId user) {
         this.user = user;
@@ -104,7 +104,7 @@ public class Account extends LockProvider {
     /**
      * Returns the user for this account.
      *
-     * @return User url.
+     * @return User Id.
      */
     UserId getUser() {
         return this.user;

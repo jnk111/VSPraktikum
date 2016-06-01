@@ -6,7 +6,6 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
-import vs.gerriet.controller.bank.BanksController;
 import vs.gerriet.id.UserId;
 import vs.gerriet.json.AccountInfo;
 import vs.gerriet.model.bank.Bank;
@@ -20,9 +19,13 @@ public class AccountsListController extends AbstractController
         implements GetController, PostController {
 
     /**
+     * Uri part after bank uri (extra because used within bank).
+     */
+    public static final String URI_PART = "/accounts";
+    /**
      * Generic account access uri.
      */
-    public static final String URI = BanksController.URI + "/accounts";
+    public static final String URI = BankController.URI + AccountsListController.URI_PART;
 
     /**
      * Returns a list of all accounts on the selected bank.

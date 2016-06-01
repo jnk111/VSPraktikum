@@ -17,29 +17,37 @@ public class BankData {
      * @return Created bank data object;
      */
     public static BankData createFromBank(final Bank bank) {
-        return new BankData(bank.getAccountsUrl(), bank.getTransferUrl());
+        return new BankData(bank.getAccountsUri(), bank.getTransferUri(), bank.getId().getUri());
     }
 
     /**
-     * Url for account access.
+     * Uri for account access.
      */
     public String accounts;
 
     /**
-     * Url for transfer access.
+     * Uri for transfer access.
      */
     public String transfers;
+
+    /**
+     * Uri for the bank itself.
+     */
+    public String bank;
 
     /**
      * Creates new Bank data object with given information.
      *
      * @param accounts
-     *            Url to access the bank's account features.
+     *            Uri to access the bank's account features.
      * @param transfers
-     *            Url to access the bank's transfer features.
+     *            Uri to access the bank's transfer features.
+     * @param bank
+     *            Uri to access the bank itself.
      */
-    public BankData(final String accounts, final String transfers) {
+    public BankData(final String accounts, final String transfers, final String bank) {
         this.accounts = accounts;
         this.transfers = transfers;
+        this.bank = bank;
     }
 }

@@ -19,9 +19,6 @@ public class ServiceAllocator {
 		String json = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
 		ServiceList list = GSON.fromJson(json, ServiceList.class);
 		
-		// Temp
-		list.setBroker("http://localhost:4567/broker");
-		
 		return list;
 	};
 	

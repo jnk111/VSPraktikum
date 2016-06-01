@@ -13,7 +13,7 @@ import vs.jonas.services.services.YellowPagesService;
 
 public class Start {
 	public static void main(String[] args) throws IOException, UnirestException {
-		YellowPagesService yellowPagesService = new YellowPagesService(false);
+		YellowPagesService yellowPagesService = new YellowPagesService(true);
 		
 		
 		String username = "";

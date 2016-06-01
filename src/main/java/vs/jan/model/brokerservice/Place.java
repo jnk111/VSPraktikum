@@ -226,7 +226,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		}
 		
 		if(place.getHouses() > 0){
-			this.setHousesPrice(0);
+			this.setHousesPrice(this.housesPrice = place.getHouses());
 		}
 		
 		if(place.getHypocredit() != null){

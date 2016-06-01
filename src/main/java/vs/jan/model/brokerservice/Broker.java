@@ -154,9 +154,9 @@ public class Broker implements Convertable<JSONBroker> {
 	}
 
 	public Place getPlace(String placeid) {
-		
 		for(Place p: this.places){
-			if(this.places.contains(placeid)){
+			String [] u = p.getPlaceUri().split("/");
+			if(u[u.length - 1].equals(placeid)){
 				return p;
 			}
 		}

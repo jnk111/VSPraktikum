@@ -40,8 +40,7 @@ import vs.jonas.services.model.Dice;
 public class BoardService {
 
 	private final Gson GSON = new Gson();
-	
-	
+
 	/*
 	 * Mapping Board -> GameUri
 	 */
@@ -85,14 +84,14 @@ public class BoardService {
 	 * 
 	 * @param game
 	 *          Das Spiel, fuer das ein Board erzeugt werden soll
-	 * @param host 
 	 * @param host
-	 * 					Client-IP von der das Board erstellt wird
+	 * @param host
+	 *          Client-IP von der das Board erstellt wird
 	 * @throws InvalidInputException
 	 *           Json-Format der Uri ungueltig
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 */
-	public synchronized void createNewBoard(JSONGameURI game, String host) 
+	public synchronized void createNewBoard(JSONGameURI game, String host)
 			throws InvalidInputException, ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 		String gameId = helper.getID(game.getURI());
@@ -269,7 +268,7 @@ public class BoardService {
 	 *           Board oder Figur nicht gefunden
 	 * @throws InvalidInputException
 	 *           Es wurde keine gueltiger Wurf uebergeben
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 */
 	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
 			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException {
@@ -311,17 +310,17 @@ public class BoardService {
 	 *         haben
 	 * @throws ResourceNotFoundException
 	 *           Board oder Figur nicht gefunden
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 * 
 	 */
-	public synchronized JSONEventList rollDice(String gameid, String pawnid) 
+	public synchronized JSONEventList rollDice(String gameid, String pawnid)
 			throws ResourceNotFoundException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
-		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());		
-		
+		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
+
 		// Temp
 		validator.checkPlayerHasMutex(gameid, pawnid, "http://localhost:4567/games");
-		
+
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);
 		Dice roll = rollDice(pawn, gameid); // Zum Testen Local
@@ -339,11 +338,10 @@ public class BoardService {
 	 * @param gameid
 	 *          Die ID des Games
 	 * @return Der Int-Wert des gemachten Wurfes
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 */
-	private Dice rollDice(Pawn pawn, String gameid) 
-			throws ResponseCodeException {
-		
+	private Dice rollDice(Pawn pawn, String gameid) throws ResponseCodeException {
+
 		String json = HttpService.get(this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
@@ -399,10 +397,10 @@ public class BoardService {
 	public synchronized void updateAPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
-		 Board key = helper.getBoard(this.boards, gameid);
-		 Place p = helper.getPlace(key.getFields(), helper.getID(pathinfo));
-		 p.setBrokerUri(place.getBroker());
-		 p.setName(place.getName());
+		Board key = helper.getBoard(this.boards, gameid);
+		Place p = helper.getPlace(key.getFields(), helper.getID(pathinfo));
+		p.setBrokerUri(place.getBroker());
+		p.setName(place.getName());
 	}
 
 	/**
@@ -419,28 +417,34 @@ public class BoardService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(board, Error.JSON_BOARD.getMsg());
 		Board b = helper.getBoard(this.boards, gameid);
-		
+
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
-			
+
 		} else {
 			updateBoard(b, board, gameid);
 		}
 	}
 
 	private void initNewBoard(Board key, String gameid) {
- 		List<Field> fields = new ArrayList<>();
-		
+		List<Field> fields = new ArrayList<>();
+
 		for (int i = 0; i < Place.values().length; i++) {
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
-			vs.jan.json.brokerservice.JSONPlace place = new vs.jan.json.brokerservice.JSONPlace();
-			place.setPlace(p.getPlaceUri());
-			p.setBrokerUri(this.services.getBroker() + "/" + gameid + "/places/" + i);
-			HttpService.put(p.getBrokerUri(), place, HttpURLConnection.HTTP_OK);
+
+			if (p.isPlace()) {
+				vs.jan.json.brokerservice.JSONPlace place = new vs.jan.json.brokerservice.JSONPlace();
+				place.setPlace(p.getPlaceUri());
+				p.setBrokerUri(this.services.getBroker() + "/" + gameid + "/places/" + i);
+				place.setValue(p.getPrice());
+				place.setHouses(p.getHousesPrice());
+				HttpService.put(p.getBrokerUri(), place, HttpURLConnection.HTTP_OK);
+			}
+
 		}
 
 		key.setFields(fields);
@@ -507,7 +511,6 @@ public class BoardService {
 		p.setPosition(pawn.getPosition());
 		p.setRollsUri(pawn.getRoll());
 	}
-
 
 	public Map<Board, JSONGameURI> getBoards() {
 

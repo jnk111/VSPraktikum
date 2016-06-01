@@ -132,7 +132,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
-		Place place = helper.getPlace(b, placeid);
+		Place place = b.getPlace(placeid);
 		return place.convert();
 	}
 
@@ -140,7 +140,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
-		Place p = helper.getPlace(b, placeid);
+		Place p = b.getPlace(placeid);
 		Player owner = new Player();
 
 		if (p.getOwner() != null) {

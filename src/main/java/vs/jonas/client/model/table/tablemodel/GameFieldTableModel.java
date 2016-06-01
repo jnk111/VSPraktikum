@@ -39,8 +39,14 @@ public class GameFieldTableModel extends DefaultTableModel{
 	}
 
 	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		return String.class;
+	public Class<?> getColumnClass(int col) {
+		if(col == NAME){
+			return String.class;
+		} else if(col == PLAYERS){
+			return List.class;
+		} else{
+			return Object.class;
+		}
 	}
 
 	/**
@@ -87,9 +93,15 @@ public class GameFieldTableModel extends DefaultTableModel{
 		}
 		return ergebnis;
 	}
+	
+	@Override
+	public void setValueAt(Object aValue, int row, int column) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	/**
-	 * L�dt die Tabelle mit neuen Daten.
+	 * Laedt die Tabelle mit neuen Daten.
 	 * 
 	 * @param data
 	 *            Die neuen Daten.
@@ -106,13 +118,12 @@ public class GameFieldTableModel extends DefaultTableModel{
 		return fields.get(row);
 	}
 	
-	public JComboBox<String> getPlayersAsComboBox(int row){
-		return (JComboBox<String>) getValueAt(row, PLAYERS);
-	}
-	
 	@Override
 	public boolean isCellEditable(int row, int col)
 	{
+		if(col == PLAYERS){
+			return true;
+		}
 		return false;
 	}
 

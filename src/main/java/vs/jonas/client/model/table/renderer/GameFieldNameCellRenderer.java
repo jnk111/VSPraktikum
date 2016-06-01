@@ -1,4 +1,4 @@
-package vs.jonas.client.model.table;
+package vs.jonas.client.model.table.renderer;
 
 import java.awt.Color;
 import java.awt.Component;

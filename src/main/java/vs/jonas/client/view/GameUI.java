@@ -17,8 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import vs.jonas.client.model.table.GameFieldNameCellRenderer;
-import vs.jonas.client.model.table.GameFieldPlayerCellRenderer;
+import vs.jonas.client.model.table.GameFieldTable;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 
@@ -95,22 +94,15 @@ public class GameUI {
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		JScrollPane playerOverview = new JScrollPane(playerTable);
 		JPanel playerPanel = new JPanel(new BorderLayout());
-		JLabel playerHeader = new JLabel("********** Player Overview **********");
+		JLabel playerHeader = new JLabel("********** Spieler **********");
 		playerHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
 		playerHeader.setHorizontalAlignment(SwingConstants.CENTER);
 		playerPanel.add(playerHeader, BorderLayout.NORTH);
 		playerPanel.add(playerOverview, BorderLayout.CENTER);
 		splitPane_1.setLeftComponent(playerPanel);
 		
-		gameFieldTable = new JTable(new GameFieldTableModel());
-		gameFieldTable.setRowHeight(100);
-		GameFieldNameCellRenderer fieldNameRenderer = new GameFieldNameCellRenderer();
-//		GameFieldPlayerCellRenderer playersRenderer = new GameFieldPlayerCellRenderer();
-		fieldNameRenderer.setHorizontalAlignment( JLabel.CENTER );
-		gameFieldTable.getColumnModel().getColumn(GameFieldTableModel.NAME).setCellRenderer(fieldNameRenderer);
-//		gameFieldTable.getColumnModel().getColumn(GameFieldTableModel.PLAYERS).setCellRenderer(playersRenderer);
-//		gameFieldTable.setColumnSelectionAllowed(true);
-//		gameFieldTable.setCellSelectionEnabled(true);
+		gameFieldTable = new GameFieldTable(new GameFieldTableModel());
+
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");

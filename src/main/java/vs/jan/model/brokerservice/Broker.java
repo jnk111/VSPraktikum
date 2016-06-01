@@ -3,10 +3,8 @@ package vs.jan.model.brokerservice;
 import java.util.ArrayList;
 import java.util.List;
 
-import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.Convertable;
-import vs.jan.model.exception.Error;
 
 public class Broker implements Convertable<JSONBroker> {
 
@@ -153,15 +151,4 @@ public class Broker implements Convertable<JSONBroker> {
 		this.estateUri = estateUri;
 	}
 
-	public Place getPlace(String placeid) {
-		for(Place p: this.places){
-			String [] u = p.getPlaceUri().split("/");
-			if(u[u.length - 1].equals(placeid)){
-				return p;
-			}
-		}
-		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
-	}
-	
-	
 }

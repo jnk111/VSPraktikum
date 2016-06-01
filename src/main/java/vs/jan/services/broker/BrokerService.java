@@ -1,10 +1,13 @@
 package vs.jan.services.broker;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.brokerservice.BrokerHelper;
+import vs.jan.json.boardservice.JSONEvent;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
@@ -32,7 +35,7 @@ public class BrokerService {
 
 	public BrokerService() {
 		this.validator = new BrokerValidator();
-		this.helper = new BrokerHelper();
+		this.helper = new BrokerHelper(null);
 		brokers = new HashMap<>();
 	};
 
@@ -42,6 +45,7 @@ public class BrokerService {
 		b.setGameUri(game.getURI());
 		brokers.put(b, game);
 		this.services = ServiceAllocator.initServices(host, helper.getID(game.getURI()));
+		helper.setServices(this.services);
 	}
 
 	public JSONBrokerList getBrokers() {
@@ -82,7 +86,7 @@ public class BrokerService {
 		this.services = services;
 	}
 
-	public synchronized void visitPlace(String gameid, String placeid, String pawnid, String playeruri)
+	public synchronized JSONEventList visitPlace(String gameid, String placeid, String pawnid, String playeruri, String path)
 			throws TransactionFailedException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
@@ -90,11 +94,17 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playeruri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = helper.getBroker(brokers, gameid);
-		Place place = broker.getPlace(placeid);
-
+		Place place = helper.getPlace(broker, placeid);
+		Player player = helper.getPlayer(this.services.getGame() + "/" + gameid + "/players/" +  helper.getID(playeruri), gameid);
+		
+		
+		String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
+		JSONEvent event = new JSONEvent(gameid, "visit", "visit", reason, path, playeruri);
+		helper.postEvent(event, this.services.getEvents());
+		
 		if (place.getOwner() != null) {
 			Player owner = place.getOwner();
-			Player player = helper.getPlayer(playeruri, gameid);
+			
 			
 			if (!owner.getId().equals(playeruri)) {
 				RentTransaction rent = null;
@@ -111,8 +121,19 @@ public class BrokerService {
 					if (jsonFrom.getSaldo() > amount) {
 						rent = new RentTransaction(from, to, amount, "rent", this.services.getBank());
 						rent.execute(gameid);
+						
+						reason = "Player: " + player.getId() + " has payed the rent for the place: " + place.getUri();
+						event = new JSONEvent(gameid, "payrent", "payrent", reason, path, playeruri);
+						helper.postEvent(event, this.services.getEvents());
+						
 					} else {
-						// nehme Hypothek auf? (client oder Broker?)
+						reason = "Player: " + player.getId() 
+											+ " cannot pay the rent of: " 
+												+ place.getPrice() + " for the place: " 
+													+ place.getUri() + " -> Saldo: " + from.getSaldo();
+						
+						event = new JSONEvent(gameid, "cannotpayrent", "cannotpayrent", reason, path, playeruri);
+						helper.postEvent(event, this.services.getEvents());
 					}
 				} catch (TransactionFailedException e) {
 					place.setOwner(rent.getHistory().getTo().getPlayer());
@@ -120,6 +141,8 @@ public class BrokerService {
 				}
 			}
 		}
+		
+		return helper.retrieveEventList(this.services.getEvents(), playeruri, gameid, new Date());
 	}
 
 	public JSONBroker getSpecificBroker(String gameid) {
@@ -132,7 +155,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
-		Place place = b.getPlace(placeid);
+		Place place = helper.getPlace(b, placeid);
 		return place.convert();
 	}
 
@@ -140,7 +163,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
-		Place p = b.getPlace(placeid);
+		Place p = helper.getPlace(b, placeid);
 		Player owner = new Player();
 
 		if (p.getOwner() != null) {

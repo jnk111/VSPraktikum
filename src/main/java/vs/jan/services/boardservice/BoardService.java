@@ -25,7 +25,6 @@ import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
-import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
@@ -45,10 +44,11 @@ public class BoardService {
 	 * Mapping Board -> GameUri
 	 */
 	private Map<Board, JSONGameURI> boards;
-
+	
 	private BoardValidator validator;
 	private BoardHelper helper;
 	private ServiceList services;
+	private boolean LOCAL = false;
 
 	/*
 	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
@@ -64,7 +64,7 @@ public class BoardService {
 		boards = new HashMap<>();
 		throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
-		this.helper = new BoardHelper();
+		this.helper = new BoardHelper(null);
 	}
 
 	/**
@@ -99,6 +99,7 @@ public class BoardService {
 		Board b = new Board(boardUri);
 		boards.put(b, game);
 		this.services = ServiceAllocator.initServices(host, gameId);
+		helper.setServices(this.services);
 		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
 		placeABoard(gameId, b.convert());
 	}
@@ -296,6 +297,8 @@ public class BoardService {
 		String resource = p.getRollsUri();
 		JSONEvent event = new JSONEvent(gameid, "move", "move", reas, resource, p.getPlayerUri());
 		helper.postEvent(event, this.services.getEvents());
+		String uri = this.services.getBroker() + "/" + gameid + "/places/" + newPos + "/visit/" + pawnid;
+		HttpService.post(uri, p.getPlayerUri(), HttpURLConnection.HTTP_OK);
 	}
 
 	/**
@@ -327,7 +330,7 @@ public class BoardService {
 		movePawn(gameid, pawnid, roll.getNumber());
 		helper.addThrow(this.throwMap, pawn, roll);
 
-		return helper.retrieveEventList(this.services.getEvents(), pawn, gameid, new Date());
+		return helper.retrieveEventList(this.services.getEvents(), pawn.getPlayerUri(), gameid, new Date());
 	}
 
 	/**
@@ -515,6 +518,14 @@ public class BoardService {
 	public Map<Board, JSONGameURI> getBoards() {
 
 		return this.boards;
+	}
+
+	public boolean isLOCAL() {
+		return LOCAL;
+	}
+
+	public void setLOCAL(boolean lOCAL) {
+		LOCAL = lOCAL;
 	}
 
 }

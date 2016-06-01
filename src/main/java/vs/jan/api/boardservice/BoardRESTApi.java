@@ -234,7 +234,7 @@ public class BoardRESTApi {
 	private void initPostCreateNewBoard() {
 		post("/boards", CONTENT_TYPE, (req, resp) -> {
 			JSONGameURI uri = GSON.fromJson(req.body(), JSONGameURI.class);
-			boardService.createNewBoard(uri, req.host());
+			boardService.createNewBoard(uri, req.ip() + ":" + req.port());
 			return StatusCodes.CREATED + CLRF;
 		});
 	}

@@ -1,17 +1,14 @@
 package vs.jan.helper.boardservice;
 
 import java.net.HttpURLConnection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import vs.jan.exception.ResourceNotFoundException;
-import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.Helper;
-import vs.jan.json.boardservice.JSONEvent;
-import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
+import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
@@ -22,46 +19,8 @@ import vs.jonas.services.model.Dice;
 
 public class BoardHelper extends Helper {
 
-	/**
-	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
-	 * einem Wuerfelwurd zu einer neuen Position bewegen
-	 * 
-	 * @param gameid
-	 *          Die ID des Spiels
-	 * @param type
-	 *          Der Eventtyp, z. B.: 'move'
-	 * @param name
-	 *          Der Eventname
-	 * @param pawn
-	 *          Die Figur um die es sich handelt
-	 * @param neededServices2
-	 * @throws ResponseCodeException
-	 */
-	public void postEvent(JSONEvent event, String uri) throws ResponseCodeException {
-
-		HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
-	}
-
-	/**
-	 * Holt alle Events des Spielers seit dem letzten Wurf
-	 * 
-	 * @param eventServiceUri
-	 * 
-	 * @param pawn
-	 *          Die Figur
-	 * @param gameid
-	 *          Das Board
-	 * @param date
-	 *          Der aktuelle Zeitpunkt des Wurfes
-	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
-	 * 
-	 */
-	public JSONEventList retrieveEventList(String eventServiceUri, Pawn pawn, String gameid, Date date) {
-		//
-		String url = eventServiceUri + "?game=" + gameid + "&player=" + pawn.getPlayerUri();
-		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
-		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
-		return list;
+	public BoardHelper(ServiceList serviceList){
+		this.services = serviceList;
 	}
 
 	/**
@@ -173,10 +132,6 @@ public class BoardHelper extends Helper {
 		}
 	}
 
-	public void registerPlacesToBroker(Board b, String gameid) {
-		
-		
-	}
 
 	public void createNewBroker(String broker, JSONGameURI game) {
 		

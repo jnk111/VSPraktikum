@@ -15,6 +15,7 @@ import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.NotImplementedException;
 import vs.jan.exception.ResourceNotFoundException;
+import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
 import vs.jan.json.brokerservice.JSONEstates;
@@ -141,8 +142,9 @@ public class BrokerAPI {
 	
 	private void initPostVisitPlace() {
 		post("/broker/:gameid/places/:placeid/visit/:pawnid", CONTENT_TYPE, (req, resp) -> {
-			service.visitPlace(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), req.body());
-			return StatusCodes.SUCCESS + CLRF;
+			String playerUri = GSON.fromJson(req.body(), String.class);
+			JSONEventList list = service.visitPlace(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), playerUri, req.pathInfo());
+			return GSON.toJson(list);
 		});
 	}
 	
@@ -150,6 +152,8 @@ public class BrokerAPI {
 	private void initPostBuyPlace() {
 		post("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			//return service.buyPlace()
+			//return StatusCodes.CREATED + CLRF; 
 		});
 	}
 

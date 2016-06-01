@@ -7,14 +7,22 @@ import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.helper.Helper;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.json.brokerservice.JSONGameURI;
+import vs.jan.model.ServiceList;
+import vs.jan.model.Validable;
 import vs.jan.model.brokerservice.Account;
 import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
 
+@SuppressWarnings("unused")
 public class BrokerHelper extends Helper {
 
+		
+	public BrokerHelper(ServiceList serviceList){
+		this.setServices(serviceList);
+	}
+	
 	public Broker getBroker(Map<Broker, JSONGameURI> brokers, String gameid) {
 
 		for (Broker b : brokers.keySet()) {
@@ -28,12 +36,21 @@ public class BrokerHelper extends Helper {
 
 	public Place getPlace(Broker b, String placeid) {
 
-		for (Place p : b.getPlaces()) {
-			if (p.getUri().contains(placeid)) {
+		for(Place p: b.getPlaces()){
+			String id = getID(p.getPlaceUri());
+			if(id.equals(placeid)){
 				return p;
 			}
 		}
-
+		
+		String uri = this.services.getBoard();
+		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
+		vs.jan.json.boardservice.JSONPlace place = GSON.fromJson(json, vs.jan.json.boardservice.JSONPlace.class);
+		
+		if(place != null) {
+			return new Place(this.services.getBoard() + "/boards/");
+		}
+		
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 

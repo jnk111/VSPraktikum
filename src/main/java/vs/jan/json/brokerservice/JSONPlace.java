@@ -115,7 +115,7 @@ public class JSONPlace implements Validable{
 	@Override
 	public boolean isValid() {
 		
-		return this.place != null;
+		return this.place != null && !this.place.isEmpty();
 	}
 
 	@Override

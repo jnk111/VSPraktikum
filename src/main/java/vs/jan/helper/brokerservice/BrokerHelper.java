@@ -14,28 +14,26 @@ import vs.jan.model.exception.Error;
 import vs.jan.tools.HttpService;
 
 public class BrokerHelper extends Helper {
-	
+
 	public Broker getBroker(Map<Broker, JSONGameURI> brokers, String gameid) {
-		
-		for(Broker b: brokers.keySet()){
-			if(b.getUri().contains(gameid)){
+
+		for (Broker b : brokers.keySet()) {
+			if (b.getUri().contains(gameid)) {
 				return b;
 			}
 		}
-		
+
 		throw new ResourceNotFoundException(Error.BROKER_NOT_FOUND.getMsg());
 	}
 
-	public Place getPlace(Map<Broker, JSONGameURI> brokers, String placeid) {
-		
-		for(Broker b: brokers.keySet()){
-			for(Place p: b.getPlaces()){
-				if(p.getUri().contains(placeid)){
-					return p;
-				}
+	public Place getPlace(Broker b, String placeid) {
+
+		for (Place p : b.getPlaces()) {
+			if (p.getUri().contains(placeid)) {
+				return p;
 			}
 		}
-		
+
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
@@ -43,6 +41,5 @@ public class BrokerHelper extends Helper {
 		String json = HttpService.get(accountUri, HttpURLConnection.HTTP_OK);
 		return GSON.fromJson(json, JSONAccount.class);
 	}
-
 
 }

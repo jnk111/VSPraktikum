@@ -22,12 +22,12 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	
 	
 	public Place(String placeUri){
-		this(null, placeUri, null,-1, new ArrayList<>(), new ArrayList<>(),-1,null,null);
+		this(null, placeUri, null, 0, new ArrayList<>(), new ArrayList<>(), 0,null,null);
 	}
 	
 	public Place(String uri, String placeUri){
 		
-		this(uri, placeUri, null, -1, new ArrayList<>(), new ArrayList<>(), -1, null, null);
+		this(uri, placeUri, null, 0, new ArrayList<>(), new ArrayList<>(), 0, null, null);
 	}
 	
 	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
@@ -199,16 +199,20 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	@Override
 	public JSONPlace convert() {
 		
-		JSONPlace place = new JSONPlace(this.getPlaceUri());
-		place.setCost(this.getCost());
-		place.setHouses(this.getHousesPrice());
-		place.setHypocredit(this.getHypoCreditUri());
-		place.setId(this.getUri());
-		place.setOwner(this.owner.getId());
-		place.setPlace(this.getPlaceUri());
-		place.setRent(this.getRent());
-		place.setValue(this.getPrice());
-		place.setVisit(this.getVisitUri());
+		JSONPlace place = new JSONPlace(this.placeUri);
+		place.setCost(this.cost);
+		place.setHouses(this.housesPrice);
+		place.setHypocredit(this.hypoCreditUri);
+		place.setId(this.uri);
+		
+		if(this.owner != null){
+			place.setOwner(this.owner.getId());
+		}
+		
+		place.setPlace(this.placeUri);
+		place.setRent(this.rent);
+		place.setValue(this.price);
+		place.setVisit(this.visitUri);
 		
 		return place;
 	}

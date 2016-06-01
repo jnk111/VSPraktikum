@@ -17,6 +17,7 @@ import vs.jan.exception.NotImplementedException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.json.brokerservice.JSONBrokerList;
+import vs.jan.json.brokerservice.JSONEstates;
 import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
@@ -46,6 +47,7 @@ public class BrokerAPI {
 	private void initGET() {
 		initGETBrokers();
 		initGETSpecificBroker();
+		initGETPlaces();
 		initGETSpecificPlace();
 		initGetOwner();
 	}
@@ -63,7 +65,6 @@ public class BrokerAPI {
 	private void initPUT() {
 		initPutBroker();
 		initPUTRegisterPlace();
-		initPUTRegisterPlace();
 		initPUTTradePlace();
 		initPUTTakeHypothecaryCredit();
 	}
@@ -73,20 +74,20 @@ public class BrokerAPI {
 	}
 
 	private void initDELETERemoveHypothecaryCredit() {
-		delete("/broker/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
+		delete("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
 		});
 	}
 
 	private void initPUTTakeHypothecaryCredit() {
-		put("/broker/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
+		put("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
 		});
 		
 	}
 
 	private void initPUTTradePlace() {
-		put("/brokers/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
+		put("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
 		});
 	}
@@ -96,43 +97,50 @@ public class BrokerAPI {
 
 
 	private void initGetOwner() {
-		get(" /broker/places/:placeid/owner ", "application/json", (req, resp) -> {
-			Player owner = service.getOwner(req.params(":placeid"));
+		get(" /broker/:gameid/places/:placeid/owner ", "application/json", (req, resp) -> {
+			Player owner = service.getOwner(req.params(":gameid"), req.params(":placeid"));
 			return GSON.toJson(owner);
 		});
 		
 	}
 
 	private void initGETBrokers() {
-		get("/brokers", "application/json", (req, resp) -> {
+		get("/broker", "application/json", (req, resp) -> {
 			JSONBrokerList list = service.getBrokers();
 			return GSON.toJson(list);
 		});
 	}
 	
 	private void initGETSpecificBroker() {
-		get("/brokers/:gameid", "application/json", (req, resp) -> {
+		get("/broker/:gameid", "application/json", (req, resp) -> {
 			JSONBroker broker = service.getSpecificBroker(req.params(":gameid"));
 			return GSON.toJson(broker);
 		});
 	}
 	
+	private void initGETPlaces() {
+		get("/broker/:gameid/places", "application/json", (req, resp) -> {
+			JSONEstates estates = service.getPlaces(req.params(":gameid"));
+			return GSON.toJson(estates);
+		});
+	}
+	
 	private void initGETSpecificPlace() {
-		get("/brokers/places/:placeid", "application/json", (req, resp) -> {
-			JSONPlace place = service.getSpecificPlace(req.params(":placeid"));
+		get("/broker/:gameid/places/:placeid", "application/json", (req, resp) -> {
+			JSONPlace place = service.getSpecificPlace(req.params(":gameid"), req.params(":placeid"));
 			return GSON.toJson(place);
 		});
 	}
 
 	private void initPOSTCreateBroker() {
-		post("/brokers", CONTENT_TYPE, (req, resp) -> {
+		post("/broker", CONTENT_TYPE, (req, resp) -> {
 			service.createBroker(GSON.fromJson(req.body(), JSONGameURI.class), req.host());
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
 	
 	private void initPostVisitPlace() {
-		post("/brokers/:gameid/places/:placeid/visit/:pawnid", CONTENT_TYPE, (req, resp) -> {
+		post("/broker/:gameid/places/:placeid/visit/:pawnid", CONTENT_TYPE, (req, resp) -> {
 			service.visitPlace(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), req.body());
 			return StatusCodes.SUCCESS + CLRF;
 		});
@@ -140,14 +148,14 @@ public class BrokerAPI {
 	
 	
 	private void initPostBuyPlace() {
-		post("/brokers/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
+		post("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
 		});
 	}
 
 	private void initPUTRegisterPlace() {
 
-		put("/brokers/:gameid/places/:placeid", CONTENT_TYPE, (req, resp) -> {
+		put("/broker/:gameid/places/:placeid", CONTENT_TYPE, (req, resp) -> {
 			JSONPlace place = GSON.fromJson(req.body(), JSONPlace.class);
 			service.registerPlace(req.params(":gameid"), req.params(":placeid"), place);
 			return StatusCodes.CREATED + CLRF;

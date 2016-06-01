@@ -172,4 +172,15 @@ public class BoardHelper extends Helper {
 			}
 		}
 	}
+
+	public void registerPlacesToBroker(Board b, String gameid) {
+		
+		
+	}
+
+	public void createNewBroker(String broker, JSONGameURI game) {
+		
+		HttpService.post(broker, game, HttpURLConnection.HTTP_OK);
+		
+	}
 }

@@ -25,6 +25,7 @@ import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
+import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
@@ -99,6 +100,7 @@ public class BoardService {
 		Board b = new Board(boardUri);
 		boards.put(b, game);
 		this.services = ServiceAllocator.initServices(host, gameId);
+		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
 		placeABoard(gameId, b.convert());
 	}
 
@@ -420,20 +422,25 @@ public class BoardService {
 		
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
+			
 		} else {
 			updateBoard(b, board, gameid);
 		}
 	}
 
 	private void initNewBoard(Board key, String gameid) {
-		List<Field> fields = new ArrayList<>();
-
+ 		List<Field> fields = new ArrayList<>();
+		
 		for (int i = 0; i < Place.values().length; i++) {
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
+			vs.jan.json.brokerservice.JSONPlace place = new vs.jan.json.brokerservice.JSONPlace();
+			place.setPlace(p.getPlaceUri());
+			p.setBrokerUri(this.services.getBroker() + "/" + gameid + "/places/" + i);
+			HttpService.put(p.getBrokerUri(), place, HttpURLConnection.HTTP_OK);
 		}
 
 		key.setFields(fields);

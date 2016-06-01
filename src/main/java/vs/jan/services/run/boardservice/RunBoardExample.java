@@ -11,6 +11,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import vs.jan.api.boardservice.BoardRESTApi;
+import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.ResponseCodeException;
@@ -58,6 +59,7 @@ public class RunBoardExample {
 																				// DiceService laufen
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
+		new BrokerAPI();
 
 		boardApi = new BoardRESTApi();
 		

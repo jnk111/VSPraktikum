@@ -67,7 +67,7 @@ public class Broker implements Convertable<JSONBroker> {
 		broker.setId(this.getUri());
 		broker.setEstates(this.getEstateUri());
 		broker.setGame(this.getGameUri());
-		return null;
+		return broker;
 	}
 
 	
@@ -130,7 +130,7 @@ public class Broker implements Convertable<JSONBroker> {
 	}
 
 	public void addPlace(Place p) {
-		if(this.places.contains(p)){
+		if(!this.places.contains(p)){
 			this.places.add(p);
 		}
 	}

@@ -16,10 +16,13 @@ public class ServiceAllocator {
 		
 		String gameServiceUri = "http://" + host;
 		gameServiceUri += "/games/" + gameid + "/services";
-		String list = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
-		System.out.println("LIST: " + list.toString());
+		String json = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
+		ServiceList list = GSON.fromJson(json, ServiceList.class);
 		
-		return GSON.fromJson(list, ServiceList.class);
+		// Temp
+		list.setBroker("http://localhost:4567/broker");
+		
+		return list;
 	};
 	
 }

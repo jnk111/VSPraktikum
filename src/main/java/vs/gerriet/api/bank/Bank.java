@@ -32,16 +32,16 @@ public class Bank extends BankBase implements Lazy {
     /**
      * Contains accounts from this bank.
      */
-    private AccountList accounts;
+    private Accounts accounts;
     /**
      * Contains transactions from this bank.
      */
-    private TransactionMap transactions;
+    private Transactions transactions;
 
     /**
      * Contains transfers for this bank.
      */
-    private TransferMap transfers;
+    private Transfers transfers;
 
     /**
      * Game this bank belongs to.
@@ -87,7 +87,7 @@ public class Bank extends BankBase implements Lazy {
      *
      * @return Account list.
      */
-    public AccountList getAccounts() {
+    public Accounts getAccounts() {
         this.load();
         return this.accounts;
     }
@@ -115,7 +115,7 @@ public class Bank extends BankBase implements Lazy {
      *
      * @return Transaction list.
      */
-    public TransactionMap getTransactions() {
+    public Transactions getTransactions() {
         this.load();
         return this.transactions;
     }
@@ -125,7 +125,7 @@ public class Bank extends BankBase implements Lazy {
      *
      * @return Transfer list.
      */
-    public TransferMap getTransfers() {
+    public Transfers getTransfers() {
         this.load();
         return this.transfers;
     }
@@ -160,9 +160,9 @@ public class Bank extends BankBase implements Lazy {
         this.id.loadUri(data.bank);
         this.game = new GameId(null);
         this.game.loadUri(data.game);
-        this.transfers = new TransferMap(this);
-        this.accounts = new AccountList(this);
-        this.transactions = new TransactionMap(this);
+        this.transfers = new Transfers(this);
+        this.accounts = new Accounts(this);
+        this.transactions = new Transactions(this);
     }
 
 }

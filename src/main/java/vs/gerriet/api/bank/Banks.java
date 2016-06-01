@@ -23,23 +23,23 @@ import vs.gerriet.json.BankList;
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  *
  */
-public class BankMap extends BankBase implements LazyMap<BankId, Bank> {
+public class Banks extends BankBase implements LazyMap<BankId, Bank> {
 
     /**
      * Contains the bank map singleton instance.
      */
-    private static BankMap instance;
+    private static Banks instance;
 
     /**
      * Returns the bank map singleton instance.
      *
      * @return Bank map.
      */
-    public static synchronized BankMap getInstance() {
-        if (BankMap.instance == null) {
-            BankMap.instance = new BankMap();
+    public static synchronized Banks getInstance() {
+        if (Banks.instance == null) {
+            Banks.instance = new Banks();
         }
-        return BankMap.instance;
+        return Banks.instance;
     }
 
     /**
@@ -50,7 +50,7 @@ public class BankMap extends BankBase implements LazyMap<BankId, Bank> {
     /**
      * Hide default constructor.
      */
-    private BankMap() {
+    private Banks() {
         // hide default constructor.
     }
 

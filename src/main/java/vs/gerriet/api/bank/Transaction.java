@@ -26,7 +26,7 @@ public class Transaction extends BankBase implements Lazy {
     /**
      * Transaction map this transaction belongs to.
      */
-    private final TransactionMap transactions;
+    private final Transactions transactions;
     /**
      * Id of this transaction.
      */
@@ -50,7 +50,7 @@ public class Transaction extends BankBase implements Lazy {
      * @param id
      *            Id of this transaction.
      */
-    Transaction(final Bank bank, final TransactionMap map, final TransactionId id) {
+    Transaction(final Bank bank, final Transactions map, final TransactionId id) {
         this.bank = bank;
         this.transactions = map;
         this.id = id;
@@ -68,7 +68,7 @@ public class Transaction extends BankBase implements Lazy {
      * @throws ApiException
      *             If creation failed.
      */
-    Transaction(final Bank bank, final TransactionMap map, final Type type) throws ApiException {
+    Transaction(final Bank bank, final Transactions map, final Type type) throws ApiException {
         this.bank = bank;
         this.transactions = map;
         HttpResponse<String> result = null;
@@ -148,7 +148,7 @@ public class Transaction extends BankBase implements Lazy {
      *
      * @return Transaction map.
      */
-    public TransactionMap getTransactions() {
+    public Transactions getTransactions() {
         return this.transactions;
     }
 

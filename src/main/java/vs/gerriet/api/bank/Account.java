@@ -12,13 +12,13 @@ public class Account extends BankBase implements Lazy {
     /**
      * Contains the account list this account is part of.
      */
-    private final AccountList list;
+    private final Accounts list;
     /**
      * Contains.
      */
     private final AccountId id;
 
-    Account(final Bank bank, final AccountList list, final AccountId id) {
+    Account(final Bank bank, final Accounts list, final AccountId id) {
         this.bank = bank;
         this.list = list;
         this.id = id;

@@ -14,7 +14,7 @@ import vs.gerriet.id.bank.AccountId;
  * This map is not modifiable. Except when calling {@link #refresh()}.
  * </p>
  */
-public class AccountList extends BankBase implements LazyMap<AccountId, Account> {
+public class Accounts extends BankBase implements LazyMap<AccountId, Account> {
     /**
      * Map of accounts, will be loaded within refresh. Cannot be modified.
      */
@@ -31,7 +31,7 @@ public class AccountList extends BankBase implements LazyMap<AccountId, Account>
      * @param bank
      *            Bank this list belongs to.
      */
-    AccountList(final Bank bank) {
+    Accounts(final Bank bank) {
         this.bank = bank;
     }
 

@@ -19,7 +19,7 @@ import vs.gerriet.model.bank.transaction.Transaction.Type;
  * Modification of this map does not affect the remove list.
  * </p>
  */
-public class TransactionMap extends BankBase implements LazyMap<TransactionId, Transaction> {
+public class Transactions extends BankBase implements LazyMap<TransactionId, Transaction> {
     /**
      * Map of transfers, will be loaded within refresh.
      */
@@ -36,7 +36,7 @@ public class TransactionMap extends BankBase implements LazyMap<TransactionId, T
      * @param bank
      *            Bank this map belongs to.
      */
-    TransactionMap(final Bank bank) {
+    Transactions(final Bank bank) {
         this.bank = bank;
     }
 

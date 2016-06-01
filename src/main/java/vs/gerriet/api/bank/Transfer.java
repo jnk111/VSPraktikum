@@ -26,7 +26,7 @@ public class Transfer extends BankBase implements Lazy {
     /**
      * Transfer map this transfer belongs to.
      */
-    private final TransferMap map;
+    private final Transfers map;
     /**
      * Transfer id.
      */
@@ -81,7 +81,7 @@ public class Transfer extends BankBase implements Lazy {
      * @throws ApiException
      *             If transfer creation failed.
      */
-    Transfer(final Bank bank, final TransferMap map, final Account from, final Account to,
+    Transfer(final Bank bank, final Transfers map, final Account from, final Account to,
             final int amount, final String reason, final Transaction transaction)
             throws ApiException {
         this.bank = bank;
@@ -130,7 +130,7 @@ public class Transfer extends BankBase implements Lazy {
      * @param id
      *            Transfer id.
      */
-    Transfer(final Bank bank, final TransferMap map, final TransferId id) {
+    Transfer(final Bank bank, final Transfers map, final TransferId id) {
         this.bank = bank;
         this.map = map;
         this.id = id;
@@ -210,7 +210,7 @@ public class Transfer extends BankBase implements Lazy {
      *
      * @return Transfer map. May be <code>null</code>.
      */
-    public TransferMap getTransfers() {
+    public Transfers getTransfers() {
         return this.map;
     }
 

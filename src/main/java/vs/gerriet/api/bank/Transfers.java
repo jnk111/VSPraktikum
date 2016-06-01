@@ -19,7 +19,7 @@ import vs.gerriet.json.TransferList;
  * the service itself.
  * </p>
  */
-public class TransferMap extends BankBase implements LazyMap<TransferId, Transfer> {
+public class Transfers extends BankBase implements LazyMap<TransferId, Transfer> {
     /**
      * Map of transfers, will be loaded within refresh. Cannot be modified.
      */
@@ -36,7 +36,7 @@ public class TransferMap extends BankBase implements LazyMap<TransferId, Transfe
      * @param bank
      *            Bank this map belongs to.
      */
-    TransferMap(final Bank bank) {
+    Transfers(final Bank bank) {
         this.bank = bank;
     }
 

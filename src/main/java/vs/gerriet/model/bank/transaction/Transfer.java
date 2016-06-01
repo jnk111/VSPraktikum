@@ -42,6 +42,14 @@ public class Transfer {
      * Transfer id (application unique).
      */
     private final TransferId id;
+    /**
+     * Transfer failed status.
+     */
+    boolean failed = false;
+    /**
+     * Transfer pending status.
+     */
+    boolean pending = true;
 
     /**
      * Creates a new transfer from one account to an other.
@@ -119,6 +127,8 @@ public class Transfer {
      * @return Transfer info.
      */
     public TransferInfo getInfo() {
-        return new TransferInfo(this.from.getUri(), this.to.getUri(), this.amount, this.reason);
+        return new TransferInfo(this.from == null ? null : this.from.getUri(),
+                this.to == null ? null : this.to.getUri(), this.amount, this.reason, this.failed,
+                this.pending);
     }
 }

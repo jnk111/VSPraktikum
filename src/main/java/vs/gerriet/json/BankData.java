@@ -17,7 +17,8 @@ public class BankData {
      * @return Created bank data object;
      */
     public static BankData createFromBank(final Bank bank) {
-        return new BankData(bank.getAccountsUri(), bank.getTransferUri(), bank.getId().getUri());
+        return new BankData(bank.getAccountsUri(), bank.getTransferUri(), bank.getId().getUri(),
+                bank.getGameId().getUri());
     }
 
     /**
@@ -36,6 +37,11 @@ public class BankData {
     public String bank;
 
     /**
+     * Game uri for the bank;
+     */
+    public String game;
+
+    /**
      * Creates new Bank data object with given information.
      *
      * @param accounts
@@ -44,10 +50,14 @@ public class BankData {
      *            Uri to access the bank's transfer features.
      * @param bank
      *            Uri to access the bank itself.
+     * @param game
+     *            Game uri for the bank.
      */
-    public BankData(final String accounts, final String transfers, final String bank) {
+    public BankData(final String accounts, final String transfers, final String bank,
+            final String game) {
         this.accounts = accounts;
         this.transfers = transfers;
         this.bank = bank;
+        this.game = game;
     }
 }

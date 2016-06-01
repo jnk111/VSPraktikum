@@ -16,6 +16,7 @@ import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.AccountInfo;
 import vs.gerriet.json.TransferInfo;
+import vs.gerriet.json.TransferList;
 import vs.gerriet.model.bank.transaction.AtomicOperation;
 import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 import vs.gerriet.model.bank.transaction.Transaction;
@@ -266,13 +267,13 @@ public class Bank {
     }
 
     /**
-     * Returns all successful transfer IDs.
+     * Returns all successful transfer uris.
      *
-     * @return Transfer IDs.
+     * @return Transfer list.
      */
-    public String[] getTransfers() {
+    public TransferList getTransfers() {
         final Set<?> keys = this.transfers.keySet();
-        return keys.toArray(new String[keys.size()]);
+        return new TransferList(keys.toArray(new String[keys.size()]));
     }
 
     /**

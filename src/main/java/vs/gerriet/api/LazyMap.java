@@ -1,11 +1,14 @@
 package vs.gerriet.api;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import vs.gerriet.exception.ApiException;
+import vs.gerriet.id.Id;
 
 /**
  * <p>
@@ -22,51 +25,7 @@ import vs.gerriet.exception.ApiException;
  * @param <E>
  *            List element type.
  */
-public interface LazyList<E> extends List<E>, Lazy {
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default boolean add(final E element) throws ApiException {
-        this.load();
-        return this.getInternalList().add(element);
-    }
-
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default void add(final int index, final E element) throws ApiException {
-        this.load();
-        this.getInternalList().add(index, element);
-    }
-
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default boolean addAll(final Collection<? extends E> collection) throws ApiException {
-        this.load();
-        return this.getInternalList().addAll(collection);
-    }
-
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default boolean addAll(final int index, final Collection<? extends E> collection)
-            throws ApiException {
-        this.load();
-        return this.getInternalList().addAll(index, collection);
-    }
+public interface LazyMap<K extends Id<?>, V> extends Map<K, V>, Lazy {
 
     /**
      * @throws ApiException
@@ -76,7 +35,7 @@ public interface LazyList<E> extends List<E>, Lazy {
     @Override
     default void clear() throws ApiException {
         this.load();
-        this.getInternalList().clear();
+        this.getInternalMap().clear();
     }
 
     /**
@@ -85,9 +44,11 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default boolean contains(final Object object) throws ApiException {
+    default V compute(final K key,
+            final BiFunction<? super K, ? super V, ? extends V> remappingFunction)
+            throws ApiException {
         this.load();
-        return this.getInternalList().contains(object);
+        return this.getInternalMap().compute(key, remappingFunction);
     }
 
     /**
@@ -96,9 +57,10 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default boolean containsAll(final Collection<?> collection) throws ApiException {
+    default V computeIfAbsent(final K key, final Function<? super K, ? extends V> mappingFunction)
+            throws ApiException {
         this.load();
-        return this.getInternalList().containsAll(collection);
+        return this.getInternalMap().computeIfAbsent(key, mappingFunction);
     }
 
     /**
@@ -107,29 +69,74 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default E get(final int index) throws ApiException {
+    default V computeIfPresent(final K key,
+            final BiFunction<? super K, ? super V, ? extends V> remappingFunction)
+            throws ApiException {
         this.load();
-        return this.getInternalList().get(index);
+        return this.getInternalMap().computeIfPresent(key, remappingFunction);
     }
 
     /**
-     * <p>
-     * <b>Do not use this method yourself, use this instance's methods.</b>
-     * </p>
-     * <p>
-     * Returns the internal list.
-     * </p>
-     * <p>
-     * This list is only used as container for the returned internal list.
-     * </p>
-     * <p>
-     * This method might return <code>null</code> if {@link #load()} has
-     * not been called yet.
-     * </p>
+     * @throws ApiException
+     *             If lazy loading failed.
+     * @see #load()
+     */
+    @Override
+    default boolean containsKey(final Object key) throws ApiException {
+        this.load();
+        return this.containsKey(key);
+    }
+
+    /**
+     * @throws ApiException
+     *             If lazy loading failed.
+     * @see #load()
+     */
+    @Override
+    default boolean containsValue(final Object value) throws ApiException {
+        this.load();
+        return this.getInternalMap().containsValue(value);
+    }
+
+    /**
+     * @throws ApiException
+     *             If lazy loading failed.
+     * @see #load()
+     */
+    @Override
+    default Set<Map.Entry<K, V>> entrySet() throws ApiException {
+        this.load();
+        return this.getInternalMap().entrySet();
+    }
+
+    /**
+     * @throws ApiException
+     *             If lazy loading failed.
+     * @see #load()
+     */
+    @Override
+    default void forEach(final BiConsumer<? super K, ? super V> action) throws ApiException {
+        this.load();
+        this.getInternalMap().forEach(action);
+    }
+
+    /**
+     * @throws ApiException
+     *             If lazy loading failed.
+     * @see #load()
+     */
+    @Override
+    default V get(final Object key) throws ApiException {
+        this.load();
+        return this.getInternalMap().get(key);
+    }
+
+    /**
+     * Returns the internal map for this lazy map.
      *
-     * @return The internal list.
+     * @return Map instance.
      */
-    List<E> getInternalList();
+    Map<K, V> getInternalMap();
 
     /**
      * @throws ApiException
@@ -137,9 +144,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default int indexOf(final Object object) throws ApiException {
+    default V getOrDefault(final Object key, final V defaultValue) throws ApiException {
         this.load();
-        return this.getInternalList().indexOf(object);
+        return this.getInternalMap().getOrDefault(key, defaultValue);
     }
 
     /**
@@ -150,7 +157,7 @@ public interface LazyList<E> extends List<E>, Lazy {
     @Override
     default boolean isEmpty() throws ApiException {
         this.load();
-        return this.getInternalList().isEmpty();
+        return this.getInternalMap().isEmpty();
     }
 
     /**
@@ -159,9 +166,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default Iterator<E> iterator() throws ApiException {
+    default Set<K> keySet() throws ApiException {
         this.load();
-        return this.getInternalList().iterator();
+        return this.getInternalMap().keySet();
     }
 
     /**
@@ -170,9 +177,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default int lastIndexOf(final Object object) throws ApiException {
+    default V put(final K key, final V value) throws ApiException {
         this.load();
-        return this.getInternalList().lastIndexOf(object);
+        return this.getInternalMap().put(key, value);
     }
 
     /**
@@ -181,9 +188,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default ListIterator<E> listIterator() throws ApiException {
+    default void putAll(final Map<? extends K, ? extends V> map) throws ApiException {
         this.load();
-        return this.getInternalList().listIterator();
+        this.getInternalMap().putAll(map);
     }
 
     /**
@@ -192,9 +199,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default ListIterator<E> listIterator(final int index) throws ApiException {
+    default V putIfAbsent(final K key, final V value) throws ApiException {
         this.load();
-        return this.getInternalList().listIterator(index);
+        return this.getInternalMap().putIfAbsent(key, value);
     }
 
     /**
@@ -203,9 +210,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default E remove(final int index) throws ApiException {
+    default V remove(final Object key) throws ApiException {
         this.load();
-        return this.getInternalList().remove(index);
+        return this.getInternalMap().remove(key);
     }
 
     /**
@@ -214,9 +221,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default boolean remove(final Object object) throws ApiException {
+    default boolean remove(final Object key, final Object value) throws ApiException {
         this.load();
-        return this.getInternalList().remove(object);
+        return this.getInternalMap().remove(key, value);
     }
 
     /**
@@ -225,9 +232,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default boolean removeAll(final Collection<?> collection) throws ApiException {
+    default V replace(final K key, final V value) throws ApiException {
         this.load();
-        return this.getInternalList().removeAll(collection);
+        return this.getInternalMap().replace(key, value);
     }
 
     /**
@@ -236,9 +243,9 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default boolean retainAll(final Collection<?> collection) throws ApiException {
+    default boolean replace(final K key, final V oldValue, final V newValue) throws ApiException {
         this.load();
-        return this.getInternalList().retainAll(collection);
+        return this.getInternalMap().replace(key, oldValue, newValue);
     }
 
     /**
@@ -247,9 +254,10 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default E set(final int index, final E element) throws ApiException {
+    default void replaceAll(final BiFunction<? super K, ? super V, ? extends V> function)
+            throws ApiException {
         this.load();
-        return this.getInternalList().set(index, element);
+        this.getInternalMap().replaceAll(function);
     }
 
     /**
@@ -260,7 +268,7 @@ public interface LazyList<E> extends List<E>, Lazy {
     @Override
     default int size() throws ApiException {
         this.load();
-        return this.getInternalList().size();
+        return this.getInternalMap().size();
     }
 
     /**
@@ -269,30 +277,8 @@ public interface LazyList<E> extends List<E>, Lazy {
      * @see #load()
      */
     @Override
-    default List<E> subList(final int fromIndex, final int toIndex) throws ApiException {
+    default Collection<V> values() throws ApiException {
         this.load();
-        return this.getInternalList().subList(fromIndex, toIndex);
-    }
-
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default Object[] toArray() throws ApiException {
-        this.load();
-        return this.getInternalList().toArray();
-    }
-
-    /**
-     * @throws ApiException
-     *             If lazy loading failed.
-     * @see #load()
-     */
-    @Override
-    default <T> T[] toArray(final T[] array) throws ApiException {
-        this.load();
-        return this.getInternalList().toArray(array);
+        return this.getInternalMap().values();
     }
 }

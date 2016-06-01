@@ -8,15 +8,15 @@ package vs.gerriet.json;
 public class BankList {
 
     /**
-     * Bank id list.
+     * Bank uri list.
      */
     public String[] banks;
 
     /**
-     * Creates a new response with the given bank id list.
+     * Creates a new response with the given bank uri list.
      *
      * @param banks
-     *            Bank id list.
+     *            Bank uri list.
      */
     public BankList(final String[] banks) {
         this.banks = banks;

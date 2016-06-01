@@ -18,7 +18,7 @@ public class Bank extends BankBase implements Lazy {
     /**
      * Flag if {@link #load()} has been called yet.
      */
-    private boolean initialized = false;
+    private boolean loaded = false;
     /**
      * <p>
      * Contains the bank's id.
@@ -29,12 +29,24 @@ public class Bank extends BankBase implements Lazy {
      */
     private BankId id;
 
-    // TODO @gerriet-hinrichs: Add
-    // private AccountList accounts;
-    // TODO @gerriet-hinrichs: Add
-    // private TransactionList transactions;
-    // TODO @gerriet-hinrichs: Add
-    // private TransferList transfers;
+    /**
+     * Contains accounts from this bank.
+     */
+    private AccountList accounts;
+    /**
+     * Contains transactions from this bank.
+     */
+    private TransactionMap transactions;
+
+    /**
+     * Contains transfers for this bank.
+     */
+    private TransferMap transfers;
+
+    /**
+     * Game this bank belongs to.
+     */
+    private GameId game;
 
     /**
      * Loads the bank with the given id from the bank service.
@@ -44,7 +56,7 @@ public class Bank extends BankBase implements Lazy {
      * @throws ApiException
      *             If the bank data could not be loaded from the bank service.
      */
-    public Bank(final BankId id) throws ApiException {
+    Bank(final BankId id) throws ApiException {
         this.id = id;
     }
 
@@ -61,31 +73,70 @@ public class Bank extends BankBase implements Lazy {
      * @throws ApiException
      *             If the bank could not be created on the bank service.
      */
-    public Bank(final GameId id) throws ApiException {
+    Bank(final GameId id) throws ApiException {
         final HttpResponse<BankData> result = this.requestCreateBank(id);
         if (result == null || result.getStatus() != 200) {
             throw new ApiException("Failed to create bank for game '" + id.getUri() + "'.");
         }
         this.refreshData(result.getBody());
-        this.initialized = true;
+        this.loaded = true;
+    }
+
+    /**
+     * Returns the accounts that belong to this bank.
+     *
+     * @return Account list.
+     */
+    public AccountList getAccounts() {
+        this.load();
+        return this.accounts;
+    }
+
+    /**
+     * Returns the game this bank belongs to.
+     * 
+     * @return Game id.
+     */
+    public GameId getGame() {
+        return this.game;
     }
 
     /**
      * Returns the id of this bank.
-     * 
+     *
      * @return Bank id.
      */
     public BankId getId() {
         return this.id;
     }
 
+    /**
+     * Returns the transactions that belong to this bank.
+     *
+     * @return Transaction list.
+     */
+    public TransactionMap getTransactions() {
+        this.load();
+        return this.transactions;
+    }
+
+    /**
+     * Returns the transfers that belong to this bank.
+     *
+     * @return Transfer list.
+     */
+    public TransferMap getTransfers() {
+        this.load();
+        return this.transfers;
+    }
+
     @Override
     public void load() throws ApiException {
-        if (this.initialized) {
+        if (this.loaded) {
             return;
         }
         this.refresh();
-        this.initialized = true;
+        this.loaded = true;
     }
 
     @Override
@@ -107,6 +158,11 @@ public class Bank extends BankBase implements Lazy {
     private void refreshData(final BankData data) {
         this.id = new BankId(null);
         this.id.loadUri(data.bank);
-        // TODO @gerriet-hinrichs: load missing fields
+        this.game = new GameId(null);
+        this.game.loadUri(data.game);
+        this.transfers = new TransferMap(this);
+        this.accounts = new AccountList(this);
+        this.transactions = new TransactionMap(this);
     }
+
 }

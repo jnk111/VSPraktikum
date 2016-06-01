@@ -290,7 +290,7 @@ public class Transaction extends LockProvider {
             }
         }
         // if everything is successful
-        this.addTransfersToBank();
+        this.setTransferSuccess();
         this.createEvents();
         this.status = Status.COMMITTED;
         return true;
@@ -372,15 +372,6 @@ public class Transaction extends LockProvider {
     }
 
     /**
-     * Adds all transfers from this transaction to the bank.
-     */
-    private void addTransfersToBank() {
-        this.transfers.forEach(transfer -> {
-            this.bank.addTransfer(transfer);
-        });
-    }
-
-    /**
      * Creates events for all done operations.
      */
     private void createEvents() {
@@ -408,5 +399,27 @@ public class Transaction extends LockProvider {
      */
     private boolean isOperationValid(final AtomicOperation operation) {
         return !this.isLocked() && operation.getBank().equals(this.bank);
+    }
+
+    /**
+     * Updates the transfer instances within the bank to all have failed state.
+     */
+    private void setTransferFailure() {
+        this.transfers.forEach(transfer -> {
+            transfer.failed = true;
+            transfer.pending = false;
+            this.bank.addTransfer(transfer);
+        });
+    }
+
+    /**
+     * Updates the transfer instances within the bank to all have success state.
+     */
+    private void setTransferSuccess() {
+        this.transfers.forEach(transfer -> {
+            transfer.failed = false;
+            transfer.pending = false;
+            this.bank.addTransfer(transfer);
+        });
     }
 }

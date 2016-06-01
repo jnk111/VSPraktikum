@@ -6,7 +6,9 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
+import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.UserId;
+import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.json.AccountInfo;
 import vs.gerriet.model.Bank;
 
@@ -62,6 +64,12 @@ public class AccountsListController extends AbstractController
             response.status(201);
         } else {
             response.status(409);
+        }
+        try {
+            return this.gson.toJson(bank.getInfo(new AccountId(bank.getId(), user.getBaseData())));
+        } catch (@SuppressWarnings("unused") final AccountAccessException ex) {
+            // we can ignore this exception, we know there is an account for
+            // that user
         }
         return "";
     }

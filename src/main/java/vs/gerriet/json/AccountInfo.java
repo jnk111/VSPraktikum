@@ -2,7 +2,7 @@ package vs.gerriet.json;
 
 /**
  * Account info JSON object.
- * 
+ *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class AccountInfo {
@@ -17,6 +17,11 @@ public class AccountInfo {
     public int balance;
 
     /**
+     * Account uri.
+     */
+    public String uri;
+
+    /**
      * Creates a new instance.
      *
      * @param player
@@ -24,8 +29,9 @@ public class AccountInfo {
      * @param balance
      *            Account balance.
      */
-    public AccountInfo(final String player, final int balance) {
+    public AccountInfo(final String player, final int balance, final String uri) {
         this.balance = balance;
         this.player = player;
+        this.uri = uri;
     }
 }

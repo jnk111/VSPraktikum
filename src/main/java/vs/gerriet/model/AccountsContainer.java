@@ -111,7 +111,8 @@ public class AccountsContainer {
         this.lock(involvedAccounts);
         // we know the account exist, otherwise lock() would fail
         final Account acc = this.accounts.get(accountId);
-        final AccountInfo res = new AccountInfo(acc.getUser().getUri(), acc.getBalance());
+        final AccountInfo res =
+                new AccountInfo(acc.getUser().getUri(), acc.getBalance(), accountId.getUri());
         this.unlock(involvedAccounts);
         return res;
     }

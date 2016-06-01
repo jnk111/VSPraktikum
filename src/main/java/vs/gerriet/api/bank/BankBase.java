@@ -11,6 +11,7 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import de.stuff42.error.ExceptionUtils;
 import vs.gerriet.api.VsApiBase;
 import vs.gerriet.controller.bank.BanksController;
+import vs.gerriet.controller.bank.account.AccountsListController;
 import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
@@ -19,6 +20,8 @@ import vs.gerriet.id.GameId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
+import vs.gerriet.json.AccountInfo;
+import vs.gerriet.json.AccountList;
 import vs.gerriet.json.BankData;
 import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
@@ -69,6 +72,36 @@ abstract class BankBase extends VsApiBase {
         try {
             return Unirest.put(this.getServiceUri() + transaction.getUri()).body(account.getUri())
                     .asString();
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
+     * <p>
+     * API call to create an account from the given data.
+     * </p>
+     * <p>
+     * The following status codes are important:
+     * <ul>
+     * <li><code>201</code> - Account created.</li>
+     * <li><code>409</code> - Account found.</li>
+     * </ul>
+     * </p>
+     *
+     * @param bank
+     *            Bank to create the account on.
+     * @param data
+     *            Data for the account.
+     * @return Response with updated account data or <code>null</code> if the
+     *         request failed.
+     */
+    public HttpResponse<AccountInfo> requestCreateAccount(final BankId bank,
+            final AccountInfo data) {
+        try {
+            final String uri = bank.getUri() + AccountsListController.URI_PART;
+            return Unirest.post(this.getServiceUri() + uri).body(data).asObject(AccountInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -132,6 +165,41 @@ abstract class BankBase extends VsApiBase {
             }
             return Unirest.post(this.getServiceUri() + bank.getUri()).queryString("phases", phases)
                     .asString();
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
+     * API call to get information about a specific account.
+     *
+     * @param account
+     *            Account id.
+     * @return Response with account data or <code>null</code> if the request
+     *         failed.
+     */
+    public HttpResponse<AccountInfo> requestGetAccount(final AccountId account) {
+        try {
+            return Unirest.get(this.getServiceUri() + account.getUri()).asObject(AccountInfo.class);
+        } catch (final UnirestException ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
+            return null;
+        }
+    }
+
+    /**
+     * API call to load a list with all accounts for the given bank.
+     *
+     * @param bank
+     *            Bank to load accounts from.
+     * @return Response with account list or <code>null</code> if the request
+     *         failed.
+     */
+    public HttpResponse<AccountList> requestGetAccountList(final BankId bank) {
+        try {
+            final String uri = bank.getUri() + AccountsListController.URI_PART;
+            return Unirest.get(this.getServiceUri() + uri).asObject(AccountList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;

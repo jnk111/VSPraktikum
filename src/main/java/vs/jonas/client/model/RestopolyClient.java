@@ -199,7 +199,9 @@ public class RestopolyClient {
 		for (PlayerID playerID : playerList.getPlayers()) {
 
 			// {"ready":false,"id":"/games/100/players/wario","user":"/user/wario"}
-			JsonObject playerRessource = get(BASE_URL + playerID.getId());
+			String newUri = gameServiceUri.replaceAll("/games", "");
+			System.out.println("Request an:" + newUri + playerID.getId());
+			JsonObject playerRessource = get(newUri + playerID.getId());
 			PlayerResponse player = gson.fromJson(playerRessource, PlayerResponse.class);
 //			System.out.println("PlayerResponse: " + player);
 
@@ -270,20 +272,13 @@ public class RestopolyClient {
 		List<Field> fields = board.getFields();
 		for (Field field : fields) {
 //			System.out.println(gson.toJson(field));
-			String placeUri = field.getPlace();
-			JsonObject fieldRessource = get(BASE_URL + placeUri);
+			String placeUri = field.getPlace().replaceAll("/boards","");
+//			System.out.println("URI: " + placeUri);
+			JsonObject fieldRessource = get(boardServiceUri + placeUri);
 //			 System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n"
 //			 +fieldRessource.toString());
-			System.out.println(fieldRessource.get("name"));
+//			System.out.println(fieldRessource.get("name"));
 			String id = placeUri;
-			// String name = "";
-			// String owner = "";
-			// String value = "";
-			// String rent = "";
-			// String cost = "";
-			// String houses = "";
-			// String hypocredit = "";
-			// List<Player> players = null;
 			Place place = gson.fromJson(fieldRessource.toString(), Place.class);
 			place.setPlayers(field.getPawns());
 			place.setID(id);

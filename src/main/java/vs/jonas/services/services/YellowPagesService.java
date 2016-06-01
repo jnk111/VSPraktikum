@@ -20,6 +20,7 @@ public class YellowPagesService {
 	private final String YELLOW_SERVICE_IP = "http://172.18.0.5:4567";
 	private final String YELLOW_SERVICE_URL = "http://172.18.0.5:4567/services";
 	private final String OF_NAME = "/of/name/JJMG";
+	private String GAMES_BASE_URL;
 
 	private Map<String, JSONService> services;
 
@@ -32,6 +33,7 @@ public class YellowPagesService {
 	public YellowPagesService(boolean online) {
 		try {
 			this.online = online;
+			GAMES_BASE_URL = "http://172.18.0.78:4567";
 			initServices(this.online);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -155,7 +157,7 @@ public class YellowPagesService {
 
 	public String getBaseIP() {
 		if(online){
-			return YELLOW_SERVICE_IP;
+			return GAMES_BASE_URL;
 		}
 		else return "http://localhost:4567";
 	}

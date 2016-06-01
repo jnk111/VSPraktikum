@@ -17,10 +17,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import vs.jonas.client.model.table.GameFieldTableCellRenderer;
+import vs.jonas.client.model.table.GameFieldNameCellRenderer;
+import vs.jonas.client.model.table.GameFieldPlayerCellRenderer;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
-import javax.swing.JComboBox;
 
 public class GameUI {
 
@@ -103,9 +103,14 @@ public class GameUI {
 		splitPane_1.setLeftComponent(playerPanel);
 		
 		gameFieldTable = new JTable(new GameFieldTableModel());
-		gameFieldTable.setRowHeight(80);
-		GameFieldTableCellRenderer cellRenderer = new GameFieldTableCellRenderer();
-		gameFieldTable.setDefaultRenderer(Object.class, cellRenderer);
+		gameFieldTable.setRowHeight(100);
+		GameFieldNameCellRenderer fieldNameRenderer = new GameFieldNameCellRenderer();
+//		GameFieldPlayerCellRenderer playersRenderer = new GameFieldPlayerCellRenderer();
+		fieldNameRenderer.setHorizontalAlignment( JLabel.CENTER );
+		gameFieldTable.getColumnModel().getColumn(GameFieldTableModel.NAME).setCellRenderer(fieldNameRenderer);
+//		gameFieldTable.getColumnModel().getColumn(GameFieldTableModel.PLAYERS).setCellRenderer(playersRenderer);
+//		gameFieldTable.setColumnSelectionAllowed(true);
+//		gameFieldTable.setCellSelectionEnabled(true);
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");

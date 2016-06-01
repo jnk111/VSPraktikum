@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 
-public class GameFieldTableCellRenderer extends DefaultTableCellRenderer {
+public class GameFieldNameCellRenderer extends DefaultTableCellRenderer {
 
 	/**
 	 * 
@@ -20,8 +20,8 @@ public class GameFieldTableCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int col) {
 		JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-		label.setHorizontalTextPosition(CENTER);
 		GameFieldTableModel model = (GameFieldTableModel) table.getModel();
+				
 		String fieldName = model.getPlace(row).getName();
 //		System.out.println("## Rendering Gamefield: " + fieldName);
 		
@@ -51,7 +51,6 @@ public class GameFieldTableCellRenderer extends DefaultTableCellRenderer {
 				|| fieldName.equals("Nordbahnhof") || fieldName.equals("Hauptbahnhof")){
 			label.setBackground(Color.LIGHT_GRAY);
 		} else label.setBackground(Color.WHITE);
-		
 		return label;
 	}
 

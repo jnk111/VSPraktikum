@@ -15,7 +15,7 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = { "Spieler", "Kontostand", "Position", "Letzter Wurf", "Ready", "Turn"};
+	private String[] columnNames = { "Spieler", "Kontostand", "Letzter Wurf", "Ready", "Turn"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
@@ -76,10 +76,9 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 		switch (col) {
 		case 0:	ergebnis = player.getPawn(); break;
 		case 1:	ergebnis = player.getAccount(); break;
-		case 2:	ergebnis = player.getPosition();	break;
-		case 3: ergebnis = player.getLastRoll(); break;
-		case 4: ergebnis = player.isReady(); break;
-		case 5: ergebnis = player.hasTurnMutex();
+		case 2: ergebnis = player.getLastRoll(); break;
+		case 3: ergebnis = player.isReady(); break;
+		case 4: ergebnis = player.hasTurnMutex();
 		}
 		return ergebnis;
 	}

@@ -5,7 +5,9 @@ import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
+import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
+import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
@@ -48,8 +50,6 @@ public class StartLocalServices {
      */
     public void startServices() throws ServiceUnavailableException, MalformedURLException, InterruptedException {
 
-        /*  Initializes BankService  */
-//        BankService.run();
 
         /*  Initializes EventService */
         new EventService().startService();
@@ -62,8 +62,15 @@ public class StartLocalServices {
         neededServicesDice.put(ServiceNames.EVENT, yellowPages.getService(ServiceNames.EVENT));
         new DiceService(neededServicesDice).startService();
 
+        
         /*  Initializes GameService */
         new GamesServiceAPI();
+
+        /*	Initializes BrokerService */
+        new BrokerAPI();
+
+        /*  Initializes BankService  */
+        BankService.run();
 
         /*  Initializes UserService */
         new UserServiceRESTApi();

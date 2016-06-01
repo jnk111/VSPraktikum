@@ -3,6 +3,8 @@ package vs.jonas.client.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComboBox;
+
 import com.google.gson.Gson;
 
 public class Place {
@@ -107,5 +109,14 @@ public class Place {
 	@Override
 	public String toString(){
 		return new Gson().toJson(this);
+	}
+
+	public JComboBox<String> getPlayersASComboBox() {
+		// TODO Auto-generated method stub
+		JComboBox<String> box = new JComboBox<>();
+		for(String player : this.players){
+			box.addItem(player);
+		}
+		return box;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 
 import vs.jonas.client.json.Place;
@@ -28,6 +29,8 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 */
 	List<Place> fields;
 
+	public static int NAME = 0;
+	public static int PLAYERS = 1;
 	/**
 	 * Initialisiert das TableModel
 	 */
@@ -101,6 +104,10 @@ public class GameFieldTableModel extends DefaultTableModel{
 	
 	public Place getPlace(int row){
 		return fields.get(row);
+	}
+	
+	public JComboBox<String> getPlayersAsComboBox(int row){
+		return (JComboBox<String>) getValueAt(row, PLAYERS);
 	}
 	
 	@Override

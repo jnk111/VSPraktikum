@@ -48,6 +48,14 @@ public class Transfer extends BankBase implements Lazy {
      * Reason for this transfer.
      */
     private String reason;
+    /**
+     * Pending flag of this transfer.
+     */
+    private boolean pending;
+    /**
+     * Failed flag for this transfer.
+     */
+    private boolean failed;
 
     /**
      * Creates a new Transfer lazy from the given data.
@@ -130,6 +138,27 @@ public class Transfer extends BankBase implements Lazy {
         return this.map;
     }
 
+    /**
+     * Returns if this transfer failed. A transfer will always fail if the
+     * associated transaction fails, even if the transfer itself is not the
+     * actual cause.
+     *
+     * @return Failed flag.
+     */
+    public boolean isFailed() {
+        return this.failed;
+    }
+
+    /**
+     * Returns if this transfer is already performed or pending (transaction
+     * still running).
+     *
+     * @return Pending flag.
+     */
+    public boolean isPending() {
+        return this.pending;
+    }
+
     @Override
     public void load() throws ApiException {
         if (!this.loaded) {
@@ -155,6 +184,8 @@ public class Transfer extends BankBase implements Lazy {
     private void loadData(final TransferInfo data) {
         this.amount = data.amount;
         this.reason = data.reason;
+        this.pending = data.pending;
+        this.failed = data.failed;
         this.from = null;
         if (data.from != null) {
             final AccountId accountId = new AccountId(this.bank.getId(), null);

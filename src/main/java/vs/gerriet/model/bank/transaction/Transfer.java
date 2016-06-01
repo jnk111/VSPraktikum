@@ -131,4 +131,13 @@ public class Transfer {
                 this.to == null ? null : this.to.getUri(), this.amount, this.reason, this.failed,
                 this.pending);
     }
+
+    /**
+     * Returns failed flag.
+     * 
+     * @return Failed flag.
+     */
+    public boolean isFailed() {
+        return this.failed;
+    }
 }

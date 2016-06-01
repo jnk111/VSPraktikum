@@ -77,4 +77,6 @@ public class TransferMap extends BankBase implements LazyMap<TransferId, Transfe
         // make list read only
         this.map = Collections.unmodifiableMap(transferMap);
     }
+
+    // TODO @gerriet-hinrichs: create transfer
 }

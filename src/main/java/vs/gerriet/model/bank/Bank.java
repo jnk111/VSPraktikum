@@ -340,9 +340,11 @@ public class Bank {
      * @throws TransactionException
      *             If something went horribly wrong.
      */
-    public boolean performTransfer(final AccountId from, final AccountId to, final int amount,
+    public Transfer performTransfer(final AccountId from, final AccountId to, final int amount,
             final String reason) throws TransactionException {
-        return this.runTransfer(new Transfer(this, from, to, amount, reason));
+        final Transfer transfer = new Transfer(this, from, to, amount, reason);
+        this.runTransfer(transfer);
+        return transfer;
     }
 
     /**
@@ -360,13 +362,14 @@ public class Bank {
      *            Transaction for this transfer.
      * @return <code>true</code> on success, <code>false</code> otherwise.
      */
-    public boolean performTransfer(final AccountId from, final AccountId to, final int amount,
+    public Transfer performTransfer(final AccountId from, final AccountId to, final int amount,
             final String reason, final TransactionId transactionId) {
         if (!this.transactions.containsKey(transactionId)) {
-            return false;
+            return null;
         }
-        return this.transactions.get(transactionId)
-                .addOperation(new Transfer(this, from, to, amount, reason));
+        final Transfer transfer = new Transfer(this, from, to, amount, reason);
+        this.transactions.get(transactionId).addOperation(transfer);
+        return transfer;
     }
 
     /**
@@ -384,9 +387,11 @@ public class Bank {
      * @throws TransactionException
      *             If something went horribly wrong.
      */
-    public boolean performTransfer(final AccountId player, final Type type, final int amount,
+    public Transfer performTransfer(final AccountId player, final Type type, final int amount,
             final String reason) throws TransactionException {
-        return this.runTransfer(new Transfer(this, type, player, amount, reason));
+        final Transfer transfer = new Transfer(this, type, player, amount, reason);
+        this.runTransfer(transfer);
+        return transfer;
     }
 
     /**
@@ -404,13 +409,14 @@ public class Bank {
      *            Transaction for this transfer.
      * @return <code>true</code> on success, <code>false</code> otherwise.
      */
-    public boolean performTransfer(final AccountId player, final Type type, final int amount,
+    public Transfer performTransfer(final AccountId player, final Type type, final int amount,
             final String reason, final TransactionId transactionId) {
         if (!this.transactions.containsKey(transactionId)) {
-            return false;
+            return null;
         }
-        return this.transactions.get(transactionId)
-                .addOperation(new Transfer(this, type, player, amount, reason));
+        final Transfer transfer = new Transfer(this, type, player, amount, reason);
+        this.transactions.get(transactionId).addOperation(transfer);
+        return transfer;
     }
 
     /**

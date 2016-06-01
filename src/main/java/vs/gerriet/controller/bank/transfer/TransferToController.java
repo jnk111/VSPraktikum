@@ -10,6 +10,7 @@ import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.model.bank.Bank;
 import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
+import vs.gerriet.model.bank.transaction.Transfer;
 
 /**
  * Controller for transfers to a specific account.
@@ -51,10 +52,10 @@ public class TransferToController extends AbstractController implements PostCont
         final int amount = Integer.parseInt(request.params("amount"));
         final String reason = this.gson.fromJson(request.body(), String.class);
         final String transactionUri = request.queryParams("transaction");
-        boolean success;
+        Transfer transfer;
         if (transactionUri == null) {
             try {
-                success = bank.performTransfer(player, Type.DEPOSIT, amount, reason);
+                transfer = bank.performTransfer(player, Type.DEPOSIT, amount, reason);
             } catch (final TransactionException ex) {
                 // something went horribly wrong
                 return AbstractController.handleFatalError(ex, response);
@@ -66,11 +67,15 @@ public class TransferToController extends AbstractController implements PostCont
                 response.status(404);
                 return "";
             }
-            success = bank.performTransfer(player, Type.DEPOSIT, amount, reason, transactionId);
+            transfer = bank.performTransfer(player, Type.DEPOSIT, amount, reason, transactionId);
         }
-        // no success: insufficient fonds
-        response.status(success ? 201 : 403);
-        return "";
+        if (transfer == null || transfer.isFailed()) {
+            // no success: insufficient fonds
+            response.status(403);
+            return "";
+        }
+        response.status(201);
+        return this.gson.toJson(transfer.getInfo());
     }
 
 }

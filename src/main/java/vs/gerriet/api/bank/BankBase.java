@@ -58,7 +58,7 @@ abstract class BankBase extends VsApiBase {
 
     /**
      * API call to create a new simple transaction.
-     * 
+     *
      * @param bank
      *            Bank the transaction is created on.
      * @return Response containing the uri of the created transaction within
@@ -71,7 +71,7 @@ abstract class BankBase extends VsApiBase {
 
     /**
      * API call to create a new transaction.
-     * 
+     *
      * @param bank
      *            Bank the transaction is created on.
      * @param type
@@ -134,7 +134,7 @@ abstract class BankBase extends VsApiBase {
 
     /**
      * Returns the status of the given transaction.
-     * 
+     *
      * @param transaction
      *            Transaction id.
      * @return Response containing the state of the transaction as string.
@@ -204,16 +204,17 @@ abstract class BankBase extends VsApiBase {
      *            Transfer amount.
      * @param reason
      *            Transfer reason.
-     * @return Empty response or <code>null</code> if the request failed.
+     * @return Response with created transfer or <code>null</code> if the
+     *         request failed.
      */
-    public HttpResponse<String> requestPerformTransfer(final AccountId from, final AccountId to,
-            final int amount, final String reason) {
+    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId from,
+            final AccountId to, final int amount, final String reason) {
         try {
             return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
                     // cast to object to use object mapper
-                    .body((Object) reason).asString();
+                    .body((Object) reason).asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -240,17 +241,19 @@ abstract class BankBase extends VsApiBase {
      *            Transfer reason.
      * @param transaction
      *            Transaction to add this transfer to.
-     * @return Empty response or <code>null</code> if the request failed.
+     * @return Response with created transfer or <code>null</code> if the
+     *         request failed.
      */
-    public HttpResponse<String> requestPerformTransfer(final AccountId from, final AccountId to,
-            final int amount, final String reason, final TransactionId transaction) {
+    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId from,
+            final AccountId to, final int amount, final String reason,
+            final TransactionId transaction) {
         try {
             return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
                     .queryString("transaction", transaction.getUri())
                     // cast to object to use object mapper
-                    .body((Object) reason).asString();
+                    .body((Object) reason).asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -277,9 +280,10 @@ abstract class BankBase extends VsApiBase {
      *            Transfer amount.
      * @param reason
      *            Transfer reason.
-     * @return Empty response or <code>null</code> if the request failed.
+     * @return Response with created transfer or <code>null</code> if the
+     *         request failed.
      */
-    public HttpResponse<String> requestPerformTransfer(final AccountId account,
+    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
             final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
             final String reason) {
         try {
@@ -302,7 +306,7 @@ abstract class BankBase extends VsApiBase {
             params.forEach((key, value) -> request.routeParam(key, value));
             // cast to object to use object mapper
             request.body((Object) reason);
-            return request.asString();
+            return request.asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -328,9 +332,10 @@ abstract class BankBase extends VsApiBase {
      *            Transfer reason.
      * @param transaction
      *            Transaction to add this transfer to.
-     * @return Empty response or <code>null</code> if the request failed.
+     * @return Response with created transfer or <code>null</code> if the
+     *         request failed.
      */
-    public HttpResponse<String> requestPerformTransfer(final AccountId account,
+    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
             final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
             final String reason, final TransactionId transaction) {
         try {
@@ -354,7 +359,7 @@ abstract class BankBase extends VsApiBase {
             request.queryString("transaction", transaction.getUri());
             // cast to object to use object mapper
             request.body((Object) reason);
-            return request.asString();
+            return request.asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;

@@ -37,7 +37,7 @@ public class BankData {
     public String bank;
 
     /**
-     * Game uri for the bank;
+     * Game uri for the bank.
      */
     public String game;
 

@@ -211,6 +211,7 @@ public class Transaction extends LockProvider {
      *         otherwise.
      */
     public synchronized boolean addOperation(final Transfer operation) {
+        this.bank.addTransfer(operation);
         for (final AtomicOperation op : operation.operations) {
             if (!this.isOperationValid(op)) {
                 return false;
@@ -368,6 +369,7 @@ public class Transaction extends LockProvider {
         while (!this.doneOperations.isEmpty()) {
             this.doneOperations.pop().undo();
         }
+        this.setTransferFailure();
         this.status = Status.ROLLED_BACK;
     }
 

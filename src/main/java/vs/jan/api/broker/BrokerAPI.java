@@ -135,7 +135,9 @@ public class BrokerAPI {
 
 	private void initPOSTCreateBroker() {
 		post("/broker", CONTENT_TYPE, (req, resp) -> {
-			service.createBroker(GSON.fromJson(req.body(), JSONGameURI.class), req.host());
+			String ip = req.ip() + ":" + req.port();
+			JSONGameURI gameUri = GSON.fromJson(req.body(), JSONGameURI.class);
+			service.createBroker(gameUri, ip);
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}

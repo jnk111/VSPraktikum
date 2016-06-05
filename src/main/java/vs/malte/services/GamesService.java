@@ -38,7 +38,7 @@ public class GamesService
     // ************************CODE CONFIGS************************ //
 
     private final boolean DEBUG_MODE = true; // Zu Testzwecken: Konsolenausgaben aktivieren
-    private final boolean LOCAL = true;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
+    private final boolean LOCAL = false;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
 
     // **************************PREFIXES************************** //
 
@@ -160,7 +160,7 @@ public class GamesService
                 }
 
                 newGame.getServiceList().setAllServices( newServices ); // Services in neuem Spiel speichern
-                newGame.setPlayers( newServices.get( "users" ) );       // TODO: Userservice ( Da Userservice laut Spezi nicht unter Services gespeichert ist )
+                newGame.setPlayers( newGame.getServiceList().getGame() + "/" + newGame.getName() + "/players" );      
             }
             catch ( UnirestException e )
             {
@@ -541,7 +541,7 @@ public class GamesService
 
         if ( !game.isRunning() )
         {
-            String hostUri = req.host();
+            String clientUri = req.ip() + ":" + req.port();
 
             Player newPlayer = new Gson().fromJson( req.body(), Player.class );   // Erstellt Playerobjekt mit Namen
             String mapKey = newPlayer.getUserName().toLowerCase();
@@ -559,7 +559,7 @@ public class GamesService
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
                 userServiceDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
                 userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/user/", "" ) );
-                userServiceDTO.setUri( hostUri + "/client" + userServiceDTO.getName() );
+                userServiceDTO.setUri( clientUri + "/client" + userServiceDTO.getName() );
 
                 if ( DEBUG_MODE )
                 {

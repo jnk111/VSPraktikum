@@ -7,7 +7,7 @@ public class ServiceList
 {
     private String games;
     private String dice;
-    private String board;
+    private String boards;
     private String bank;
     private String broker;
     private String decks;
@@ -18,7 +18,7 @@ public class ServiceList
     {
         this.games = game;
         this.dice = dice;
-        this.board = board;
+        this.boards = board;
         this.bank = bank;
         this.broker = broker;
         this.decks = decks;
@@ -41,7 +41,7 @@ public class ServiceList
 
     public String getBoard()
     {
-        return board;
+        return boards;
     }
 
     public String getBank()
@@ -79,8 +79,8 @@ public class ServiceList
         if ( dice != null )
             services.put( "dice", dice );
 
-        if ( board != null )
-            services.put( "board", board );
+        if ( boards != null )
+            services.put( "board", boards );
 
         if ( bank != null )
             services.put( "bank", bank );
@@ -114,8 +114,8 @@ public class ServiceList
         if ( newServices.containsKey( "dice" ) && this.dice == null )
             setDice( newServices.get( "dice" ) );
 
-        if ( newServices.containsKey( "board" ) && this.board == null )
-            setBoard( newServices.get( "board" ) );
+        if ( newServices.containsKey( "boards" ) && this.boards == null )
+            setBoard( newServices.get( "boards" ) );
 
         if ( newServices.containsKey( "bank" ) && this.bank == null )
             setBank( newServices.get( "bank" ) );
@@ -146,7 +146,7 @@ public class ServiceList
 
     public void setBoard( String board )
     {
-        this.board = board;
+        this.boards = board;
     }
 
     public void setBank( String bank )
@@ -174,7 +174,7 @@ public class ServiceList
     {
         return "ServiceList [game=" + games + ",\n"
                 + " dice=" + dice + ",\n"
-                + " board=" + board + ",\n"
+                + " board=" + boards + ",\n"
                 + " bank=" + bank + ",\n"
                 + " broker=" + broker + ",\n"
                 + " decks=" + decks + ",\n"

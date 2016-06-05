@@ -8,16 +8,16 @@ public class GamesServiceAPI
 {
     private final GamesService gameService;
 
-    public GamesServiceAPI( )
+    public GamesServiceAPI()
     {
-//        this.gameService = gameService;
+        // this.gameService = gameService;
         this.gameService = new GamesService();
-        
+
         initGetAvailableGames();
         initGetGame();
         initGetGameServices();
         initGetGameComponents();
-        initGetAllPlayers();
+        initGetAllPlayer();
         initGetPlayerReadyness();
         initGetSpecificPlayer();
         initGetGameStatus();
@@ -32,8 +32,8 @@ public class GamesServiceAPI
         initPutPlayerReady();
         initPutGameStatus();
         initPutPlayersTurn();
-        
-//        initExceptions();
+
+        // initExceptions();
     }
 
     /**
@@ -129,7 +129,7 @@ public class GamesServiceAPI
     /**
      * Initialisiert die GET-Methode zum Erfragen der Bereitschaft eines Spielers.
      */
-    private void initGetAllPlayers()
+    private void initGetAllPlayer()
     {
         get( "/games/:gameId/players", ( req, resp ) ->
         {
@@ -219,14 +219,14 @@ public class GamesServiceAPI
             return gameService.getPlayersCurrent( req, resp );
         } );
     }
-    
-//    private void initExceptions()
-//    {
-//        exception(JsonSyntaxException.class, (exception, request, response) -> {
-//
-//            response.status(StatusCodes.BAD_REQ);
-//            response.body(StatusCodes.BAD_REQ + ": Invalid Json Input!");
-//            exception.printStackTrace();
-//        });
-//    }
+
+    // private void initExceptions()
+    // {
+    // exception(JsonSyntaxException.class, (exception, request, response) -> {
+    //
+    // response.status(StatusCodes.BAD_REQ);
+    // response.body(StatusCodes.BAD_REQ + ": Invalid Json Input!");
+    // exception.printStackTrace();
+    // });
+    // }
 }

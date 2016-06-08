@@ -44,7 +44,7 @@ public class BoardService {
 	 * Mapping Board -> GameUri
 	 */
 	private Map<Board, JSONGameURI> boards;
-	
+
 	private BoardValidator validator;
 	private BoardHelper helper;
 	private ServiceList services;
@@ -101,7 +101,6 @@ public class BoardService {
 		this.services = ServiceAllocator.initServices(host, gameId);
 		helper.setServices(this.services);
 		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
-		//placeABoard(gameId, b.convert());
 	}
 
 	/**
@@ -297,8 +296,14 @@ public class BoardService {
 		String resource = p.getRollsUri();
 		JSONEvent event = new JSONEvent(gameid, "move", "move", reas, resource, p.getPlayerUri());
 		helper.postEvent(event, this.services.getEvents());
-		String uri = this.services.getBroker() + "/" + gameid + "/places/" + newPos + "/visit/" + pawnid;
-		HttpService.post(uri, p.getPlayerUri(), HttpURLConnection.HTTP_OK);
+		Place place = helper.getPlace(b.getFields(), String.valueOf(newPos));
+
+		if (place.isPlace()) {
+			String uri = this.services.getBroker() + "/" + gameid + "/places/" + newPos + "/visit/" + pawnid;
+			HttpService.post(uri, p.getPlayerUri(), HttpURLConnection.HTTP_OK);
+		} else {
+			// TODO: call decks
+		}
 	}
 
 	/**
@@ -440,7 +445,13 @@ public class BoardService {
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
-			HttpService.put(p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
+
+			if (p.isPlace()) {
+				HttpService.put(p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
+			} else {
+				// TODO: call decks
+			}
+
 		}
 
 		key.setFields(fields);

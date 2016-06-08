@@ -132,7 +132,7 @@ public enum Place implements Convertable<JSONPlace> {
 	}
 
 	public boolean isPlace() {
-		return this.price > 0 || this.ordinal() == 0;
+		return this.price > 0;
 	}
 
 }

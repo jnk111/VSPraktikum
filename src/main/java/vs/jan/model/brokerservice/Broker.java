@@ -1,10 +1,14 @@
 package vs.jan.model.brokerservice;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.Convertable;
+import vs.jan.model.boardservice.Player;
+import vs.jan.transaction.SellTransaction;
 
 public class Broker implements Convertable<JSONBroker> {
 
@@ -13,6 +17,7 @@ public class Broker implements Convertable<JSONBroker> {
 	private String name;
 	private String estateUri;
 	private List<Place> places;
+	private Set<SellTransaction> hypothecaryCredits;
 
 	public Broker() {
 		this(null);
@@ -31,6 +36,7 @@ public class Broker implements Convertable<JSONBroker> {
 		this.uri = uri;
 		this.gameUri = gameUri;
 		this.places = places;
+		this.hypothecaryCredits = new HashSet<>();
 
 	}
 
@@ -60,7 +66,7 @@ public class Broker implements Convertable<JSONBroker> {
 
 	@Override
 	public JSONBroker convert() {
-		
+
 		JSONBroker broker = new JSONBroker();
 		broker.setId(this.getUri());
 		broker.setEstates(this.getEstateUri());
@@ -76,6 +82,7 @@ public class Broker implements Convertable<JSONBroker> {
 		int result = 1;
 		result = prime * result + ((estateUri == null) ? 0 : estateUri.hashCode());
 		result = prime * result + ((gameUri == null) ? 0 : gameUri.hashCode());
+		result = prime * result + ((hypothecaryCredits == null) ? 0 : hypothecaryCredits.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((places == null) ? 0 : places.hashCode());
 		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
@@ -101,6 +108,11 @@ public class Broker implements Convertable<JSONBroker> {
 				return false;
 		} else if (!gameUri.equals(other.gameUri))
 			return false;
+		if (hypothecaryCredits == null) {
+			if (other.hypothecaryCredits != null)
+				return false;
+		} else if (!hypothecaryCredits.equals(other.hypothecaryCredits))
+			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -118,19 +130,26 @@ public class Broker implements Convertable<JSONBroker> {
 			return false;
 		return true;
 	}
-	
-	
 
+	
 	@Override
 	public String toString() {
 		return "Broker [uri=" + uri + ", gameUri=" + gameUri + ", name=" + name + ", estateUri=" + estateUri + ", places="
-				+ places + "]";
+				+ places + ", hypothecaryCredits=" + hypothecaryCredits + "]";
 	}
 
 	public void addPlace(Place p) {
-		if(!this.places.contains(p)){
+		if (!this.places.contains(p)) {
 			this.places.add(p);
 		}
+	}
+
+	public void addHypothecaryCredit(SellTransaction trans) {
+		this.hypothecaryCredits.add(trans);
+	}
+	
+	public void removehypothecaryCredit(SellTransaction trans) {
+		this.hypothecaryCredits.remove(trans);
 	}
 
 	public String getName() {
@@ -140,8 +159,6 @@ public class Broker implements Convertable<JSONBroker> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
 
 	public String getEstateUri() {
 		return estateUri;
@@ -149,6 +166,29 @@ public class Broker implements Convertable<JSONBroker> {
 
 	public void setEstateUri(String estateUri) {
 		this.estateUri = estateUri;
+	}
+
+	public Set<SellTransaction> getHypothecaryCredits() {
+		return hypothecaryCredits;
+	}
+
+	public void setHypothecaryCredits(Set<SellTransaction> hypothecaryCredits) {
+		this.hypothecaryCredits = hypothecaryCredits;
+	}
+
+	public SellTransaction getHypothecaryCredit(String placeid, String playerUri) {
+		
+		for(SellTransaction credit: this.hypothecaryCredits) {
+			
+			String id = credit.getID(credit.getPlace().getUri());
+			Player player = credit.getTo().getPlayer();
+			
+			if(player.getId().equals(playerUri)
+					&& id.equals(placeid)) {
+				return credit;
+			}
+		}
+		return null;
 	}
 
 }

@@ -1,9 +1,10 @@
-package vs.jan.services.broker.transaction;
+package vs.jan.transaction;
 
 import java.net.HttpURLConnection;
 
 import vs.jan.model.boardservice.Player;
 import vs.jan.model.brokerservice.Account;
+import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.tools.HttpService;
 
 public class RentTransaction extends Transaction {

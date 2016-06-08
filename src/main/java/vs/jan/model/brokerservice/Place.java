@@ -19,11 +19,13 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private int housesPrice;
 	private String visitUri;
 	private String hypoCreditUri;
+	private int level;
 	
 	
 	public Place(String uri, String placeUri, int rentPrice, int housesPrice, String visitUri, String hypoCreditUri){
 		
 		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), housesPrice, visitUri, hypoCreditUri);
+
 	}
 	
 	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
@@ -38,6 +40,29 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.housesPrice = housesPrice;
 		this.visitUri = visitUri;
 		this.hypoCreditUri = hypoCreditUri;
+		this.setLevel(0);
+		initRents();
+		initCosts();
+	}
+
+	private void initCosts() {
+		
+		int price = this.housesPrice;
+		this.cost.add(price);
+		for(int i = 1; i < 6; i++){
+			this.cost.add(price);
+		}
+	}
+
+	private void initRents() {
+		int price = this.price;
+		this.rent.add(price);
+		
+		for(int i = 1; i < 6; i++){
+			price = price * 2;
+			this.rent.add(price + (this.housesPrice * i));
+		}
+		
 	}
 
 	public String getUri() {
@@ -111,9 +136,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public void setHypoCreditUri(String hypoCreditUri) {
 		this.hypoCreditUri = hypoCreditUri;
 	}
-
-
-
+	
 	
 
 	@Override
@@ -123,6 +146,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		result = prime * result + ((cost == null) ? 0 : cost.hashCode());
 		result = prime * result + housesPrice;
 		result = prime * result + ((hypoCreditUri == null) ? 0 : hypoCreditUri.hashCode());
+		result = prime * result + level;
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		result = prime * result + ((placeUri == null) ? 0 : placeUri.hashCode());
 		result = prime * result + price;
@@ -152,6 +176,8 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 			if (other.hypoCreditUri != null)
 				return false;
 		} else if (!hypoCreditUri.equals(other.hypoCreditUri))
+			return false;
+		if (level != other.level)
 			return false;
 		if (owner == null) {
 			if (other.owner != null)
@@ -189,7 +215,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public String toString() {
 		return "Place [uri=" + uri + ", placeUri=" + placeUri + ", owner=" + owner + ", price=" + price + ", rent=" + rent
 				+ ", cost=" + cost + ", housesPrice=" + housesPrice + ", visitUri=" + visitUri + ", hypoCreditUri="
-				+ hypoCreditUri + "]";
+				+ hypoCreditUri + ", level=" + level + "]";
 	}
 
 	@Override
@@ -244,5 +270,13 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		if(place.getVisit() != null){
 			this.setVisitUri(place.getVisit());
 		}
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 }

@@ -24,8 +24,8 @@ import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
 import vs.jan.model.boardservice.Player;
 import vs.jan.services.broker.BrokerService;
-import vs.jan.services.broker.transaction.TransactionFailedException;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.TransactionFailedException;
 
 public class BrokerAPI {
 
@@ -76,13 +76,16 @@ public class BrokerAPI {
 
 	private void initDELETERemoveHypothecaryCredit() {
 		delete("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			
+			JSONEventList list = service.deleteHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			return GSON.toJson(list);
 		});
 	}
 
 	private void initPUTTakeHypothecaryCredit() {
 		put("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			JSONEventList list = service.takeHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			return GSON.toJson(list);
 		});
 		
 	}

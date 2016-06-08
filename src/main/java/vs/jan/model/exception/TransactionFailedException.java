@@ -1,4 +1,4 @@
-package vs.jan.services.broker.transaction;
+package vs.jan.model.exception;
 
 public class TransactionFailedException extends Exception {
 

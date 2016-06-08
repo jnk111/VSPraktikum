@@ -1,6 +1,7 @@
-package vs.jan.services.broker.transaction;
+package vs.jan.transaction;
 
 import vs.jan.model.brokerservice.Account;
+import vs.jan.model.exception.TransactionFailedException;
 
 public abstract class Transaction {
 
@@ -72,7 +73,7 @@ public abstract class Transaction {
 				+ history + ", bankUri=" + bankUri + "]";
 	}
 	
-	protected String getID(String accUri) {
+	public String getID(String accUri) {
 
 		String[] u = accUri.split("/");
 		return u[u.length - 1];

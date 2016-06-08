@@ -144,6 +144,8 @@ public class BoardService {
 		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
+		
+		// TODO: zahle Startkapital aus
 
 		// Neue Wuerfelliste fuer die Figur erstellen
 		JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
@@ -282,6 +284,7 @@ public class BoardService {
 		// Eine Runde rumgelaufen?
 		if (newPos >= b.getFields().size() - 1) {
 			newPos = ((newPos % b.getFields().size()));
+			// TODO: zahle Geld aus (ueber Los gelaufen)
 		}
 
 		b.getFields().get(oldPos).removePawn(p); // Figur von alter

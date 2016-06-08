@@ -30,10 +30,12 @@ public class RentTransaction extends Transaction {
 		try {
 			String idFrom = getID(this.from.getAccUri());
 			String idTo = getID(this.to.getAccUri());
+			this.to.setSaldo(this.to.getSaldo() + this.amount);
+			this.from.setSaldo(this.from.getSaldo() - this.amount);
 			String url = this.bankUri + "/" + gameid + "/transfer/from/" + idFrom + "/to/" + idTo + "/" + amount
 					+ "?transaction=/transactions/" + gameid;
-			this.from.setSaldo(this.from.getSaldo() - this.amount);
-			this.to.setSaldo(this.to.getSaldo() + this.amount);
+			
+			
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 
 		} catch (Exception e) {
@@ -108,10 +110,6 @@ public class RentTransaction extends Transaction {
 		this.bankUri = bank;
 	}
 
-	private String getID(String accUri) {
 
-		String[] u = accUri.split("/");
-		return u[u.length - 1];
-	}
 
 }

@@ -12,7 +12,7 @@ public abstract class Transaction {
 
 	protected String bankUri;
 
-	protected abstract void execute(String gameid) throws TransactionFailedException;
+	public abstract void execute(String gameid) throws TransactionFailedException;
 
 	@Override
 	public int hashCode() {
@@ -70,6 +70,12 @@ public abstract class Transaction {
 	public String toString() {
 		return "Transaction [from=" + from + ", to=" + to + ", amount=" + amount + ", reason=" + reason + ", history="
 				+ history + ", bankUri=" + bankUri + "]";
+	}
+	
+	protected String getID(String accUri) {
+
+		String[] u = accUri.split("/");
+		return u[u.length - 1];
 	}
 
 	public Account getFrom() {

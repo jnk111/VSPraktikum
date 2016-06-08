@@ -153,9 +153,8 @@ public class BrokerAPI {
 	
 	private void initPostBuyPlace() {
 		post("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
-			//return service.buyPlace()
-			//return StatusCodes.CREATED + CLRF; 
+			JSONEventList list = service.buyPlace(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			return GSON.toJson(list);
 		});
 	}
 

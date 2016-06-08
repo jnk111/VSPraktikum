@@ -21,10 +21,12 @@ import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.services.allocator.ServiceAllocator;
+import vs.jan.services.broker.transaction.BuyTransaction;
 import vs.jan.services.broker.transaction.RentTransaction;
 import vs.jan.services.broker.transaction.TransactionFailedException;
 import vs.jan.validator.BrokerValidator;
 import vs.jan.validator.Validator;
+import vs.jonas.services.json.EventData;
 
 public class BrokerService {
 
@@ -179,6 +181,34 @@ public class BrokerService {
 		JSONEstates estates = new JSONEstates();
 		b.getPlaces().forEach(p -> estates.getEstates().add(p.getUri()));
 		return estates;
+	}
+
+	public JSONEventList buyPlace(String gameid, String placeid, String playerUri, String path) {
+		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		
+		Broker broker = helper.getBroker(this.brokers, gameid);
+		Player player = helper.getPlayer(playerUri, gameid);
+		JSONAccount jsonFrom = helper.getAccount(player.getAccount());
+		Account from = new Account(player, jsonFrom.getSaldo(), helper.getID(player.getId()));
+		Place place = helper.getPlace(broker, placeid);
+		BuyTransaction buy = null;
+		
+		try {
+			if(place.getOwner() != null){
+				if(from.getSaldo() > place.getPrice()){
+					buy = new BuyTransaction(from, place.getPrice());
+					buy.execute(gameid);
+					String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
+					JSONEvent event = new JSONEvent(gameid, "buyedplace", "buyedplace", reason, path, playerUri);
+					helper.postEvent(event, this.services.getEvents());
+				}
+			}
+		}catch (TransactionFailedException e) {
+			place.setOwner(buy.getHistory().getTo().getPlayer());
+		}
+		
+		return helper.retrieveEventList(this.services.getEvents(), playerUri, gameid, new Date());
 	}
 
 }

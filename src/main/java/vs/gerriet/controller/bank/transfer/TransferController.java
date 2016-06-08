@@ -5,6 +5,7 @@ import spark.Response;
 import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
+import vs.gerriet.id.bank.TransferId;
 import vs.gerriet.json.TransferInfo;
 import vs.gerriet.model.Bank;
 
@@ -26,8 +27,13 @@ public class TransferController extends AbstractController implements GetControl
     @Override
     public String get(final Request request, final Response response) {
         final Bank bank = BankController.getBank(request);
-        final String transferId = request.params("transferid");
         if (bank == null) {
+            response.status(404);
+            return "";
+        }
+        final TransferId transferId = new TransferId(bank.getId(), null);
+        transferId.loadUriSuffix(request.params("transferid"));
+        if (transferId.getBaseData() == null) {
             response.status(404);
             return "";
         }

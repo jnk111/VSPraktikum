@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
+import vs.gerriet.id.BankId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.json.TransactionInfo;
@@ -218,17 +219,25 @@ public class Transaction extends LockProvider {
      *         otherwise.
      */
     public synchronized boolean addOperation(final Transfer operation) {
-        for (final AtomicOperation op : operation.operations) {
-            if (!this.isOperationValid(op)) {
-                return false;
-            }
-        }
         boolean res = true;
         for (final AtomicOperation op : operation.operations) {
-            res = res && this.addOperation(op);
+            if (op != null) {
+                if (this.isOperationValid(op)) {
+                    if (!this.addOperation(op)) {
+                        res = false;
+                        break;
+                    }
+                } else {
+                    res = false;
+                    break;
+                }
+            }
         }
         if (!res) {
             this.operations.removeAll(operation.operations);
+            // set failed state to transaction
+            operation.failed = true;
+            operation.pending = false;
         } else {
             this.bank.addTransfer(operation);
             this.transfers.add(operation);
@@ -340,7 +349,7 @@ public class Transaction extends LockProvider {
                 typeString = "1-phase";
                 break;
         }
-        return new TransactionInfo(typeString, this.id.getUri(), this.status.name());
+        return new TransactionInfo(typeString, this.id.getUri(), this.getStatus().name());
     }
 
     /**
@@ -436,7 +445,15 @@ public class Transaction extends LockProvider {
      * @return <code>true</code> if it's valid, <code>false</code> otherwise.
      */
     private boolean isOperationValid(final AtomicOperation operation) {
-        return !this.isLocked() && operation.getBank().equals(this.bank);
+        if (this.isLocked()) {
+            return false;
+        }
+        final BankId id1 = this.bank.getId();
+        final BankId id2 = operation.getBank().getId();
+        if (id1.equals(id2)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -446,6 +463,9 @@ public class Transaction extends LockProvider {
         this.transfers.forEach(transfer -> {
             transfer.failed = true;
             transfer.pending = false;
+            // also update transfer within bank (reference somehow does not
+            // work)
+            this.bank.addTransfer(transfer);
         });
     }
 
@@ -456,6 +476,9 @@ public class Transaction extends LockProvider {
         this.transfers.forEach(transfer -> {
             transfer.failed = false;
             transfer.pending = false;
+            // also update transfer within bank (reference somehow does not
+            // work)
+            this.bank.addTransfer(transfer);
         });
     }
 }

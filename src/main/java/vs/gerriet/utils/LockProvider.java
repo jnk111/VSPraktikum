@@ -31,7 +31,7 @@ public abstract class LockProvider {
      *         otherwise.
      */
     public synchronized boolean isLocked() {
-        return this.semaphore.availablePermits() > 0;
+        return this.semaphore.availablePermits() <= 0;
     }
 
     /**

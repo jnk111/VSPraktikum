@@ -17,6 +17,8 @@ public class PlayerId extends Id<String> {
     /**
      * Creates a new user id container.
      *
+     * @param game
+     *            Game id for the user.
      * @param request
      *            Request to load the id from.
      * @param param
@@ -30,6 +32,8 @@ public class PlayerId extends Id<String> {
     /**
      * Creates a new user id container.
      *
+     * @param game
+     *            Game id for the user.
      * @param data
      *            Contained id.
      */
@@ -39,12 +43,36 @@ public class PlayerId extends Id<String> {
     }
 
     @Override
+    public int compareTo(final Id<String> obj) {
+        if (obj instanceof PlayerId) {
+            final PlayerId other = (PlayerId) obj;
+            if (this.game != null) {
+                // compare game first
+                final int compare = this.game.compareTo(other.game);
+                if (compare != 0) {
+                    return compare;
+                }
+            } else {
+                if (other.game != null) {
+                    // other instance has game set: other is larger
+                    return 1;
+                }
+                // both game field null: compare data
+            }
+            return super.compareTo(obj);
+        }
+        // invalid case...
+        throw new UnsupportedOperationException("Cannot compare " + this.getClass().getName()
+                + " with " + obj.getClass().getName());
+    }
+
+    @Override
     protected String fromUriSuffix(final String suffix) {
         return suffix;
     }
 
     @Override
     protected String getUriPrefix() {
-        return this.game.getUri();
+        return this.game.getUri() + "/players/";
     }
 }

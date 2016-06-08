@@ -14,6 +14,7 @@ import vs.gerriet.controller.bank.account.AccountsListController;
 import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
+import vs.gerriet.controller.bank.transfer.TransfersController;
 import vs.gerriet.id.BankId;
 import vs.gerriet.id.GameId;
 import vs.gerriet.id.bank.AccountId;
@@ -54,7 +55,7 @@ public class Bank extends VsApiBase {
      * <p>
      * Use for debug only.
      * </p>
-     * 
+     *
      * @param uri
      *            New bank service uri.
      */
@@ -63,7 +64,16 @@ public class Bank extends VsApiBase {
     }
 
     /**
+     * <p>
      * API call to commit a transaction.
+     * </p>
+     * <p>
+     * The following status codes are important:
+     * <ul>
+     * <li><code>200</code> - Transaction successfully committed.</li>
+     * <li><code>409</code> - Transaction failed and rolled back.</li>
+     * </ul>
+     * </p>
      *
      * @param transaction
      *            Transaction to be committed.
@@ -181,8 +191,8 @@ public class Bank extends VsApiBase {
                 default:
                     return null;
             }
-            return Unirest.post(this.getServiceUri() + bank.getUri()).queryString("phases", phases)
-                    .asString();
+            return Unirest.post(this.getServiceUri() + bank.getUri() + "/transaction")
+                    .queryString("phases", phases).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -273,7 +283,7 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<TransactionList> getTransactionList(final BankId bank) {
         try {
-            return Unirest.get(this.getServiceUri() + bank.getUri())
+            return Unirest.get(this.getServiceUri() + bank.getUri() + "/transaction")
                     .asObject(TransactionList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
@@ -327,7 +337,8 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<TransferList> getTransferList(final BankId bank) {
         try {
-            return Unirest.get(this.getServiceUri() + bank.getUri()).asObject(TransferList.class);
+            return Unirest.get(this.getServiceUri() + bank.getUri() + TransfersController.URI_PART)
+                    .asObject(TransferList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -365,7 +376,13 @@ public class Bank extends VsApiBase {
     public HttpResponse<TransferInfo> performTransfer(final AccountId from, final AccountId to,
             final int amount, final String reason) {
         try {
-            return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
+            if (!from.getBank().equals(to.getBank())) {
+                System.err.println("[API] Cannot perform transfer from one bank to another.");
+                return null;
+            }
+            return Unirest
+                    .post(this.getServiceUri() + from.getBank().getUri()
+                            + TransferFromToController.URI_PART_UNIREST)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
                     // cast to object to use object mapper
@@ -402,7 +419,13 @@ public class Bank extends VsApiBase {
     public HttpResponse<TransferInfo> performTransfer(final AccountId from, final AccountId to,
             final int amount, final String reason, final TransactionId transaction) {
         try {
-            return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
+            if (!from.getBank().equals(to.getBank())) {
+                System.err.println("[API] Cannot perform transfer from one bank to another.");
+                return null;
+            }
+            return Unirest
+                    .post(this.getServiceUri() + from.getBank().getUri()
+                            + TransferFromToController.URI_PART_UNIREST)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
                     .queryString("transaction", transaction.getUri())
@@ -441,15 +464,15 @@ public class Bank extends VsApiBase {
             final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason) {
         try {
-            String uri = "";
+            String uri = account.getBank().getUri();
             final Map<String, String> params = new HashMap<>(2);
             switch (type) {
                 case DEPOSIT:
-                    uri = TransferToController.URI_PART;
+                    uri += TransferToController.URI_PART_UNIREST;
                     params.put("to", account.getBaseData());
                     break;
                 case WITHDRAW:
-                    uri = TransferFromController.URI_PART;
+                    uri += TransferFromController.URI_PART_UNIREST;
                     params.put("from", account.getBaseData());
                     break;
                 default:
@@ -493,15 +516,15 @@ public class Bank extends VsApiBase {
             final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason, final TransactionId transaction) {
         try {
-            String uri = "";
+            String uri = account.getBank().getUri();
             final Map<String, String> params = new HashMap<>(2);
             switch (type) {
                 case DEPOSIT:
-                    uri = TransferToController.URI_PART;
+                    uri += TransferToController.URI_PART_UNIREST;
                     params.put("to", account.getBaseData());
                     break;
                 case WITHDRAW:
-                    uri = TransferFromController.URI_PART;
+                    uri += TransferFromController.URI_PART_UNIREST;
                     params.put("from", account.getBaseData());
                     break;
                 default:

@@ -75,7 +75,7 @@ public class Bank {
     public Bank(final BankId id, final GameId gameId) {
         this.id = id;
         this.gameId = gameId;
-        this.accounts = new AccountsContainer();
+        this.accounts = new AccountsContainer(this);
         this.transactions = new ConcurrentSkipListMap<>();
         this.transfers = new ConcurrentSkipListMap<>();
         this.accountsUri = this.id.getUri() + AccountsListController.URI_PART;
@@ -262,7 +262,12 @@ public class Bank {
      */
     public TransactionList getTransactions() {
         final Set<TransactionId> keys = this.transactions.keySet();
-        return new TransactionList(keys.toArray(new String[keys.size()]));
+        final String[] uris = new String[keys.size()];
+        int index = 0;
+        for (final TransactionId current : keys) {
+            uris[index++] = current.getUri();
+        }
+        return new TransactionList(uris);
     }
 
     /**
@@ -273,7 +278,7 @@ public class Bank {
      * @return Transfer information. Returns <code>null</code> if no transfer
      *         was found for the given instance.
      */
-    public TransferInfo getTransferInfo(final String transferId) {
+    public TransferInfo getTransferInfo(final TransferId transferId) {
         return this.transfers.get(transferId);
     }
 
@@ -284,7 +289,12 @@ public class Bank {
      */
     public TransferList getTransfers() {
         final Set<TransferId> keys = this.transfers.keySet();
-        return new TransferList(keys.toArray(new String[keys.size()]));
+        final String[] uris = new String[keys.size()];
+        int index = 0;
+        for (final TransferId current : keys) {
+            uris[index++] = current.getUri();
+        }
+        return new TransferList(uris);
     }
 
     /**

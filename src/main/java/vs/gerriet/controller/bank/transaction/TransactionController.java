@@ -41,7 +41,9 @@ public class TransactionController extends AbstractController
         if (bank == null || idString == null) {
             return null;
         }
-        return new TransactionId(bank.getId(), Integer.getInteger(idString));
+        final TransactionId id = new TransactionId(bank.getId(), null);
+        id.loadUriSuffix(idString);
+        return id;
     }
 
     /**
@@ -93,8 +95,11 @@ public class TransactionController extends AbstractController
         }
         final String userUri = request.body();
         try {
-            if (userUri == null) {
-                bank.commitTransaction(id);
+            if (userUri == null || userUri.isEmpty()) {
+                if (!bank.commitTransaction(id)) {
+                    // indicate that the transaction failed
+                    response.status(409);
+                }
             } else {
                 final PlayerId user = new PlayerId(bank.getGameId(), null);
                 user.loadUri(userUri);

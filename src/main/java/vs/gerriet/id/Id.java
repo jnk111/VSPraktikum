@@ -44,6 +44,12 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
 
     @Override
     public int compareTo(final Id<T> obj) {
+        if (this.data == null) {
+            if (obj.data == null) {
+                return 0;
+            }
+            return -1;
+        }
         return this.data.compareTo(obj.data);
     }
 
@@ -61,7 +67,8 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        final Id<?> other = (Id<?>) obj;
+        @SuppressWarnings("unchecked")
+        final Id<T> other = (Id<T>) obj;
         if (this.data == null) {
             if (other.data != null) {
                 return false;
@@ -133,6 +140,16 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
         }
         this.data = suffixData;
         return true;
+    }
+
+    /**
+     * Loads data for this ID container from the given uri suffix.
+     *
+     * @param suffix
+     *            Uri suffix to load the data from.
+     */
+    public void loadUriSuffix(final String suffix) {
+        this.setBaseData(this.fromUriSuffix(suffix));
     }
 
     /**

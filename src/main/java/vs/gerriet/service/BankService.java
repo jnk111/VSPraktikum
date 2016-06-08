@@ -65,8 +65,8 @@ public class BankService {
         } catch (final Throwable ex) {
             // if we get startup errors, we terminate spark and exit
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "STARTUP"));
-            // Spark.stop();
-            // System.exit(-1);
+            Spark.stop();
+            System.exit(-1);
         }
     }
 
@@ -80,9 +80,9 @@ public class BankService {
         // register transfer controllers
         ServiceUtils.registerController(new TransfersController());
         ServiceUtils.registerController(new TransferController());
-        ServiceUtils.registerController(new TransferFromToController());
-        ServiceUtils.registerController(new TransferToController());
         ServiceUtils.registerController(new TransferFromController());
+        ServiceUtils.registerController(new TransferToController());
+        ServiceUtils.registerController(new TransferFromToController());
         // register transaction controllers
         ServiceUtils.registerController(new TransactionListController());
         ServiceUtils.registerController(new TransactionController());

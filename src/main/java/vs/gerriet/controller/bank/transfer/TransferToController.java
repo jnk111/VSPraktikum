@@ -9,8 +9,8 @@ import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.model.Bank;
-import vs.gerriet.model.transaction.Transfer;
 import vs.gerriet.model.transaction.AtomicOperation.Type;
+import vs.gerriet.model.transaction.Transfer;
 
 /**
  * Controller for transfers to a specific account.
@@ -21,11 +21,15 @@ public class TransferToController extends AbstractController implements PostCont
     /**
      * Uri part (used externally).
      */
-    public static final String URI_PART = TransfersController.URI_PART + "/to/:to/:amount";
+    public static final String URI_PART = "/transfer/to/:to/:amount";
     /**
      * Uri for transfers to a specific account.
      */
     public static final String URI = BankController.URI + TransferToController.URI_PART;
+    /**
+     * Uri part (used externally) with Unirest parameters.
+     */
+    public static final String URI_PART_UNIREST = "/transfer/to/{to}/{amount}";
 
     @Override
     public String getUri() {

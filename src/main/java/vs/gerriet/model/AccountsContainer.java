@@ -24,7 +24,7 @@ public class AccountsContainer {
     /**
      * Contains the bank this account container belongs to.
      */
-    private Bank bank;
+    private final Bank bank;
 
     /**
      * We use a sorted map to store accounts to ensure proper ordering. This is
@@ -32,6 +32,16 @@ public class AccountsContainer {
      * lock / unlock accounts in the same order to prevent deadlocks.
      */
     private final SortedMap<AccountId, Account> accounts = new ConcurrentSkipListMap<>();
+
+    /**
+     * Creates a new account container for the given bank.
+     *
+     * @param bank
+     *            Bank to create this container for.
+     */
+    AccountsContainer(final Bank bank) {
+        this.bank = bank;
+    }
 
     /**
      * Creates a new account within this container. If the account id is already
@@ -86,11 +96,11 @@ public class AccountsContainer {
      * @return Account uris.
      */
     public String[] getAccounts() {
-        final Set<?> keys = this.accounts.keySet();
-        final AccountId[] accountIds = new AccountId[keys.size()];
+        final Set<AccountId> keys = this.accounts.keySet();
         final String[] result = new String[keys.size()];
-        for (int i = 0; i < accountIds.length; i++) {
-            result[i] = accountIds[i].getUri();
+        int index = 0;
+        for (final AccountId id : keys) {
+            result[index++] = id.getUri();
         }
         return result;
     }

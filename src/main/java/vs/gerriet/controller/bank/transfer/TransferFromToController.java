@@ -20,12 +20,15 @@ public class TransferFromToController extends AbstractController implements Post
     /**
      * Uri part (used externally).
      */
-    public static final String URI_PART =
-            TransfersController.URI_PART + "/from/:from/to/:to/:amount";
+    public static final String URI_PART = "/transfer/from/:from/to/:to/:amount";
     /**
      * Uri for transfers involving two accounts.
      */
     public static final String URI = BankController.URI + TransferFromToController.URI_PART;
+    /**
+     * Uri part (used externally) with Unirest parameters.
+     */
+    public static final String URI_PART_UNIREST = "/transfer/from/{from}/to/{to}/{amount}";
 
     @Override
     public String getUri() {

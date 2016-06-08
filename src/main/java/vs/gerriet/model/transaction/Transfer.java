@@ -93,9 +93,10 @@ public class Transfer {
      */
     public Transfer(final Bank bank, final Type type, final AccountId player, final int amount,
             final String reason) {
-        this.operations.add(new AtomicOperation(bank, type, player, amount, reason));
+        this.amount = amount;
+        this.id = new TransferId(bank.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
         this.reason = reason;
-
+        this.operations.add(new AtomicOperation(bank, type, player, amount, reason, this.id));
         switch (type) {
             case DEPOSIT:
                 this.to = player;
@@ -108,8 +109,6 @@ public class Transfer {
             default:
                 throw new UnsupportedOperationException();
         }
-        this.amount = amount;
-        this.id = new TransferId(bank.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
     }
 
     /**

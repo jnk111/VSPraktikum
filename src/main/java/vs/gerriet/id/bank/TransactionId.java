@@ -43,6 +43,30 @@ public class TransactionId extends Id<Integer> {
     }
 
     @Override
+    public int compareTo(final Id<Integer> obj) {
+        if (obj instanceof TransactionId) {
+            final TransactionId other = (TransactionId) obj;
+            if (this.bank != null) {
+                // compare bank first
+                final int compare = this.bank.compareTo(other.bank);
+                if (compare != 0) {
+                    return compare;
+                }
+            } else {
+                if (other.bank != null) {
+                    // other instance has bank set: other is larger
+                    return 1;
+                }
+                // both bank field null: compare data
+            }
+            return super.compareTo(obj);
+        }
+        // invalid case...
+        throw new UnsupportedOperationException("Cannot compare " + this.getClass().getName()
+                + " with " + obj.getClass().getName());
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
@@ -98,6 +122,6 @@ public class TransactionId extends Id<Integer> {
 
     @Override
     protected String getUriPrefix() {
-        return this.bank.getUri();
+        return this.bank.getUri() + "/transaction/";
     }
 }

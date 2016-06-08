@@ -5,6 +5,7 @@ import spark.Response;
 import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
+import vs.gerriet.json.TransferList;
 import vs.gerriet.model.Bank;
 
 /**
@@ -33,7 +34,8 @@ public class TransfersController extends AbstractController implements GetContro
             response.status(404);
             return "";
         }
-        return this.gson.toJson(bank.getTransfers());
+        final TransferList transfers = bank.getTransfers();
+        return this.gson.toJson(transfers);
     }
 
     @Override

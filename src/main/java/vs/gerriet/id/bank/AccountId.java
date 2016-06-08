@@ -43,6 +43,30 @@ public class AccountId extends Id<String> {
     }
 
     @Override
+    public int compareTo(final Id<String> obj) {
+        if (obj instanceof AccountId) {
+            final AccountId other = (AccountId) obj;
+            if (this.bank != null) {
+                // compare bank first
+                final int compare = this.bank.compareTo(other.bank);
+                if (compare != 0) {
+                    return compare;
+                }
+            } else {
+                if (other.bank != null) {
+                    // other instance has bank set: other is larger
+                    return 1;
+                }
+                // both bank field null: compare data
+            }
+            return super.compareTo(obj);
+        }
+        // invalid case...
+        throw new UnsupportedOperationException("Cannot compare " + this.getClass().getName()
+                + " with " + obj.getClass().getName());
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
@@ -98,6 +122,6 @@ public class AccountId extends Id<String> {
 
     @Override
     protected String getUriPrefix() {
-        return this.bank.getUri();
+        return this.bank.getUri() + "/accounts/";
     }
 }

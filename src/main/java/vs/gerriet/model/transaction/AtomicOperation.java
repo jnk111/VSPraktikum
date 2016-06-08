@@ -94,34 +94,14 @@ public class AtomicOperation implements Cloneable {
      * @param transfer
      *            Transfer id of the transfer this operation belongs to.
      */
-    public AtomicOperation(final Bank bank, final Type type, final AccountId account,
-            final int amount, final String message, final TransferId transfer) {
+    AtomicOperation(final Bank bank, final Type type, final AccountId account, final int amount,
+            final String message, final TransferId transfer) {
         this.account = account;
         this.amount = amount;
         this.type = type;
         this.bank = bank;
         this.message = message;
         this.transfer = transfer;
-    }
-
-    /**
-     * Creates a new atomic operation from the given arguments. This does not
-     * perform any action.
-     *
-     * @param bank
-     *            Bank this operation belongs to.
-     * @param type
-     *            Type of this operation.
-     * @param account
-     *            Account this operation belongs to.
-     * @param amount
-     *            Amount for this operation.
-     * @param message
-     *            Message for this operation.
-     */
-    AtomicOperation(final Bank bank, final Type type, final AccountId account, final int amount,
-            final String message) {
-        this(bank, type, account, amount, message, null);
     }
 
     /**

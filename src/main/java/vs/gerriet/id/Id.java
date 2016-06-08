@@ -1,5 +1,6 @@
 package vs.gerriet.id;
 
+import de.stuff42.error.ExceptionUtils;
 import spark.Request;
 
 /**
@@ -112,12 +113,21 @@ public abstract class Id<T extends Comparable<T>> implements Comparable<Id<T>> {
      * @return <code>true</code> on success, <code>false</code> otherwise.
      */
     public boolean loadUri(final String uri) {
+        if (uri == null) {
+            return false;
+        }
         final String prefix = this.getUriPrefix();
         if (!uri.startsWith(prefix)) {
             return false;
         }
         final String suffix = uri.replace(prefix, "");
-        final T suffixData = this.fromUriSuffix(suffix);
+        T suffixData = null;
+        try {
+            suffixData = this.fromUriSuffix(suffix);
+        } catch (final Exception ex) {
+            System.err.println(ExceptionUtils.getExceptionInfo(ex, "ID"));
+            return false;
+        }
         if (suffixData == null) {
             return false;
         }

@@ -6,6 +6,7 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
+import vs.gerriet.id.GameId;
 import vs.gerriet.json.BankData;
 import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
@@ -45,11 +46,16 @@ public class BanksController extends AbstractController implements GetController
     public String post(final Request request, final Response response) {
         final GameIdContainer game = this.gson.fromJson(request.body(), GameIdContainer.class);
         if (game == null) {
-            response.status(403);
+            response.status(400);
             return "";
         }
+        final GameId gameId = game.createGameId();
+        if (gameId == null) {
+            response.status(400);
+            return "";
+        }
+        final Bank bank = BanksContainer.createBank(gameId);
         response.type(Controller.MIME_TYPE_JSON);
-        final Bank bank = BanksContainer.createBank(game.createGameId());
         return this.gson.toJson(BankData.createFromBank(bank));
     }
 

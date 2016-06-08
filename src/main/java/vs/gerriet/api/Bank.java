@@ -1,4 +1,4 @@
-package vs.gerriet.api.bank;
+package vs.gerriet.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
 import de.stuff42.error.ExceptionUtils;
-import vs.gerriet.api.VsApiBase;
 import vs.gerriet.controller.bank.BanksController;
 import vs.gerriet.controller.bank.account.AccountsListController;
 import vs.gerriet.controller.bank.transfer.TransferFromController;
@@ -31,15 +30,36 @@ import vs.gerriet.json.TransferInfo;
 import vs.gerriet.json.TransferList;
 
 /**
- * Base class for bank data API classes.
+ * Class for bank service API calls.
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-abstract class BankBase extends VsApiBase {
+public class Bank extends VsApiBase {
+    /**
+     * Contains the set service uri for this API class.
+     */
+    private static String serviceUri = null;
 
-    @Override
-    public String getType() {
-        return "bank";
+    /**
+     * Resets the bank set bank service uri.
+     */
+    public static void resetServiceUri() {
+        Bank.setServiceUri(null);
+    }
+
+    /**
+     * <p>
+     * Sets the uri for this API class to the given uri.
+     * </p>
+     * <p>
+     * Use for debug only.
+     * </p>
+     * 
+     * @param uri
+     *            New bank service uri.
+     */
+    public static void setServiceUri(final String uri) {
+        Bank.serviceUri = uri;
     }
 
     /**
@@ -49,7 +69,7 @@ abstract class BankBase extends VsApiBase {
      *            Transaction to be committed.
      * @return Empty response or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestCommitTransaction(final TransactionId transaction) {
+    public HttpResponse<String> commitTransaction(final TransactionId transaction) {
         try {
             return Unirest.put(this.getServiceUri() + transaction.getUri()).asString();
         } catch (final UnirestException ex) {
@@ -67,7 +87,7 @@ abstract class BankBase extends VsApiBase {
      *            Account that confirms the transaction.
      * @return Empty response or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestConfirmTransaction(final TransactionId transaction,
+    public HttpResponse<String> confirmTransaction(final TransactionId transaction,
             final AccountId account) {
         try {
             return Unirest.put(this.getServiceUri() + transaction.getUri()).body(account.getUri())
@@ -97,8 +117,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with updated account data or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<AccountInfo> requestCreateAccount(final BankId bank,
-            final AccountInfo data) {
+    public HttpResponse<AccountInfo> createAccount(final BankId bank, final AccountInfo data) {
         try {
             final String uri = bank.getUri() + AccountsListController.URI_PART;
             return Unirest.post(this.getServiceUri() + uri).body(data).asObject(AccountInfo.class);
@@ -116,7 +135,7 @@ abstract class BankBase extends VsApiBase {
      * @return Information about the created bank or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<BankData> requestCreateBank(final GameId game) {
+    public HttpResponse<BankData> createBank(final GameId game) {
         try {
             return Unirest.post(this.getServiceUri() + BanksController.URI)
                     .body(new GameIdContainer(game.getUri())).asObject(BankData.class);
@@ -134,9 +153,8 @@ abstract class BankBase extends VsApiBase {
      * @return Response containing the uri of the created transaction within
      *         body or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestCreateTransaction(final BankId bank) {
-        return this.requestCreateTransaction(bank,
-                vs.gerriet.model.transaction.Transaction.Type.SIMPLE);
+    public HttpResponse<String> createTransaction(final BankId bank) {
+        return this.createTransaction(bank, vs.gerriet.model.transaction.Transaction.Type.SIMPLE);
     }
 
     /**
@@ -149,7 +167,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response containing the uri of the created transaction within
      *         body or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestCreateTransaction(final BankId bank,
+    public HttpResponse<String> createTransaction(final BankId bank,
             final vs.gerriet.model.transaction.Transaction.Type type) {
         try {
             String phases = "";
@@ -179,7 +197,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with account data or <code>null</code> if the request
      *         failed.
      */
-    public HttpResponse<AccountInfo> requestGetAccount(final AccountId account) {
+    public HttpResponse<AccountInfo> getAccount(final AccountId account) {
         try {
             return Unirest.get(this.getServiceUri() + account.getUri()).asObject(AccountInfo.class);
         } catch (final UnirestException ex) {
@@ -196,7 +214,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with account list or <code>null</code> if the request
      *         failed.
      */
-    public HttpResponse<AccountList> requestGetAccountList(final BankId bank) {
+    public HttpResponse<AccountList> getAccountList(final BankId bank) {
         try {
             final String uri = bank.getUri() + AccountsListController.URI_PART;
             return Unirest.get(this.getServiceUri() + uri).asObject(AccountList.class);
@@ -214,7 +232,7 @@ abstract class BankBase extends VsApiBase {
      * @return Information about the bank or <code>null</code> if the request
      *         failed.
      */
-    public HttpResponse<BankData> requestGetBankData(final BankId bank) {
+    public HttpResponse<BankData> getBankData(final BankId bank) {
         try {
             return Unirest.get(this.getServiceUri() + bank.getUri()).asObject(BankData.class);
         } catch (final UnirestException ex) {
@@ -228,13 +246,21 @@ abstract class BankBase extends VsApiBase {
      *
      * @return Bank list or <code>null</code> if the request failed.
      */
-    public HttpResponse<BankList> requestGetBankList() {
+    public HttpResponse<BankList> getBankList() {
         try {
             return Unirest.get(this.getServiceUri() + BanksController.URI).asObject(BankList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
         }
+    }
+
+    @Override
+    public String getServiceUri() {
+        if (Bank.serviceUri != null) {
+            return Bank.serviceUri;
+        }
+        return super.getServiceUri();
     }
 
     /**
@@ -245,7 +271,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with list of transactions for the given bank or
      *         <code>null</code> if the request failed.
      */
-    public HttpResponse<TransactionList> requestGetTransactionList(final BankId bank) {
+    public HttpResponse<TransactionList> getTransactionList(final BankId bank) {
         try {
             return Unirest.get(this.getServiceUri() + bank.getUri())
                     .asObject(TransactionList.class);
@@ -263,8 +289,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response containing transaction info or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<TransactionInfo>
-            requestGetTransactionStatus(final TransactionId transaction) {
+    public HttpResponse<TransactionInfo> getTransactionStatus(final TransactionId transaction) {
         try {
             return Unirest.get(this.getServiceUri() + transaction.getUri())
                     .asObject(TransactionInfo.class);
@@ -282,7 +307,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with transfer info or <code>null</code> if the request
      *         failed.
      */
-    public HttpResponse<TransferInfo> requestGetTransferInfo(final TransferId transfer) {
+    public HttpResponse<TransferInfo> getTransferInfo(final TransferId transfer) {
         try {
             return Unirest.get(this.getServiceUri() + transfer.getUri())
                     .asObject(TransferInfo.class);
@@ -300,13 +325,18 @@ abstract class BankBase extends VsApiBase {
      * @return Response with transfer uris or <code>null</code> if the request
      *         failed.
      */
-    public HttpResponse<TransferList> requestGetTransferList(final BankId bank) {
+    public HttpResponse<TransferList> getTransferList(final BankId bank) {
         try {
             return Unirest.get(this.getServiceUri() + bank.getUri()).asObject(TransferList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
         }
+    }
+
+    @Override
+    public String getType() {
+        return "bank";
     }
 
     /**
@@ -332,8 +362,8 @@ abstract class BankBase extends VsApiBase {
      * @return Response with created transfer or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId from,
-            final AccountId to, final int amount, final String reason) {
+    public HttpResponse<TransferInfo> performTransfer(final AccountId from, final AccountId to,
+            final int amount, final String reason) {
         try {
             return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
@@ -369,9 +399,8 @@ abstract class BankBase extends VsApiBase {
      * @return Response with created transfer or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId from,
-            final AccountId to, final int amount, final String reason,
-            final TransactionId transaction) {
+    public HttpResponse<TransferInfo> performTransfer(final AccountId from, final AccountId to,
+            final int amount, final String reason, final TransactionId transaction) {
         try {
             return Unirest.post(this.getServiceUri() + TransferFromToController.URI_PART)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
@@ -408,7 +437,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with created transfer or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
+    public HttpResponse<TransferInfo> performTransfer(final AccountId account,
             final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason) {
         try {
@@ -460,7 +489,7 @@ abstract class BankBase extends VsApiBase {
      * @return Response with created transfer or <code>null</code> if the
      *         request failed.
      */
-    public HttpResponse<TransferInfo> requestPerformTransfer(final AccountId account,
+    public HttpResponse<TransferInfo> performTransfer(final AccountId account,
             final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
             final String reason, final TransactionId transaction) {
         try {
@@ -498,7 +527,7 @@ abstract class BankBase extends VsApiBase {
      *            Transaction to be rolled back.
      * @return Empty response or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestRollBackTransaction(final TransactionId transaction) {
+    public HttpResponse<String> rollBackTransaction(final TransactionId transaction) {
         try {
             return Unirest.delete(this.getServiceUri() + transaction.getUri()).asString();
         } catch (final UnirestException ex) {
@@ -516,7 +545,7 @@ abstract class BankBase extends VsApiBase {
      *            New data.
      * @return Empty response or <code>null</code> if the request failed.
      */
-    public HttpResponse<String> requestSetBankData(final BankId bank, final BankData data) {
+    public HttpResponse<String> setBankData(final BankId bank, final BankData data) {
         try {
             return Unirest.put(this.getServiceUri() + bank.getUri()).body(data).asString();
         } catch (final UnirestException ex) {

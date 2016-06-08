@@ -1,7 +1,7 @@
 package vs.gerriet.model;
 
 import vs.gerriet.exception.AccountAccessException;
-import vs.gerriet.id.UserId;
+import vs.gerriet.id.PlayerId;
 import vs.gerriet.utils.LockProvider;
 
 /**
@@ -14,7 +14,7 @@ public class Account extends LockProvider {
     /**
      * Contains the user id this account belongs to.
      */
-    private final UserId user;
+    private final PlayerId user;
 
     /**
      * Account balance.
@@ -28,7 +28,7 @@ public class Account extends LockProvider {
      * @param user
      *            User id.
      */
-    Account(final UserId user) {
+    Account(final PlayerId user) {
         this.user = user;
         this.balance = 0;
     }
@@ -42,7 +42,7 @@ public class Account extends LockProvider {
      * @param balance
      *            Account balance.
      */
-    Account(final UserId user, final int balance) {
+    Account(final PlayerId user, final int balance) {
         this.user = user;
         this.balance = balance;
     }
@@ -106,7 +106,7 @@ public class Account extends LockProvider {
      *
      * @return User Id.
      */
-    UserId getUser() {
+    PlayerId getUser() {
         return this.user;
     }
 

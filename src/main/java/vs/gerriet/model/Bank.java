@@ -10,7 +10,7 @@ import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
 import vs.gerriet.id.GameId;
-import vs.gerriet.id.UserId;
+import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
@@ -20,9 +20,9 @@ import vs.gerriet.json.TransactionList;
 import vs.gerriet.json.TransferInfo;
 import vs.gerriet.json.TransferList;
 import vs.gerriet.model.transaction.AtomicOperation;
+import vs.gerriet.model.transaction.AtomicOperation.Type;
 import vs.gerriet.model.transaction.Transaction;
 import vs.gerriet.model.transaction.Transfer;
-import vs.gerriet.model.transaction.AtomicOperation.Type;
 import vs.gerriet.utils.IdUtils;
 
 /**
@@ -133,7 +133,7 @@ public class Bank {
      *         for the given user already exists.
      * @see #createAccount(String, int)
      */
-    public boolean createAccount(final UserId userId) {
+    public boolean createAccount(final PlayerId userId) {
         return this.createAccount(userId, 0);
     }
 
@@ -147,7 +147,7 @@ public class Bank {
      * @return <code>true</code> on success, <code>false</code> if an account
      *         for the given user already exists.
      */
-    public boolean createAccount(final UserId userId, final int balance) {
+    public boolean createAccount(final PlayerId userId, final int balance) {
         return this.accounts.createAccount(userId, new Account(userId, balance));
     }
 
@@ -173,7 +173,7 @@ public class Bank {
      * @param user
      *            User id.
      */
-    public void deleteAccount(final UserId user) {
+    public void deleteAccount(final PlayerId user) {
         this.accounts.deleteAccount(user);
     }
 
@@ -237,7 +237,7 @@ public class Bank {
      *             If the user account could not be locked or if it does not
      *             exist.
      */
-    public AccountInfo getInfo(final UserId user) throws AccountAccessException {
+    public AccountInfo getInfo(final PlayerId user) throws AccountAccessException {
         return this.accounts.getInfo(user);
     }
 

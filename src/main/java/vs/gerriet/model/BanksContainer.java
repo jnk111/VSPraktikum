@@ -6,7 +6,6 @@ import java.util.Map;
 
 import vs.gerriet.id.BankId;
 import vs.gerriet.id.GameId;
-import vs.gerriet.utils.IdUtils;
 
 /**
  * Container & Factory for bank instances.
@@ -30,7 +29,7 @@ public class BanksContainer {
      * @return Found or created Bank instance.
      */
     public static Bank createBank(final GameId game) {
-        final BankId id = new BankId(Integer.valueOf(IdUtils.getUniqueRunntimeId()));
+        final BankId id = new BankId(game.getBaseData());
         Bank bank = BanksContainer.getBank(id);
         if (bank == null) {
             bank = new Bank(id, game);

@@ -7,7 +7,12 @@ import spark.Request;
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class UserId extends Id<String> {
+public class PlayerId extends Id<String> {
+
+    /**
+     * Contains the game id for this player.
+     */
+    private final GameId game;
 
     /**
      * Creates a new user id container.
@@ -17,8 +22,9 @@ public class UserId extends Id<String> {
      * @param param
      *            Parameter name containing the id.
      */
-    public UserId(final Request request, final String param) {
+    public PlayerId(final GameId game, final Request request, final String param) {
         super(request, param);
+        this.game = game;
     }
 
     /**
@@ -27,8 +33,9 @@ public class UserId extends Id<String> {
      * @param data
      *            Contained id.
      */
-    public UserId(final String data) {
+    public PlayerId(final GameId game, final String data) {
         super(data);
+        this.game = game;
     }
 
     @Override
@@ -38,6 +45,6 @@ public class UserId extends Id<String> {
 
     @Override
     protected String getUriPrefix() {
-        return "/users/";
+        return this.game.getUri();
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 
 import vs.gerriet.exception.AccountAccessException;
-import vs.gerriet.id.UserId;
+import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.json.AccountInfo;
 
@@ -43,7 +43,7 @@ public class AccountsContainer {
      *            Account.
      * @return <code>true</code> on success, <code>false</code> otherwise.
      */
-    public synchronized boolean createAccount(final UserId userId, final Account account) {
+    public synchronized boolean createAccount(final PlayerId userId, final Account account) {
         final AccountId accountId = new AccountId(this.bank.getId(), userId.getBaseData());
         if (this.hasAccount(accountId)) {
             return false;
@@ -58,7 +58,7 @@ public class AccountsContainer {
      * @param user
      *            User id.
      */
-    public void deleteAccount(final UserId user) {
+    public void deleteAccount(final PlayerId user) {
         this.accounts.remove(user);
     }
 
@@ -127,7 +127,7 @@ public class AccountsContainer {
      *             If the user account could not be locked or if it does not
      *             exist.
      */
-    public AccountInfo getInfo(final UserId user) throws AccountAccessException {
+    public AccountInfo getInfo(final PlayerId user) throws AccountAccessException {
         return this.getInfo(new AccountId(this.bank.getId(), user.getBaseData()));
     }
 

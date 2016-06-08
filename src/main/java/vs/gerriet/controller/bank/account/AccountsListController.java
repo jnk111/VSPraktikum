@@ -7,9 +7,10 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.AccountAccessException;
-import vs.gerriet.id.UserId;
+import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.json.AccountInfo;
+import vs.gerriet.json.AccountList;
 import vs.gerriet.model.Bank;
 
 /**
@@ -39,7 +40,7 @@ public class AccountsListController extends AbstractController
             response.status(404);
             return "";
         }
-        return this.gson.toJson(bank.getAccounts());
+        return this.gson.toJson(new AccountList(bank.getAccounts().getAccounts()));
     }
 
     @Override
@@ -58,9 +59,12 @@ public class AccountsListController extends AbstractController
             return "";
         }
         final AccountInfo body = this.gson.fromJson(request.body(), AccountInfo.class);
-        final UserId user = new UserId(null);
-        user.loadUri(body.player);
-        if (bank.createAccount(user, body.balance)) {
+        final PlayerId user = new PlayerId(bank.getGameId(), null);
+        if (!user.loadUri(body.player)) {
+            response.status(400);
+            return "";
+        }
+        if (bank.createAccount(user, body.saldo)) {
             response.status(201);
         } else {
             response.status(409);

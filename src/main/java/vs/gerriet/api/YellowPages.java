@@ -21,7 +21,7 @@ public class YellowPages extends ApiBase {
     /**
      * Yellow pages uri.
      */
-    public static final String URI = "http://172.18.0.5:4567";
+    public static final String URI = "http://172.18.0.17:4567";
 
     /**
      * Uri for the service list.

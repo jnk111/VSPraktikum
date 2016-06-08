@@ -14,12 +14,12 @@ public class AccountInfo {
     /**
      * Account balance.
      */
-    public int balance;
+    public int saldo;
 
     /**
      * Account uri.
      */
-    public String uri;
+    public String account;
 
     /**
      * Creates a new instance.
@@ -29,9 +29,24 @@ public class AccountInfo {
      * @param balance
      *            Account balance.
      */
-    public AccountInfo(final String player, final int balance, final String uri) {
-        this.balance = balance;
-        this.player = player;
-        this.uri = uri;
+    public AccountInfo(final String player, final int balance) {
+        this(player, balance, null);
     }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param player
+     *            Player uri.
+     * @param balance
+     *            Account balance.
+     * @param account
+     *            Account uri.
+     */
+    public AccountInfo(final String player, final int balance, final String account) {
+        this.saldo = balance;
+        this.player = player;
+        this.account = account;
+    }
+
 }

@@ -8,7 +8,7 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PutController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.TransactionException;
-import vs.gerriet.id.UserId;
+import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.model.Bank;
@@ -96,7 +96,7 @@ public class TransactionController extends AbstractController
             if (userUri == null) {
                 bank.commitTransaction(id);
             } else {
-                final UserId user = new UserId(null);
+                final PlayerId user = new PlayerId(bank.getGameId(), null);
                 user.loadUri(userUri);
                 final AccountId account = new AccountId(bank.getId(), user.getBaseData());
                 bank.confirmTransaction(id, account);

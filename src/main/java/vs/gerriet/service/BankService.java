@@ -65,8 +65,8 @@ public class BankService {
         } catch (final Throwable ex) {
             // if we get startup errors, we terminate spark and exit
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "STARTUP"));
-            Spark.stop();
-            System.exit(-1);
+            // Spark.stop();
+            // System.exit(-1);
         }
     }
 

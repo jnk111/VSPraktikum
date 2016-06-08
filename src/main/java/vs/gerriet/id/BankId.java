@@ -7,17 +7,7 @@ import spark.Request;
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class BankId extends Id<Integer> {
-
-    /**
-     * Creates a new bank id container.
-     *
-     * @param data
-     *            Contained id.
-     */
-    public BankId(final Integer data) {
-        super(data);
-    }
+public class BankId extends Id<String> {
 
     /**
      * Creates a new bank id container.
@@ -31,9 +21,19 @@ public class BankId extends Id<Integer> {
         super(request, param);
     }
 
+    /**
+     * Creates a new bank id container.
+     *
+     * @param data
+     *            Contained id.
+     */
+    public BankId(final String data) {
+        super(data);
+    }
+
     @Override
-    protected Integer fromUriSuffix(final String suffix) {
-        return Integer.decode(suffix);
+    protected String fromUriSuffix(final String suffix) {
+        return suffix;
     }
 
     @Override

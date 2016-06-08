@@ -36,7 +36,8 @@ public class BoardHelper extends Helper {
 	public Board getBoard(Map<Board, JSONGameURI> boards, String gameid) {
 
 		for (Board b : boards.keySet()) {
-			if (boards.get(b).getURI().contains(gameid)) {
+			JSONGameURI uri = boards.get(b);
+			if (uri.getURI().contains(gameid)) {
 				return b;
 			}
 		}

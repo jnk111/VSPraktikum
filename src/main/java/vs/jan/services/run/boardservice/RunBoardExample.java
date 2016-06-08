@@ -80,10 +80,10 @@ public class RunBoardExample {
 		createBoard(boardID, gameUri);
 //		placeBoard(boardID);
 //		checkBoardAdded(boardID);
-//		setupUser(boardID, gameUri);
-//		startGame(boardID);
-//		letCurrPlayerRollDice(boardID);
-//		getFinalBoardState(boardID);
+		setupUser(boardID, gameUri);
+		startGame(boardID);
+		letCurrPlayerRollDice(boardID);
+		getFinalBoardState(boardID);
 
 	}
 

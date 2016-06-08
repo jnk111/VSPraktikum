@@ -135,4 +135,9 @@ public enum Place implements Convertable<JSONPlace> {
 		return this.price > 0;
 	}
 
+	public boolean isJail() {
+		
+		return GoJail.ordinal() == this.ordinal();
+	}
+
 }

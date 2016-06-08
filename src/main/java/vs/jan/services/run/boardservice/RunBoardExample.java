@@ -25,6 +25,7 @@ import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.boardservice.Pawn;
+import vs.jan.model.boardservice.Place;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -76,7 +77,9 @@ public class RunBoardExample {
 	private static void setupBoard() throws InterruptedException, MalformedURLException, ResponseCodeException {
 		String gameUri = "http://localhost:4567/games";
 		int boardID = 42;
-
+		
+		System.out.println("GOJAIL_ORDINAL: " + Place.GoJail.ordinal());
+		System.out.println("INJAIL_ORDINAL: " + Place.InJail.ordinal());
 		createBoard(boardID, gameUri);
 //		placeBoard(boardID);
 //		checkBoardAdded(boardID);
@@ -87,13 +90,6 @@ public class RunBoardExample {
 
 	}
 
-	private static void placeBoard(int boardID) throws ResponseCodeException {
-		
-		JSONBoard board = new JSONBoard("" + boardID);
-		
-		HttpService.put("http://localhost:4567/boards/" + boardID, board, 200);
-		
-	}
 
 	private static void letCurrPlayerRollDice(int boardID) throws ResponseCodeException {
 		

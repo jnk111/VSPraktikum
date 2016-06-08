@@ -302,9 +302,22 @@ public class BoardService {
 		helper.postEvent(event, this.services.getEvents());
 		Place place = helper.getPlace(b.getFields(), String.valueOf(newPos));
 
-		if (place.isPlace()) {
+		if (place.isPlace() && !place.isJail()) {
 			String uri = this.services.getBroker() + "/" + gameid + "/places/" + newPos + "/visit/" + pawnid;
 			HttpService.post(uri, p.getPlayerUri(), HttpURLConnection.HTTP_OK);
+			
+		} else if (place.isJail()){
+			
+			int jailPos = Place.InJail.ordinal();
+			b.getFields().get(newPos).removePawn(p);
+			p.setPosition(jailPos);
+			b.getFields().get(jailPos).addPawn(p);
+			b.updatePositions(newPos, jailPos);
+			p.updatePlaceUri(jailPos);
+			reas = p.getPlayerUri() + " has moved to jail: " + p.getPawnUri() + " to: " + p.getPlaceUri();
+			event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(), reas, resource, p.getPlayerUri());
+			helper.postEvent(event, this.services.getEvents());
+			
 		} else {
 			// TODO: call decks
 		}

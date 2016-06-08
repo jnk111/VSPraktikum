@@ -14,6 +14,7 @@ import vs.jan.exception.InvalidPlaceIDException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.boardservice.BoardHelper;
+import vs.jan.helper.events.EventTypes;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONBoardList;
 import vs.jan.json.boardservice.JSONEvent;
@@ -297,7 +298,7 @@ public class BoardService {
 		p.updatePlaceUri(newPos); // Update Placeuri to the new Place
 		String reas = p.getPlayerUri() + " has moved the pawn: " + p.getPawnUri() + " to: " + p.getPlaceUri();
 		String resource = p.getRollsUri();
-		JSONEvent event = new JSONEvent(gameid, "move", "move", reas, resource, p.getPlayerUri());
+		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVE_PAWN.getType(), EventTypes.MOVE_PAWN.getType(), reas, resource, p.getPlayerUri());
 		helper.postEvent(event, this.services.getEvents());
 		Place place = helper.getPlace(b.getFields(), String.valueOf(newPos));
 
@@ -330,7 +331,7 @@ public class BoardService {
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 
 		// Temp
-		validator.checkPlayerHasMutex(gameid, pawnid, "http://localhost:4567/games");
+		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame());
 
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);

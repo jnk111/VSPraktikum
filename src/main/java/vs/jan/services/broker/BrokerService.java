@@ -6,6 +6,7 @@ import java.util.Map;
 
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.brokerservice.BrokerHelper;
+import vs.jan.helper.events.EventTypes;
 import vs.jan.json.boardservice.JSONEvent;
 import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.brokerservice.JSONAccount;
@@ -100,7 +101,7 @@ public class BrokerService {
 				gameid);
 
 		String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
-		JSONEvent event = new JSONEvent(gameid, "visit", "visit", reason, path, playeruri);
+		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(), reason, path, playeruri);
 		helper.postEvent(event, this.services.getEvents());
 		Player owner = place.getOwner();
 		RentTransaction rent = null;
@@ -121,14 +122,14 @@ public class BrokerService {
 					rent.execute(gameid);
 
 					reason = "Player: " + player.getId() + " has payed the rent for the place: " + place.getUri();
-					event = new JSONEvent(gameid, "payrent", "payrent", reason, path, playeruri);
+					event = new JSONEvent(gameid, EventTypes.PAY_RENT.getType(), EventTypes.PAY_RENT.getType(), reason, path, playeruri);
 					helper.postEvent(event, this.services.getEvents());
 
 				} else {
 					reason = "Player: " + player.getId() + " cannot pay the rent of: " + place.getPrice() + " for the place: "
 							+ place.getUri() + " -> Saldo: " + from.getSaldo();
 
-					event = new JSONEvent(gameid, "cannotpayrent", "cannotpayrent", reason, path, playeruri);
+					event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_RENT.getType(), EventTypes.CANNOT_PAY_RENT.getType(), reason, path, playeruri);
 					helper.postEvent(event, this.services.getEvents());
 				}
 			} catch (Exception e) {
@@ -140,14 +141,12 @@ public class BrokerService {
 		return helper.retrieveEventList(this.services.getEvents(), playeruri, gameid, new Date());
 	}
 
-	
 	public JSONBroker getSpecificBroker(String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
 		return b.convert();
 	}
 
-	
 	public JSONPlace getSpecificPlace(String gameid, String placeid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
@@ -191,21 +190,25 @@ public class BrokerService {
 		Account from = new Account(player, jsonFrom.getSaldo(), helper.getID(player.getId()));
 		Place place = helper.getPlace(broker, placeid);
 		BuyTransaction buy = null;
-
+		String reason = "Player: " + player.getId() + " wants to buy the place: " + place.getUri();
+		JSONEvent event = null;
+		
 		if (place.getOwner() != null) {
 			if (from.getSaldo() > place.getPrice()) {
 
 				try {
+					
 					buy = new BuyTransaction(from, place.getPrice());
 					buy.execute(gameid);
-					String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
-					JSONEvent event = new JSONEvent(gameid, "buyedplace", "buyedplace", reason, path, playerUri);
+					event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(), reason, path, playerUri);
 					helper.postEvent(event, this.services.getEvents());
 				} catch (Exception e) {
 					place.setOwner(null);
 					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 				}
-
+			} else {
+				
+				event = new JSONEvent(gameid, EventTypes.CANNOT_BUY_PLACE.getType(), EventTypes.CANNOT_BUY_PLACE.getType(), reason, path, playerUri);
 			}
 		}
 
@@ -237,7 +240,7 @@ public class BrokerService {
 				sell.execute(gameid);
 				place.setOwner(null);
 				String reason = "Player: " + player.getId() + " has taken a hypothecary credit on: " + place.getUri();
-				JSONEvent event = new JSONEvent(gameid, "takehypothecary", "takehypothecary", reason, path, playerUri);
+				JSONEvent event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason, path, playerUri);
 				broker.addHypothecaryCredit(sell);
 				helper.postEvent(event, this.services.getEvents());
 
@@ -248,39 +251,46 @@ public class BrokerService {
 				throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 			}
 		}
-		
+
 		return helper.retrieveEventList(this.services.getEvents(), playerUri, gameid, new Date());
 	}
 
-	public JSONEventList deleteHypothecaryCredit(String gameid, String placeid, String playerUri, String path) throws TransactionFailedException {
+	public JSONEventList deleteHypothecaryCredit(String gameid, String placeid, String playerUri, String path)
+			throws TransactionFailedException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
-		
+
 		Broker broker = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(broker, placeid);
 		Player player = helper.getPlayer(playerUri, gameid);
 		SellTransaction credit = broker.getHypothecaryCredit(placeid, playerUri);
 		BuyTransaction buyBack = null;
-		
-		if(credit != null){
-		
-			try{
+
+		if (credit != null) {
+
+			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
+			JSONAccount jsonFrom = helper.getAccount(player.getAccount());
+			Account from = new Account(player, jsonFrom.getSaldo(), helper.getID(player.getId()));
+			JSONEvent event = null;
+			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
+
+			if (from.getSaldo() >= amount) {
+				try {
+					buyBack = new BuyTransaction(from, amount);
+					buyBack.execute(gameid);
+
+					event = new JSONEvent(gameid, EventTypes.DELETE_HYPO.getType(), EventTypes.DELETE_HYPO.getType(), reason, path, playerUri);
+					helper.postEvent(event, this.services.getEvents());
+					place.setOwner(player);
+					
+				} catch (Exception e) {
+					place.setOwner(null);
+					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+				}
 				
-				int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
-				JSONAccount jsonFrom = helper.getAccount(player.getAccount());
-				Account from = new Account(player, jsonFrom.getSaldo(), helper.getID(player.getId()));
-				buyBack = new BuyTransaction(from, amount);
-				buyBack.execute(gameid);
-				String reason = "Player: " + player.getId() + " has deleted his hypothecary credit for: " + place.getUri();
-				JSONEvent event = new JSONEvent(gameid, "deletehypothecary", "deletehypothecary", reason, path, playerUri);
-				helper.postEvent(event, this.services.getEvents());
-				place.setOwner(player);
-				
-			} catch (Exception e) {
-				
-				place.setOwner(null);
-				throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+			} else {
+				event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), "cannotdeletehypothecary", reason, path, playerUri);
 			}
 		}
 

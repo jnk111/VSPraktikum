@@ -4,6 +4,7 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
+import vs.jonas.client.Start;
 import vs.malte.services.GamesServiceAPI;
 
 public class RestopolyRun {

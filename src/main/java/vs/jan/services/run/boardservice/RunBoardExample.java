@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
@@ -52,7 +53,7 @@ public class RunBoardExample {
 	 */
 	public static void main(String[] args) throws InterruptedException, MalformedURLException, ResponseCodeException {
 
-		//BankService.run();
+		BankService.run();
 		new GamesServiceAPI();
 		Map<String, JSONService> neededServicesDice = getNeededServices(ServiceNames.DICE);
 		new EventService().startService(); // Der EventService muss f�r den
@@ -79,10 +80,10 @@ public class RunBoardExample {
 		createBoard(boardID, gameUri);
 //		placeBoard(boardID);
 //		checkBoardAdded(boardID);
-		setupUser(boardID, gameUri);
-		startGame(boardID);
-		letCurrPlayerRollDice(boardID);
-		getFinalBoardState(boardID);
+//		setupUser(boardID, gameUri);
+//		startGame(boardID);
+//		letCurrPlayerRollDice(boardID);
+//		getFinalBoardState(boardID);
 
 	}
 

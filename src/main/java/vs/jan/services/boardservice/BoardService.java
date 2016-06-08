@@ -101,7 +101,7 @@ public class BoardService {
 		this.services = ServiceAllocator.initServices(host, gameId);
 		helper.setServices(this.services);
 		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
-		placeABoard(gameId, b.convert());
+		//placeABoard(gameId, b.convert());
 	}
 
 	/**
@@ -435,19 +435,12 @@ public class BoardService {
 		for (int i = 0; i < Place.values().length; i++) {
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
+			String brokerUri = this.services.getBroker() + "/" + gameid + "/places/" + i;
+			p.setBrokerUri(brokerUri);
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
-
-			if (p.isPlace()) {
-				vs.jan.json.brokerservice.JSONPlace place = new vs.jan.json.brokerservice.JSONPlace();
-				place.setPlace(p.getPlaceUri());
-				p.setBrokerUri(this.services.getBroker() + "/" + gameid + "/places/" + i);
-				place.setValue(p.getPrice());
-				place.setHouses(p.getHousesPrice());
-				HttpService.put(p.getBrokerUri(), place, HttpURLConnection.HTTP_OK);
-			}
-
+			HttpService.put(p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
 		}
 
 		key.setFields(fields);

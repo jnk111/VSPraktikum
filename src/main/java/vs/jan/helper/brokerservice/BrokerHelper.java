@@ -42,15 +42,7 @@ public class BrokerHelper extends Helper {
 				return p;
 			}
 		}
-		
-		String uri = this.services.getBoard();
-		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
-		vs.jan.json.boardservice.JSONPlace place = GSON.fromJson(json, vs.jan.json.boardservice.JSONPlace.class);
-		
-		if(place != null) {
-			return new Place(this.services.getBoard() + "/boards/");
-		}
-		
+
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 

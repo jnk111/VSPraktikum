@@ -70,11 +70,10 @@ public class BrokerService {
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		Place p = new Place(place.getPlace());
-		p.setUri("/brokers/" + gameid + "/places/" + placeid);
-		p.update(place);
-		String id = helper.getID(place.getPlace());
-		place.setId("/broker/places/" + id);
+		String id = "/brokers/" + gameid + "/places/" + placeid;
+		String visitUri = id + "/visit";
+		String hypoCreditUri = id + "/hypothecarycredit";
+		Place p = new Place(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri);
 		broker.addPlace(p);
 	}
 

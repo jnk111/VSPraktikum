@@ -21,13 +21,9 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private String hypoCreditUri;
 	
 	
-	public Place(String placeUri){
-		this(null, placeUri, null, 0, new ArrayList<>(), new ArrayList<>(), 0,null,null);
-	}
-	
-	public Place(String uri, String placeUri){
+	public Place(String uri, String placeUri, int rentPrice, int housesPrice, String visitUri, String hypoCreditUri){
 		
-		this(uri, placeUri, null, 0, new ArrayList<>(), new ArrayList<>(), 0, null, null);
+		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), housesPrice, visitUri, hypoCreditUri);
 	}
 	
 	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
@@ -234,7 +230,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		}
 		
 		if(place.getOwner() != null){
-			// TODO: get Owner
+			// TODO: Owner
 		}
 		
 		if(place.getValue() > 0){

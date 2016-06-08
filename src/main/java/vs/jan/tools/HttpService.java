@@ -67,7 +67,6 @@ public class HttpService {
 			}
 
 			int respCode = connection.getResponseCode();
-			System.out.println("GOT RESPONSE CODE: " + respCode);
 			if (respCode == expResponseCode) {
 
 				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -93,7 +92,6 @@ public class HttpService {
 		try {
 			connection.setRequestMethod("GET");
 			responseCode = connection.getResponseCode();
-			System.out.println("GOT RESPONSE CODE: " + responseCode);
 			if (responseCode == expResponseCode) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String line = null;

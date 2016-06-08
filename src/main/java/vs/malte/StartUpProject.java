@@ -11,7 +11,7 @@ import vs.malte.services.GamesServiceAPI;
 
 public class StartUpProject
 {
-    private static final boolean LOCAL = false;
+    private static final boolean LOCAL = true;
 
     public static void main( String[] args )
     {
@@ -33,7 +33,7 @@ public class StartUpProject
                 e.printStackTrace();
             }
 
-            // Example.runExample01( "http://localhost:4567" );
+             Example.runExample01( "http://localhost:4567" );
         }
     }
 }

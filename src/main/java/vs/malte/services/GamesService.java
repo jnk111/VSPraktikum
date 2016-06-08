@@ -37,8 +37,8 @@ public class GamesService
 {
     // ************************CODE CONFIGS************************ //
 
-    private final boolean DEBUG_MODE = true; // Zu Testzwecken: Konsolenausgaben aktivieren
-    private final boolean LOCAL = false;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
+    private final boolean DEBUG_MODE = false; // Zu Testzwecken: Konsolenausgaben aktivieren
+    private final boolean LOCAL = true;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
 
     // **************************PREFIXES************************** //
 
@@ -49,7 +49,7 @@ public class GamesService
 
     // ********************YELLOW PAGE CONFIGS********************* //
 
-    private final String YELLOW_PAGE = "http://172.18.0.5:4567";
+    private final String YELLOW_PAGE = "http://172.18.0.17:4567";
     private final String YP_GROUP_CMD = "/services/of/name/";
     private final String YP_GROUP_NAME = "JJMG";
 
@@ -173,7 +173,7 @@ public class GamesService
 
             newServices.put( "games", "http://localhost:4567/games" );
             newServices.put( "dice", "http://localhost:4567/dice" );
-            newServices.put( "board", "http://localhost:4567/boards" );
+            newServices.put( "boards", "http://localhost:4567/boards" );
             newServices.put( "bank", "http://localhost:4567/banks" );
             newServices.put( "broker", "http://localhost:4567/broker" );
             newServices.put( "decks", "http://localhost:4567/decks" );

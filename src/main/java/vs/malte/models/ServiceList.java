@@ -80,7 +80,7 @@ public class ServiceList
             services.put( "dice", dice );
 
         if ( boards != null )
-            services.put( "board", boards );
+            services.put( "boards", boards );
 
         if ( bank != null )
             services.put( "bank", bank );

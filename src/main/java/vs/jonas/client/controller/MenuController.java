@@ -62,6 +62,7 @@ public class MenuController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new OffeneSpieleController(client);				
+				ui.getFrame().dispose();
 			}
 		});
 		

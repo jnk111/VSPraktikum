@@ -42,7 +42,7 @@ public class MyRest {
 
         try {
         	YellowPagesService yellowPages = new YellowPagesService(false);
-			RestopolyClient client = new RestopolyClient(yellowPages, new User("TestUser"));
+			RestopolyClient client = new RestopolyClient(yellowPages);
 			
 			JsonObject response = client.get("http://localhost:4567/games");
 			System.out.println(response);

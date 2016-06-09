@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import vs.jonas.client.json.GameResponse;
+import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameInformationTableModel;
 import vs.jonas.client.view.OffeneSpieleUI;
@@ -91,14 +92,27 @@ public class OffeneSpieleController {
 		});
 		
 		ui.getBtnBeitreten().addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String gameID = ui.getLblAuswahl().getText();
 				if(!gameID.equals("")){
+						String username = "";
+						while(username != null && username.equals("")){
+							username = JOptionPane.showInputDialog(ui.getFrame(), "Bitte wählen Sie einen Usernamen.");
+							if(username != null && username.equals("")){
+								JOptionPane.showMessageDialog(ui.getFrame(), "Dieser Username ist nicht gültig. Der Username darf nicht leer sein.");
+							}
+						}
 					try {
-						new GameController(client,gameID);
-					} catch (IOException | UnirestException e1) {
+						if(username != null){
+							ui.getFrame().dispose();
+							User user = new User(username.toLowerCase());
+							new GameController(client,gameID, user);
+						}
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog(ui.getFrame(), "Ups, da ist ein Verbindungsfehler aufgetreten.");
+						ex.printStackTrace();
+					} catch (UnirestException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}

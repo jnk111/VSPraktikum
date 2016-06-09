@@ -102,4 +102,8 @@ public class OffeneSpieleUI {
 		frame.setVisible(true);
 	}
 
+	public JFrame getFrame() {
+		return frame;
+	}
+
 }

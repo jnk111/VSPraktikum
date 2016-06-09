@@ -47,7 +47,6 @@ public class RestopolyClient {
 
 	private JSONService gameService;
 	private JSONService boardService;
-	private String BASE_URL;
 	private String SLASH;
 	private String SLASH_PLAYERS;
 	private String SLASH_PAWNS;
@@ -57,7 +56,6 @@ public class RestopolyClient {
 	private String SLASH_TURN;
 	private String SLASH_STATUS;
 	private Gson gson;
-	private User user;
 
 	/**
 	 * Initialisiert den Client
@@ -67,7 +65,7 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 * @throws Exception
 	 */
-	public RestopolyClient(YellowPagesService yellowPages, User user) throws IOException, UnirestException, Exception {
+	public RestopolyClient(YellowPagesService yellowPages) throws IOException, UnirestException, Exception {
 		try {
 			SLASH = "/";
 			SLASH_PLAYERS = "/players";
@@ -77,11 +75,9 @@ public class RestopolyClient {
 			SLASH_CURRENT = "/current";
 			SLASH_TURN = "/turn";
 			SLASH_STATUS = "/status";
-			BASE_URL = yellowPages.getBaseIP();
 			gameService = yellowPages.getService(ServiceNames.GAME);
 			boardService = yellowPages.getService(ServiceNames.BOARD);
 			gson = new Gson();
-			this.user = user;
 		} catch (ServiceUnavailableException e) {
 			e.printStackTrace();
 		}
@@ -134,7 +130,7 @@ public class RestopolyClient {
 	 * @throws IOException
 	 * @throws UnirestException
 	 */
-	public void enterGame(String gameID) throws IOException, UnirestException {
+	public void enterGame(String gameID, User user) throws IOException, UnirestException {
 		System.out.println("\n************* Enter Game *************");
 		String uri = gameService.getUri();
 		String gamesPlayersUri = uri + SLASH + gameID + SLASH_PLAYERS;
@@ -144,7 +140,7 @@ public class RestopolyClient {
 		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
 	}
 	
-	public void setReady(String gameID) throws IOException, Exception{
+	public void setReady(String gameID, User user) throws IOException, Exception{
 		System.out.println("\n************** SetReady ************** ");
 		String readyUri = gameService.getUri() + SLASH + gameID + SLASH_PLAYERS + SLASH + user.getName() + SLASH_READY;
 		System.out.println(readyUri);
@@ -315,7 +311,7 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 * @throws IOException
 	 */
-	public String getPawnID(String gameID) throws UnirestException, IOException{
+	public String getPawnID(String gameID, User user) throws UnirestException, IOException{
 		System.out.println("\n************** Get PawnID **************");
 		
 		
@@ -341,7 +337,7 @@ public class RestopolyClient {
 	 * @throws IOException
 	 * @throws UnirestException 
 	 */
-	public int rollDice(String gameID) throws IOException, UnirestException {
+	public int rollDice(String gameID, User user) throws IOException, UnirestException {
 		System.out.println("\n**************  Roll Dice  **************");
 
 		String boardServiceUri = boardService.getUri();
@@ -401,13 +397,5 @@ public class RestopolyClient {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Liefert den angemeldeten User zurueck.
-	 * @return
-	 */
-	public User getUser() {
-		return user;
 	}
 }

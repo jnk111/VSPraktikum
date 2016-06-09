@@ -35,15 +35,15 @@ public class RestopolyMenuUI {
 	public RestopolyMenuUI() {
 		frame = new JFrame("Restopoly");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 300, 200);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(new EmptyBorder(5, 75, 5, 75));
 		frame.setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(4, 0, 0, 0));
+		contentPane.setLayout(new GridLayout(4, 0, 0, 5));
 		
 		JLabel lblRestopoly = new JLabel("Restopoly");
 		lblRestopoly.setFont(new Font("Kristen ITC", Font.BOLD, 18));
@@ -51,9 +51,11 @@ public class RestopolyMenuUI {
 		contentPane.add(lblRestopoly);
 		
 		btnOffeneSpiele = new JButton("Offene Spiele");
+		btnOffeneSpiele.setFont(new Font("Kristen ITC", Font.PLAIN, 11));
 		contentPane.add(btnOffeneSpiele);
 		
 		btnSpielErstellen = new JButton("Spiel Erstellen");
+		btnSpielErstellen.setFont(new Font("Kristen ITC", Font.PLAIN, 11));
 		contentPane.add(btnSpielErstellen);
 	}
 
@@ -67,5 +69,9 @@ public class RestopolyMenuUI {
 	
 	public void showUI(){
 		frame.setVisible(true);
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 }

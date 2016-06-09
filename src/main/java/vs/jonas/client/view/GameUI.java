@@ -43,7 +43,7 @@ public class GameUI {
 		frame = new JFrame("Restopoly");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 850, 500);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -156,4 +156,7 @@ public class GameUI {
 		frame.setVisible(true);
 	}
 
+	public static void main(String[] args) {
+		new GameUI().showUI();
+	}
 }

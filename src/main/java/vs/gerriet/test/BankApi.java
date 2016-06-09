@@ -17,8 +17,19 @@ import vs.gerriet.json.TransferList;
 import vs.gerriet.model.transaction.AtomicOperation.Type;
 import vs.gerriet.service.BankService;
 
+/**
+ * Demo class for the bank service and the service API.
+ *
+ * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
+ */
 public class BankApi {
 
+    /**
+     * Runs a small test application that uses the bank service.
+     *
+     * @param args
+     *            Program arguments.
+     */
     public static void main(final String[] args) {
         // start bank service locally
         System.out.println("Starting bank service on localhost ...");
@@ -166,6 +177,12 @@ public class BankApi {
         Spark.stop();
     }
 
+    /**
+     * Prints the response using Gson.
+     *
+     * @param res
+     *            Response to be printed.
+     */
     private static void printResponse(final HttpResponse<? extends Object> res) {
         if (res == null) {
             System.out.println("NULL");
@@ -177,6 +194,14 @@ public class BankApi {
 
     }
 
+    /**
+     * Prints a list with all transaction also containing detailed information.
+     *
+     * @param bankApi
+     *            Bank API instance to be used.
+     * @param bankId
+     *            Id of the bank the transactions should be printed for.
+     */
     private static void printTransactions(final Bank bankApi, final BankId bankId) {
         // list transactions
         System.out.println("Listing transactions ...");
@@ -195,6 +220,14 @@ public class BankApi {
         }
     }
 
+    /**
+     * Prints a list with all transfers also containing detailed information.
+     *
+     * @param bankApi
+     *            Bank API instance to be used.
+     * @param bankId
+     *            Id of the bank the transfers should be printed for.
+     */
     private static void printTransfers(final Bank bankApi, final BankId bankId) {
         // listing transfers
         System.out.println("Listing transfers ...");

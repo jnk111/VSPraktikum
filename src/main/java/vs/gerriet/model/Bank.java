@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import vs.gerriet.controller.bank.account.AccountsListController;
 import vs.gerriet.controller.bank.transfer.TransfersController;
+import vs.gerriet.event.AddEventQueue;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
@@ -70,6 +71,11 @@ public class Bank {
     private final Map<TransactionId, Transaction> transactions;
 
     /**
+     * Queue used to create events.
+     */
+    private final AddEventQueue eventQueue;
+
+    /**
      * Creates a new bank without any accounts.
      */
     public Bank(final BankId id, final GameId gameId) {
@@ -80,6 +86,7 @@ public class Bank {
         this.transfers = new ConcurrentSkipListMap<>();
         this.accountsUri = this.id.getUri() + AccountsListController.URI_PART;
         this.transferUri = this.id.getUri() + TransfersController.URI_PART;
+        this.eventQueue = new AddEventQueue();
     }
 
     /**
@@ -162,7 +169,7 @@ public class Bank {
             createTransaction(final vs.gerriet.model.transaction.Transaction.Type type) {
         final TransactionId transactionId =
                 new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
-        final Transaction transaction = new Transaction(transactionId, type, this);
+        final Transaction transaction = new Transaction(transactionId, type, this, this.eventQueue);
         this.transactions.put(transactionId, transaction);
         return transactionId;
     }

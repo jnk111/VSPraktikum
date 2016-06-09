@@ -20,11 +20,6 @@ public abstract class VsApiBase extends ApiBase {
     public static final String GROUP_NAME = "JJMG";
 
     /**
-     * Cache for yellow pages service list.
-     */
-    private static ServiceStatusList serviceCache;
-
-    /**
      * Contains the cached uri for this service.
      */
     private String uriCache;
@@ -73,7 +68,6 @@ public abstract class VsApiBase extends ApiBase {
      */
     public void resetCache() {
         this.uriCache = null;
-        VsApiBase.serviceCache = null;
     }
 
     /**
@@ -84,13 +78,11 @@ public abstract class VsApiBase extends ApiBase {
      * @return Service uri. Returns <code>null</code> if loading failed.
      */
     protected String loadUriForService(final Function<ServiceStatus, Boolean> filter) {
-        if (VsApiBase.serviceCache == null) {
-            final HttpResponse<ServiceStatusList> response = this.yellowPages.getFullServices();
-            if (response == null || response.getStatus() != 200) {
-                return null;
-            }
+        final HttpResponse<ServiceStatusList> response = this.yellowPages.getFullServices();
+        if (response == null || response.getStatus() != 200) {
+            return null;
         }
-        for (final ServiceStatus current : VsApiBase.serviceCache.services) {
+        for (final ServiceStatus current : response.getBody().services) {
             if (filter.apply(current).booleanValue()) {
                 return current.uri;
             }
@@ -109,8 +101,8 @@ public abstract class VsApiBase extends ApiBase {
      */
     protected String loadUriForService(final String groupName, final String type) {
         return this.loadUriForService((element) -> {
-            // TODO @gerriet-hinrichs: check for status field
-            return Boolean.valueOf(element.name.equals(groupName) && element.service.equals(type));
+            return Boolean.valueOf(element.name.equals(groupName) && element.service.equals(type)
+                    && !element.status.equals("dead"));
         });
     }
 }

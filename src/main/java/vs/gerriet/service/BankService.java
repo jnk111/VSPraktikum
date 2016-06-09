@@ -2,7 +2,9 @@ package vs.gerriet.service;
 
 import java.net.InetAddress;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import de.stuff42.error.ExceptionUtils;
@@ -59,8 +61,18 @@ public class BankService {
             final String ip = InetAddress.getLocalHost().getHostAddress();
             final Service bankService = new Service(VsApiBase.GROUP_NAME, "Bank service", "banks",
                     "http://" + ip + ":4567");
-            if (new YellowPages().registerService(bankService) == null) {
-                throw new Exception("Failed to register within yellow pages.");
+            final HttpResponse<String> yellowPagesResponse =
+                    new YellowPages().registerService(bankService);
+            if (yellowPagesResponse == null || yellowPagesResponse.getStatus() != 201) {
+                String message = "Failed to register within yellow pages.";
+                message += System.lineSeparator();
+                if (yellowPagesResponse == null) {
+                    message += "Request failed.";
+                } else {
+                    message += "[" + yellowPagesResponse.getStatus() + "] => "
+                            + (new Gson().toJson(yellowPagesResponse.getBody()));
+                }
+                throw new Exception(message);
             }
         } catch (final Throwable ex) {
             // if we get startup errors, we terminate spark and exit

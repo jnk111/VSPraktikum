@@ -133,8 +133,8 @@ public class YellowPages extends ApiBase {
      */
     public HttpResponse<String> registerService(final Service service) {
         try {
-            return Unirest.post(this.getServiceUri() + YellowPages.LIST_URI).body(service)
-                    .asString();
+            return Unirest.post(this.getServiceUri() + YellowPages.LIST_URI)
+                    .header("content-type", "application/json").body(service).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -168,7 +168,8 @@ public class YellowPages extends ApiBase {
      */
     public HttpResponse<String> updateService(final ServiceId id, final Service service) {
         try {
-            return Unirest.put(this.getServiceUri() + id.getUri()).body(service)
+            return Unirest.put(this.getServiceUri() + id.getUri())
+                    .header("content-type", "application/json").body(service)
                     .asObject(String.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));

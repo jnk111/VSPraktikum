@@ -100,8 +100,8 @@ public class Bank extends VsApiBase {
     public HttpResponse<String> confirmTransaction(final TransactionId transaction,
             final AccountId account) {
         try {
-            return Unirest.put(this.getServiceUri() + transaction.getUri()).body(account.getUri())
-                    .asString();
+            return Unirest.put(this.getServiceUri() + transaction.getUri())
+                    .header("content-type", "application/json").body(account.getUri()).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -130,7 +130,9 @@ public class Bank extends VsApiBase {
     public HttpResponse<AccountInfo> createAccount(final BankId bank, final AccountInfo data) {
         try {
             final String uri = bank.getUri() + AccountsListController.URI_PART;
-            return Unirest.post(this.getServiceUri() + uri).body(data).asObject(AccountInfo.class);
+            return Unirest.post(this.getServiceUri() + uri)
+                    .header("content-type", "application/json").body(data)
+                    .asObject(AccountInfo.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -148,6 +150,7 @@ public class Bank extends VsApiBase {
     public HttpResponse<BankData> createBank(final GameId game) {
         try {
             return Unirest.post(this.getServiceUri() + BanksController.URI)
+                    .header("content-type", "application/json")
                     .body(new GameIdContainer(game.getUri())).asObject(BankData.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
@@ -385,6 +388,7 @@ public class Bank extends VsApiBase {
                             + TransferFromToController.URI_PART_UNIREST)
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
+                    .header("content-type", "application/json")
                     // cast to object to use object mapper
                     .body((Object) reason).asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
@@ -429,6 +433,7 @@ public class Bank extends VsApiBase {
                     .routeParam("from", from.getBaseData()).routeParam("to", to.getBaseData())
                     .routeParam("amount", String.valueOf(amount))
                     .queryString("transaction", transaction.getUri())
+                    .header("content-type", "application/json")
                     // cast to object to use object mapper
                     .body((Object) reason).asObject(TransferInfo.class);
         } catch (final UnirestException ex) {
@@ -481,6 +486,7 @@ public class Bank extends VsApiBase {
             params.put("amount", String.valueOf(amount));
             final HttpRequestWithBody request = Unirest.post(this.getServiceUri() + uri);
             params.forEach((key, value) -> request.routeParam(key, value));
+            request.header("content-type", "application/json");
             // cast to object to use object mapper
             request.body((Object) reason);
             return request.asObject(TransferInfo.class);
@@ -534,6 +540,7 @@ public class Bank extends VsApiBase {
             final HttpRequestWithBody request = Unirest.post(this.getServiceUri() + uri);
             params.forEach((key, value) -> request.routeParam(key, value));
             request.queryString("transaction", transaction.getUri());
+            request.header("content-type", "application/json");
             // cast to object to use object mapper
             request.body((Object) reason);
             return request.asObject(TransferInfo.class);
@@ -570,7 +577,8 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<String> setBankData(final BankId bank, final BankData data) {
         try {
-            return Unirest.put(this.getServiceUri() + bank.getUri()).body(data).asString();
+            return Unirest.put(this.getServiceUri() + bank.getUri())
+                    .header("content-type", "application/json").body(data).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;

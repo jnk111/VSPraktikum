@@ -9,6 +9,7 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import vs.gerriet.event.AddEventQueue;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
@@ -17,7 +18,6 @@ import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.json.TransactionInfo;
 import vs.gerriet.model.Bank;
 import vs.gerriet.utils.LockProvider;
-import vs.jonas.services.json.EventData;
 
 /**
  * Class for bank transactions.
@@ -118,6 +118,10 @@ public class Transaction extends LockProvider {
     private Status status;
 
     /**
+     * Event queue used to create events.
+     */
+    private final AddEventQueue eventQueue;
+    /**
      * Contains the transaction type.
      */
     private final Type type;
@@ -177,7 +181,8 @@ public class Transaction extends LockProvider {
      * @param bank
      *            Bank instance for this transaction.
      */
-    public Transaction(final TransactionId id, final Type type, final Bank bank) {
+    public Transaction(final TransactionId id, final Type type, final Bank bank,
+            final AddEventQueue eventQueue) {
         this.id = id;
         this.type = type;
         this.bank = bank;
@@ -187,6 +192,7 @@ public class Transaction extends LockProvider {
         this.accounts = new ConcurrentSkipListSet<>();
         this.confirmed = new ConcurrentSkipListSet<>();
         this.transfers = Collections.synchronizedList(new LinkedList<>());
+        this.eventQueue = eventQueue;
     }
 
     /**
@@ -422,19 +428,10 @@ public class Transaction extends LockProvider {
      * Creates events for all done operations.
      */
     private void createEvents() {
-        // create event queue
-        final Queue<EventData> eventData = new ConcurrentLinkedQueue<>();
         // fill event queue with events from this transaction
         while (!this.doneOperations.isEmpty()) {
-            eventData.add(this.doneOperations.pop().getEventData());
+            this.eventQueue.push(this.doneOperations.pop().getEventData());
         }
-        // start new thread to add events from the queue to the event service
-        (new Thread(() -> {
-            while (!eventData.isEmpty()) {
-                final EventData current = eventData.poll();
-                // TODO @gerriet-hinrichs: API
-            }
-        })).start();
     }
 
     /**

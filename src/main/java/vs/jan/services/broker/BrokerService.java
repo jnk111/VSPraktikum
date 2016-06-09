@@ -44,8 +44,12 @@ public class BrokerService {
 
 	public void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
-		Broker b = new Broker("/broker/" + helper.getID(game.getURI()));
+		String baseUri = "/broker/";
+		String gameid = helper.getID(game.getURI());
+		String id = baseUri + gameid;
+		Broker b = new Broker(id);
 		b.setGameUri(game.getURI());
+		b.setEstateUri(id + "/places");
 		brokers.put(b, game);
 		this.services = ServiceAllocator.initServices(host, helper.getID(game.getURI()));
 		helper.setServices(this.services);
@@ -185,20 +189,24 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		Player player = helper.getPlayer(playerUri, gameid);
-		JSONAccount jsonFrom = helper.getAccount(player.getAccount());
+		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
+		
+		// Temp
+		JSONAccount jsonFrom = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+		
+//		JSONAccount jsonFrom = helper.getAccount(player.getAccount());
 		Account from = new Account(player, jsonFrom.getSaldo(), helper.getID(player.getId()));
 		Place place = helper.getPlace(broker, placeid);
 		BuyTransaction buy = null;
 		String reason = "Player: " + player.getId() + " wants to buy the place: " + place.getUri();
 		JSONEvent event = null;
 		
-		if (place.getOwner() != null) {
+		if (place.getOwner() == null) {
 			if (from.getSaldo() > place.getPrice()) {
 
 				try {
 					
-					buy = new BuyTransaction(from, place.getPrice());
+					buy = new BuyTransaction(from, place.getPrice(), this.services.getBank());
 					buy.execute(gameid);
 					event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(), reason, path, playerUri);
 					helper.postEvent(event, this.services.getEvents());
@@ -277,7 +285,7 @@ public class BrokerService {
 
 			if (from.getSaldo() >= amount) {
 				try {
-					buyBack = new BuyTransaction(from, amount);
+					buyBack = new BuyTransaction(from, amount, this.services.getBank());
 					buyBack.execute(gameid);
 
 					event = new JSONEvent(gameid, EventTypes.DELETE_HYPO.getType(), EventTypes.DELETE_HYPO.getType(), reason, path, playerUri);

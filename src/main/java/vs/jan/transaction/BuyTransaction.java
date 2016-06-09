@@ -10,10 +10,11 @@ import vs.jan.tools.HttpService;
 public class BuyTransaction extends Transaction{
 
 	
-	public BuyTransaction(Account from, int amount) {
+	public BuyTransaction(Account from, int amount, String bankUri) {
 		this.from = from;
 		this.amount = amount;
 		this.history = null;
+		this.bankUri = bankUri;
 	}
 
 	@Override
@@ -23,9 +24,7 @@ public class BuyTransaction extends Transaction{
 		try {
 			String idFrom = getID(this.from.getAccUri());
 			this.from.setSaldo(this.from.getSaldo() - this.amount);
-			String url = this.bankUri + "/" + gameid + "/transfer/from/" + idFrom + "/" + this.amount 
-					+ "?transaction=/transactions/" + gameid;
-			
+			String url = this.bankUri + "/" + gameid + "/transfer/from/" + idFrom + "/" + this.amount;
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 
 		} catch (Exception e) {
@@ -42,7 +41,7 @@ public class BuyTransaction extends Transaction{
 
 		Account from = new Account(newFrom, this.from.getSaldo(), this.from.getAccUri());
 
-		BuyTransaction copy = new BuyTransaction(from, this.amount);
+		BuyTransaction copy = new BuyTransaction(from, this.amount, this.bankUri);
 
 		return copy;
 	}

@@ -76,15 +76,16 @@ public class BrokerAPI {
 
 	private void initDELETERemoveHypothecaryCredit() {
 		delete("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
-			
-			JSONEventList list = service.deleteHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			String playerUri = GSON.fromJson(req.body(), String.class);
+			JSONEventList list = service.deleteHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
 			return GSON.toJson(list);
 		});
 	}
 
 	private void initPUTTakeHypothecaryCredit() {
 		put("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
-			JSONEventList list = service.takeHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			String playerUri = GSON.fromJson(req.body(), String.class);
+			JSONEventList list = service.takeHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
 			return GSON.toJson(list);
 		});
 		
@@ -156,7 +157,8 @@ public class BrokerAPI {
 	
 	private void initPostBuyPlace() {
 		post("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
-			JSONEventList list = service.buyPlace(req.params(":gameid"), req.params(":placeid"), req.body(), req.pathInfo());
+			String playerUri = GSON.fromJson(req.body(), String.class);
+			JSONEventList list = service.buyPlace(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
 			return GSON.toJson(list);
 		});
 	}

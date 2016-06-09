@@ -28,8 +28,7 @@ public class SellTransaction extends Transaction{
 			
 			String idTo = getID(this.to.getAccUri());
 			this.to.setSaldo(this.to.getSaldo() + this.amount);
-			String url = this.bankUri + "/" + gameid + "/transfer/to/" + idTo + "/" + this.amount 
-					+ "?transaction=/transactions/" + gameid;
+			String url = this.bankUri + "/" + gameid + "/transfer/to/" + idTo + "/" + this.amount;
 			
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 

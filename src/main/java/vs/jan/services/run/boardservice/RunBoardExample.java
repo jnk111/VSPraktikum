@@ -2,10 +2,7 @@ package vs.jan.services.run.boardservice;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -14,35 +11,31 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.exception.InvalidInputException;
 import vs.jan.exception.ResponseCodeException;
+import vs.jan.helper.boardservice.BoardHelper;
 import vs.jan.json.boardservice.JSONBoard;
-import vs.jan.json.boardservice.JSONEventList;
-import vs.jan.json.boardservice.JSONField;
+import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
-import vs.jan.json.boardservice.JSONPawnList;
-import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONService;
+import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.ServiceNames;
-import vs.jan.model.boardservice.Pawn;
-import vs.jan.model.boardservice.Place;
+import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
 import vs.malte.example.json.CreateGameExDTO;
-import vs.malte.models.Player;
-import vs.malte.services.GamesService;
 import vs.malte.services.GamesServiceAPI;
 
 public class RunBoardExample {
 
 	private static final Gson GSON = new Gson();
 	private static final int TIMEOUT = 500;
-	@SuppressWarnings("unused")
-	private static BoardRESTApi boardApi;
-
-	@SuppressWarnings("unused")
-	private static DiceService diceApi;
+	private static final String HOST = "http://localhost:4567";
+	private final static String GAME_URI = HOST + "/games";
+	private final static String BOARD_URI = HOST + "/boards";
+	private final static String BANK_URI = HOST + "/banks";
+	private final static int BOARD_ID = 42;
+	private final static int MAX_PLAYERS = 4;
 
 	/**
 	 * Startet den Boardservice und fuehrt ein paar Testoperationen aus.
@@ -53,20 +46,20 @@ public class RunBoardExample {
 	 * @throws ResponseCodeException 
 	 */
 	public static void main(String[] args) throws InterruptedException, MalformedURLException, ResponseCodeException {
+		initialize();
+		setupGame();
+	}
 
+	private static void initialize() {
+		
 		BankService.run();
 		new GamesServiceAPI();
 		Map<String, JSONService> neededServicesDice = getNeededServices(ServiceNames.DICE);
-		new EventService().startService(); // Der EventService muss f�r den
-																				// DiceService laufen
+		new EventService().startService();
 		new DiceService(neededServicesDice).startService();
 		new UserServiceRESTApi();
 		new BrokerAPI();
-
-		boardApi = new BoardRESTApi();
-		
-		setupGame();
-
+		new BoardRESTApi();
 	}
 
 	private static void setupGame() throws InterruptedException, MalformedURLException, ResponseCodeException {
@@ -75,78 +68,69 @@ public class RunBoardExample {
 	}
 
 	private static void setupBoard() throws InterruptedException, MalformedURLException, ResponseCodeException {
-		String gameUri = "http://localhost:4567/games";
-		int boardID = 42;
-		
-		System.out.println("GOJAIL_ORDINAL: " + Place.GoJail.ordinal());
-		System.out.println("INJAIL_ORDINAL: " + Place.InJail.ordinal());
-		createBoard(boardID, gameUri);
-//		placeBoard(boardID);
-//		checkBoardAdded(boardID);
-		setupUser(boardID, gameUri);
-		startGame(boardID);
-		letCurrPlayerRollDice(boardID);
-		getFinalBoardState(boardID);
+
+		createBoard();
+		createBank();
+		setupUser();
+		startGame();
+		letCurrPlayerRollDice();
+		getFinalBoardState();
 
 	}
 
 
-	private static void letCurrPlayerRollDice(int boardID) throws ResponseCodeException {
+	private static void createBank() {
+		JSONGameURI uri = new JSONGameURI("/games/" + BOARD_ID);
+		System.out.println("Create the Bank");
+		System.out.println("-------------------------------------------------------------------------------------------");
+		HttpService.post(BANK_URI, uri, 200);
+		System.out.println("Bank created");
+		System.out.println(HttpService.get(BANK_URI, 200));
+		System.out.println(HttpService.get(BANK_URI + "/42", 200));
+		System.out.println("-------------------------------------------------------------------------------------------");
 		
-		for(int i = 0; i < 4; i++){
+		
+	}
+
+	private static void letCurrPlayerRollDice() throws ResponseCodeException {
+		
+		for(int i = 0; i < MAX_PLAYERS; i++){
 			System.out.println("Let Player with mutex roll the dice");
 			System.out.println("-------------------------------------------------------------------------------------------");
-			String json = HttpService.get("http://localhost:4567/games/" + boardID + "/player/current", 200);
-
+			String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/player/current", 200);
 			Player p = GSON.fromJson(json, Player.class);
-			HttpService.put("http://localhost:4567/games/" + boardID + "/player/turn", p, 201);
+			HttpService.put(GAME_URI + "/" + BOARD_ID + "/player/turn", p, 201);
 			
 
 			String pawnUri = p.getPawn();
 			String [] u = pawnUri.split("/");
 			String id = u[u.length - 1];
-			String uri = "http://localhost:4567/boards/42/pawns/" + id;
+			String uri = BOARD_URI + "/" + BOARD_ID +"/pawns/" + id;
 			p.setPawn(uri);
 			System.out.println("Get Pawn with uri: " + p.getPawn());
 			String json2 = HttpService.get(p.getPawn(), 200);
 			JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
-			System.out.println("Got Pawn: " + json2);
 			System.out.println("Pawn rolls dice: " + json2);
-			String list = HttpService.post("http://localhost:4567" + pawn.getRoll(), null, 200);
+			String list = HttpService.post(HOST + pawn.getRoll(), null, 200);
 			System.out.println();
 			System.out.println("RECEIVED EVENTLIST: ");
 			System.out.println(list);
 			System.out.println();
 			System.out.println();
 			System.out.println("Player: " + json + " releases the Mutex");
-			System.out.println("ID: " + id);
-			HttpService.put("http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
+			HttpService.put(GAME_URI + "/" + BOARD_ID + "/players/" + id + "/ready", null, 200);
 		}
 	}
 
-	private static void startGame(int boardID) throws ResponseCodeException {
-		System.out.println("Start game: " + boardID);
+	private static void startGame() throws ResponseCodeException {
+		System.out.println("Start game: " + GAME_URI + "/" + BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");
-		HttpService.put("http://localhost:4567/games/" + boardID + "/status", null, 200);
-		System.out.println("SUCCESS");
+		HttpService.put(GAME_URI + "/" + BOARD_ID + "/status", null, 200);
 		System.out.println();
 	}
 
-	@SuppressWarnings("unused")
-	private static void updateBoard(int boardID) throws ResponseCodeException {
 
-		JSONBoard board = new JSONBoard("" + boardID);
-
-		JSONField field = new JSONField("/boards/" + boardID + "/places/2");
-		JSONPawn pawn = new JSONPawn("/game/" + boardID + "/players/mario");
-		pawn.setId("/boards/" + boardID + "/pawns/mario");
-		field.getPawns().add(pawn.getId());
-		board.setFields(new ArrayList<>(Arrays.asList(field)));
-		HttpService.put("http://localhost:4567/boards/" + boardID, board, 200);
-
-	}
-
-	private static void setupUser(int boardID, String gameUri) throws InterruptedException, ResponseCodeException {
+	private static void setupUser() throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
 		Player p1 = new Player();
@@ -157,44 +141,79 @@ public class RunBoardExample {
 		p2.setUserName("wario");
 		p3.setUserName("yoshi");
 		p4.setUserName("donkeykong");
-		String gamePlayerUri = gameUri + "/" + boardID + "/players";
-		System.out.println("GameplayerURI: " + gamePlayerUri);
-		System.out.println("Create Some Users on Game: " + boardID);
+		String gamePlayerUri = GAME_URI + "/" + BOARD_ID + "/players";
+		System.out.println("Create Some Users on Game: " + BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");
-		createUser(boardID, gamePlayerUri, p1);
-		createUser(boardID, gamePlayerUri, p2);
-		createUser(boardID, gamePlayerUri, p3);
-		createUser(boardID, gamePlayerUri, p4);
+		createUser(BOARD_ID, gamePlayerUri, p1);
+		createUser(BOARD_ID, gamePlayerUri, p2);
+		createUser(BOARD_ID, gamePlayerUri, p3);
+		createUser(BOARD_ID, gamePlayerUri, p4);
 		
-		System.out.println("SUCCESS");
 		System.out.println();
-		
-		System.out.println("Set Users ready on Game: " + boardID);
+		System.out.println("Create Bank Accounts:");
 		System.out.println("-------------------------------------------------------------------------------------------");
-		setUserReady(p1, boardID);
-		setUserReady(p2, boardID);
-		setUserReady(p3, boardID);
-		setUserReady(p4, boardID);
+		
+		createBankAccount(BOARD_ID, gamePlayerUri, p1);
+		createBankAccount(BOARD_ID, gamePlayerUri, p2);
+		createBankAccount(BOARD_ID, gamePlayerUri, p3);
+		createBankAccount(BOARD_ID, gamePlayerUri, p4);
+		
+		System.out.println("Init Start balance:");
+		System.out.println("-------------------------------------------------------------------------------------------");
+		initStartBalances(gamePlayerUri, p1);
+		initStartBalances(gamePlayerUri, p2);
+		initStartBalances(gamePlayerUri, p3);
+		initStartBalances(gamePlayerUri, p4);
+		
+		System.out.println("Set Users ready on Game: " + BOARD_ID);
+		System.out.println("-------------------------------------------------------------------------------------------");
+		setUserReady(p1, BOARD_ID);
+		setUserReady(p2, BOARD_ID);
+		setUserReady(p3, BOARD_ID);
+		setUserReady(p4, BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println();
 		checkPlayersAddedOnUserService();
-		System.out.println("SUCCESS");
 		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
 		System.out.println();
 
 	}
 
 
+	private static void initStartBalances(String gamePlayerUri, Player p1) {
+		String json = HttpService.get(BANK_URI + "/" + BOARD_ID + "/accounts/" + p1.getUserName(), 200);
+		System.out.println("Got Account: " + json);
+		JSONAccount acc = GSON.fromJson(json, JSONAccount.class);
+		String uri = BANK_URI + "/" + BOARD_ID + "/transfer/to/" + p1.getUserName() + "/" + (acc.getSaldo() + 20000);
+		System.out.println("Set start saldo: ");
+		HttpService.post(uri, null, 201);
+		
+	}
+
+	private static void createBankAccount(int boardId, String gamePlayerUri, Player p1) {
+		String uri = BANK_URI + "/" + BOARD_ID + "/accounts";
+		JSONAccount acc = new JSONAccount(gamePlayerUri.replace(HOST, "") + "/" + p1.getUserName(), 0);
+		System.out.println(acc.getPlayer());
+		System.out.println("Account: " + GSON.toJson(acc));
+		HttpService.post(uri, acc, 201);
+		System.out.println("Account created: " + HttpService.get(uri + "/" + getID(acc.getPlayer()), 200));
+		
+	}
+
+	private static String getID(String uri) {
+		String [] u = uri.split("/");
+		String id = u[u.length - 1];
+		return id;
+	}
+
 	private static void setUserReady(Player p1, int boardID) throws InterruptedException, ResponseCodeException {
 		
 		Thread.sleep(TIMEOUT);
-		String json = HttpService.get("http://localhost:4567/games/" + boardID + "/players/" + p1.getUserName(), 200);
+		String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/players/" + p1.getUserName(), 200);
 		System.out.println("User is ready: " + json);
 		Player p = GSON.fromJson(json, Player.class);
-		String [] u = p.getId().split("/");
-		String id = u[u.length - 1];
-		HttpService.put( "http://localhost:4567/games/" + boardID + "/players/" + id + "/ready", null, 200);
+		String id = getID(p.getId());
+		HttpService.put( GAME_URI + "/" + BOARD_ID + "/players/" + id + "/ready", null, 200);
 		System.out.println("SUCCESS");
 		System.out.println();
 	}
@@ -214,10 +233,10 @@ public class RunBoardExample {
 		System.out.println();
 	}
 
-	private static void getFinalBoardState(int boardID) throws InterruptedException, ResponseCodeException {
+	private static void getFinalBoardState() throws InterruptedException, ResponseCodeException {
 		System.out.println("FINAL BOARD STATE: ");
 		System.out.println("-------------------------------------------------------------------------------------------");
-		checkBoardAdded(boardID);
+		checkBoardAdded(BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");
 		System.out.println("FINISHED");
 		System.out.println();
@@ -225,214 +244,10 @@ public class RunBoardExample {
 	}
 
 
-	private static JSONPlace getPlace(String placeUri) {
 
-		try {
 
-			System.out.println("Get Place with uri: " + placeUri + " ...");
-			String json = HttpService.get("http://localhost:4567" + placeUri, HttpURLConnection.HTTP_OK);
-			JSONPlace place = GSON.fromJson(json, JSONPlace.class);
-			System.out.println("SUCCESS");
-			System.out.println("Fetched Place: " + GSON.toJson(place));
 
-			if (place != null) {
-				return place;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		throw new InvalidInputException();
-	}
 
-	private static List<String> getPlacesUris(int boardID) throws ResponseCodeException {
-
-		System.out.println("Get Places Uris...");
-		String json = HttpService.get("http://localhost:4567/boards/" + boardID + "/places", HttpURLConnection.HTTP_OK);
-
-		@SuppressWarnings("unchecked")
-		List<String> places = GSON.fromJson(json, List.class);
-
-		if (places != null) {
-			System.out.println("SUCCESS");
-			System.out.println("fetched place uris: " + GSON.toJson(places));
-			return places;
-		}
-
-		throw new InvalidInputException();
-	}
-
-	private static void deletePawns(int boardID) throws InterruptedException, ResponseCodeException {
-		System.out.println("Delete a random pawn on the board...");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		JSONPawnList list = null;
-		try {
-			Thread.sleep(TIMEOUT);
-			System.out.println("Old PawnList:");
-			list = getPawnsOnBoard(boardID);
-			System.out.println();
-			System.out.println(GSON.toJson(list));
-
-			List<JSONPawn> pawns = new ArrayList<>();
-
-			for (String pawnUri : list.getPawns()) {
-				JSONPawn p = getPawn(boardID, pawnUri);
-				pawns.add(p);
-			}
-
-			// Get Random Pawn
-			int index = (int) (Math.random() * pawns.size());
-			JSONPawn pawn = pawns.get(index);
-			deletePawn(pawn, boardID);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("New PawnList...");
-		list = getPawnsOnBoard(boardID);
-		System.out.println();
-		System.out.println(GSON.toJson(list));
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-
-	}
-
-	private static void deletePawn(JSONPawn pawn, int boardID) {
-
-		try {
-			System.out.println("Pawn that will be deleted: " + GSON.toJson(pawn));
-			HttpService.delete("http://localhost:4567" + pawn.getId(), HttpURLConnection.HTTP_OK);
-			System.out.println("SUCCESS");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private static void updatePawns(int boardID) throws ResponseCodeException {
-		System.out.println("Update Pawninformation of pawns on the board...");
-		System.out.println("-------------------------------------------------------------------------------------------");
-
-		try {
-			Thread.sleep(TIMEOUT);
-			JSONPawnList list = getPawnsOnBoard(boardID);
-			List<JSONPawn> pawns = new ArrayList<>();
-
-			for (String pawnUri : list.getPawns()) {
-				JSONPawn p = getPawn(boardID, pawnUri);
-				pawns.add(p);
-			}
-
-			// Get Random Pawn
-			int index = (int) (Math.random() * pawns.size());
-			JSONPawn pawn = pawns.get(index);
-			updatePawn(pawn, boardID);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-
-	}
-
-	private static void updatePawn(JSONPawn pawn, int boardID) throws ResponseCodeException {
-
-		System.out.println("Pawn that will be updated: " + GSON.toJson(pawn));
-		System.out.println("Update PlayerUri...");
-		pawn.setPlayer("/games/" + boardID + "/players/updated");
-		HttpService.put("http://localhost:4567" + pawn.getId(), pawn, HttpURLConnection.HTTP_OK);
-		System.out.println("SUCCESS");
-		System.out.println();
-
-	}
-
-	private static void letPawnsRollDice(int boardID) throws InterruptedException, ResponseCodeException {
-		System.out.println("Ĺet Pawns roll the dice on the Board: " + boardID);
-		System.out.println("-------------------------------------------------------------------------------------------");
-
-		JSONPawnList list = getPawnsOnBoard(boardID);
-		List<JSONPawn> pawns = new ArrayList<>();
-
-		for (String pawnUri : list.getPawns()) {
-			JSONPawn p = getPawn(boardID, pawnUri);
-			pawns.add(p);
-		}
-
-		System.out.println("Old Pawns: " + GSON.toJson(pawns));
-		System.out.println();
-
-		for (JSONPawn p : pawns) {
-			rollDice(p);
-		}
-		pawns = new ArrayList<>();
-		for (String pawnUri : list.getPawns()) {
-			JSONPawn p = getPawn(boardID, pawnUri);
-			pawns.add(p);
-		}
-		System.out.println("Moved Pawns: " + GSON.toJson(pawns));
-		System.out.println("-------------------------------------------------------------------------------------------");
-		System.out.println();
-		System.out.println();
-
-	}
-
-	private static void rollDice(JSONPawn p) throws InterruptedException, ResponseCodeException {
-
-		Thread.sleep(TIMEOUT);
-		String diceUri = "http://localhost:4567" + p.getRoll();
-		System.out.println("Pawn with uri: " + p.getId() + " rolls the dice...");
-		System.out.println(diceUri);
-		HttpService.post(diceUri, null, HttpURLConnection.HTTP_OK);
-		System.out.println("SUCCESS");
-		System.out.println();
-
-	}
-
-	private static JSONPawn getPawn(int boardID, String pawnUri) throws InterruptedException, ResponseCodeException {
-
-		Thread.sleep(TIMEOUT);
-		System.out.println("Get Pawn from Board with URI " + pawnUri + "...");
-		String json = HttpService.get("http://localhost:4567" + pawnUri, HttpURLConnection.HTTP_OK);
-		JSONPawn pawn = GSON.fromJson(json, JSONPawn.class);
-
-		if (pawn != null) {
-			System.out.println("SUCCESS");
-			System.out.println("Fetched Pawn: " + GSON.toJson(pawn));
-			System.out.println();
-			return pawn;
-		}
-		throw new InvalidInputException();
-
-	}
-
-	private static JSONPawnList getPawnsOnBoard(int boardID) throws InterruptedException, ResponseCodeException {
-
-		Thread.sleep(TIMEOUT);
-		System.out.println("Get Pawns from Board with id " + boardID + "...");
-		String json = HttpService.get("http://localhost:4567/boards/" + boardID + "/pawns", HttpURLConnection.HTTP_OK);
-		JSONPawnList list = GSON.fromJson(json, JSONPawnList.class);
-		if (list != null) {
-			System.out.println("SUCCESS");
-			System.out.println("Fetched Pawnlist: " + GSON.toJson(list));
-			System.out.println();
-			return list;
-		}
-		throw new InvalidInputException();
-	}
-
-	private static void createPawn(int boardID, String playerName) throws InterruptedException, ResponseCodeException {
-
-		Thread.sleep(TIMEOUT);
-		Pawn p = new Pawn();
-		p.setPlayerUri("/games/" + boardID + "/players/" + playerName);
-		System.out.println("Create Pawn: " + GSON.toJson(p.convert()));
-		HttpService.post("http://localhost:4567/boards/" + boardID + "/pawns", p.convert(), HttpURLConnection.HTTP_OK);
-		System.out.println("SUCCESS");
-		System.out.println();
-
-	}
 
 	private static void checkBoardAdded(int boardID) throws InterruptedException, ResponseCodeException {
 
@@ -446,37 +261,21 @@ public class RunBoardExample {
 
 	}
 
-	private static void createBoard(int boardID, String gameUri) throws InterruptedException, ResponseCodeException {
+	private static void createBoard() throws InterruptedException, ResponseCodeException {
 
 		Thread.sleep(TIMEOUT);
-		System.out.println("Create Game on: " + gameUri);
+		System.out.println("Create Game on: " + BOARD_ID);
 		CreateGameExDTO g = new CreateGameExDTO();
-		g.setName("" + boardID);
-		HttpService.post(gameUri, g, HttpURLConnection.HTTP_CREATED);
-		System.out.println("SUCCESS");
-		System.out.println();
-		System.out.println("Added Game");
-		checkGameAdded(boardID, gameUri);
-		System.out.println();
-		System.out.println("Added Board");
-
-
+		g.setName("" + BOARD_ID);
+		HttpService.post(GAME_URI, g, HttpURLConnection.HTTP_CREATED);
 		System.out.println("-------------------------------------------------------------------------------------------");
-
+		System.out.println();
 	}
 
-	private static void checkGameAdded(int boardID, String gameUri2) throws ResponseCodeException {
-
-		String json = HttpService.get(gameUri2, HttpURLConnection.HTTP_OK);
-		System.out.println(json);
-
-	}
 
 	private static Map<String, JSONService> getNeededServices(String type) {
+		
 		Map<String, JSONService> services = new HashMap<>();
-
-		// services.put(ServiceNames.EVENT, start.getService(ServiceNames.EVENT));
-		// ... weitere
 
 		if (type.equals(ServiceNames.DICE) || type.equals(ServiceNames.BOARD)) {
 			JSONService s = new JSONService("/services/13", "Logs the Events", "bla", ServiceNames.EVENT, "running",

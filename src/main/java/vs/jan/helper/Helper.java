@@ -40,7 +40,6 @@ public abstract class Helper {
 	 */
 	public Player getPlayer(String playerUri, String gameid) 
 			throws ResponseCodeException {
-		System.out.println("PlayerUri: " + playerUri);
 		String json = HttpService.get(playerUri, HttpURLConnection.HTTP_OK);
 		Player currPlayer = GSON.fromJson(json, Player.class);
 		return currPlayer;

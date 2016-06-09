@@ -12,7 +12,8 @@ public enum Error {
 																	"broker input is not valid"), BROKER_NOT_FOUND("broker not found"), PLAYER_URI(
 																			"the playeruri must not be null"), NOT_IMPL("not yet implemented"), ACC_URI(
 																					"account uri was null"), TRANS_FAIL(
-																							"transaction failed, all actions are rolled back");
+																							"transaction failed, all actions are rolled back"), NO_OWNER(
+																									"place does not have an owner yet");
 
 	private String msg;
 

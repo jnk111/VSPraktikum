@@ -11,12 +11,13 @@ import vs.jan.tools.HttpService;
 public class SellTransaction extends Transaction{
 
 	private Place place;
-	public SellTransaction(Account to, int amount, Place place) {
+	public SellTransaction(Account to, int amount, Place place, String bankUri) {
 		
 		this.to = to;
 		this.amount = amount;
 		this.history = null;
 		this.place = place;
+		this.bankUri = bankUri;
 	}
 	
 	
@@ -46,7 +47,7 @@ public class SellTransaction extends Transaction{
 
 		Account to = new Account(newTo, this.to.getSaldo(), this.to.getAccUri());
 		Place newPlace = new Place(this.place.getUri(), this.place.getPlaceUri(), this.place.getPrice(), this.place.getHousesPrice(), this.place.getVisitUri(), this.place.getHypoCreditUri());
-		SellTransaction copy = new SellTransaction(to, this.amount, newPlace);
+		SellTransaction copy = new SellTransaction(to, this.amount, newPlace, this.bankUri);
 
 		return copy;
 	}

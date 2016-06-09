@@ -164,13 +164,13 @@ public class BrokerService {
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		Broker b = helper.getBroker(this.brokers, gameid);
 		Place p = helper.getPlace(b, placeid);
-		Player owner = new Player();
+		Player owner = null;
 
 		if (p.getOwner() != null) {
-			owner = p.getOwner();
+			return p.getOwner();
 		}
-
-		return owner;
+		
+		throw new PlaceNotHasAnOwnerException(Error.NO_OWNER.getMsg());
 
 	}
 
@@ -208,8 +208,8 @@ public class BrokerService {
 					
 					buy = new BuyTransaction(from, place.getPrice(), this.services.getBank());
 					buy.execute(gameid);
+					place.setOwner(player);
 					event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(), reason, path, playerUri);
-					helper.postEvent(event, this.services.getEvents());
 				} catch (Exception e) {
 					place.setOwner(null);
 					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
@@ -219,7 +219,8 @@ public class BrokerService {
 				event = new JSONEvent(gameid, EventTypes.CANNOT_BUY_PLACE.getType(), EventTypes.CANNOT_BUY_PLACE.getType(), reason, path, playerUri);
 			}
 		}
-
+		
+		helper.postEvent(event, this.services.getEvents());
 		return helper.retrieveEventList(this.services.getEvents(), playerUri, gameid, new Date());
 	}
 
@@ -244,7 +245,7 @@ public class BrokerService {
 			int amount = amountRent + amountHouses;
 
 			try {
-				sell = new SellTransaction(to, amount, place);
+				sell = new SellTransaction(to, amount, place, this.services.getBank());
 				sell.execute(gameid);
 				place.setOwner(null);
 				String reason = "Player: " + player.getId() + " has taken a hypothecary credit on: " + place.getUri();

@@ -2,7 +2,9 @@ package vs.jan.services.run.boardservice;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -11,13 +13,15 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
+import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
-import vs.jan.helper.boardservice.BoardHelper;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
+import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.json.brokerservice.JSONAccount;
+import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
@@ -36,6 +40,7 @@ public class RunBoardExample {
 	private final static String BANK_URI = HOST + "/banks";
 	private final static int BOARD_ID = 42;
 	private final static int MAX_PLAYERS = 4;
+	private static final String BROKER_URI = HOST + "/broker";
 
 	/**
 	 * Startet den Boardservice und fuehrt ein paar Testoperationen aus.
@@ -74,10 +79,57 @@ public class RunBoardExample {
 		setupUser();
 		startGame();
 		letCurrPlayerRollDice();
+		buyPlaces();
+		payRents();
 		getFinalBoardState();
 
 	}
 
+
+	private static void payRents() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void buyPlaces() {
+		
+		System.out.println("Buy Places: ");
+		System.out.println("-----------------------------------------------------------");
+		List<JSONPawn> pawns = getPawnList();
+		
+		for(JSONPawn p: pawns){
+			buyPlace(p);
+		}
+		
+		
+		
+	}
+
+	private static void buyPlace(JSONPawn p) {
+		
+		String json = HttpService.get(HOST + p.getPlace(), 200);
+		System.out.println("Pawn tries to buy the place: " + p.getPlace());
+		JSONPlace place = GSON.fromJson(json, JSONPlace.class);
+		String id = getID(p.getPlace());
+
+		HttpService.post(BROKER_URI + "/" + BOARD_ID + "/places/" + id + "/owner", p.getPlayer(), 200);
+
+		
+		
+	}
+
+	private static List<JSONPawn> getPawnList() {
+		String url = BOARD_URI + "/" + BOARD_ID + "/pawns";
+		String json = HttpService.get(url, 200);
+		JSONPawnList pawns = GSON.fromJson(json, JSONPawnList.class);
+		List<JSONPawn> pawnlist = new ArrayList<>();
+		for(String pawn: pawns.getPawns()){
+			String json2 = HttpService.get(HOST + pawn , 200);
+			JSONPawn p = GSON.fromJson(json2, JSONPawn.class);
+			pawnlist.add(p);
+		}
+		return pawnlist;
+	}
 
 	private static void createBank() {
 		JSONGameURI uri = new JSONGameURI("/games/" + BOARD_ID);

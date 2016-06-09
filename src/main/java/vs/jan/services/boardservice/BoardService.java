@@ -457,17 +457,19 @@ public class BoardService {
 		for (int i = 0; i < Place.values().length; i++) {
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
-			String brokerUri = this.services.getBroker() + "/" + gameid + "/places/" + i;
+			String brokerUri = "/broker/" + gameid + "/places/" + i;
 			p.setBrokerUri(brokerUri);
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
 
-			if (p.isPlace()) {
-				HttpService.put(p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
-			} else {
-				// TODO: call decks
-			}
+			// Temp
+			HttpService.put(this.services.getBroker().replace("/broker", "") + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
+//			if (p.isPlace()) {
+//				HttpService.put(this.services.getBroker().replace("/broker", "") + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
+//			} else {
+//				// TODO: call decks
+//			}
 
 		}
 

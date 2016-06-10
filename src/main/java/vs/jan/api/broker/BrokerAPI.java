@@ -23,11 +23,10 @@ import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
 import vs.jan.model.boardservice.Player;
-import vs.jan.services.broker.BrokerService;
-import vs.jan.model.exception.Error;
 import vs.jan.model.exception.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
+import vs.jan.services.broker.BrokerService;
 
 public class BrokerAPI {
 
@@ -107,7 +106,7 @@ public class BrokerAPI {
 
 
 	private void initGetOwner() {
-		get(" /broker/:gameid/places/:placeid/owner ", "application/json", (req, resp) -> {
+		get(" /broker/:gameid/places/:placeid/owner ", CONTENT_TYPE, (req, resp) -> {
 			Player owner = service.getOwner(req.params(":gameid"), req.params(":placeid"));
 			return GSON.toJson(owner);
 		});
@@ -115,28 +114,28 @@ public class BrokerAPI {
 	}
 
 	private void initGETBrokers() {
-		get("/broker", "application/json", (req, resp) -> {
+		get("/broker", CONTENT_TYPE, (req, resp) -> {
 			JSONBrokerList list = service.getBrokers();
 			return GSON.toJson(list);
 		});
 	}
 	
 	private void initGETSpecificBroker() {
-		get("/broker/:gameid", "application/json", (req, resp) -> {
+		get("/broker/:gameid", CONTENT_TYPE, (req, resp) -> {
 			JSONBroker broker = service.getSpecificBroker(req.params(":gameid"));
 			return GSON.toJson(broker);
 		});
 	}
 	
 	private void initGETPlaces() {
-		get("/broker/:gameid/places", "application/json", (req, resp) -> {
+		get("/broker/:gameid/places", CONTENT_TYPE, (req, resp) -> {
 			JSONEstates estates = service.getPlaces(req.params(":gameid"));
 			return GSON.toJson(estates);
 		});
 	}
 	
 	private void initGETSpecificPlace() {
-		get("/broker/:gameid/places/:placeid", "application/json", (req, resp) -> {
+		get("/broker/:gameid/places/:placeid", CONTENT_TYPE, (req, resp) -> {
 			JSONPlace place = service.getSpecificPlace(req.params(":gameid"), req.params(":placeid"));
 			return GSON.toJson(place);
 		});

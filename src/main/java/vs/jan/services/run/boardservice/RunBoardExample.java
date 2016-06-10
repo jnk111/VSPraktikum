@@ -13,7 +13,6 @@ import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
-import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.json.boardservice.JSONBoard;
 import vs.jan.json.boardservice.JSONGameURI;
@@ -21,7 +20,6 @@ import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.json.brokerservice.JSONAccount;
-import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
@@ -99,17 +97,13 @@ public class RunBoardExample {
 		
 		for(JSONPawn p: pawns){
 			buyPlace(p);
-		}
-		
-		
-		
+		}		
 	}
 
 	private static void buyPlace(JSONPawn p) {
 		
-		String json = HttpService.get(HOST + p.getPlace(), 200);
-		System.out.println("Pawn tries to buy the place: " + p.getPlace());
-		JSONPlace place = GSON.fromJson(json, JSONPlace.class);
+		System.out.println();
+		System.out.println("Pawn: " + p.getId() + " tries to buy the place: " + p.getPlace());
 		String id = getID(p.getPlace());
 
 		HttpService.post(BROKER_URI + "/" + BOARD_ID + "/places/" + id + "/owner", p.getPlayer(), 200);

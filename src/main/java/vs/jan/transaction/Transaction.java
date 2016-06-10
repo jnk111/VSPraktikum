@@ -1,97 +1,32 @@
 package vs.jan.transaction;
 
-import vs.jan.model.brokerservice.Account;
 import vs.jan.model.exception.TransactionFailedException;
 
 public abstract class Transaction {
 
-	protected Account from;
-	protected Account to;
+	protected String from;
+	protected String to;
 	protected int amount;
-	protected String reason;
 	protected Transaction history;
+	protected String gameId;
 
 	protected String bankUri;
 
-	public abstract void execute(String gameid) throws TransactionFailedException;
+	public abstract void execute() throws TransactionFailedException;
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + amount;
-		result = prime * result + ((bankUri == null) ? 0 : bankUri.hashCode());
-		result = prime * result + ((from == null) ? 0 : from.hashCode());
-		result = prime * result + ((history == null) ? 0 : history.hashCode());
-		result = prime * result + ((reason == null) ? 0 : reason.hashCode());
-		result = prime * result + ((to == null) ? 0 : to.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Transaction other = (Transaction) obj;
-		if (amount != other.amount)
-			return false;
-		if (bankUri == null) {
-			if (other.bankUri != null)
-				return false;
-		} else if (!bankUri.equals(other.bankUri))
-			return false;
-		if (from == null) {
-			if (other.from != null)
-				return false;
-		} else if (!from.equals(other.from))
-			return false;
-		if (history == null) {
-			if (other.history != null)
-				return false;
-		} else if (!history.equals(other.history))
-			return false;
-		if (reason == null) {
-			if (other.reason != null)
-				return false;
-		} else if (!reason.equals(other.reason))
-			return false;
-		if (to == null) {
-			if (other.to != null)
-				return false;
-		} else if (!to.equals(other.to))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Transaction [from=" + from + ", to=" + to + ", amount=" + amount + ", reason=" + reason + ", history="
-				+ history + ", bankUri=" + bankUri + "]";
-	}
-	
-	public String getID(String accUri) {
-
-		String[] u = accUri.split("/");
-		return u[u.length - 1];
-	}
-
-	public Account getFrom() {
+	public String getFrom() {
 		return from;
 	}
 
-	public void setFrom(Account from) {
+	public void setFrom(String from) {
 		this.from = from;
 	}
 
-	public Account getTo() {
+	public String getTo() {
 		return to;
 	}
 
-	public void setTo(Account to) {
+	public void setTo(String to) {
 		this.to = to;
 	}
 
@@ -103,20 +38,20 @@ public abstract class Transaction {
 		this.amount = amount;
 	}
 
-	public String getReason() {
-		return reason;
-	}
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-
 	public Transaction getHistory() {
 		return history;
 	}
 
 	public void setHistory(Transaction history) {
 		this.history = history;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
 	}
 
 	public String getBankUri() {
@@ -126,5 +61,4 @@ public abstract class Transaction {
 	public void setBankUri(String bankUri) {
 		this.bankUri = bankUri;
 	}
-
 }

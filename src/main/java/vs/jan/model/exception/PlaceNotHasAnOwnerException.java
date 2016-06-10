@@ -1,4 +1,4 @@
-package vs.jan.services.broker;
+package vs.jan.model.exception;
 
 import vs.jan.exception.ResourceNotFoundException;
 

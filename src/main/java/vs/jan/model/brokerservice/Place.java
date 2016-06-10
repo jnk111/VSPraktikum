@@ -45,6 +45,21 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		initCosts();
 	}
 
+	public Place(Place place) {
+		this.uri = place.getUri();
+		this.placeUri = place.getPlaceUri();
+		this.owner = place.getOwner();
+		this.price = place.getPrice();
+		this.rent = place.getRent();
+		this.cost = place.getCost();
+		this.housesPrice = place.getHousesPrice();
+		this.visitUri = place.getVisitUri();
+		this.hypoCreditUri = place.getHypoCreditUri();
+		this.setLevel(0);
+		initRents();
+		initCosts();
+	}
+
 	private void initCosts() {
 		
 		int price = this.housesPrice;

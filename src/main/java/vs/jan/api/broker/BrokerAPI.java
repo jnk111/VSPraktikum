@@ -24,9 +24,10 @@ import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
 import vs.jan.model.boardservice.Player;
 import vs.jan.services.broker.BrokerService;
-import vs.jan.services.broker.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.TransactionFailedException;
+import vs.jan.model.exception.TransactionRollBackException;
 
 public class BrokerAPI {
 
@@ -234,6 +235,13 @@ public class BrokerAPI {
 
 			response.status(HttpURLConnection.HTTP_NOT_FOUND);
 			response.body(HttpURLConnection.HTTP_NOT_FOUND + ": " + exception.getMessage());
+			exception.printStackTrace();
+		});
+		
+		exception(TransactionRollBackException.class, (exception, request, response) -> {
+
+			response.status(HttpURLConnection.HTTP_CONFLICT);
+			response.body(HttpURLConnection.HTTP_CONFLICT + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
 	}

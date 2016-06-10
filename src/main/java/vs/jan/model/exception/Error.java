@@ -13,7 +13,8 @@ public enum Error {
 																			"the playeruri must not be null"), NOT_IMPL("not yet implemented"), ACC_URI(
 																					"account uri was null"), TRANS_FAIL(
 																							"transaction failed, all actions are rolled back"), NO_OWNER(
-																									"place does not have an owner yet");
+																									"place does not have an owner yet"), ROLL_BACK_FAILED(
+																											"roll back failed");
 
 	private String msg;
 

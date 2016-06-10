@@ -352,7 +352,7 @@ public class BoardService {
 		movePawn(gameid, pawnid, roll.getNumber());
 		helper.addThrow(this.throwMap, pawn, roll);
 
-		return helper.retrieveEventList(this.services.getEvents(), pawn.getPlayerUri(), gameid, new Date());
+		return helper.receiveEventList(this.services.getEvents(), pawn.getPlayerUri(), gameid, new Date());
 	}
 
 	/**

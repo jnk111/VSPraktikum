@@ -79,7 +79,7 @@ public abstract class Helper {
 	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
 	 * 
 	 */
-	public JSONEventList retrieveEventList(String eventServiceUri, String playeruri, String gameid, Date date) {
+	public JSONEventList receiveEventList(String eventServiceUri, String playeruri, String gameid, Date date) {
 		//
 		String url = eventServiceUri + "?game=" + gameid + "&player=" + playeruri;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);

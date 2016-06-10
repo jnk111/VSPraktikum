@@ -176,19 +176,15 @@ public class Broker implements Convertable<JSONBroker> {
 		this.hypothecaryCredits = hypothecaryCredits;
 	}
 
-	public SellTransaction getHypothecaryCredit(String placeid, String playerUri) {
+	public SellTransaction getHypothecaryCredit(Place place, String id) {
 		
 		for(SellTransaction credit: this.hypothecaryCredits) {
 			
-			String id = credit.getID(credit.getPlace().getUri());
-			Player player = credit.getTo().getPlayer();
-			
-			if(player.getId().equals(playerUri)
-					&& id.equals(placeid)) {
+			if(place.equals(credit.getPlace())
+					&& id.equals(credit.getTo())) {
 				return credit;
 			}
 		}
 		return null;
 	}
-
 }

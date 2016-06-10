@@ -2,8 +2,6 @@ package vs.jan.transaction;
 
 import java.net.HttpURLConnection;
 
-import vs.jan.model.boardservice.Player;
-import vs.jan.model.brokerservice.Account;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.tools.HttpService;
@@ -11,47 +9,39 @@ import vs.jan.tools.HttpService;
 public class SellTransaction extends Transaction{
 
 	private Place place;
-	public SellTransaction(Account to, int amount, Place place, String bankUri) {
+	
+	public SellTransaction(String to, int amount, Place place, String bankUri, String gameId) {
 		
 		this.to = to;
 		this.amount = amount;
-		this.history = null;
 		this.place = place;
 		this.bankUri = bankUri;
+		this.gameId = gameId;
+	}
+	
+	public SellTransaction(SellTransaction trans) {
+		
+		this.to = trans.getTo();
+		this.amount = trans.getAmount();
+		this.place = new Place(trans.getPlace());
+		this.bankUri = trans.getBankUri();
+		this.gameId = trans.getGameId();
 	}
 	
 	
 	@Override
-	public void execute(String gameid) throws TransactionFailedException {
-		this.history = copy();
+	public void execute() throws TransactionFailedException {
+		this.history = new SellTransaction(this);
 		
 		try {
-			
-			String idTo = getID(this.to.getAccUri());
-			this.to.setSaldo(this.to.getSaldo() + this.amount);
-			String url = this.bankUri + "/" + gameid + "/transfer/to/" + idTo + "/" + this.amount;
+			String url = this.bankUri + "/" + this.gameId + "/transfer/to/" + this.to + "/" + this.amount;
 			
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 
 		} catch (Exception e) {
 			throw new TransactionFailedException();
 		}
-		
 	}
-
-
-	private SellTransaction copy() {
-		Player oldTo = this.to.getPlayer();
-		Player newTo = new Player(oldTo.getUserName(), oldTo.getId(), oldTo.getPawn(), oldTo.getAccount(),
-				oldTo.isReady());
-
-		Account to = new Account(newTo, this.to.getSaldo(), this.to.getAccUri());
-		Place newPlace = new Place(this.place.getUri(), this.place.getPlaceUri(), this.place.getPrice(), this.place.getHousesPrice(), this.place.getVisitUri(), this.place.getHypoCreditUri());
-		SellTransaction copy = new SellTransaction(to, this.amount, newPlace, this.bankUri);
-
-		return copy;
-	}
-
 
 	public Place getPlace() {
 		return place;

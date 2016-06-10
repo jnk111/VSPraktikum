@@ -117,7 +117,9 @@ public class Player implements Validable{
 	
 	@Override
 	public boolean isValid() {
-		return getId() != null && getUserName() != null && getAccount() != null && getPawn() != null;
+		
+		// Temp -> TODO: check account
+		return getId() != null && getUserName() != null && getPawn() != null;
 	}
 
 }

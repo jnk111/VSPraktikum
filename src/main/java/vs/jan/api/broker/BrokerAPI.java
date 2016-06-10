@@ -98,7 +98,7 @@ public class BrokerAPI {
 			
 			Player player = GSON.fromJson(req.body(), Player.class);
 			JSONEventList list = service.tradePlace(req.params(":gameid"), req.params(":placeid"), player, req.pathInfo());
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			return GSON.toJson(list);
 		});
 	}
 

@@ -20,6 +20,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private String visitUri;
 	private String hypoCreditUri;
 	private int level;
+	private boolean hypo;
 	
 	
 	public Place(String uri, String placeUri, int rentPrice, int housesPrice, String visitUri, String hypoCreditUri){
@@ -41,6 +42,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.visitUri = visitUri;
 		this.hypoCreditUri = hypoCreditUri;
 		this.setLevel(0);
+		this.setHypo(false);
 		initRents();
 		initCosts();
 	}
@@ -293,5 +295,13 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public boolean isHypo() {
+		return hypo;
+	}
+
+	public void setHypo(boolean hypo) {
+		this.hypo = hypo;
 	}
 }

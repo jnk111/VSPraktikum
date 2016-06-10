@@ -113,7 +113,7 @@ public class BrokerService {
 		JSONAccount to = null;
 		RentTransaction rent = null;
 
-		if (owner != null && !owner.equals(player)) {
+		if (owner != null && !owner.equals(player) && !place.isHypo()) {
 
 			try {
 				// Temp
@@ -265,41 +265,53 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		Player player = helper.getPlayer(playerUri, gameid);
+		
+		// Temp
+		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
 		Place place = helper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
-
-		if (owner != null && owner.getId().equals(playerUri)) {
-			JSONAccount to = helper.getAccount(player.getAccount());
+		JSONEvent event = null;
+		
+		if (owner != null && owner.equals(player)) {
+			
+			// Temp
+			JSONAccount to = helper
+					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
 			SellTransaction sell = null;
 			int amountRent = (int) place.getPrice() / 2;
 			int amountHouses = (int) (place.getHousesPrice() * place.getLevel()) / 2;
 			int amount = amountRent + amountHouses;
+			
 
 			try {
 				sell = new SellTransaction(helper.getID(to.getPlayer()), amount, place, this.services.getBank(), gameid);
 				sell.execute();
-				place.setOwner(null);
+				place.setHypo(true);
 				String reason = "Player: " + player.getId() + " has taken a hypothecary credit on: " + place.getUri();
-				JSONEvent event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason,
+				event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason,
 						path, playerUri);
 				broker.addHypothecaryCredit(sell);
 				helper.postEvent(event, this.services.getEvents());
 
 			} catch (Exception e) {
 
-				JSONAccount t = helper.getAccount(owner.getAccount());
+				JSONAccount t = helper
+						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
 				if (to.getSaldo() != t.getSaldo()) {
 					throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 				} else {
-					place.setOwner(owner);
+					place.setHypo(false);
 					broker.removehypothecaryCredit(sell);
 					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 				}
 
 			}
+		}
+		
+		if(event != null) {
+			helper.postEvent(event, this.services.getEvents());
 		}
 
 		return helper.receiveEventList(this.services.getEvents(), playerUri, gameid, new Date());
@@ -313,14 +325,16 @@ public class BrokerService {
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(broker, placeid);
-		Player player = helper.getPlayer(playerUri, gameid);
+		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
 		SellTransaction credit = broker.getHypothecaryCredit(place, helper.getID(playerUri));
 		BuyTransaction buyBack = null;
 
 		if (credit != null) {
 
 			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
-			JSONAccount from = helper.getAccount(player.getAccount());
+			
+			// Temp
+			JSONAccount from = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 			JSONEvent event = null;
 			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
 
@@ -332,7 +346,8 @@ public class BrokerService {
 					event = new JSONEvent(gameid, EventTypes.DELETE_HYPO.getType(), EventTypes.DELETE_HYPO.getType(), reason,
 							path, playerUri);
 					helper.postEvent(event, this.services.getEvents());
-					place.setOwner(player);
+					broker.removehypothecaryCredit(credit);
+					place.setHypo(false);
 
 				} catch (Exception e) {
 
@@ -341,7 +356,8 @@ public class BrokerService {
 					if (from.getSaldo() != f.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 					} else {
-						place.setOwner(null);
+						place.setHypo(true);
+						broker.addHypothecaryCredit(credit);
 						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 					}
 

@@ -7,8 +7,7 @@ import java.util.Set;
 
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.Convertable;
-import vs.jan.model.boardservice.Player;
-import vs.jan.transaction.SellTransaction;
+import vs.jan.transaction.BankSellTransaction;
 
 public class Broker implements Convertable<JSONBroker> {
 
@@ -17,7 +16,7 @@ public class Broker implements Convertable<JSONBroker> {
 	private String name;
 	private String estateUri;
 	private List<Place> places;
-	private Set<SellTransaction> hypothecaryCredits;
+	private Set<BankSellTransaction> hypothecaryCredits;
 
 	public Broker() {
 		this(null);
@@ -144,11 +143,11 @@ public class Broker implements Convertable<JSONBroker> {
 		}
 	}
 
-	public void addHypothecaryCredit(SellTransaction trans) {
+	public void addHypothecaryCredit(BankSellTransaction trans) {
 		this.hypothecaryCredits.add(trans);
 	}
 	
-	public void removehypothecaryCredit(SellTransaction trans) {
+	public void removehypothecaryCredit(BankSellTransaction trans) {
 		this.hypothecaryCredits.remove(trans);
 	}
 
@@ -168,17 +167,17 @@ public class Broker implements Convertable<JSONBroker> {
 		this.estateUri = estateUri;
 	}
 
-	public Set<SellTransaction> getHypothecaryCredits() {
+	public Set<BankSellTransaction> getHypothecaryCredits() {
 		return hypothecaryCredits;
 	}
 
-	public void setHypothecaryCredits(Set<SellTransaction> hypothecaryCredits) {
+	public void setHypothecaryCredits(Set<BankSellTransaction> hypothecaryCredits) {
 		this.hypothecaryCredits = hypothecaryCredits;
 	}
 
-	public SellTransaction getHypothecaryCredit(Place place, String id) {
+	public BankSellTransaction getHypothecaryCredit(Place place, String id) {
 		
-		for(SellTransaction credit: this.hypothecaryCredits) {
+		for(BankSellTransaction credit: this.hypothecaryCredits) {
 			
 			if(place.equals(credit.getPlace())
 					&& id.equals(credit.getTo())) {

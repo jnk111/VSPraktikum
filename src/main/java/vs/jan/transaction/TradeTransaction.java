@@ -5,20 +5,20 @@ import java.net.HttpURLConnection;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.tools.HttpService;
 
-public class RentTransaction extends Transaction {
+public class TradeTransaction extends Transaction {
 
 
-	public RentTransaction(String from, String to, int amount, String bankUri, String gameId) {
+	public TradeTransaction(String from, String to, int amount, String bankUri, String gameId) {
 		super();
 		this.from = from;
 		this.to = to;
 		this.amount = amount;
 		this.bankUri = bankUri;
 		this.gameId = gameId;
-		this.history = new RentTransaction(this);
+		this.history = new TradeTransaction(this);
 	}
 
-	public RentTransaction(RentTransaction trans) {
+	public TradeTransaction(TradeTransaction trans) {
 		super();
 		this.from = trans.getFrom();
 		this.to = trans.getTo();

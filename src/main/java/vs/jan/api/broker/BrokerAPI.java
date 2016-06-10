@@ -95,6 +95,9 @@ public class BrokerAPI {
 
 	private void initPUTTradePlace() {
 		put("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
+			
+			Player player = GSON.fromJson(req.body(), Player.class);
+			JSONEventList list = service.tradePlace(req.params(":gameid"), req.params(":placeid"), player, req.pathInfo());
 			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
 		});
 	}

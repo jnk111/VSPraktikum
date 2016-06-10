@@ -2,7 +2,6 @@ package vs.jan.transaction;
 
 import java.net.HttpURLConnection;
 
-import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.tools.HttpService;
 

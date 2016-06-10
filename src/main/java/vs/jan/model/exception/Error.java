@@ -14,7 +14,7 @@ public enum Error {
 																					"account uri was null"), TRANS_FAIL(
 																							"transaction failed, all actions are rolled back"), NO_OWNER(
 																									"place does not have an owner yet"), ROLL_BACK_FAILED(
-																											"roll back failed");
+																											"roll back failed"), JSON_PLAYER("player input is not valid");
 
 	private String msg;
 

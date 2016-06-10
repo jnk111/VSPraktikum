@@ -25,8 +25,8 @@ import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.transaction.BuyTransaction;
-import vs.jan.transaction.RentTransaction;
-import vs.jan.transaction.SellTransaction;
+import vs.jan.transaction.TradeTransaction;
+import vs.jan.transaction.BankSellTransaction;
 import vs.jan.validator.BrokerValidator;
 import vs.jan.validator.Validator;
 
@@ -111,7 +111,7 @@ public class BrokerService {
 		Player owner = place.getOwner();
 		JSONAccount from = null;
 		JSONAccount to = null;
-		RentTransaction rent = null;
+		TradeTransaction rent = null;
 
 		if (owner != null && !owner.equals(player) && !place.isHypo()) {
 
@@ -124,7 +124,8 @@ public class BrokerService {
 				int amount = place.getRent().get(place.getLevel());
 
 				if (from.getSaldo() >= amount) {
-					rent = new RentTransaction(helper.getID(from.getPlayer()), helper.getID(to.getPlayer()), amount, this.services.getBank(), gameid);
+					rent = new TradeTransaction(helper.getID(from.getPlayer()), helper.getID(to.getPlayer()), amount,
+							this.services.getBank(), gameid);
 					rent.execute();
 
 					reason = "Player: " + player.getId() + " has payed the rent for the place: " + place.getUri();
@@ -141,12 +142,13 @@ public class BrokerService {
 			} catch (Exception e) {
 
 				// Temp
-				JSONAccount f = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playeruri));
+				JSONAccount f = helper
+						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playeruri));
 				// from = helper.getAccount(player.getAccount());
 				JSONAccount t = helper
 						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
-//				JSONAccount f = helper.getAccount(player.getAccount());
-//				JSONAccount t = helper.getAccount(owner.getAccount());
+				// JSONAccount f = helper.getAccount(player.getAccount());
+				// JSONAccount t = helper.getAccount(owner.getAccount());
 
 				if (f.getSaldo() != from.getSaldo() || t.getSaldo() != to.getSaldo()) {
 
@@ -154,7 +156,6 @@ public class BrokerService {
 				} else {
 					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 				}
-				
 			}
 		}
 
@@ -234,15 +235,13 @@ public class BrokerService {
 					JSONAccount f = helper
 							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
-					if (f.getSaldo() != from.getSaldo()) {
+					if (f.getSaldo() == from.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 					} else {
-						
+
 						place.setOwner(null);
 						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 					}
-
-
 				}
 			} else {
 
@@ -265,52 +264,49 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		
+
 		// Temp
 		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
 		Place place = helper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
-		
+
 		if (owner != null && owner.equals(player)) {
-			
+
 			// Temp
 			JSONAccount to = helper
 					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
-			SellTransaction sell = null;
+			BankSellTransaction sell = null;
 			int amountRent = (int) place.getPrice() / 2;
 			int amountHouses = (int) (place.getHousesPrice() * place.getLevel()) / 2;
 			int amount = amountRent + amountHouses;
-			
 
 			try {
-				sell = new SellTransaction(helper.getID(to.getPlayer()), amount, place, this.services.getBank(), gameid);
+				sell = new BankSellTransaction(helper.getID(to.getPlayer()), amount, place, this.services.getBank(), gameid);
 				sell.execute();
 				place.setHypo(true);
 				String reason = "Player: " + player.getId() + " has taken a hypothecary credit on: " + place.getUri();
-				event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason,
-						path, playerUri);
+				event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason, path,
+						playerUri);
 				broker.addHypothecaryCredit(sell);
-				helper.postEvent(event, this.services.getEvents());
-
+				
 			} catch (Exception e) {
 
 				JSONAccount t = helper
 						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
-				if (to.getSaldo() != t.getSaldo()) {
+				if (to.getSaldo() == t.getSaldo()) {
 					throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 				} else {
 					place.setHypo(false);
 					broker.removehypothecaryCredit(sell);
 					throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 				}
-
 			}
 		}
-		
-		if(event != null) {
+				
+		if (event != null) {
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -326,16 +322,17 @@ public class BrokerService {
 		Broker broker = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(broker, placeid);
 		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
-		SellTransaction credit = broker.getHypothecaryCredit(place, helper.getID(playerUri));
+		BankSellTransaction credit = broker.getHypothecaryCredit(place, helper.getID(playerUri));
 		BuyTransaction buyBack = null;
+		JSONEvent event = null;
 
 		if (credit != null) {
 
 			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
-			
+
 			// Temp
-			JSONAccount from = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
-			JSONEvent event = null;
+			JSONAccount from = helper
+					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
 
 			if (from.getSaldo() >= amount) {
@@ -345,30 +342,101 @@ public class BrokerService {
 
 					event = new JSONEvent(gameid, EventTypes.DELETE_HYPO.getType(), EventTypes.DELETE_HYPO.getType(), reason,
 							path, playerUri);
-					helper.postEvent(event, this.services.getEvents());
 					broker.removehypothecaryCredit(credit);
 					place.setHypo(false);
 
 				} catch (Exception e) {
 
-					JSONAccount f = helper.getAccount(player.getAccount());
+					// Temp
+					JSONAccount f = helper
+							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
 
-					if (from.getSaldo() != f.getSaldo()) {
+					if (from.getSaldo() == f.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 					} else {
 						place.setHypo(true);
 						broker.addHypothecaryCredit(credit);
 						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 					}
-
 				}
 
 			} else {
-				event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), "cannotdeletehypothecary", reason, path,
-						playerUri);
+				event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), EventTypes.CANNOT_DELETE_HYPO.getType(),
+						reason, path, playerUri);
 			}
+		}
+		
+		if(event != null) {
+			helper.postEvent(event, this.services.getEvents());
 		}
 
 		return helper.receiveEventList(this.services.getEvents(), playerUri, gameid, new Date());
+	}
+
+	public JSONEventList tradePlace(String gameid, String placeid, Player player, String path)
+			throws TransactionFailedException {
+		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		validator.checkJsonIsValid(player, Error.JSON_PLAYER.getMsg());
+
+		Broker broker = helper.getBroker(this.brokers, gameid);
+		Place place = helper.getPlace(broker, placeid);
+		Player owner = place.getOwner();
+		JSONAccount from = null;
+		JSONAccount to = null;
+		JSONEvent event = null;
+		String reason = null;
+
+		if (owner != null && !player.equals(owner)) {
+
+			// Temp
+			from = helper
+					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(player.getId()));
+			to = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
+			int amount = place.getRent().get(place.getLevel());
+
+			if (to.getSaldo() >= amount) {
+
+				try {
+					TradeTransaction trade = new TradeTransaction(helper.getID(from.getPlayer()), helper.getID(to.getPlayer()),
+							amount, this.services.getBank(), gameid);
+					trade.execute();
+					place.setOwner(player);
+					reason = "Owner: " + owner.getId() + " trades the place: " + place.getUri() + " to the player: "
+							+ player.getId();
+					event = new JSONEvent(gameid, EventTypes.TRADE_PLACE.getType(), EventTypes.TRADE_PLACE.getType(), reason,
+							path, owner.getId());
+
+				} catch (Exception e) {
+
+					JSONAccount f = helper
+							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(player.getId()));
+					JSONAccount t = helper
+							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
+
+					if (from.getSaldo() == f.getSaldo() || to.getSaldo() == t.getSaldo()) {
+						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
+
+					} else {
+						place.setOwner(owner);
+						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+					}
+				}
+			} else {
+				
+				reason = "Owner: " + owner.getId() + " cannot trade the place: " + place.getUri() + " to the player: "
+						+ player.getId() + " -> Saldo: " + to.getSaldo() + ", amount: " + amount;
+
+				event = new JSONEvent(gameid, EventTypes.CANNOT_TRADE_PLACE.getType(), EventTypes.TRADE_PLACE.getType(), reason,
+						path, owner.getId());
+			}
+		}
+		
+		if(event != null) {
+			
+			helper.postEvent(event, this.services.getEvents());
+		}
+		
+		return helper.receiveEventList(this.services.getEvents(), owner.getId(), gameid, new Date());
 	}
 }

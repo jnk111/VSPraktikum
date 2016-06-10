@@ -1,6 +1,9 @@
 package vs.jan.model.boardservice;
 
-public class Player {
+import vs.jan.model.Validable;
+
+public class Player implements Validable{
+	
 	private String id;
 	private String user;
 	private boolean ready;
@@ -59,10 +62,6 @@ public class Player {
 		this.ready = ready;
 	}
 
-	public boolean isValid() {
-		return getId() != null && getUserName() != null && getAccount() != null && getPawn() != null;
-	}
-
 	@Override
 	public String toString() {
 		return "Player [id=" + id + ", user=" + user + ", pawn=" + pawn + ", account=" + account + "]";
@@ -115,4 +114,10 @@ public class Player {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public boolean isValid() {
+		return getId() != null && getUserName() != null && getAccount() != null && getPawn() != null;
+	}
+
 }

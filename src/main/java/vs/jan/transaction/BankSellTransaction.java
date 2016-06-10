@@ -6,11 +6,11 @@ import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.tools.HttpService;
 
-public class SellTransaction extends Transaction{
+public class BankSellTransaction extends Transaction{
 
 	private Place place;
 	
-	public SellTransaction(String to, int amount, Place place, String bankUri, String gameId) {
+	public BankSellTransaction(String to, int amount, Place place, String bankUri, String gameId) {
 		
 		this.to = to;
 		this.amount = amount;
@@ -19,7 +19,7 @@ public class SellTransaction extends Transaction{
 		this.gameId = gameId;
 	}
 	
-	public SellTransaction(SellTransaction trans) {
+	public BankSellTransaction(BankSellTransaction trans) {
 		
 		this.to = trans.getTo();
 		this.amount = trans.getAmount();
@@ -31,7 +31,7 @@ public class SellTransaction extends Transaction{
 	
 	@Override
 	public void execute() throws TransactionFailedException {
-		this.history = new SellTransaction(this);
+		this.history = new BankSellTransaction(this);
 		
 		try {
 			String url = this.bankUri + "/" + this.gameId + "/transfer/to/" + this.to + "/" + this.amount;

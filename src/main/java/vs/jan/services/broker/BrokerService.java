@@ -290,7 +290,7 @@ public class BrokerService {
 				event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(), reason, path,
 						playerUri);
 				broker.addHypothecaryCredit(sell);
-				
+
 			} catch (Exception e) {
 
 				JSONAccount t = helper
@@ -305,7 +305,7 @@ public class BrokerService {
 				}
 			}
 		}
-				
+
 		if (event != null) {
 			helper.postEvent(event, this.services.getEvents());
 		}
@@ -336,6 +336,7 @@ public class BrokerService {
 			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
 
 			if (from.getSaldo() >= amount) {
+				
 				try {
 					buyBack = new BuyTransaction(helper.getID(from.getPlayer()), amount, this.services.getBank(), gameid);
 					buyBack.execute();
@@ -365,8 +366,8 @@ public class BrokerService {
 						reason, path, playerUri);
 			}
 		}
-		
-		if(event != null) {
+
+		if (event != null) {
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -423,7 +424,7 @@ public class BrokerService {
 					}
 				}
 			} else {
-				
+
 				reason = "Owner: " + owner.getId() + " cannot trade the place: " + place.getUri() + " to the player: "
 						+ player.getId() + " -> Saldo: " + to.getSaldo() + ", amount: " + amount;
 
@@ -431,12 +432,12 @@ public class BrokerService {
 						path, owner.getId());
 			}
 		}
-		
-		if(event != null) {
-			
+
+		if (event != null) {
+
 			helper.postEvent(event, this.services.getEvents());
 		}
-		
+
 		return helper.receiveEventList(this.services.getEvents(), owner.getId(), gameid, new Date());
 	}
 }

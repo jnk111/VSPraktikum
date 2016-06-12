@@ -28,16 +28,16 @@ import vs.jan.json.boardservice.JSONPlayersList;
 import vs.jan.json.boardservice.JSONPlayersListElement;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
+import vs.jan.json.decksservice.JSONCard;
 import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
+import vs.jan.model.decksservice.ChanceCard;
+import vs.jan.model.decksservice.CommCard;
 import vs.jan.model.exception.Error;
 import vs.jan.services.allocator.ServiceAllocator;
-import vs.jan.services.decks.ChanceCard;
-import vs.jan.services.decks.CommCard;
-import vs.jan.services.decks.JSONCard;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.BoardValidator;
 import vs.jonas.services.model.Dice;
@@ -387,6 +387,7 @@ public class BoardService {
 			String fromId = helper.getID(elem.getId());			
 			
 			// TODO: saldocheck
+			
 			// Temp
 			String bankUri = this.services.getBank() + "/" + gameid + "/transfer/from/" + fromId + "/to/" + toId + "/" + CommCard.PLAYER_MONEY;			
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);

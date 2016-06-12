@@ -1,4 +1,4 @@
-package vs.jan.services.decks;
+package vs.jan.json.decksservice;
 
 import vs.jan.model.Validable;
 

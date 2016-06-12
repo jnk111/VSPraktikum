@@ -1,7 +1,8 @@
-package vs.jan.services.decks;
+package vs.jan.model.decksservice;
 
 import java.util.Stack;
 
+import vs.jan.json.decksservice.JSONDecks;
 import vs.jan.model.Convertable;
 
 public class Decks implements Convertable<JSONDecks>{

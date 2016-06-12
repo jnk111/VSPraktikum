@@ -1,4 +1,4 @@
-package vs.jan.services.decks;
+package vs.jan.json.decksservice;
 
 public class JSONCard {
 	

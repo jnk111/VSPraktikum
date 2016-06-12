@@ -1,5 +1,6 @@
-package vs.jan.services.decks;
+package vs.jan.model.decksservice;
 
+import vs.jan.json.decksservice.JSONCard;
 import vs.jan.model.Convertable;
 
 public enum CommCard implements Convertable<JSONCard> {

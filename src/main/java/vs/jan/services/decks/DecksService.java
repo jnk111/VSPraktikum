@@ -6,6 +6,10 @@ import java.util.Map;
 import vs.jan.api.decksservice.JSONDecksList;
 import vs.jan.helper.decksservice.DecksHelper;
 import vs.jan.json.boardservice.JSONGameURI;
+import vs.jan.json.decksservice.JSONCard;
+import vs.jan.model.decksservice.ChanceCard;
+import vs.jan.model.decksservice.CommCard;
+import vs.jan.model.decksservice.Decks;
 import vs.jan.model.exception.Error;
 import vs.jan.validator.DecksValidator;
 

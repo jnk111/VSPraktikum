@@ -12,7 +12,6 @@ import vs.jan.exception.NotImplementedException;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.decksservice.JSONCard;
 import vs.jan.model.StatusCodes;
-import vs.jan.model.exception.Error;
 import vs.jan.services.decks.DecksService;
 
 public class DecksAPI {

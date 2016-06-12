@@ -14,7 +14,6 @@ public class DecksHelper extends Helper {
 
 		for (Decks d : decks.keySet()) {
 			JSONGameURI uri = decks.get(d);
-			System.out.println("GAME ID: " + gameid);
 			if (uri.getURI().contains(gameid)) {
 				return d;
 			}

@@ -24,6 +24,8 @@ import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONPlace;
+import vs.jan.json.boardservice.JSONPlayersList;
+import vs.jan.json.boardservice.JSONPlayersListElement;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.model.ServiceList;
@@ -33,6 +35,9 @@ import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
 import vs.jan.model.exception.Error;
 import vs.jan.services.allocator.ServiceAllocator;
+import vs.jan.services.decks.ChanceCard;
+import vs.jan.services.decks.CommCard;
+import vs.jan.services.decks.JSONCard;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.BoardValidator;
 import vs.jonas.services.model.Dice;
@@ -307,20 +312,88 @@ public class BoardService {
 			HttpService.post(uri, p.getPlayerUri(), HttpURLConnection.HTTP_OK);
 			
 		} else if (place.isJail()){
+			moveToJail(gameid, b, p, newPos);
 			
-			int jailPos = Place.InJail.ordinal();
-			b.getFields().get(newPos).removePawn(p);
-			p.setPosition(jailPos);
-			b.getFields().get(jailPos).addPawn(p);
-			b.updatePositions(newPos, jailPos);
-			p.updatePlaceUri(jailPos);
-			reas = p.getPlayerUri() + " has moved to jail: " + p.getPawnUri() + " to: " + p.getPlaceUri();
-			event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(), reas, resource, p.getPlayerUri());
-			helper.postEvent(event, this.services.getEvents());
+		} else if (place.isChance()){
+			doFurtherDecksActions(gameid, newPos, b, p, "chance");
 			
-		} else {
-			// TODO: call decks
+		} else if (place.isCommunity()) {
+			doFurtherDecksActions(gameid, newPos, b, p, "community");
 		}
+	}
+
+	private void moveToJail(String gameid, Board board, Pawn pawn, int newPos) {
+		
+		int jailPos = Place.InJail.ordinal();
+		board.getFields().get(newPos).removePawn(pawn);
+		pawn.setPosition(jailPos);
+		board.getFields().get(jailPos).addPawn(pawn);
+		board.updatePositions(newPos, jailPos);
+		pawn.updatePlaceUri(jailPos);
+		String reas = pawn.getPlayerUri() + " has moved to jail: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
+		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(), reas, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.postEvent(event, this.services.getEvents());
+	}
+
+	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type) {
+		
+		// String url = this.services.getDecks() + "/" + gameid + "/" + type;
+		
+		// Temp
+		String url = "http://localhost:4567/decks" + "/" + gameid + "/" + type;
+		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
+		JSONCard card = GSON.fromJson(json, JSONCard.class);
+		String name = card.getName();
+		
+		if (name.equals(ChanceCard.GO_TO_JAIL.getName())) {
+			moveToJail(gameid, board, pawn, newPos);
+			
+		} else if (name.equals(ChanceCard.MOVE_3_TIMES.getName())) {
+			movePawn(gameid, helper.getID(pawn.getPawnUri()), 3);
+			
+		} else if (name.equals(ChanceCard.MOVE_TO_GO.getName())) {
+			movePawn(gameid, helper.getID(pawn.getPawnUri()), (board.getFields().size() - 1) - pawn.getPosition());
+			
+		} else if (name.equals(CommCard.GET_MONEY_FROM_ALL_PLAYERS.getName())) {
+			
+			getMoneyFromAllPlayers(pawn, gameid);
+			
+		} else if (name.equals(CommCard.GET_MONEY_FROM_BANK.getName())) {
+			getMoneyFromBank(pawn, gameid);
+		}		
+	}
+
+	private void getMoneyFromBank(Pawn pawn, String gameid) {
+		String toId = helper.getID(pawn.getPlayerUri());
+		
+		// Temp
+		String bankUri = this.services.getBank() + "/" + gameid + "/transfer/to/" + toId + "/" + CommCard.BANK_MONEY;
+		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+		
+		String reason = "Player with id: " + toId + " got a community card and receives money from the bank";
+		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.postEvent(event, this.services.getEvents());
+		
+	}
+
+	public void getMoneyFromAllPlayers(Pawn pawn, String gameid) {
+		
+		String toId = helper.getID(pawn.getPlayerUri());
+		String url = this.services.getGames() + "/" + gameid + "/players"; 
+		String players = HttpService.get(url, HttpURLConnection.HTTP_OK);
+		JSONPlayersList list = GSON.fromJson(players, JSONPlayersList.class);
+		
+		for(JSONPlayersListElement elem: list.getPlayers()) {
+			String fromId = helper.getID(elem.getId());			
+			
+			// TODO: saldocheck
+			// Temp
+			String bankUri = this.services.getBank() + "/" + gameid + "/transfer/from/" + fromId + "/to/" + toId + "/" + CommCard.PLAYER_MONEY;			
+			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+		}
+		String reason = "Player with id: " + toId + " got a community card and receives money from all other players";
+		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.postEvent(event, this.services.getEvents());
 	}
 
 	/**
@@ -462,19 +535,24 @@ public class BoardService {
 			p.setPlaceUri(placeUri);
 			Field f = new Field(p);
 			fields.add(f);
-
-			// Temp
 			HttpService.put(this.services.getBroker().replace("/broker", "") + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
-//			if (p.isPlace()) {
-//				HttpService.put(this.services.getBroker().replace("/broker", "") + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
-//			} else {
-//				// TODO: call decks
-//			}
-
+			
 		}
 
 		key.setFields(fields);
 		key.setPlayers("/games/" + gameid + "/players");
+		
+		initDecks(key);
+	}
+	
+
+	private void initDecks(Board key) {
+		
+		JSONGameURI uri = this.boards.get(key);
+		// Workaround
+		String url = "http://localhost:4567/decks";
+		HttpService.post(url, uri, HttpURLConnection.HTTP_OK);
+		// HttpService.post(this.services.getDecks(), uri, HttpURLConnection.HTTP_CREATED);
 	}
 
 	private void updateBoard(Board key, JSONBoard board, String gameid) {

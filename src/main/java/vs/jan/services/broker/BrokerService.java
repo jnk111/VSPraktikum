@@ -113,7 +113,7 @@ public class BrokerService {
 		JSONAccount to = null;
 		TradeTransaction rent = null;
 
-		if (owner != null && !owner.equals(player) && !place.isHypo()) {
+		if (owner != null && !owner.equals(player) && !place.isHypo() && place.isPlace()) {
 
 			try {
 				// Temp
@@ -219,7 +219,7 @@ public class BrokerService {
 		String reason = "Player: " + player.getId() + " wants to buy the place: " + place.getUri();
 		JSONEvent event = null;
 
-		if (place.getOwner() == null) {
+		if (place.getOwner() == null && place.isPlace()) {
 			if (from.getSaldo() >= place.getPrice()) {
 
 				try {
@@ -271,7 +271,7 @@ public class BrokerService {
 		Player owner = place.getOwner();
 		JSONEvent event = null;
 
-		if (owner != null && owner.equals(player)) {
+		if (owner != null && owner.equals(player) && place.isPlace()) {
 
 			// Temp
 			JSONAccount to = helper
@@ -326,7 +326,7 @@ public class BrokerService {
 		BuyTransaction buyBack = null;
 		JSONEvent event = null;
 
-		if (credit != null) {
+		if (credit != null && place.isPlace()) {
 
 			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
 
@@ -387,7 +387,7 @@ public class BrokerService {
 		JSONEvent event = null;
 		String reason = null;
 
-		if (owner != null && !player.equals(owner)) {
+		if (owner != null && !player.equals(owner) && place.isPlace()) {
 
 			// Temp
 			from = helper

@@ -39,7 +39,7 @@ public enum Place implements Convertable<JSONPlace> {
 	private int price;
 	private int housesPrice;
 	private PlaceColors color;
-	
+
 	private Place() {
 		this(null);
 	}
@@ -66,7 +66,6 @@ public enum Place implements Convertable<JSONPlace> {
 		this.housesPrice = housePrice;
 		this.color = color;
 	}
-
 
 	public String getName() {
 		return name;
@@ -116,14 +115,13 @@ public enum Place implements Convertable<JSONPlace> {
 		this.color = color;
 	}
 
-
 	@Override
 	public JSONPlace convert() {
 
 		return new JSONPlace(this.name, this.brokerUri);
 	}
-	
-	public vs.jan.json.brokerservice.JSONPlace convertToBrokerPlace(){
+
+	public vs.jan.json.brokerservice.JSONPlace convertToBrokerPlace() {
 		vs.jan.json.brokerservice.JSONPlace place = new vs.jan.json.brokerservice.JSONPlace();
 		place.setPlace(this.getPlaceUri());
 		place.setValue(this.getPrice());
@@ -136,8 +134,18 @@ public enum Place implements Convertable<JSONPlace> {
 	}
 
 	public boolean isJail() {
-		
+
 		return GoJail.ordinal() == this.ordinal();
+	}
+
+	public boolean isChance() {
+
+		return this == Place.Ereignis1 || this == Place.Ereignis2 || this == Place.Ereignis3;
+	}
+
+	public boolean isCommunity() {
+
+		return this == Place.Gemeinschaft1 || this == Place.Gemeinschaft2 || this == Place.Gemeinschaft3;
 	}
 
 }

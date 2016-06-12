@@ -304,4 +304,9 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public void setHypo(boolean hypo) {
 		this.hypo = hypo;
 	}
+
+	public boolean isPlace() {
+		
+		return this.price > 0;
+	}
 }

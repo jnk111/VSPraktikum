@@ -9,8 +9,11 @@ import java.net.HttpURLConnection;
 import com.google.gson.Gson;
 
 import vs.jan.exception.NotImplementedException;
+import vs.jan.json.boardservice.JSONGameURI;
+import vs.jan.model.StatusCodes;
 import vs.jan.model.exception.Error;
-import vs.jan.services.DecksService;
+import vs.jan.services.decks.DecksService;
+import vs.jan.services.decks.JSONCard;
 
 public class DecksAPI {
 	
@@ -37,26 +40,31 @@ public class DecksAPI {
 
 	private void initGetCommunity() {
 		get(" /decks/:gameid/community", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			JSONCard comm = service.getNextCommunityCard(req.params(":gameid"));
+			return GSON.toJson(comm);
 		});
 		
 	}
 
 	private void initGetChance() {
 		get(" /decks/:gameid/chance ", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			JSONCard chance = service.getNextChanceCard(req.params(":gameid"));
+			return GSON.toJson(chance);
 		});
 	}
 
 	private void initGetDecks() {
 		get(" /decks", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			JSONDecksList list = service.getAllDecksURIS();
+			return GSON.toJson(list);
 		});
 	}
 	
 	private void initPostDecks() {
 		post("/decks", CONTENT_TYPE, (req, resp) -> {
-			throw new NotImplementedException(Error.NOT_IMPL.getMsg());
+			JSONGameURI uri = GSON.fromJson(req.body(), JSONGameURI.class);
+			service.createDecks(uri);
+			return StatusCodes.CREATED + CLRF;
 		});
 	}
 	

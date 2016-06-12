@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
+import vs.jan.api.decksservice.DecksAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.json.boardservice.JSONBoard;
@@ -63,6 +64,7 @@ public class RunBoardExample {
 		new UserServiceRESTApi();
 		new BrokerAPI();
 		new BoardRESTApi();
+		new DecksAPI();
 	}
 
 	private static void setupGame() throws InterruptedException, MalformedURLException, ResponseCodeException {
@@ -78,16 +80,9 @@ public class RunBoardExample {
 		startGame();
 		letCurrPlayerRollDice();
 		buyPlaces();
-		payRents();
 		getFinalBoardState();
-
 	}
 
-
-	private static void payRents() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private static void buyPlaces() {
 		

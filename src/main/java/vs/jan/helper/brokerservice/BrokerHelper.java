@@ -46,9 +46,4 @@ public class BrokerHelper extends Helper {
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-	public JSONAccount getAccount(String accountUri) {
-		String json = HttpService.get(accountUri, HttpURLConnection.HTTP_OK);
-		return GSON.fromJson(json, JSONAccount.class);
-	}
-
 }

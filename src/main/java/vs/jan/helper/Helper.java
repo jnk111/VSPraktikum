@@ -10,6 +10,7 @@ import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.json.boardservice.JSONEvent;
 import vs.jan.json.boardservice.JSONEventList;
+import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
@@ -85,6 +86,11 @@ public abstract class Helper {
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
 		return list;
+	}
+	
+	public JSONAccount getAccount(String accountUri) {
+		String json = HttpService.get(accountUri, HttpURLConnection.HTTP_OK);
+		return GSON.fromJson(json, JSONAccount.class);
 	}
 	
 	public ServiceList getServices() {

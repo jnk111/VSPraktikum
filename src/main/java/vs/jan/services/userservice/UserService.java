@@ -97,6 +97,7 @@ public class UserService {
 	public synchronized void createUser(User user) throws InvalidInputException {
 
 		if (user != null && user.isValid()) {
+			user.setId("/users/" + user.getName());
 			users.put(user.getId(), user);
 		} else {
 			throw new InvalidInputException();

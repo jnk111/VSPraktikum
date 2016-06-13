@@ -8,6 +8,7 @@ public class ServiceList {
 	private String broker;
 	private String decks;
 	private String events;
+	private String users;
 
 	public ServiceList() {
 		this(null, null, null, null, null, null, null);
@@ -89,5 +90,13 @@ public class ServiceList {
 	public String toString() {
 		return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + board + ", bank=" + bank + ", broker="
 				+ broker + ", decks=" + decks + ", events=" + events + "]";
+	}
+
+	public String getUsers() {
+		return users;
+	}
+
+	public void setUsers(String users) {
+		this.users = users;
 	}
 }

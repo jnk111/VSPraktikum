@@ -158,10 +158,10 @@ public class BoardService {
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
 		String playerUri = this.services.getGames().replace("/games", "") + p.getPlayerUri();
-		System.out.println(playerUri);
+		System.out.println("PLAYER_URI :" + playerUri);
 		Player player = helper.getPlayer(playerUri, gameid);
-		//User user = helper.getUser(player.g)
-
+		User user = helper.getUser(this.services.getUsers().replace("/users", "") + player.getUser());
+		System.out.println(user.toString());
 		// Neue Wuerfelliste fuer die Figur erstellen
 		JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
 		JSONThrowsList list = new JSONThrowsList();

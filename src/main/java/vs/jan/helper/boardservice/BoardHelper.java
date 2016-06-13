@@ -9,6 +9,7 @@ import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.model.ServiceList;
+import vs.jan.model.User;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
@@ -138,5 +139,11 @@ public class BoardHelper extends Helper {
 		
 		HttpService.post(broker, game, HttpURLConnection.HTTP_OK);
 		
+	}
+
+	public User getUser(String uri) {
+		
+		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
+		return GSON.fromJson(json, User.class);
 	}
 }

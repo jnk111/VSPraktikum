@@ -116,9 +116,9 @@ public abstract class Helper {
 			clientUris.add(user.getUri());
 		}
 		
-		for(String uri: clientUris) {
-			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
-		}
+//		for(String uri: clientUris) {
+//			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+//		}
 	}
 	
 	public ServiceList getServices() {

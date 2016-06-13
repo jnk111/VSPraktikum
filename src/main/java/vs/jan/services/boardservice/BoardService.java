@@ -448,8 +448,6 @@ public class BoardService {
 			throws ResourceNotFoundException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
-
-		// Temp
 		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), true);
 
 		Board board = helper.getBoard(this.boards, gameid);

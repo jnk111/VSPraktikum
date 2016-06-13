@@ -121,11 +121,10 @@ public class BrokerService {
 		if (owner != null && !owner.equals(player) && !place.isHypo() && place.isPlace()) {
 
 			try {
-				// Temp
-				from = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playeruri));
-				// from = helper.getAccount(player.getAccount());
+				from = helper.getAccount(player.getAccount());
+				
 				to = helper
-						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
+						.getAccount(owner.getAccount());
 				int amount = place.getRent().get(place.getLevel());
 
 				if (from.getSaldo() >= amount) {
@@ -145,15 +144,11 @@ public class BrokerService {
 							reason, path, playeruri);
 				}
 			} catch (Exception e) {
-
-				// Temp
+				
 				JSONAccount f = helper
-						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playeruri));
-				// from = helper.getAccount(player.getAccount());
+						.getAccount(player.getAccount());
 				JSONAccount t = helper
-						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
-				// JSONAccount f = helper.getAccount(player.getAccount());
-				// JSONAccount t = helper.getAccount(owner.getAccount());
+						.getAccount(owner.getAccount());
 
 				if (f.getSaldo() != from.getSaldo() || t.getSaldo() != to.getSaldo()) {
 
@@ -220,11 +215,10 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
+		Player player = helper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
 
-		// Temp
 		JSONAccount from = helper
-				.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+				.getAccount(player.getAccount());
 		Place place = helper.getPlace(broker, placeid);
 		BuyTransaction buy = null;
 		String reason = "Player: " + player.getId() + " wants to buy the place: " + place.getUri();
@@ -242,9 +236,8 @@ public class BrokerService {
 							playerUri);
 				} catch (Exception e) {
 
-					// Temp
 					JSONAccount f = helper
-							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+							.getAccount(player.getAccount());
 
 					if (f.getSaldo() == from.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
@@ -277,17 +270,15 @@ public class BrokerService {
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
 
-		// Temp
-		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
+		Player player = helper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
 		Place place = helper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
 
 		if (owner != null && owner.equals(player) && place.isPlace()) {
 
-			// Temp
 			JSONAccount to = helper
-					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+					.getAccount(player.getAccount());
 
 			BankSellTransaction sell = null;
 			int amountRent = (int) place.getPrice() / 2;
@@ -334,7 +325,7 @@ public class BrokerService {
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(broker, placeid);
-		Player player = helper.getPlayer(this.services.getGame() + playerUri.replace("/games", ""), gameid);
+		Player player = helper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, helper.getID(playerUri));
 		BuyTransaction buyBack = null;
 		JSONEvent event = null;
@@ -343,9 +334,8 @@ public class BrokerService {
 
 			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
 
-			// Temp
 			JSONAccount from = helper
-					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+					.getAccount(player.getAccount());
 			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
 
 			if (from.getSaldo() >= amount) {
@@ -361,9 +351,8 @@ public class BrokerService {
 
 				} catch (Exception e) {
 
-					// Temp
 					JSONAccount f = helper
-							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+							.getAccount(player.getAccount());
 
 					if (from.getSaldo() == f.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
@@ -404,10 +393,9 @@ public class BrokerService {
 
 		if (owner != null && !player.equals(owner) && place.isPlace()) {
 
-			// Temp
 			from = helper
-					.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(player.getId()));
-			to = helper.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
+					.getAccount(player.getAccount());
+			to = helper.getAccount(owner.getAccount());
 			int amount = place.getRent().get(place.getLevel());
 
 			if (to.getSaldo() >= amount) {

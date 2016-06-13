@@ -23,6 +23,8 @@ import javax.swing.border.EmptyBorder;
 import vs.jonas.client.model.table.GameFieldTable;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
+import java.awt.Color;
+import javax.swing.UIManager;
 
 public class GameUI {
 
@@ -49,12 +51,14 @@ public class GameUI {
 	 */
 	public GameUI() {
 		frame = new JFrame("Restopoly");
+		frame.setBackground(SystemColor.activeCaption);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 850, 500);
 		frame.setLocationRelativeTo(null);
 //		frame.setBackground(SystemColor.blue);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		contentPane = new JPanel();
+		contentPane.setOpaque(false);
 //		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
@@ -87,8 +91,10 @@ public class GameUI {
 		splitPane.setRightComponent(splitPane_1);
 
 		playerTable = new JTable(new PlayerOverviewTableModel());
+		playerTable.getTableHeader().setBackground(SystemColor.inactiveCaption);
 		JScrollPane playerOverview = new JScrollPane(playerTable);
 		JPanel playerPanel = new JPanel(new BorderLayout());
+		playerPanel.setBackground(SystemColor.activeCaption);
 		JLabel playerHeader = new JLabel("********** Spieler **********");
 		playerHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
 		playerHeader.setHorizontalAlignment(SwingConstants.CENTER);
@@ -102,9 +108,10 @@ public class GameUI {
 		optionsPanel.add(splitPane_2);
 		
 		panel = new JPanel();
+		panel.setBackground(SystemColor.activeCaption);
 		panel.setBorder(new EmptyBorder(10, 60, 10, 60));
 		splitPane_2.setLeftComponent(panel);
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		panel.setLayout(new GridLayout(0, 1, 0, 5));
 		
 		userLbl = new JLabel("Username");
 		userLbl.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -132,7 +139,7 @@ public class GameUI {
 		eventsConsole = new JTextArea();
 		eventsConsole.setForeground(SystemColor.text);
 		eventsConsole.setFont(new Font("Monospaced", Font.PLAIN, 13));
-		eventsConsole.setBackground(SystemColor.activeCaptionBorder);
+		eventsConsole.setBackground(new Color(70, 130, 180));
 		eventsConsole.setEditable(false);
 		eventsConsole.append("#Initial Entry");
 		panel_1.add(eventsConsole, BorderLayout.CENTER);
@@ -140,9 +147,11 @@ public class GameUI {
 		splitPane.setLeftComponent(playerPanel);
 		
 		gameFieldTable = new GameFieldTable(new GameFieldTableModel());
+		gameFieldTable.getTableHeader().setBackground(SystemColor.inactiveCaption);
 
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
+		gameFieldPanel.setBackground(SystemColor.activeCaption);
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");
 		gameFieldHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
 		gameFieldHeader.setHorizontalAlignment(SwingConstants.CENTER);

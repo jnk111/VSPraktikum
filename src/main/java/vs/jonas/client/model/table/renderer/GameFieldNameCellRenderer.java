@@ -2,6 +2,7 @@ package vs.jonas.client.model.table.renderer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.SystemColor;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -21,7 +22,7 @@ public class GameFieldNameCellRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus, int row, int col) {
 		JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 		GameFieldTableModel model = (GameFieldTableModel) table.getModel();
-				
+		
 		String fieldName = model.getPlace(row).getName();
 //		System.out.println("## Rendering Gamefield: " + fieldName);
 		
@@ -50,7 +51,7 @@ public class GameFieldNameCellRenderer extends DefaultTableCellRenderer {
 		} else if(fieldName.equals("Suedbahnhof") || fieldName.equals("Westbahnhof")
 				|| fieldName.equals("Nordbahnhof") || fieldName.equals("Hauptbahnhof")){
 			label.setBackground(Color.LIGHT_GRAY);
-		} else label.setBackground(Color.WHITE);
+		} else label.setBackground(SystemColor.activeCaption);
 		return label;
 	}
 

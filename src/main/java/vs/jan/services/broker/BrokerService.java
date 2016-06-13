@@ -1,7 +1,9 @@
 package vs.jan.services.broker;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import vs.jan.exception.ResponseCodeException;
@@ -85,13 +87,6 @@ public class BrokerService {
 		broker.addPlace(p);
 	}
 
-	public ServiceList getServices() {
-		return services;
-	}
-
-	public void setServices(ServiceList services) {
-		this.services = services;
-	}
 
 	public synchronized JSONEventList visitPlace(String gameid, String placeid, String pawnid, String playeruri,
 			String path) throws TransactionFailedException {
@@ -439,5 +434,13 @@ public class BrokerService {
 		}
 
 		return helper.receiveEventList(this.services.getEvents(), owner.getId(), gameid, new Date());
+	}
+	
+	public ServiceList getServices() {
+		return services;
+	}
+
+	public void setServices(ServiceList services) {
+		this.services = services;
 	}
 }

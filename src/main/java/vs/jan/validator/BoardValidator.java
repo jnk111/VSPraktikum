@@ -44,16 +44,19 @@ public class BoardValidator extends Validator{
 	 * @param pawnid
 	 * @throws ResponseCodeException 
 	 */
-	public void checkPlayerHasMutex(String gameid, String pawnid, String gameServiceUri) 
+	public void checkPlayerHasMutex(String gameid, String pawnid, String gameServiceUri, boolean local) 
 			throws ResponseCodeException {
 
-		String player = gameServiceUri + "/" + gameid + "/player/turn";
-		String json = HttpService.get(player, HttpURLConnection.HTTP_OK);
-		Player current = GSON.fromJson(json, Player.class);
-		
-		if (!current.getPawn().contains(pawnid)) {
-			throw new TurnMutexNotFreeException(Error.MUTEX.getMsg());
+		if(!local) {
+			String player = gameServiceUri + "/" + gameid + "/player/turn";
+			String json = HttpService.get(player, HttpURLConnection.HTTP_OK);
+			Player current = GSON.fromJson(json, Player.class);
+			
+			if (!current.getPawn().contains(pawnid)) {
+				throw new TurnMutexNotFreeException(Error.MUTEX.getMsg());
+			}
 		}
+
 	}
 
 }

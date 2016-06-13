@@ -30,10 +30,12 @@ import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.json.decksservice.JSONCard;
 import vs.jan.model.ServiceList;
+import vs.jan.model.User;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
+import vs.jan.model.boardservice.Player;
 import vs.jan.model.decksservice.ChanceCard;
 import vs.jan.model.decksservice.CommCard;
 import vs.jan.model.exception.Error;
@@ -43,6 +45,9 @@ import vs.jan.validator.BoardValidator;
 import vs.jonas.services.model.Dice;
 
 public class BoardService {
+
+	private static final int GO_VALUE = 3000;
+	private final String []DECK_TYPES = {"chance", "community"};
 
 	private final Gson GSON = new Gson();
 
@@ -54,7 +59,7 @@ public class BoardService {
 	private BoardValidator validator;
 	private BoardHelper helper;
 	private ServiceList services;
-	private boolean LOCAL = false;
+	private Map<Pawn, User> users;
 
 	/*
 	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
@@ -71,6 +76,7 @@ public class BoardService {
 		throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
 		this.helper = new BoardHelper(null);
+		this.users = new HashMap<>();
 	}
 
 	/**
@@ -142,6 +148,7 @@ public class BoardService {
 		Board b = helper.getBoard(this.boards, gameid);
 		validator.checkBoardHasFields(b);
 		validator.checkJsonIsValid(pawn, Error.JSON_PAWN.getMsg());
+		
 		Pawn p = new Pawn();
 		String pawnUri = helper.getPawnUri(b, pawn.getPlayer());
 		p.setPawnUri(pawnUri);
@@ -150,8 +157,9 @@ public class BoardService {
 		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
-		
-		// TODO: zahle Startkapital aus
+		String playerUri = this.services.getGames().replace("/games", "") + p.getPlayerUri();
+//		System.out.println(playerUri);
+//		Player player = helper.getPlayer(playerUri, gameid);
 
 		// Neue Wuerfelliste fuer die Figur erstellen
 		JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
@@ -290,7 +298,7 @@ public class BoardService {
 		// Eine Runde rumgelaufen?
 		if (newPos >= b.getFields().size() - 1) {
 			newPos = ((newPos % b.getFields().size()));
-			// TODO: zahle Geld aus (ueber Los gelaufen)
+			payRunOverGoValue(p, gameid);
 		}
 
 		b.getFields().get(oldPos).removePawn(p); // Figur von alter
@@ -315,11 +323,21 @@ public class BoardService {
 			moveToJail(gameid, b, p, newPos);
 			
 		} else if (place.isChance()){
-			doFurtherDecksActions(gameid, newPos, b, p, "chance");
+			doFurtherDecksActions(gameid, newPos, b, p, DECK_TYPES[0]);
 			
 		} else if (place.isCommunity()) {
-			doFurtherDecksActions(gameid, newPos, b, p, "community");
+			doFurtherDecksActions(gameid, newPos, b, p, DECK_TYPES[1]);
 		}
+	}
+
+
+	private void payRunOverGoValue(Pawn p, String gameid) {
+		String toId = helper.getID(p.getPawnUri());
+		String bankUri = this.services.getBank() + "/" + gameid + "/transfer/to/" + toId + "/" + GO_VALUE;
+		String reason = "Player with id: " + toId + " receives money from the bank by running over Go";
+		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_OVER_GO.getType(), EventTypes.MOVED_OVER_GO.getType(), reason, p.getRollsUri(), p.getPlayerUri());
+		helper.postEvent(event, this.services.getEvents());
 	}
 
 	private void moveToJail(String gameid, Board board, Pawn pawn, int newPos) {
@@ -418,7 +436,7 @@ public class BoardService {
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 
 		// Temp
-		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame());
+		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), true);
 
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);
@@ -620,14 +638,6 @@ public class BoardService {
 	public Map<Board, JSONGameURI> getBoards() {
 
 		return this.boards;
-	}
-
-	public boolean isLOCAL() {
-		return LOCAL;
-	}
-
-	public void setLOCAL(boolean lOCAL) {
-		LOCAL = lOCAL;
 	}
 
 }

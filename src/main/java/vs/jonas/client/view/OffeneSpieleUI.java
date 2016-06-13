@@ -1,6 +1,7 @@
 package vs.jonas.client.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 
@@ -62,9 +63,10 @@ public class OffeneSpieleUI {
 		GameInformationTableModel model = new GameInformationTableModel();
 		offeneSpieleTable = new JTable(model);
 		offeneSpieleTable.setCellSelectionEnabled(true);
-//	    ListSelectionModel cellSelectionModel = offeneSpieleTable.getSelectionModel();
-//	    cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		offeneSpieleTable.setBackground(SystemColor.activeCaption);
+//		offeneSpieleTable.getTableHeader().setOpaque(false);
+//		offeneSpieleTable.getTableHeader().setBackground(new Color(204, 255, 204));
+
+		offeneSpieleTable.setBackground(new Color(204, 255, 204));
 		JScrollPane scrollPane = new JScrollPane(offeneSpieleTable);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		auswahlPanel.add(scrollPane);

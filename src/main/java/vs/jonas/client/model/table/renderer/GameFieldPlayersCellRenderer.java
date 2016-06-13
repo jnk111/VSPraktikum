@@ -1,5 +1,6 @@
 package vs.jonas.client.model.table.renderer;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.SystemColor;
 
@@ -17,7 +18,7 @@ public class GameFieldPlayersCellRenderer implements TableCellRenderer {
 			boolean isSelected, boolean hasFocus, int row, int col) {
 
 		JTextArea textArea = new JTextArea();
-		textArea.setBackground(SystemColor.activeCaption);
+		textArea.setBackground(new Color(204, 255, 204));
 		GameFieldTableModel model = (GameFieldTableModel) table.getModel();
 		Place place = model.getPlace(row);
 		for(String s : place.getPlayers()){

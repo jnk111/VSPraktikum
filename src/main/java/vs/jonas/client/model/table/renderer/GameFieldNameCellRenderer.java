@@ -51,7 +51,7 @@ public class GameFieldNameCellRenderer extends DefaultTableCellRenderer {
 		} else if(fieldName.equals("Suedbahnhof") || fieldName.equals("Westbahnhof")
 				|| fieldName.equals("Nordbahnhof") || fieldName.equals("Hauptbahnhof")){
 			label.setBackground(Color.LIGHT_GRAY);
-		} else label.setBackground(SystemColor.activeCaption);
+		} else label.setBackground(new Color(204, 255, 204));
 		return label;
 	}
 

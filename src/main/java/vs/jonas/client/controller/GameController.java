@@ -41,7 +41,7 @@ public class GameController {
 	private String gameID;
 	private final String SLASH_CLIENT = "/client";
 	private final String SLASH_TURN = "/turn";
-	private final String SLASH_EVENT = "/event";
+	private final String SLASH_EVENT = "/events";
 	private User user;
 	private final int PORT = 4777;;
 	private String ip;
@@ -80,17 +80,20 @@ public class GameController {
 			return new Gson().toJson(user);
 		});
 		
-		Spark.post("", "application/json",(req,res) -> {
+		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_EVENT,"application/json", (req,res)->{
+			System.out.println("########Incoming Event");
+			handleIncomingEvent(gson.fromJson(req.body(),EventData.class));
+			return "";
+		});
+
+		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_TURN, "application/json",(req,res) -> {
 			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
+			System.out.println("########Incoming Turn Message");
 			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
 			ladeSpielerInformationen();
 			return "";
 		});
 		
-		Spark.post(SLASH_CLIENT + SLASH_EVENT, (req,res)->{
-			handleIncomingEvent(gson.fromJson(req.body(),EventData.class));
-			return "";
-		});
 		
 	}
 
@@ -241,9 +244,10 @@ public class GameController {
 		} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL)){
 //			JOptionPane.showMessageDialog(null, event.getPlayer() + " has moved to Jail.");
 		} else{
-//			JOptionPane.showMessageDialog(null, event.getReason());
 		}
+//			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("\n" + event.getReason());
+//		eventsConsole.upd
 		try {
 			updateGame();
 		} catch (Exception e) {

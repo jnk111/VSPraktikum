@@ -178,10 +178,10 @@ public class RunBoardExample {
 		Player p2 = new Player();
 		Player p3 = new Player();
 		Player p4 = new Player();
-		p1.setUserName("mario");
-		p2.setUserName("wario");
-		p3.setUserName("yoshi");
-		p4.setUserName("donkeykong");
+		p1.setUser("mario");
+		p2.setUser("wario");
+		p3.setUser("yoshi");
+		p4.setUser("donkeykong");
 		String gamePlayerUri = GAME_URI + "/" + BOARD_ID + "/players";
 		System.out.println("Create Some Users on Game: " + BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");
@@ -222,10 +222,10 @@ public class RunBoardExample {
 
 
 	private static void initStartBalances(String gamePlayerUri, Player p1) {
-		String json = HttpService.get(BANK_URI + "/" + BOARD_ID + "/accounts/" + p1.getUserName(), 200);
+		String json = HttpService.get(BANK_URI + "/" + BOARD_ID + "/accounts/" + getID(p1.getUser()), 200);
 		System.out.println("Got Account: " + json);
 		JSONAccount acc = GSON.fromJson(json, JSONAccount.class);
-		String uri = BANK_URI + "/" + BOARD_ID + "/transfer/to/" + p1.getUserName() + "/" + (acc.getSaldo() + 20000);
+		String uri = BANK_URI + "/" + BOARD_ID + "/transfer/to/" + getID(p1.getUser()) + "/" + (acc.getSaldo() + 20000);
 		System.out.println("Set start saldo: ");
 		HttpService.post(uri, null, 201);
 		
@@ -233,7 +233,7 @@ public class RunBoardExample {
 
 	private static void createBankAccount(int boardId, String gamePlayerUri, Player p1) {
 		String uri = BANK_URI + "/" + BOARD_ID + "/accounts";
-		JSONAccount acc = new JSONAccount(gamePlayerUri.replace(HOST, "") + "/" + p1.getUserName(), 0);
+		JSONAccount acc = new JSONAccount(gamePlayerUri.replace(HOST, "") + "/" + getID(p1.getUser()), 0);
 		System.out.println(acc.getPlayer());
 		System.out.println("Account: " + GSON.toJson(acc));
 		HttpService.post(uri, acc, 201);
@@ -250,7 +250,7 @@ public class RunBoardExample {
 	private static void setUserReady(Player p1, int boardID) throws InterruptedException, ResponseCodeException {
 		
 		Thread.sleep(TIMEOUT);
-		String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/players/" + p1.getUserName(), 200);
+		String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/players/" + getID(p1.getUser()), 200);
 		System.out.println("User is ready: " + json);
 		Player p = GSON.fromJson(json, Player.class);
 		String id = getID(p.getId());

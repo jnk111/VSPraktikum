@@ -30,11 +30,11 @@ public class Player implements Validable{
 		this.id = id;
 	}
 
-	public String getUserName() {
+	public String getUser() {
 		return user;
 	}
 
-	public void setUserName(String user) {
+	public void setUser(String user) {
 		this.user = user;
 	}
 
@@ -119,7 +119,7 @@ public class Player implements Validable{
 	public boolean isValid() {
 		
 		// Temp -> TODO: check account
-		return getId() != null && getUserName() != null && getPawn() != null;
+		return getId() != null && getUser() != null && getPawn() != null;
 	}
 
 }

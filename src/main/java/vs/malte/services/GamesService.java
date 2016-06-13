@@ -37,14 +37,14 @@ public class GamesService
 {
     // ************************CODE CONFIGS************************ //
 
-    private final boolean DEBUG_MODE = false; // Zu Testzwecken: Konsolenausgaben aktivieren
+    private final boolean DEBUG_MODE = true; // Zu Testzwecken: Konsolenausgaben aktivieren
     private final boolean LOCAL = true;      // Zu Testzwecken: LOCAL auf true, wenn alle Services lokal laufen sollen
 
     // **************************PREFIXES************************** //
 
     private final String GAMEID_PREFIX = "/games/";
     private final String PLAYERID_INFIX = "/players/";
-    private final String USER_NAME_PREFIX = "/user/";
+    private final String USER_NAME_PREFIX = "/users/";
     private final String ID_PREFIX_FOR_INIT_BOARDS = "/boards/";
 
     // ********************YELLOW PAGE CONFIGS********************* //
@@ -551,20 +551,25 @@ public class GamesService
             newPlayer.setId( GAMEID_PREFIX + game.getName() + PLAYERID_INFIX + newPlayer.getUserName().toLowerCase() );
             newPlayer.setUserName( USER_NAME_PREFIX + newPlayer.getUserName().toLowerCase() );
 
+            if ( DEBUG_MODE )
+            {
+                System.out.println( "\n********************CREATE NEW PLAYER IN GAMESERVICE********************" );
+                System.out.println( "NewPlayer: " + new Gson().toJson( newPlayer ) );
+            }
+            
             if ( game != null && !game.getPlayers().containsKey( mapKey ) )
             {
 
                 // ================= Playerobjekt wird entsprechend der Spezi fuer UserService konfiguriert ================= //
 
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
-                userServiceDTO.setId( newPlayer.getUserName().replaceAll( "/user/", "/users/" ) );
-                userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/user/", "" ) );
-                userServiceDTO.setUri( clientUri + "/client" + userServiceDTO.getName() );
+                userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/users/", "" ) );
+                userServiceDTO.setUri( clientUri + "/client/" + userServiceDTO.getName() );
 
                 if ( DEBUG_MODE )
                 {
-                    System.out.println( "\n********************CREATE NEW PLAYER********************" );
-                    System.out.println( "NewPlayer: " + new Gson().toJson( userServiceDTO ) );
+                    System.out.println( "\n********************CREATE NEW USER IN USERSERVICE********************" );
+                    System.out.println( "NewUser: " + new Gson().toJson( userServiceDTO ) );
                 }
 
                 // ================= Post an UserService (User wird im UserService erstellt) ================= //

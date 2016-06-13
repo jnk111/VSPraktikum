@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
+import vs.jan.api.decksservice.DecksAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.malte.example.Example;
 import vs.malte.services.GamesServiceAPI;
@@ -20,6 +21,7 @@ public class StartUpProject
         if ( LOCAL )
         {
             new BrokerAPI();
+            new DecksAPI();
             new BoardRESTApi();
             new UserServiceRESTApi();
             BankService.run();

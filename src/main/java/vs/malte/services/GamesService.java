@@ -65,7 +65,7 @@ public class GamesService
     private final int SERVER_ERR_RESP_CODE = 500;
 
     // ************************START SALDO************************ //
-    
+
     private final int START_SALDO = 20000;
 
     // ********************************************************** //
@@ -164,7 +164,7 @@ public class GamesService
                 }
 
                 newGame.getServiceList().setAllServices( newServices ); // Services in neuem Spiel speichern
-                newGame.setPlayers( newGame.getServiceList().getGame() + "/" + newGame.getName() + "/players" );      
+                newGame.setPlayers( newGame.getServiceList().getGame() + "/" + newGame.getName() + "/players" );
             }
             catch ( UnirestException e )
             {
@@ -200,8 +200,7 @@ public class GamesService
     {
         game = createBoard( game );
         game = createBank( game );
-        // game = createBroker( game );
-        // game = createDecks( game );
+        game = createBroker( game );
 
         // initialize dice
         game.getComponents().setDice( game.getServiceList().getDice() );
@@ -211,6 +210,9 @@ public class GamesService
 
         // initialize game
         game.getComponents().setGame( game.getServiceList().getGame() + "/" + game.getName() );
+
+        // initialize deck
+        game.getComponents().setDecks( game.getServiceList().getDecks() + "/" + game.getName() );
 
         return game;
     }
@@ -304,11 +306,11 @@ public class GamesService
 
     private Game createBroker( Game game )
     {
-        String brokerUrl = game.getServiceList().getBank();
+        String brokerUrl = game.getServiceList().getBroker();
         BrokerDTO brokerDTO = new BrokerDTO();
         brokerDTO.setGame( game.getId() );
 
-        int responseCode = HttpService.post( brokerUrl, brokerUrl );
+        int responseCode = HttpService.post( brokerUrl, brokerDTO );
 
         if ( DEBUG_MODE )
         {
@@ -319,32 +321,6 @@ public class GamesService
         if ( responseCode == 200 )
         {
             game.getComponents().setBroker( brokerUrl + "/" + game.getName() );
-        }
-        else
-        {
-            // TODO throw Component not available Exception
-        }
-
-        return game;
-    }
-
-    private Game createDecks( Game game )
-    {
-        String decksUrl = game.getServiceList().getBank();
-        DecksDTO decksDTO = new DecksDTO();
-        decksDTO.setGame( game.getId() );
-
-        int responseCode = HttpService.post( decksUrl, decksUrl );
-
-        if ( DEBUG_MODE )
-        {
-            System.out.println( "\n********************CREATE DECK FOR " + game.getName() + "********************" );
-            System.out.println( "With DTO: " + new Gson().toJson( decksDTO ) );
-        }
-
-        if ( responseCode == 200 )
-        {
-            game.getComponents().setDecks( decksUrl + "/" + game.getName() );
         }
         else
         {
@@ -535,7 +511,7 @@ public class GamesService
      * 
      * URI: /games/:gameId/players
      */
-    public synchronized String postNewPlayer( Request req, Response resp )
+    public synchronized String createNewPlayer( Request req, Response resp )
     {
 
         resp.header( "Content-Type", "application/json" );
@@ -560,7 +536,7 @@ public class GamesService
                 System.out.println( "\n********************CREATE NEW PLAYER IN GAMESERVICE********************" );
                 System.out.println( "NewPlayer: " + new Gson().toJson( newPlayer ) );
             }
-            
+
             if ( game != null && !game.getPlayers().containsKey( mapKey ) )
             {
 
@@ -568,7 +544,7 @@ public class GamesService
 
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
                 userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/users/", "" ) );
-                userServiceDTO.setUri( clientUri + "/client/" + userServiceDTO.getName() );
+                userServiceDTO.setUri( clientUri + "/client/" + userServiceDTO.getName() + "/events");
 
                 if ( DEBUG_MODE )
                 {
@@ -583,11 +559,11 @@ public class GamesService
                 game.getPlayers().put( mapKey, newPlayer );
 
                 createPawn( newPlayer, game );
-                
-                createAccount ( newPlayer, game  );
-                
+
+                createAccount( newPlayer, game );
+
                 game.getPlayers().put( mapKey, newPlayer );
-                
+
                 resp.status( 201 ); // created
             }
             else
@@ -623,7 +599,7 @@ public class GamesService
 
         if ( responseCode == 200 )
         {
-            player.setPawn( game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "/users" , "" ) );
+            player.setPawn( game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "/users", "" ) );
 
             if ( DEBUG_MODE )
                 System.out.println( "New Pawn URI : " + player.getPawn() );
@@ -635,7 +611,7 @@ public class GamesService
 
         return player;
     }
-    
+
     private void createAccount( Player player, Game game )
     {
 
@@ -644,7 +620,7 @@ public class GamesService
         newAccount.setPlayer( player.getId() );
         newAccount.setSaldo( START_SALDO );
         String bankURL = game.getComponents().getBank() + "/accounts";
-        
+
         if ( DEBUG_MODE )
         {
             System.out.println( "\n********************CREATE NEW ACCOUNT FOR " + player.getUserName() + "********************" );
@@ -1018,7 +994,7 @@ public class GamesService
             currentPlayerDTO.setPawn( currentPlayer.getPawn() );
             currentPlayerDTO.setAccount( currentPlayer.getAccount() );
             currentPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + currentPlayerDTO.getUser().replaceAll( "/user/", "" ) + "/ready" );
-            
+
             result = new Gson().toJson( currentPlayerDTO );
         }
         else

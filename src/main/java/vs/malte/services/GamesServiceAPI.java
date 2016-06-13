@@ -122,7 +122,7 @@ public class GamesServiceAPI
     {
         post( "/games/:gameId/players", ( req, resp ) ->
         {
-            return gameService.postNewPlayer( req, resp );
+            return gameService.createNewPlayer( req, resp );
         } );
     }
 

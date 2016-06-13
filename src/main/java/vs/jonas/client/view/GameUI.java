@@ -82,6 +82,7 @@ public class GameUI {
 		panel.add(btnHausVerkaufen);
 
 		btnSpielzugBeenden = new JButton("Spielzug beenden");
+		btnSpielzugBeenden.setEnabled(false);
 		panel.add(btnSpielzugBeenden);
 
 		JButton btnAusloggen = new JButton("Ausloggen");

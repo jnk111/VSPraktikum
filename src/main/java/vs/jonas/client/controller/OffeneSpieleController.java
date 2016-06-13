@@ -96,25 +96,22 @@ public class OffeneSpieleController {
 			public void actionPerformed(ActionEvent e) {
 				String gameID = ui.getLblAuswahl().getText();
 				if(!gameID.equals("")){
-						String username = "";
-						while(username != null && username.equals("")){
-							username = JOptionPane.showInputDialog(ui.getFrame(), "Bitte wählen Sie einen Usernamen.");
-							if(username != null && username.equals("")){
-								JOptionPane.showMessageDialog(ui.getFrame(), "Dieser Username ist nicht gültig. Der Username darf nicht leer sein.");
-							}
+					String username = "";
+					while(username != null && username.equals("")){
+						username = JOptionPane.showInputDialog(ui.getFrame(), "Bitte wählen Sie einen Usernamen.");
+						if(username != null && username.equals("")){
+							JOptionPane.showMessageDialog(ui.getFrame(), "Dieser Username ist nicht gültig. Der Username darf nicht leer sein.");
 						}
-					try {
-						if(username != null){
+					}
+					if(username != null){
+						try {
 							ui.getFrame().dispose();
 							User user = new User(username.toLowerCase());
 							new GameController(client,gameID, user);
+						} catch (IOException | UnirestException e1) {
+							JOptionPane.showMessageDialog(null, "Ein Verbindungsfehler ist aufgetreten.");
+							e1.printStackTrace();
 						}
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog(ui.getFrame(), "Ups, da ist ein Verbindungsfehler aufgetreten.");
-						ex.printStackTrace();
-					} catch (UnirestException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
 					}
 				}
 			}

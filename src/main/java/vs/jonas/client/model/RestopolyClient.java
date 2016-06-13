@@ -140,6 +140,14 @@ public class RestopolyClient {
 		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
 	}
 	
+	/**
+	 * Wird aufgerufen, wenn ein Spieler bereit ist das Spiel zu beginnen und
+	 * wenn er mit seinem Spielzug fertig ist.
+	 * @param gameID
+	 * @param user
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public void setReady(String gameID, User user) throws IOException, Exception{
 		System.out.println("\n************** SetReady ************** ");
 		String readyUri = gameService.getUri() + SLASH + gameID + SLASH_PLAYERS + SLASH + user.getName() + SLASH_READY;
@@ -218,7 +226,9 @@ public class RestopolyClient {
 				if(ready.getBody().equals("true")){
 					playerInformation.setReady(true);
 				}
-			}
+			} 
+			
+			
 			if(player.equals(playerWithMutex)){
 				playerInformation.setHasTurn(true);
 			}
@@ -347,6 +357,7 @@ public class RestopolyClient {
 		
 		HttpResponse<String> result = Unirest.post(boardsDiceRollUri).asString();
 		System.out.println(result.getBody());
+
 		JsonObject diceRolls = get(boardsDiceRollUri);
 		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
 		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);

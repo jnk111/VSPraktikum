@@ -7,7 +7,6 @@ public class PlayerInformation {
 	String pawn;
 	String account;
 	String position;
-	String lastRoll;
 	boolean isReady;
 	boolean hasTurn;
 
@@ -33,14 +32,6 @@ public class PlayerInformation {
 
 	public void setPosition(String position) {
 		this.position = position;
-	}
-
-	public String getLastRoll() {
-		return lastRoll;
-	}
-
-	public void setLastRoll(String lastRoll) {
-		this.lastRoll = lastRoll;
 	}
 
 	public boolean isReady() {

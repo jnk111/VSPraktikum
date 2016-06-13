@@ -1,16 +1,13 @@
 package vs.jonas.client.model.table.tablemodel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import vs.jonas.client.json.Place;
-import vs.jonas.client.model.comparator.FieldsComparator;
+import vs.jonas.client.json.PlayerInformation;
 
-public class GameFieldTableModel extends DefaultTableModel{
-
+public class PlayerStartGameScreenModel extends DefaultTableModel {
 
 	/**
 	 * 
@@ -20,32 +17,24 @@ public class GameFieldTableModel extends DefaultTableModel{
 	/**
 	 * Die Spalten-Namen
 	 */
-	private String[] columnNames = {"Name","Players"};
+	private String[] columnNames = { "Spieler", "Ready"};
 
 	/**
 	 * Die Daten, die angezeigt werden sollen: GameResponse
 	 * {id,name,numberOfPlayer}
 	 */
-	List<Place> fields;
+	List<PlayerInformation> players;
 
-	public static int NAME = 0;
-	public static int PLAYERS = 1;
 	/**
 	 * Initialisiert das TableModel
 	 */
-	public GameFieldTableModel() {
-		fields = new ArrayList<>();
+	public PlayerStartGameScreenModel() {
+		players = new ArrayList<>();
 	}
 
 	@Override
-	public Class<?> getColumnClass(int col) {
-		if(col == NAME){
-			return String.class;
-		} else if(col == PLAYERS){
-			return List.class;
-		} else{
-			return Object.class;
-		}
+	public Class<?> getColumnClass(int columnIndex) {
+		return String.class;
 	}
 
 	/**
@@ -61,10 +50,10 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 */
 	@Override
 	public int getRowCount() {
-		if (fields == null) {
+		if (players == null) {
 			return 0;
 		}
-		return fields.size();
+		return players.size();
 	}
 
 	/**
@@ -83,46 +72,32 @@ public class GameFieldTableModel extends DefaultTableModel{
 	 *            DIe Spalte in der sich die Zelle befindet.
 	 */
 	public Object getValueAt(int row, int col) {
-		Place field = fields.get(row);
+		PlayerInformation player = players.get(row);
 		Object ergebnis = null;
-		
+
 		switch (col) {
-		case 0:	ergebnis = field.getName();	break;
-		case 1: ergebnis = field.getPlayers();
+		case 0:	ergebnis = player.getPawn(); break;
+		case 1: ergebnis = player.isReady()+""; 
 		}
 		return ergebnis;
 	}
-	
-	@Override
-	public void setValueAt(Object aValue, int row, int column) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/**
-	 * Laedt die Tabelle mit neuen Daten.
+	 * L�dt die Tabelle mit neuen Daten.
 	 * 
 	 * @param data
 	 *            Die neuen Daten.
 	 */
-	public void loadData(List<Place> data) {
+	public void loadData(List<PlayerInformation> data) {
 		if (data != null) {
-			fields = new ArrayList<>(data);
-			Collections.sort(fields, new FieldsComparator());
+			players = new ArrayList<>(data);
 			fireTableDataChanged();
 		}
-	}
-	
-	public Place getPlace(int row){
-		return fields.get(row);
 	}
 	
 	@Override
 	public boolean isCellEditable(int row, int col)
 	{
-		if(col == PLAYERS){
-			return true;
-		}
 		return false;
 	}
 

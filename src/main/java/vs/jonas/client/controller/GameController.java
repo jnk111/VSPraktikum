@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import com.google.gson.Gson;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import spark.Spark;
+import vs.jonas.client.json.ClientTurn;
 import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.User;
@@ -23,6 +23,7 @@ import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.view.GameUI;
+import vs.jonas.services.json.EventData;
 
 /**
  * Diese Klasse implementiert einen Controller für die GamesUI.
@@ -35,12 +36,14 @@ public class GameController {
 	private GameUI ui;
 	private RestopolyClient client;
 	private String gameID;
-	private final String SLASH_CLIENT;
-	private final String SLASH_TURN;
+	private final String SLASH_CLIENT = "/client";
+	private final String SLASH_TURN = "/turn";
+	private final String SLASH_EVENT = "/event";
 	private User user;
-	private final int PORT;
+	private final int PORT = 4777;;
 	private String ip;
-	private final String PROTOCOL;
+	private final String PROTOCOL = "http://";
+	private Gson gson;
 	
 	/**
 	 * Initialisiert den Controller
@@ -52,11 +55,8 @@ public class GameController {
 	public GameController(RestopolyClient client, String gameID, User user) throws IOException, UnirestException{
 		this.client = client;
 		this.gameID = gameID;
-		this.SLASH_CLIENT = "/client";
-		this.SLASH_TURN = "/turn";
-		this.PROTOCOL = "http://";
 		this.user = user;
-		this.PORT = 4777;
+		this.gson = new Gson();
 		URL url = new URL("http://checkip.amazonaws.com/");
 		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 		String ipadress = br.readLine();
@@ -65,21 +65,33 @@ public class GameController {
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();
-		System.err.println("**##** Response: "+ client.get(PROTOCOL + ip+":" + PORT + SLASH_CLIENT + SLASH_TURN));
+		System.err.println("**##** Response: "+ client.get(PROTOCOL + ip+":" + PORT + SLASH_CLIENT));
 	}
 
 	private void startClientService() {	
 		Spark.port(this.PORT);
 		
 		Spark.ipAddress(ip);
-		Spark.get(SLASH_CLIENT+SLASH_TURN, (req, res) -> {
-			System.out.println("THE IP_ADRESS: "+req.ip());
-			User user = new User("hans");
-			user.setUri(PROTOCOL + ip + ":"+ PORT);
+		Spark.get(SLASH_CLIENT, (req, res) -> {
+			System.out.println("Received request for route /client from: "+req.ip());
 			return new Gson().toJson(user);
 		});
 		
+		Spark.post("", "application/json",(req,res) -> {
+			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
+			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
+			ui.getBtnSpielzugBeenden().setEnabled(true);
+			ladeSpielerInformationen();
+			return "";
+		});
+		
+		Spark.post(SLASH_CLIENT + SLASH_EVENT, (req,res)->{
+			handleIncomingEvent(gson.fromJson(req.body(),EventData.class));
+			return "";
+		});
+		
 	}
+
 
 	/**
 	 * Initialisiert die UI
@@ -111,14 +123,14 @@ public class GameController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					ui.getBtnStarten().setEnabled(false);
+					ui.getBtnSpielzugBeenden().setEnabled(true);
 					client.setReady(gameID, user);
 					if(client.allPlayersReady(gameID)){
 						client.startGame(gameID);
 					}
 					updateGame();
-					startEventCheckerThread();
-					
-					
+//					startEventCheckerThread();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -138,14 +150,28 @@ public class GameController {
 					
 				} catch (Exception ex) {
 					// TODO Auto-generated catch block
-					if(i==0){
+					if(i<3){
 						JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
 						i++;
 					} else{
 						JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");
+						ex.printStackTrace();
 					}
-					ex.printStackTrace();
 				} 
+			}
+		});
+		
+		ui.getBtnSpielzugBeenden().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					ui.getBtnSpielzugBeenden().setEnabled(false);
+					client.setReady(gameID, user);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -176,10 +202,27 @@ public class GameController {
 		model.loadData(data);
 		
 	}
-	
 
-	private void startEventCheckerThread() {
-
-		
+	private void handleIncomingEvent(EventData event) {
+//		if(event.getType().equals(EventTypes.MOVE_PAWN)){
+//			movePawn(event);
+//		}
+		JOptionPane.showMessageDialog(null, event.getReason());
+		try {
+			updateGame();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+
+//	private void movePawn(EventData event) {
+//		JOptionPane.showMessageDialog(null, event.getReason());
+//		try {
+//			updateGame();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 }

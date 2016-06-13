@@ -49,7 +49,7 @@ public class GamesService
 
     // ********************YELLOW PAGE CONFIGS********************* //
 
-    private final String YELLOW_PAGE = "http://172.18.0.17:4567";
+    private final String YELLOW_PAGE = "http://172.18.0.5:4567";
     private final String YP_GROUP_CMD = "/services/of/name/";
     private final String YP_GROUP_NAME = "JJMG";
 
@@ -617,7 +617,7 @@ public class GamesService
 
         if ( responseCode == 200 )
         {
-            player.setPawn( game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "user/", "" ) );
+            player.setPawn( game.getComponents().getBoard() + "/pawns" + player.getUserName().replaceAll( "/users" , "" ) );
 
             if ( DEBUG_MODE )
                 System.out.println( "New Pawn URI : " + player.getPawn() );
@@ -801,7 +801,7 @@ public class GamesService
             specificPlayerDTO.setAccount( player.getAccount() );
             specificPlayerDTO.setId( player.getId() );
             specificPlayerDTO.setPawn( player.getPawn() );
-            specificPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + player.getUserName().replaceAll( "/user/", "" ) + "/ready" );
+            specificPlayerDTO.setReady( game.getComponents().getGame() + "/players/" + player.getUserName().replaceAll( "/users/", "" ) + "/ready" );
 
             result = new Gson().toJson( specificPlayerDTO );
         }

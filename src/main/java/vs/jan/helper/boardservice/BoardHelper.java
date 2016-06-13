@@ -3,13 +3,13 @@ package vs.jan.helper.boardservice;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
+
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.helper.Helper;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.model.ServiceList;
-import vs.jan.model.User;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;

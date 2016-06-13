@@ -354,7 +354,7 @@ public class BoardService {
 		// String url = this.services.getDecks() + "/" + gameid + "/" + type;
 		
 		// Temp
-		String url = "http://localhost:4567/decks" + "/" + gameid + "/" + type;
+		String url = this.services.getDecks() + "/" + gameid + "/" + type;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONCard card = GSON.fromJson(json, JSONCard.class);
 		String name = card.getName();

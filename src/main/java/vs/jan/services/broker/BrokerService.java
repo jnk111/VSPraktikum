@@ -99,7 +99,7 @@ public class BrokerService {
 
 		Broker broker = helper.getBroker(brokers, gameid);
 		Place place = helper.getPlace(broker, placeid);
-		Player player = helper.getPlayer(this.services.getGame() + playeruri.replace("/games", ""), gameid);
+		Player player = helper.getPlayer(this.services.getGamesHost() + playeruri, gameid);
 
 		String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(), reason,

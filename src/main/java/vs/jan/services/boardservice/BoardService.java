@@ -351,9 +351,6 @@ public class BoardService {
 
 	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type) {
 		
-		// String url = this.services.getDecks() + "/" + gameid + "/" + type;
-		
-		// Temp
 		String url = this.services.getDecks() + "/" + gameid + "/" + type;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONCard card = GSON.fromJson(json, JSONCard.class);
@@ -379,9 +376,8 @@ public class BoardService {
 
 	private void getMoneyFromBank(Pawn pawn, String gameid) {
 		String toId = helper.getID(pawn.getPlayerUri());
-		
-		// Temp
 		String bankUri = this.services.getBank() + "/" + gameid + "/transfer/to/" + toId + "/" + CommCard.BANK_MONEY;
+		
 		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 		
 		String reason = "Player with id: " + toId + " got a community card and receives money from the bank";
@@ -403,7 +399,6 @@ public class BoardService {
 			
 			// TODO: saldocheck
 			
-			// Temp
 			String bankUri = this.services.getBank() + "/" + gameid + "/transfer/from/" + fromId + "/to/" + toId + "/" + CommCard.PLAYER_MONEY;			
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 		}
@@ -566,10 +561,7 @@ public class BoardService {
 	private void initDecks(Board key) {
 		
 		JSONGameURI uri = this.boards.get(key);
-		// Workaround
-		String url = "http://localhost:4567/decks";
-		HttpService.post(url, uri, HttpURLConnection.HTTP_OK);
-		// HttpService.post(this.services.getDecks(), uri, HttpURLConnection.HTTP_CREATED);
+		HttpService.post(this.services.getDecks(), uri, HttpURLConnection.HTTP_OK);
 	}
 
 	private void updateBoard(Board key, JSONBoard board, String gameid) {

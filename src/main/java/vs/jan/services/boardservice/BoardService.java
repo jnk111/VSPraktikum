@@ -30,12 +30,10 @@ import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
 import vs.jan.json.decksservice.JSONCard;
 import vs.jan.model.ServiceList;
-import vs.jan.model.User;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
 import vs.jan.model.boardservice.Place;
-import vs.jan.model.boardservice.Player;
 import vs.jan.model.decksservice.ChanceCard;
 import vs.jan.model.decksservice.CommCard;
 import vs.jan.model.exception.Error;
@@ -59,7 +57,6 @@ public class BoardService {
 	private BoardValidator validator;
 	private BoardHelper helper;
 	private ServiceList services;
-	private Map<Pawn, User> users;
 
 	/*
 	 * Uri-Liste der gemachten Wuerfe JSONThrowsUri -> die URI der von einer Pawn
@@ -76,7 +73,6 @@ public class BoardService {
 		throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
 		this.helper = new BoardHelper(null);
-		this.users = new HashMap<>();
 	}
 
 	/**
@@ -157,11 +153,7 @@ public class BoardService {
 		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
 		p.setRollsUri(p.getPawnUri() + "/roll");
 		b.addNewPawn(p);
-		String playerUri = this.services.getGames().replace("/games", "") + p.getPlayerUri();
-		System.out.println("PLAYER_URI :" + playerUri);
-		Player player = helper.getPlayer(playerUri, gameid);
-		User user = helper.getUser(this.services.getUsers().replace("/users", "") + player.getUser());
-		System.out.println(user.toString());
+		
 		// Neue Wuerfelliste fuer die Figur erstellen
 		JSONThrowsURI uri = new JSONThrowsURI(p.getRollsUri());
 		JSONThrowsList list = new JSONThrowsList();
@@ -313,6 +305,7 @@ public class BoardService {
 		String reas = p.getPlayerUri() + " has moved the pawn: " + p.getPawnUri() + " to: " + p.getPlaceUri();
 		String resource = p.getRollsUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVE_PAWN.getType(), EventTypes.MOVE_PAWN.getType(), reas, resource, p.getPlayerUri());
+		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 		Place place = helper.getPlace(b.getFields(), String.valueOf(newPos));
 
@@ -338,6 +331,7 @@ public class BoardService {
 		String reason = "Player with id: " + toId + " receives money from the bank by running over Go";
 		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_OVER_GO.getType(), EventTypes.MOVED_OVER_GO.getType(), reason, p.getRollsUri(), p.getPlayerUri());
+		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
 
@@ -351,6 +345,7 @@ public class BoardService {
 		pawn.updatePlaceUri(jailPos);
 		String reas = pawn.getPlayerUri() + " has moved to jail: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(), reas, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
 
@@ -391,6 +386,7 @@ public class BoardService {
 		
 		String reason = "Player with id: " + toId + " got a community card and receives money from the bank";
 		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 		
 	}
@@ -413,6 +409,7 @@ public class BoardService {
 		}
 		String reason = "Player with id: " + toId + " got a community card and receives money from all other players";
 		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
 
@@ -636,9 +633,8 @@ public class BoardService {
 		p.setRollsUri(pawn.getRoll());
 	}
 
+	
 	public Map<Board, JSONGameURI> getBoards() {
-
 		return this.boards;
 	}
-
 }

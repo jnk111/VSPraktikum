@@ -1,7 +1,9 @@
 package vs.jan.helper;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gson.Gson;
 
@@ -12,6 +14,7 @@ import vs.jan.json.boardservice.JSONEvent;
 import vs.jan.json.boardservice.JSONEventList;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.ServiceList;
+import vs.jan.model.User;
 import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
 
@@ -91,6 +94,31 @@ public abstract class Helper {
 	public JSONAccount getAccount(String accountUri) {
 		String json = HttpService.get(accountUri, HttpURLConnection.HTTP_OK);
 		return GSON.fromJson(json, JSONAccount.class);
+	}
+	
+	public User getUser(String uri) {
+		
+		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
+		return GSON.fromJson(json, User.class);
+	}
+	
+	public void broadCastEvent(JSONEvent event, String userServiceUri) {
+
+		String json = HttpService.get(userServiceUri, HttpURLConnection.HTTP_OK);
+		List<String> clientUris = new ArrayList<>();
+		
+		@SuppressWarnings("unchecked")
+		List<String> uris = GSON.fromJson(json, List.class);
+		
+		for(String uri: uris) {
+			String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
+			User user = GSON.fromJson(json2, User.class);
+			clientUris.add(user.getUri());
+		}
+		
+		for(String uri: clientUris) {
+			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+		}
 	}
 	
 	public ServiceList getServices() {

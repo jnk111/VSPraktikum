@@ -141,9 +141,4 @@ public class BoardHelper extends Helper {
 		
 	}
 
-	public User getUser(String uri) {
-		
-		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
-		return GSON.fromJson(json, User.class);
-	}
 }

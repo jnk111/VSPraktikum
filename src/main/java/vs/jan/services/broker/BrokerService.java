@@ -38,11 +38,13 @@ public class BrokerService {
 	private Map<Broker, JSONGameURI> brokers;
 	private ServiceList services;
 	private BrokerHelper helper;
+	private List<String> users;
 
 	public BrokerService() {
 		this.validator = new BrokerValidator();
 		this.helper = new BrokerHelper(null);
 		brokers = new HashMap<>();
+		setUsers(new ArrayList<>());
 	};
 
 	public void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
@@ -103,6 +105,7 @@ public class BrokerService {
 		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(), reason,
 				path, playeruri);
 		helper.postEvent(event, this.services.getEvents());
+		helper.broadCastEvent(event, this.services.getUsers());
 		Player owner = place.getOwner();
 		JSONAccount from = null;
 		JSONAccount to = null;
@@ -156,6 +159,7 @@ public class BrokerService {
 
 		if (event != null) {
 			helper.postEvent(event, this.services.getEvents());
+			helper.broadCastEvent(event, this.services.getUsers());
 		}
 
 		return helper.receiveEventList(this.services.getEvents(), playeruri, gameid, new Date());
@@ -246,6 +250,7 @@ public class BrokerService {
 		}
 
 		if (event != null) {
+			helper.broadCastEvent(event, this.services.getUsers());
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -302,6 +307,7 @@ public class BrokerService {
 		}
 
 		if (event != null) {
+			helper.broadCastEvent(event, this.services.getUsers());
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -363,6 +369,7 @@ public class BrokerService {
 		}
 
 		if (event != null) {
+			helper.broadCastEvent(event, this.services.getUsers());
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -430,6 +437,7 @@ public class BrokerService {
 
 		if (event != null) {
 
+			helper.broadCastEvent(event, this.services.getUsers());
 			helper.postEvent(event, this.services.getEvents());
 		}
 
@@ -442,5 +450,13 @@ public class BrokerService {
 
 	public void setServices(ServiceList services) {
 		this.services = services;
+	}
+
+	public List<String> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<String> users) {
+		this.users = users;
 	}
 }

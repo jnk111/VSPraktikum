@@ -9,12 +9,13 @@ public class ServiceList {
 	private String decks;
 	private String events;
 	private String users;
+	private String client;
 
 	public ServiceList() {
-		this(null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null);
 	}
 
-	public ServiceList(String game, String dice, String board, String bank, String broker, String decks, String events) {
+	public ServiceList(String game, String dice, String board, String bank, String broker, String decks, String events, String users, String client) {
 		this.games = game;
 		this.dice = dice;
 		this.board = board;
@@ -22,6 +23,8 @@ public class ServiceList {
 		this.broker = broker;
 		this.decks = decks;
 		this.events = events;
+		this.users = users;
+		this.client = client;
 	}
 
 	public String getGame() {
@@ -98,5 +101,13 @@ public class ServiceList {
 
 	public void setUsers(String users) {
 		this.users = users;
+	}
+
+	public String getClient() {
+		return client;
+	}
+
+	public void setClient(String client) {
+		this.client = client;
 	}
 }

@@ -22,6 +22,7 @@ import vs.malte.json.DecksDTO;
 import vs.malte.json.GameDTO;
 import vs.malte.json.GamesListDTO;
 import vs.malte.json.InitBoardDTO;
+import vs.malte.json.NewAccountDTO;
 import vs.malte.json.PawnDTO;
 import vs.malte.json.AllPlayersArrayDTO;
 import vs.malte.json.AllPlayersDTO;
@@ -63,8 +64,11 @@ public class GamesService
     private final int GAME_ALREADY_EXCITS_RESP_CODE = 409;
     private final int SERVER_ERR_RESP_CODE = 500;
 
-    // ************************************************************ //
+    // ************************START SALDO************************ //
+    
+    private final int START_SALDO = 20000;
 
+    // ********************************************************** //
     private Map<String, Game> games;
     private final MutexService mutexService;
 
@@ -195,7 +199,7 @@ public class GamesService
     private Game initGameComponents( Game game )
     {
         game = createBoard( game );
-        // game = createBank( game );
+        game = createBank( game );
         // game = createBroker( game );
         // game = createDecks( game );
 
@@ -277,7 +281,7 @@ public class GamesService
         BankDTO bankDTO = new BankDTO();
         bankDTO.setGame( game.getId() );
 
-        int responseCode = HttpService.post( bankUrl, bankUrl );
+        int responseCode = HttpService.post( bankUrl, bankDTO );
 
         if ( DEBUG_MODE )
         {
@@ -580,6 +584,8 @@ public class GamesService
 
                 createPawn( newPlayer, game );
                 
+                createAccount ( newPlayer, game  );
+                
                 game.getPlayers().put( mapKey, newPlayer );
                 
                 resp.status( 201 ); // created
@@ -628,6 +634,38 @@ public class GamesService
         }
 
         return player;
+    }
+    
+    private void createAccount( Player player, Game game )
+    {
+
+        NewAccountDTO newAccount = new NewAccountDTO();
+
+        newAccount.setPlayer( player.getId() );
+        newAccount.setSaldo( START_SALDO );
+        String bankURL = game.getComponents().getBank() + "/accounts";
+        
+        if ( DEBUG_MODE )
+        {
+            System.out.println( "\n********************CREATE NEW ACCOUNT FOR " + player.getUserName() + "********************" );
+            System.out.println( "FOR GAME : " + game.getName() );
+            System.out.println( "TO : " + bankURL );
+            System.out.println( "With DTO : " + new Gson().toJson( newAccount ) );
+        }
+
+        int responseCode = HttpService.post( bankURL, newAccount );
+
+        if ( responseCode == 201 )
+        {
+            player.setAccount( bankURL + "/" + player.getUserName().replaceAll( USER_NAME_PREFIX, "" ) );
+
+            if ( DEBUG_MODE )
+                System.out.println( "New Account URI : " + player.getAccount() );
+        }
+        else
+        {
+            System.err.println( "Account erstellen fehlgeschlagen" );      // TODO Fehlerbehandlung falls Pawn nicht erstellt werden kann (Neuversuch alle 3s?).
+        }
     }
 
     /**

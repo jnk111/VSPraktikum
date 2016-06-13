@@ -46,14 +46,14 @@ public class DecksAPI {
 	}
 
 	private void initGetChance() {
-		get(" /decks/:gameid/chance ", CONTENT_TYPE, (req, resp) -> {
+		get("/decks/:gameid/chance ", CONTENT_TYPE, (req, resp) -> {
 			JSONCard chance = service.getNextChanceCard(req.params(":gameid"));
 			return GSON.toJson(chance);
 		});
 	}
 
 	private void initGetDecks() {
-		get(" /decks", CONTENT_TYPE, (req, resp) -> {
+		get("/decks", CONTENT_TYPE, (req, resp) -> {
 			JSONDecksList list = service.getAllDecksURIS();
 			return GSON.toJson(list);
 		});

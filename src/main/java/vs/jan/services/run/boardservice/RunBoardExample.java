@@ -194,10 +194,6 @@ public class RunBoardExample {
 		System.out.println("Create Bank Accounts:");
 		System.out.println("-------------------------------------------------------------------------------------------");
 		
-//		createBankAccount(BOARD_ID, gamePlayerUri, p1);
-//		createBankAccount(BOARD_ID, gamePlayerUri, p2);
-//		createBankAccount(BOARD_ID, gamePlayerUri, p3);
-//		createBankAccount(BOARD_ID, gamePlayerUri, p4);
 		
 		System.out.println("Init Start balance:");
 		System.out.println("-------------------------------------------------------------------------------------------");
@@ -228,16 +224,6 @@ public class RunBoardExample {
 		String uri = BANK_URI + "/" + BOARD_ID + "/transfer/to/" + getID(p1.getUser()) + "/" + (acc.getSaldo() + 20000);
 		System.out.println("Set start saldo: ");
 		HttpService.post(uri, null, 201);
-		
-	}
-
-	private static void createBankAccount(int boardId, String gamePlayerUri, Player p1) {
-		String uri = BANK_URI + "/" + BOARD_ID + "/accounts";
-		JSONAccount acc = new JSONAccount(gamePlayerUri.replace(HOST, "") + "/" + getID(p1.getUser()), 0);
-		System.out.println(acc.getPlayer());
-		System.out.println("Account: " + GSON.toJson(acc));
-		HttpService.post(uri, acc, 201);
-		System.out.println("Account created: " + HttpService.get(uri + "/" + getID(acc.getPlayer()), 200));
 		
 	}
 

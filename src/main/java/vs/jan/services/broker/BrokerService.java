@@ -49,12 +49,15 @@ public class BrokerService {
 
 	public void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
+		
 		String baseUri = "/broker/";
 		String gameid = helper.getID(game.getURI());
 		String id = baseUri + gameid;
 		Broker b = new Broker(id);
+		
 		b.setGameUri(game.getURI());
 		b.setEstateUri(id + "/places");
+		
 		brokers.put(b, game);
 		this.services = ServiceAllocator.initServices(host, helper.getID(game.getURI()));
 		helper.setServices(this.services);
@@ -62,9 +65,11 @@ public class BrokerService {
 
 	public JSONBrokerList getBrokers() {
 		JSONBrokerList list = new JSONBrokerList();
+		
 		for (Broker b : brokers.keySet()) {
 			list.getBroker().add(b.getUri());
 		}
+		
 		return list;
 	}
 
@@ -104,8 +109,10 @@ public class BrokerService {
 		String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(), reason,
 				path, playeruri);
+		
 		helper.postEvent(event, this.services.getEvents());
 		helper.broadCastEvent(event, this.services.getUsers());
+		
 		Player owner = place.getOwner();
 		JSONAccount from = null;
 		JSONAccount to = null;
@@ -167,6 +174,7 @@ public class BrokerService {
 
 	public JSONBroker getSpecificBroker(String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		Broker b = helper.getBroker(this.brokers, gameid);
 		return b.convert();
 	}
@@ -174,14 +182,17 @@ public class BrokerService {
 	public JSONPlace getSpecificPlace(String gameid, String placeid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		
 		Broker b = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(b, placeid);
+		
 		return place.convert();
 	}
 
 	public Player getOwner(String gameid, String placeid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		
 		Broker b = helper.getBroker(this.brokers, gameid);
 		Place p = helper.getPlace(b, placeid);
 
@@ -190,14 +201,16 @@ public class BrokerService {
 		}
 
 		throw new PlaceNotHasAnOwnerException(Error.NO_OWNER.getMsg());
-
 	}
 
 	public JSONEstates getPlaces(String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		Broker b = helper.getBroker(this.brokers, gameid);
 		JSONEstates estates = new JSONEstates();
+		
 		b.getPlaces().forEach(p -> estates.getEstates().add(p.getUri()));
+		
 		return estates;
 	}
 
@@ -228,6 +241,7 @@ public class BrokerService {
 					place.setOwner(player);
 					event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(), reason, path,
 							playerUri);
+					
 				} catch (Exception e) {
 
 					// Temp
@@ -361,7 +375,6 @@ public class BrokerService {
 						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 					}
 				}
-
 			} else {
 				event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), EventTypes.CANNOT_DELETE_HYPO.getType(),
 						reason, path, playerUri);

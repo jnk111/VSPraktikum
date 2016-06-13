@@ -69,8 +69,8 @@ public class BoardService {
 	 */
 	public BoardService() {
 
-		boards = new HashMap<>();
-		throwMap = new HashMap<>();
+		this.boards = new HashMap<>();
+		this.throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
 		this.helper = new BoardHelper(null);
 	}
@@ -102,12 +102,14 @@ public class BoardService {
 	public synchronized void createNewBoard(JSONGameURI game, String host)
 			throws InvalidInputException, ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
+		
 		String gameId = helper.getID(game.getURI());
 		String boardUri = "/boards/" + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
 		this.services = ServiceAllocator.initServices(host, gameId);
 		helper.setServices(this.services);
+		
 		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
 	}
 
@@ -122,6 +124,7 @@ public class BoardService {
 	 */
 	public JSONBoard getBoardForGame(String gameid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		return b.convert();
 	}
@@ -171,8 +174,10 @@ public class BoardService {
 	 */
 	public JSONPawnList getPawnsOnBoard(String gameid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		JSONPawnList pl = new JSONPawnList();
+		
 		for (Field f : b.getFields()) {
 			for (Pawn p : f.getPawns()) {
 				pl.addPawnURI(p.getPawnUri());
@@ -195,8 +200,10 @@ public class BoardService {
 	public JSONPawn getSpecificPawn(String gameid, String pawnid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		Pawn p = helper.getPawn(b, pawnid);
+		
 		return p.convert();
 	}
 
@@ -214,6 +221,7 @@ public class BoardService {
 	 */
 	public JSONThrowsList getDiceThrows(String gameid, String pawnid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		for (JSONThrowsURI uri : throwMap.keySet()) {
 			if (uri.getRollUri().contains(pawnid)) {
 				return throwMap.get(uri);
@@ -236,9 +244,11 @@ public class BoardService {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		Board b = helper.getBoard(this.boards, gameid);
 		List<String> allPlaceURIs = new ArrayList<>();
+		
 		for (Field f : b.getFields()) {
 			allPlaceURIs.add(f.getPlace().getPlaceUri());
 		}
+		
 		return allPlaceURIs;
 	}
 
@@ -259,8 +269,10 @@ public class BoardService {
 	public JSONPlace getSpecificPlace(String gameid, String placeid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		Place p = helper.getPlace(b.getFields(), placeid);
+		
 		return p.convert();
 	}
 
@@ -283,6 +295,7 @@ public class BoardService {
 			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		Pawn p = helper.getPawn(b, pawnid);
 		int oldPos = p.getPosition(); // alte Position der Figur
@@ -302,11 +315,14 @@ public class BoardService {
 		b.updatePositions(oldPos, newPos); // markiere, dass auf Position
 																				// 'newPos' Figuren stehen
 		p.updatePlaceUri(newPos); // Update Placeuri to the new Place
+		
 		String reas = p.getPlayerUri() + " has moved the pawn: " + p.getPawnUri() + " to: " + p.getPlaceUri();
 		String resource = p.getRollsUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVE_PAWN.getType(), EventTypes.MOVE_PAWN.getType(), reas, resource, p.getPlayerUri());
+		
 		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
+		
 		Place place = helper.getPlace(b.getFields(), String.valueOf(newPos));
 
 		if (place.isPlace() && !place.isJail()) {
@@ -331,20 +347,22 @@ public class BoardService {
 		String reason = "Player with id: " + toId + " receives money from the bank by running over Go";
 		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_OVER_GO.getType(), EventTypes.MOVED_OVER_GO.getType(), reason, p.getRollsUri(), p.getPlayerUri());
+	
 		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
 
 	private void moveToJail(String gameid, Board board, Pawn pawn, int newPos) {
-		
 		int jailPos = Place.InJail.ordinal();
 		board.getFields().get(newPos).removePawn(pawn);
 		pawn.setPosition(jailPos);
 		board.getFields().get(jailPos).addPawn(pawn);
 		board.updatePositions(newPos, jailPos);
 		pawn.updatePlaceUri(jailPos);
+	
 		String reas = pawn.getPlayerUri() + " has moved to jail: " + pawn.getPawnUri() + " to: " + pawn.getPlaceUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(), reas, pawn.getRollsUri(), pawn.getPlayerUri());
+	
 		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
@@ -382,6 +400,7 @@ public class BoardService {
 		
 		String reason = "Player with id: " + toId + " got a community card and receives money from the bank";
 		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		
 		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 		
@@ -402,8 +421,10 @@ public class BoardService {
 			String bankUri = this.services.getBank() + "/" + gameid + "/transfer/from/" + fromId + "/to/" + toId + "/" + CommCard.PLAYER_MONEY;			
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 		}
+		
 		String reason = "Player with id: " + toId + " got a community card and receives money from all other players";
 		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), reason, pawn.getRollsUri(), pawn.getPlayerUri());
+		
 		helper.broadCastEvent(event, this.services.getUsers());
 		helper.postEvent(event, this.services.getEvents());
 	}
@@ -434,7 +455,9 @@ public class BoardService {
 		Board board = helper.getBoard(this.boards, gameid);
 		Pawn pawn = helper.getPawn(board, pawnid);
 		Dice roll = rollDice(pawn, gameid); // Zum Testen Local
+		
 		movePawn(gameid, pawnid, roll.getNumber());
+		
 		helper.addThrow(this.throwMap, pawn, roll);
 
 		return helper.receiveEventList(this.services.getEvents(), pawn.getPlayerUri(), gameid, new Date());
@@ -455,7 +478,9 @@ public class BoardService {
 		String json = HttpService.get(this.services.getDice() + "?" + "player=" + pawn.getPlayerUri() + "&game=" + gameid,
 				HttpURLConnection.HTTP_OK);
 		Dice roll = GSON.fromJson(json, Dice.class);
+		
 		validator.checkRollValueIsValid(roll);
+		
 		return roll;
 	}
 
@@ -472,8 +497,10 @@ public class BoardService {
 	public synchronized void deletePawnFromBoard(String gameid, String pawnid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		Pawn p = helper.getPawn(b, pawnid);
+		
 		b.removePawn(p);
 	}
 
@@ -487,7 +514,9 @@ public class BoardService {
 	 */
 	public synchronized void deleteBoard(String gameid) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
+		
 		boards.remove(b);
 	}
 
@@ -507,8 +536,10 @@ public class BoardService {
 	public synchronized void updateAPlaceOnTheBoard(JSONPlace place, String pathinfo, String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
+		
 		Board key = helper.getBoard(this.boards, gameid);
 		Place p = helper.getPlace(key.getFields(), helper.getID(pathinfo));
+		
 		p.setBrokerUri(place.getBroker());
 		p.setName(place.getName());
 	}
@@ -526,11 +557,11 @@ public class BoardService {
 	public synchronized void placeABoard(String gameid, JSONBoard board) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(board, Error.JSON_BOARD.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 
 		if (!b.hasFields()) {
 			initNewBoard(b, gameid);
-
 		} else {
 			updateBoard(b, board, gameid);
 		}
@@ -543,12 +574,13 @@ public class BoardService {
 			Place p = Place.values()[i];
 			String placeUri = "/boards/" + gameid + "/places/" + i;
 			String brokerUri = "/broker/" + gameid + "/places/" + i;
+			
 			p.setBrokerUri(brokerUri);
 			p.setPlaceUri(placeUri);
+			
 			Field f = new Field(p);
 			fields.add(f);
-			HttpService.put(this.services.getBroker().replace("/broker", "") + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
-			
+			HttpService.put(this.services.getBrokerHost() + p.getBrokerUri(), p.convertToBrokerPlace(), HttpURLConnection.HTTP_OK);
 		}
 
 		key.setFields(fields);
@@ -577,7 +609,7 @@ public class BoardService {
 			} catch (NumberFormatException e) {
 				throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
 			}
-			;
+			
 
 			Place p = Place.values()[placeNum];
 			Field f = helper.getField(key, p.getPlaceUri());
@@ -614,6 +646,7 @@ public class BoardService {
 	public synchronized void placeAPawn(String gameid, JSONPawn pawn) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(pawn, Error.JSON_PAWN.getMsg());
+		
 		Board b = helper.getBoard(this.boards, gameid);
 		Pawn p = helper.getPawn(b, pawn.getId());
 

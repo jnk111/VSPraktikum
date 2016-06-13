@@ -571,10 +571,12 @@ public class GamesService
 
                 HttpService.post( game.getServiceList().getUsers(), userServiceDTO );
 
-                createPawn( newPlayer, game );
-
                 game.getPlayers().put( mapKey, newPlayer );
 
+                createPawn( newPlayer, game );
+                
+                game.getPlayers().put( mapKey, newPlayer );
+                
                 resp.status( 201 ); // created
             }
             else

@@ -541,7 +541,7 @@ public class GamesService
 
         if ( !game.isRunning() )
         {
-            String clientUri = req.ip() + ":" + req.port();
+            String clientUri = "http://" + req.ip() + ":" + req.port();
 
             Player newPlayer = new Gson().fromJson( req.body(), Player.class );   // Erstellt Playerobjekt mit Namen
             String mapKey = newPlayer.getUserName().toLowerCase();

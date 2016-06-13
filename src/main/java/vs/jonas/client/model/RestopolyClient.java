@@ -206,6 +206,8 @@ public class RestopolyClient {
 			String newUri = gameServiceUri.replaceAll("/games", "");
 			System.out.println("Request an:" + newUri + playerID.getId());
 			JsonObject playerRessource = get(newUri + playerID.getId());
+			
+			System.out.println("############### PlayerRessource: " + playerRessource.toString());
 			PlayerResponse player = gson.fromJson(playerRessource, PlayerResponse.class);
 //			System.out.println("PlayerResponse: " + player);
 

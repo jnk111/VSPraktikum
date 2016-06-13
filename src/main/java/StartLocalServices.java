@@ -8,9 +8,11 @@ import javax.naming.ServiceUnavailableException;
 import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
+import vs.jan.api.decksservice.DecksAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
+import vs.jan.services.decks.DecksService;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;
@@ -75,6 +77,9 @@ public class StartLocalServices {
         /*  Initializes UserService */
         new UserServiceRESTApi();
 
+        /*	Initializes DeckService */
+        new DecksAPI();
+        
         /*  Initializes BoardService */
         new BoardRESTApi();
 
@@ -88,7 +93,7 @@ public class StartLocalServices {
         HttpService.post(gamesUri, g, HttpURLConnection.HTTP_CREATED);
         System.out.println(HttpService.get(gamesUri, 200));
 
-        setupUser(boardID,gamesUri);
+//        setupUser(boardID,gamesUri);
         System.out.println(HttpService.get(gamesUri, 200));
 
     }

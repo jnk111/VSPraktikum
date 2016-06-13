@@ -9,7 +9,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import com.google.gson.Gson;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -22,6 +24,7 @@ import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
+import vs.jonas.client.utils.EventTypes;
 import vs.jonas.client.view.GameUI;
 import vs.jonas.services.json.EventData;
 
@@ -80,7 +83,6 @@ public class GameController {
 		Spark.post("", "application/json",(req,res) -> {
 			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
 			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
-			ui.getBtnSpielzugBeenden().setEnabled(true);
 			ladeSpielerInformationen();
 			return "";
 		});
@@ -101,9 +103,9 @@ public class GameController {
 			public void run() {
 				try {
 					ui = new GameUI();
-					registriereActionListener();
 					updateGame();
-					ui.getUserLabel().setText(user.getName());
+					ui.getUsernameLbl().setText(user.getName());				
+					registriereActionListener();
 					ui.showUI();
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
@@ -116,15 +118,30 @@ public class GameController {
 	/**
 	 * Registriert die Listener an der UI
 	 */
-	private void registriereActionListener() {
+	private void registriereActionListener() {		
+		ui.getAktionAusfuehrenBtn().addActionListener(new ActionListener() {
+			
+			int i=0;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> aktionen = ui.getAktionen();
+				switch(aktionen.getSelectedItem().toString()){
+				case "Wuerfeln": rollDice();break;
+				case "Kaufen": buy(); break;
+				case "Verkaufen": sell(); break;
+				case "Ereigniskarte spielen": playChanceCard(); break;
+				case "Zug beenden": finishRound();break;
+				}
+			}
+		});
 		
-		ui.getBtnStarten().addActionListener(new ActionListener() {
+		
+		ui.getSpielStartenMenuItem().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ui.getBtnStarten().setEnabled(false);
-					ui.getBtnSpielzugBeenden().setEnabled(true);
+					ui.getSpielStartenMenuItem().setEnabled(false);
 					client.setReady(gameID, user);
 					if(client.allPlayersReady(gameID)){
 						client.startGame(gameID);
@@ -137,48 +154,55 @@ public class GameController {
 				}
 			}
 		});
-		
-		ui.getBtnWrfeln().addActionListener(new ActionListener() {
-			
-			int i=0;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					int number = client.rollDice(gameID, user);
-					JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
-//					updateGame();
-					
-				} catch (Exception ex) {
-					// TODO Auto-generated catch block
-					if(i<3){
-						JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
-						i++;
-					} else{
-						JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");
-						ex.printStackTrace();
-					}
-				} 
-			}
-		});
-		
-		ui.getBtnSpielzugBeenden().addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					ui.getBtnSpielzugBeenden().setEnabled(false);
-					client.setReady(gameID, user);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
 	}
 	
 	private void updateGame() throws Exception{
 		ladeSpielerInformationen();
 		ladeGameFieldInformationen();
+	}
+	
+	private void rollDice() {
+		int i= 0;
+		try {
+			int number = client.rollDice(gameID, user);
+			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
+//			updateGame();
+			
+		} catch (Exception ex) {
+			// TODO Auto-generated catch block
+			if(i<3){
+				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
+				i++;
+			} else{
+				JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");
+				ex.printStackTrace();
+			}
+		} 
+	}
+	
+	private void buy(){
+		//TODO
+		System.err.println("Dummy: Buy");
+	}
+	
+	private void sell(){
+		//TODO
+		System.err.println("Dummy: Sell");
+	}
+	
+	private void playChanceCard(){
+		//TODO
+		System.err.println("Dummy: PlayChanceCard");
+	}
+	
+	private void finishRound(){
+		//TODO 
+		try {
+			client.setReady(gameID, user);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -203,11 +227,23 @@ public class GameController {
 		
 	}
 
+	/*
+	 * Handles the incoming events
+	 */
 	private void handleIncomingEvent(EventData event) {
-//		if(event.getType().equals(EventTypes.MOVE_PAWN)){
+		//TODO
+		JTextArea eventsConsole = ui.getEventsConsole();
+		
+		if(event.getType().equals(EventTypes.MOVE_PAWN)){
 //			movePawn(event);
-//		}
-		JOptionPane.showMessageDialog(null, event.getReason());
+//			JOptionPane.showMessageDialog(null, event.getReason());
+			
+		} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL)){
+//			JOptionPane.showMessageDialog(null, event.getPlayer() + " has moved to Jail.");
+		} else{
+//			JOptionPane.showMessageDialog(null, event.getReason());
+		}
+		eventsConsole.append("\n" + event.getReason());
 		try {
 			updateGame();
 		} catch (Exception e) {
@@ -216,13 +252,4 @@ public class GameController {
 		}
 	}
 
-//	private void movePawn(EventData event) {
-//		JOptionPane.showMessageDialog(null, event.getReason());
-//		try {
-//			updateGame();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 }

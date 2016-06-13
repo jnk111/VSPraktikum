@@ -210,7 +210,6 @@ public class BrokerService {
 		JSONEstates estates = new JSONEstates();
 		
 		b.getPlaces().forEach(p -> estates.getEstates().add(p.getUri()));
-		
 		return estates;
 	}
 
@@ -241,7 +240,6 @@ public class BrokerService {
 					place.setOwner(player);
 					event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(), reason, path,
 							playerUri);
-					
 				} catch (Exception e) {
 
 					// Temp
@@ -375,6 +373,7 @@ public class BrokerService {
 						throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 					}
 				}
+
 			} else {
 				event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), EventTypes.CANNOT_DELETE_HYPO.getType(),
 						reason, path, playerUri);

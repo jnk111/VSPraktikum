@@ -609,7 +609,7 @@ public class BoardService {
 			} catch (NumberFormatException e) {
 				throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
 			}
-			
+			;
 
 			Place p = Place.values()[placeNum];
 			Field f = helper.getField(key, p.getPlaceUri());
@@ -646,7 +646,6 @@ public class BoardService {
 	public synchronized void placeAPawn(String gameid, JSONPawn pawn) throws ResourceNotFoundException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkJsonIsValid(pawn, Error.JSON_PAWN.getMsg());
-		
 		Board b = helper.getBoard(this.boards, gameid);
 		Pawn p = helper.getPawn(b, pawn.getId());
 

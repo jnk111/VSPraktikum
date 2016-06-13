@@ -194,10 +194,10 @@ public class RunBoardExample {
 		System.out.println("Create Bank Accounts:");
 		System.out.println("-------------------------------------------------------------------------------------------");
 		
-		createBankAccount(BOARD_ID, gamePlayerUri, p1);
-		createBankAccount(BOARD_ID, gamePlayerUri, p2);
-		createBankAccount(BOARD_ID, gamePlayerUri, p3);
-		createBankAccount(BOARD_ID, gamePlayerUri, p4);
+//		createBankAccount(BOARD_ID, gamePlayerUri, p1);
+//		createBankAccount(BOARD_ID, gamePlayerUri, p2);
+//		createBankAccount(BOARD_ID, gamePlayerUri, p3);
+//		createBankAccount(BOARD_ID, gamePlayerUri, p4);
 		
 		System.out.println("Init Start balance:");
 		System.out.println("-------------------------------------------------------------------------------------------");

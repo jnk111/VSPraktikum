@@ -15,9 +15,10 @@ public class Player
     private boolean ready;
     private String pawn;
     private String account;
+    private String uri;
     
 
-    public Player( String user, String id, String pawn, String account, boolean ready )
+    public Player( String user, String id, String pawn, String account, String uri, boolean ready )
     {
         super();
         this.user = user;
@@ -25,6 +26,7 @@ public class Player
         this.pawn = pawn;
         this.account = account;
         this.ready = ready;
+        this.uri = uri;
     }
 
     public Player()
@@ -116,5 +118,13 @@ public class Player
 
         return result;
     }
+
+		public String getUri() {
+			return uri;
+		}
+
+		public void setUri(String uri) {
+			this.uri = uri;
+		}
 
 }

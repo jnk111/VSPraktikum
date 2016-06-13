@@ -521,7 +521,7 @@ public class GamesService
 
         if ( !game.isRunning() )
         {
-            String clientUri = "http://" + req.ip() + ":" + req.port();
+            //String clientUri = "http://" + req.ip() + ":" + req.port();
 
             Player newPlayer = new Gson().fromJson( req.body(), Player.class );   // Erstellt Playerobjekt mit Namen
             String mapKey = newPlayer.getUserName().toLowerCase();
@@ -544,7 +544,7 @@ public class GamesService
 
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
                 userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/users/", "" ) );
-                userServiceDTO.setUri( clientUri + "/client/" + userServiceDTO.getName() + "/events");
+                userServiceDTO.setUri(newPlayer.getUri());
 
                 if ( DEBUG_MODE )
                 {

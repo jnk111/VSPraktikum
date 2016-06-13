@@ -9,13 +9,15 @@ public class Player implements Validable{
 	private boolean ready;
 	private String pawn;
 	private String account;
+	private String uri;
 
-	public Player(String user, String id, String pawn, String account, boolean ready) {
+	public Player(String user, String id, String pawn, String account, String uri, boolean ready) {
 		this.user = user;
 		this.id = id;
 		this.pawn = pawn;
 		this.account = account;
 		this.ready = ready;
+		this.setUri(uri);
 	}
 
 	public Player() {
@@ -120,6 +122,14 @@ public class Player implements Validable{
 		
 		// Temp -> TODO: check account
 		return getId() != null && getUser() != null && getPawn() != null;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 }

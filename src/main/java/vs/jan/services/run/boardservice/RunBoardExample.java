@@ -179,9 +179,13 @@ public class RunBoardExample {
 		Player p3 = new Player();
 		Player p4 = new Player();
 		p1.setUser("mario");
+		p1.setUri("uri");
 		p2.setUser("wario");
+		p2.setUri("uri");
 		p3.setUser("yoshi");
+		p3.setUri("uri");
 		p4.setUser("donkeykong");
+		p4.setUri("uri");
 		String gamePlayerUri = GAME_URI + "/" + BOARD_ID + "/players";
 		System.out.println("Create Some Users on Game: " + BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");

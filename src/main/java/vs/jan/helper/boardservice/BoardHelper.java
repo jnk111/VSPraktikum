@@ -9,7 +9,6 @@ import vs.jan.helper.Helper;
 import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.json.boardservice.JSONThrowsURI;
-import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Board;
 import vs.jan.model.boardservice.Field;
 import vs.jan.model.boardservice.Pawn;
@@ -19,10 +18,6 @@ import vs.jan.tools.HttpService;
 import vs.jonas.services.model.Dice;
 
 public class BoardHelper extends Helper {
-
-	public BoardHelper(ServiceList serviceList){
-		this.services = serviceList;
-	}
 
 	/**
 	 * Liefert das Board zu einer Gameid, muss spaeter erweitert werden, falls
@@ -34,7 +29,7 @@ public class BoardHelper extends Helper {
 	 *          Die Gameid des Boards
 	 * @return Board Das Board zu der Gameid
 	 */
-	public Board getBoard(Map<Board, JSONGameURI> boards, String gameid) {
+	public static Board getBoard(Map<Board, JSONGameURI> boards, String gameid) {
 
 		for (Board b : boards.keySet()) {
 			JSONGameURI uri = boards.get(b);
@@ -55,7 +50,7 @@ public class BoardHelper extends Helper {
 	 *          The PlayerUri
 	 * @return Pawn-Uri
 	 */
-	public String getPawnUri(Board board, String playerUri) {
+	public static String getPawnUri(Board board, String playerUri) {
 
 		String[] uri = playerUri.split("/");
 
@@ -70,7 +65,7 @@ public class BoardHelper extends Helper {
 		return board.getUri() + "/pawns/" + id;
 	}
 
-	private boolean hasSamePawnID(Field f, String pawnUri) {
+	private static boolean hasSamePawnID(Field f, String pawnUri) {
 
 		for (Pawn p : f.getPawns()) {
 			if (p.getPawnUri().contains(pawnUri)) {
@@ -89,7 +84,7 @@ public class BoardHelper extends Helper {
 	 *          Die ID der Figur
 	 * @return Die angeforderte Figur
 	 */
-	public Pawn getPawn(Board board, String pawnid) {
+	public static Pawn getPawn(Board board, String pawnid) {
 
 		for (Field f : board.getFields()) {
 			for (Pawn p : f.getPawns()) {
@@ -101,7 +96,7 @@ public class BoardHelper extends Helper {
 		throw new ResourceNotFoundException(Error.PAWN_NOT_FOUND.getMsg());
 	}
 
-	public Place getPlace(List<Field> fields, String placeid) {
+	public static Place getPlace(List<Field> fields, String placeid) {
 
 		for (Field f : fields) {
 			Place p = f.getPlace();
@@ -114,7 +109,7 @@ public class BoardHelper extends Helper {
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-	public Field getField(Board key, String placeUri) {
+	public static Field getField(Board key, String placeUri) {
 
 		for (Field f : key.getFields()) {
 			Place p = f.getPlace();
@@ -125,7 +120,7 @@ public class BoardHelper extends Helper {
 		throw new ResourceNotFoundException(Error.PLACE_NOT_FOUND.getMsg());
 	}
 
-	public void addThrow(Map<JSONThrowsURI, JSONThrowsList> throwMap, Pawn pawn, Dice roll) {
+	public static void addThrow(Map<JSONThrowsURI, JSONThrowsList> throwMap, Pawn pawn, Dice roll) {
 
 		for (JSONThrowsURI uri : throwMap.keySet()) {
 			if (uri.getRollUri().contains(getID(pawn.getPawnUri()))) {

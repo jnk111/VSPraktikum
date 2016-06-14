@@ -1,32 +1,39 @@
 package vs.jan.transaction;
 
+import vs.jan.json.brokerservice.JSONAccount;
+import vs.jan.model.boardservice.Player;
+import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.TransactionFailedException;
 
 public abstract class Transaction {
 
-	protected String from;
-	protected String to;
+	protected Player from;
+	protected Player to;
 	protected int amount;
 	protected Transaction history;
 	protected String gameId;
-
 	protected String bankUri;
+	
+	protected Place place;
+	protected JSONAccount fromAcc;
+	protected JSONAccount toAcc;
 
 	public abstract void execute() throws TransactionFailedException;
+	public abstract void rollBack();
 
-	public String getFrom() {
+	public Player getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from) {
+	public void setFrom(Player from) {
 		this.from = from;
 	}
 
-	public String getTo() {
+	public Player getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public void setTo(Player to) {
 		this.to = to;
 	}
 
@@ -61,4 +68,30 @@ public abstract class Transaction {
 	public void setBankUri(String bankUri) {
 		this.bankUri = bankUri;
 	}
+	
+	public Place getPlace() {
+		return place;
+	}
+	
+	public void setPlace(Place place) {
+		this.place = place;
+	}
+	
+	public JSONAccount getFromAcc() {
+		return fromAcc;
+	}
+	
+	public void setFromAcc(JSONAccount fromAcc) {
+		this.fromAcc = fromAcc;
+	}
+	
+	public JSONAccount getToAcc() {
+		return toAcc;
+	}
+	
+	public void setToAcc(JSONAccount toAcc) {
+		this.toAcc = toAcc;
+	}
+	
+	
 }

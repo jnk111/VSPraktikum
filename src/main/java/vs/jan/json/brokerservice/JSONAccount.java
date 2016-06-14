@@ -6,17 +6,24 @@ public class JSONAccount {
 	private int saldo;
 	
 	public JSONAccount(){
-		this(null);
+		
 	}
+	
 	
 	public JSONAccount(String player){
 		this(player, 0);
 	}
+	
+	public JSONAccount(JSONAccount acc) {
+		this(acc.getPlayer(), acc.getSaldo());
+	}
+	
 	public JSONAccount(String player, int saldo) {
 		super();
 		this.player = player;
 		this.saldo = saldo;
 	}
+
 
 	@Override
 	public int hashCode() {

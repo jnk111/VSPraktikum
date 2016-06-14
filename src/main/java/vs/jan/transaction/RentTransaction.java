@@ -12,29 +12,30 @@ import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.tools.HttpService;
 
-public class BankSellTransaction extends Transaction {
-
-
-	public BankSellTransaction(Player to, int amount, String bankUri, String gameId, Place place) {
-
+public class RentTransaction extends Transaction {
+	
+	public RentTransaction(Player from, Player to, int amount, String bankUri, String gameId, Place place) {
+		super();
+		this.from = from;
 		this.to = to;
 		this.amount = amount;
-		this.place = place;
 		this.bankUri = bankUri;
 		this.gameId = gameId;
 		this.place = place;
-		this.toAcc = BrokerHelper.getAccount(to.getAccount());
-		this.history = new BankSellTransaction(this);
+		this.fromAcc = BrokerHelper.getAccount(this.from.getAccount());
+		this.toAcc = BrokerHelper.getAccount(this.to.getAccount());
+		this.history = new RentTransaction(this);
 	}
 
-	public BankSellTransaction(BankSellTransaction trans) {
-
-		this.to = trans.getTo();
+	public RentTransaction(RentTransaction trans) {
+		super();
+		this.from = new Player(trans.getFrom());
+		this.to = new Player(trans.getTo());
 		this.amount = trans.getAmount();
-		this.place = new Place(trans.getPlace());
 		this.bankUri = trans.getBankUri();
 		this.gameId = trans.getGameId();
 		this.place = new Place(trans.getPlace());
+		this.fromAcc = new JSONAccount(trans.getFromAcc());
 		this.toAcc = new JSONAccount(trans.getToAcc());
 	}
 
@@ -43,15 +44,20 @@ public class BankSellTransaction extends Transaction {
 
 		try {
 
+			String fromId = BrokerHelper.getID(this.fromAcc.getPlayer());
 			String toId = BrokerHelper.getID(this.toAcc.getPlayer());
-			String url = this.bankUri + "/" + this.gameId + "/transfer/to/" + toId + "/" + this.amount;
-			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
-			this.place.setHypo(true);
-			return;
-
+			
+			if(this.fromAcc.getSaldo() >= this.place.getRent().get(this.place.getLevel())) {
+				
+				String url = this.bankUri + "/" + this.gameId + "/transfer/from/" + fromId + "/to/" + toId + "/" + this.amount;
+				HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
+				return;
+			} 
 		} catch (Exception e) {
 			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 		}
+		
+		throw new TransactionFailedException(Error.TRANS_FAIL_NEGATIVE_SALDO.getMsg());
 	}
 
 	public Place getPlace() {
@@ -62,17 +68,16 @@ public class BankSellTransaction extends Transaction {
 		this.place = place;
 	}
 
-	@Override
 	public void rollBack() {
-
+		
+		JSONAccount from = Helper.getAccount(this.from.getAccount());
 		JSONAccount to = Helper.getAccount(this.to.getAccount());
-		BankSellTransaction history = (BankSellTransaction) this.history;
-
-		if (to.getSaldo() != history.getToAcc().getSaldo()) {
-
-			this.place.setHypo(false);
+		RentTransaction history = (RentTransaction) this.history;
+		
+		if(from.getSaldo() != history.getFromAcc().getSaldo()
+				|| to.getSaldo() != history.getToAcc().getSaldo()) {
+			
 			throw new TransactionRollBackException(Error.TRANS_FAIL.getMsg());
-		}
-
+		}		
 	}
 }

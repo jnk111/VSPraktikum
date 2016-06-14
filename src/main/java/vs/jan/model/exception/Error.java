@@ -16,7 +16,8 @@ public enum Error {
 																									"place does not have an owner yet"), ROLL_BACK_FAILED(
 																											"roll back failed"), JSON_PLAYER(
 																													"player input is not valid"), DECKS_NOT_FOUND(
-																															"decks not found");
+																															"decks not found"), TRANS_FAIL_NEGATIVE_SALDO(
+																																	"transaction failed, not enough credits");
 
 	private String msg;
 

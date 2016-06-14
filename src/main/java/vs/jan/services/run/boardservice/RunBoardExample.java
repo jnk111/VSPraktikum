@@ -199,12 +199,12 @@ public class RunBoardExample {
 		System.out.println("-------------------------------------------------------------------------------------------");
 		
 		
-		System.out.println("Init Start balance:");
-		System.out.println("-------------------------------------------------------------------------------------------");
-		initStartBalances(gamePlayerUri, p1);
-		initStartBalances(gamePlayerUri, p2);
-		initStartBalances(gamePlayerUri, p3);
-		initStartBalances(gamePlayerUri, p4);
+//		System.out.println("Init Start balance:");
+//		System.out.println("-------------------------------------------------------------------------------------------");
+//		initStartBalances(gamePlayerUri, p1);
+//		initStartBalances(gamePlayerUri, p2);
+//		initStartBalances(gamePlayerUri, p3);
+//		initStartBalances(gamePlayerUri, p4);
 		
 		System.out.println("Set Users ready on Game: " + BOARD_ID);
 		System.out.println("-------------------------------------------------------------------------------------------");

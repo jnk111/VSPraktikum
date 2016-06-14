@@ -1,7 +1,6 @@
 package vs.jan.helper;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,15 +18,15 @@ import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
 
 public abstract class Helper {
-	
-	protected final Gson GSON = new Gson();
-	protected ServiceList services;
 
-	public String getID(String uri) {
-		String [] u = uri.split("/");
+	protected final static Gson GSON = new Gson();
+	protected static ServiceList services;
+
+	public static String getID(String uri) {
+		String[] u = uri.split("/");
 		return u[u.length - 1];
 	}
-	
+
 	/**
 	 * Ermittelt den Spieler zu der Figur vom Game-Service
 	 * 
@@ -36,19 +35,18 @@ public abstract class Helper {
 	 * @param gameid
 	 *          Die Gameid zum Spiel
 	 * @return User Der Spieler der wuerfeln moechte
-	 * @throws ResponseCodeException 
+	 * @throws ResponseCodeException
 	 * @throws ResourceNotFoundException
 	 *           Spieler wurde nicht gefunden
 	 * @throws ConnectionRefusedException
 	 *           Service nicht erreichbar
 	 */
-	public Player getPlayer(String playerUri, String gameid) 
-			throws ResponseCodeException {
+	public static Player getPlayer(String playerUri, String gameid) throws ResponseCodeException {
 		String json = HttpService.get(playerUri, HttpURLConnection.HTTP_OK);
 		Player currPlayer = GSON.fromJson(json, Player.class);
 		return currPlayer;
 	}
-	
+
 	/**
 	 * Postet ein Event, das fuer eine Figur ausgeloest wurde z. B.: Figur nach
 	 * einem Wuerfelwurd zu einer neuen Position bewegen
@@ -64,11 +62,14 @@ public abstract class Helper {
 	 * @param neededServices2
 	 * @throws ResponseCodeException
 	 */
-	public void postEvent(JSONEvent event, String uri) throws ResponseCodeException {
+	public static void postEvent(JSONEvent event, String uri) throws ResponseCodeException {
 
-		HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+		if (event != null) {
+			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+		}
+
 	}
-	
+
 	/**
 	 * Holt alle Events des Spielers seit dem letzten Wurf
 	 * 
@@ -83,44 +84,39 @@ public abstract class Helper {
 	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
 	 * 
 	 */
-	public JSONEventList receiveEventList(String eventServiceUri, String playeruri, String gameid, Date date) {
+	public static JSONEventList receiveEventList(String eventServiceUri, String playeruri, String gameid, Date date) {
 		//
 		String url = eventServiceUri + "?game=" + gameid + "&player=" + playeruri;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
 		return list;
 	}
-	
-	public JSONAccount getAccount(String accountUri) {
+
+	public static JSONAccount getAccount(String accountUri) {
 		String json = HttpService.get(accountUri, HttpURLConnection.HTTP_OK);
 		return GSON.fromJson(json, JSONAccount.class);
 	}
-	
-	public User getUser(String uri) {
-		
+
+	public static User getUser(String uri) {
+
 		String json = HttpService.get(uri, HttpURLConnection.HTTP_OK);
 		return GSON.fromJson(json, User.class);
 	}
-	
-	public void broadCastEvent(JSONEvent event, String userServiceUri) {
 
-		String json = HttpService.get(userServiceUri, HttpURLConnection.HTTP_OK);
-		
-		@SuppressWarnings("unchecked")
-		List<String> uris = GSON.fromJson(json, List.class);
-		
-		for(String uri: uris) {
-			String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
-			User user = GSON.fromJson(json2, User.class);
-			HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
+	public static void broadCastEvent(JSONEvent event, String userServiceUri) {
+
+		if (event != null) {
+
+			String json = HttpService.get(userServiceUri, HttpURLConnection.HTTP_OK);
+
+			@SuppressWarnings("unchecked")
+			List<String> uris = GSON.fromJson(json, List.class);
+
+			for (String uri : uris) {
+				String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
+				User user = GSON.fromJson(json2, User.class);
+				// HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
+			}
 		}
-		
-	}
-	
-	public ServiceList getServices() {
-		return services;
-	}
-	public void setServices(ServiceList services) {
-		this.services = services;
 	}
 }

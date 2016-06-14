@@ -19,6 +19,10 @@ public class Player implements Validable{
 		this.ready = ready;
 		this.setUri(uri);
 	}
+	
+	public Player(Player from) {
+		this(from.getUser(), from.getId(), from.getPawn(), from.getAccount(), from.getUri(), from.isReady());
+	}
 
 	public Player() {
 		this.ready = false;

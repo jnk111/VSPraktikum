@@ -113,12 +113,9 @@ public abstract class Helper {
 		for(String uri: uris) {
 			String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
 			User user = GSON.fromJson(json2, User.class);
-			clientUris.add(user.getUri());
+			//HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
 		}
 		
-		for(String uri: clientUris) {
-			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
-		}
 	}
 	
 	public ServiceList getServices() {

@@ -1,9 +1,7 @@
 package vs.jan.services.broker;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import vs.jan.exception.ResponseCodeException;
@@ -34,30 +32,35 @@ import vs.jan.validator.Validator;
 
 public class BrokerService {
 
+	private final String BROKER_PREFIX = "/broker/";
+	private final String PLACES_SUFFIX = "/places";
+	private final String PLACES_INFIX = PLACES_SUFFIX + "/";
+	private final String VISIT_SUFFIX = "/visit";
+	private final String HYPO_CREDIT_SUFFIX = "/hypothecarycredit";
+	private final double HYPO_INTEREST = 0.10;
+
 	private Validator validator;
 	private Map<Broker, JSONGameURI> brokers;
 	private ServiceList services;
 	private BrokerHelper helper;
-	private List<String> users;
 
 	public BrokerService() {
 		this.validator = new BrokerValidator();
 		this.helper = new BrokerHelper(null);
 		brokers = new HashMap<>();
-		setUsers(new ArrayList<>());
 	};
 
 	public void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
-		
-		String baseUri = "/broker/";
+
+		String baseUri = BROKER_PREFIX;
 		String gameid = helper.getID(game.getURI());
 		String id = baseUri + gameid;
 		Broker b = new Broker(id);
-		
+
 		b.setGameUri(game.getURI());
-		b.setEstateUri(id + "/places");
-		
+		b.setEstateUri(id + PLACES_SUFFIX);
+
 		brokers.put(b, game);
 		this.services = ServiceAllocator.initServices(host, helper.getID(game.getURI()));
 		helper.setServices(this.services);
@@ -65,11 +68,11 @@ public class BrokerService {
 
 	public JSONBrokerList getBrokers() {
 		JSONBrokerList list = new JSONBrokerList();
-		
+
 		for (Broker b : brokers.keySet()) {
 			list.getBroker().add(b.getUri());
 		}
-		
+
 		return list;
 	}
 
@@ -87,13 +90,12 @@ public class BrokerService {
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
 
 		Broker broker = helper.getBroker(this.brokers, gameid);
-		String id = "/brokers/" + gameid + "/places/" + placeid;
-		String visitUri = id + "/visit";
-		String hypoCreditUri = id + "/hypothecarycredit";
+		String id = BROKER_PREFIX + gameid + PLACES_INFIX + placeid;
+		String visitUri = id + VISIT_SUFFIX;
+		String hypoCreditUri = id + HYPO_CREDIT_SUFFIX;
 		Place p = new Place(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri);
 		broker.addPlace(p);
 	}
-
 
 	public synchronized JSONEventList visitPlace(String gameid, String placeid, String pawnid, String playeruri,
 			String path) throws TransactionFailedException {
@@ -109,10 +111,10 @@ public class BrokerService {
 		String reason = "Player: " + player.getId() + " has visited the place: " + place.getUri();
 		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(), reason,
 				path, playeruri);
-		
+
 		helper.postEvent(event, this.services.getEvents());
 		helper.broadCastEvent(event, this.services.getUsers());
-		
+
 		Player owner = place.getOwner();
 		JSONAccount from = null;
 		JSONAccount to = null;
@@ -122,9 +124,8 @@ public class BrokerService {
 
 			try {
 				from = helper.getAccount(player.getAccount());
-				
-				to = helper
-						.getAccount(owner.getAccount());
+
+				to = helper.getAccount(owner.getAccount());
 				int amount = place.getRent().get(place.getLevel());
 
 				if (from.getSaldo() >= amount) {
@@ -144,11 +145,9 @@ public class BrokerService {
 							reason, path, playeruri);
 				}
 			} catch (Exception e) {
-				
-				JSONAccount f = helper
-						.getAccount(player.getAccount());
-				JSONAccount t = helper
-						.getAccount(owner.getAccount());
+
+				JSONAccount f = helper.getAccount(player.getAccount());
+				JSONAccount t = helper.getAccount(owner.getAccount());
 
 				if (f.getSaldo() != from.getSaldo() || t.getSaldo() != to.getSaldo()) {
 
@@ -169,7 +168,7 @@ public class BrokerService {
 
 	public JSONBroker getSpecificBroker(String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
-		
+
 		Broker b = helper.getBroker(this.brokers, gameid);
 		return b.convert();
 	}
@@ -177,17 +176,17 @@ public class BrokerService {
 	public JSONPlace getSpecificPlace(String gameid, String placeid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
-		
+
 		Broker b = helper.getBroker(this.brokers, gameid);
 		Place place = helper.getPlace(b, placeid);
-		
+
 		return place.convert();
 	}
 
 	public Player getOwner(String gameid, String placeid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
-		
+
 		Broker b = helper.getBroker(this.brokers, gameid);
 		Place p = helper.getPlace(b, placeid);
 
@@ -200,10 +199,10 @@ public class BrokerService {
 
 	public JSONEstates getPlaces(String gameid) {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
-		
+
 		Broker b = helper.getBroker(this.brokers, gameid);
 		JSONEstates estates = new JSONEstates();
-		
+
 		b.getPlaces().forEach(p -> estates.getEstates().add(p.getUri()));
 		return estates;
 	}
@@ -217,8 +216,7 @@ public class BrokerService {
 		Broker broker = helper.getBroker(this.brokers, gameid);
 		Player player = helper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
 
-		JSONAccount from = helper
-				.getAccount(player.getAccount());
+		JSONAccount from = helper.getAccount(player.getAccount());
 		Place place = helper.getPlace(broker, placeid);
 		BuyTransaction buy = null;
 		String reason = "Player: " + player.getId() + " wants to buy the place: " + place.getUri();
@@ -236,10 +234,9 @@ public class BrokerService {
 							playerUri);
 				} catch (Exception e) {
 
-					JSONAccount f = helper
-							.getAccount(player.getAccount());
+					JSONAccount f = helper.getAccount(player.getAccount());
 
-					if (f.getSaldo() == from.getSaldo()) {
+					if (f.getSaldo() != from.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 					} else {
 
@@ -277,8 +274,7 @@ public class BrokerService {
 
 		if (owner != null && owner.equals(player) && place.isPlace()) {
 
-			JSONAccount to = helper
-					.getAccount(player.getAccount());
+			JSONAccount to = helper.getAccount(player.getAccount());
 
 			BankSellTransaction sell = null;
 			int amountRent = (int) place.getPrice() / 2;
@@ -296,10 +292,9 @@ public class BrokerService {
 
 			} catch (Exception e) {
 
-				JSONAccount t = helper
-						.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(playerUri));
+				JSONAccount t = helper.getAccount(player.getAccount());
 
-				if (to.getSaldo() == t.getSaldo()) {
+				if (to.getSaldo() != t.getSaldo()) {
 					throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 				} else {
 					place.setHypo(false);
@@ -332,14 +327,13 @@ public class BrokerService {
 
 		if (credit != null && place.isPlace()) {
 
-			int amount = (int) (credit.getAmount() + (credit.getAmount() * 0.10));
+			int amount = (int) (credit.getAmount() + (credit.getAmount() * HYPO_INTEREST));
 
-			JSONAccount from = helper
-					.getAccount(player.getAccount());
+			JSONAccount from = helper.getAccount(player.getAccount());
 			String reason = "Player: " + player.getId() + " want to delete his hypothecary credit for: " + place.getUri();
 
 			if (from.getSaldo() >= amount) {
-				
+
 				try {
 					buyBack = new BuyTransaction(helper.getID(from.getPlayer()), amount, this.services.getBank(), gameid);
 					buyBack.execute();
@@ -351,10 +345,9 @@ public class BrokerService {
 
 				} catch (Exception e) {
 
-					JSONAccount f = helper
-							.getAccount(player.getAccount());
+					JSONAccount f = helper.getAccount(player.getAccount());
 
-					if (from.getSaldo() == f.getSaldo()) {
+					if (from.getSaldo() != f.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 					} else {
 						place.setHypo(true);
@@ -393,8 +386,7 @@ public class BrokerService {
 
 		if (owner != null && !player.equals(owner) && place.isPlace()) {
 
-			from = helper
-					.getAccount(player.getAccount());
+			from = helper.getAccount(player.getAccount());
 			to = helper.getAccount(owner.getAccount());
 			int amount = place.getRent().get(place.getLevel());
 
@@ -412,12 +404,10 @@ public class BrokerService {
 
 				} catch (Exception e) {
 
-					JSONAccount f = helper
-							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(player.getId()));
-					JSONAccount t = helper
-							.getAccount(this.services.getBank() + "/" + gameid + "/accounts" + "/" + helper.getID(owner.getId()));
+					JSONAccount f = helper.getAccount(player.getAccount());
+					JSONAccount t = helper.getAccount(owner.getAccount());
 
-					if (from.getSaldo() == f.getSaldo() || to.getSaldo() == t.getSaldo()) {
+					if (from.getSaldo() != f.getSaldo() || to.getSaldo() == t.getSaldo()) {
 						throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 
 					} else {
@@ -443,20 +433,12 @@ public class BrokerService {
 
 		return helper.receiveEventList(this.services.getEvents(), owner.getId(), gameid, new Date());
 	}
-	
+
 	public ServiceList getServices() {
 		return services;
 	}
 
 	public void setServices(ServiceList services) {
 		this.services = services;
-	}
-
-	public List<String> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<String> users) {
-		this.users = users;
 	}
 }

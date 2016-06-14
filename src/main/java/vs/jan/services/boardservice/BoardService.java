@@ -46,6 +46,14 @@ public class BoardService {
 
 	private static final int GO_VALUE = 3000;
 	private final String []DECK_TYPES = {"chance", "community"};
+	private final String BOARDS_PREFIX = "/boards/";
+	private final String MOVE_SUFFIX = "/move";
+	private final String ROLL_SUFFIX = "/roll";
+	private final String PLACES_INFIX = "/places/";
+	private final String BROKER_PREFIX = "/broker/";
+	private final String GAMES_PREFIX = "/games/";
+	private final String PLAYERS_SUFFIX = "/players";
+
 
 	private final Gson GSON = new Gson();
 
@@ -104,7 +112,7 @@ public class BoardService {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 		
 		String gameId = helper.getID(game.getURI());
-		String boardUri = "/boards/" + gameId;
+		String boardUri = BOARDS_PREFIX + gameId;
 		Board b = new Board(boardUri);
 		boards.put(b, game);
 		this.services = ServiceAllocator.initServices(host, gameId);
@@ -151,10 +159,10 @@ public class BoardService {
 		Pawn p = new Pawn();
 		String pawnUri = helper.getPawnUri(b, pawn.getPlayer());
 		p.setPawnUri(pawnUri);
-		p.setMovesUri(p.getPawnUri() + "/move");
+		p.setMovesUri(p.getPawnUri() + MOVE_SUFFIX);
 		p.setPlayerUri(pawn.getPlayer()); // Annahme required
-		p.setPlaceUri("/boards/" + gameid + "/places/" + 0);
-		p.setRollsUri(p.getPawnUri() + "/roll");
+		p.setPlaceUri(BOARDS_PREFIX + gameid + PLACES_INFIX + 0);
+		p.setRollsUri(p.getPawnUri() + ROLL_SUFFIX);
 		b.addNewPawn(p);
 		
 		// Neue Wuerfelliste fuer die Figur erstellen
@@ -570,8 +578,8 @@ public class BoardService {
 
 		for (int i = 0; i < Place.values().length; i++) {
 			Place p = Place.values()[i];
-			String placeUri = "/boards/" + gameid + "/places/" + i;
-			String brokerUri = "/broker/" + gameid + "/places/" + i;
+			String placeUri = BOARDS_PREFIX + gameid + PLACES_INFIX + i;
+			String brokerUri = BROKER_PREFIX + gameid + PLACES_INFIX + i;
 			
 			p.setBrokerUri(brokerUri);
 			p.setPlaceUri(placeUri);
@@ -582,7 +590,7 @@ public class BoardService {
 		}
 
 		key.setFields(fields);
-		key.setPlayers("/games/" + gameid + "/players");
+		key.setPlayers(GAMES_PREFIX + gameid + PLAYERS_SUFFIX);
 		
 		initDecks(key);
 	}
@@ -616,9 +624,9 @@ public class BoardService {
 			for (String pawnUri : field.getPawns()) {
 				Pawn pawn = helper.getPawn(key, pawnUri);
 				pawn.setPlaceUri(field.getPlace());
-				pawn.setMovesUri(pawnUri + "/move");
+				pawn.setMovesUri(pawnUri + MOVE_SUFFIX);
 				pawn.setPosition(placeNum);
-				pawn.setRollsUri(pawnUri + "/roll");
+				pawn.setRollsUri(pawnUri + ROLL_SUFFIX);
 				JSONPawn json = pawn.convert();
 				validator.checkJsonIsValid(json, Error.JSON_PAWN.getMsg());
 				f.addPawn(pawn);

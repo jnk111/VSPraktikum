@@ -18,6 +18,7 @@ import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
 import vs.jonas.client.json.Account;
 import vs.jonas.client.json.Board;
+import vs.jonas.client.json.BrokerPlace;
 import vs.jonas.client.json.CreateGame;
 import vs.jonas.client.json.DiceRolls;
 import vs.jonas.client.json.Field;
@@ -284,20 +285,44 @@ public class RestopolyClient {
 
 		List<Field> fields = board.getFields();
 		for (Field field : fields) {
+			// http://...:.../boards/{gameID}/places/{placeID}
+			//							-> liefert den Namen des Feldes und die Uri des Feldes beim Broker
 			String placeUri = field.getPlace().replaceAll("/boards","");
 			JsonObject fieldRessource = get(boardServiceUri + placeUri);
 			Place place = gson.fromJson(fieldRessource.toString(), Place.class);
 			place.setPlayers(field.getPawns());
 			place.setID(placeUri);
-			
-			String brokerURI = place.getBroker();
-			String brokerPlaceUri = brokerServiceUri.replace("/broker", "")+brokerURI;
-			System.out.println("#***######## Broker URI: " + brokerURI);
-			
-			
+					
 			data.add(place);
 		}
 		return data;
+	}
+	
+	public Place getPlace(String gameID, String placeUri) throws IOException, UnirestException{
+		String boardServiceUri = boardService.getUri();
+		String brokerServiceUri = brokerService.getUri();
+//		System.out.println("Try: " + boardServiceUri + placeUri);
+		JsonObject fieldRessource = get(boardServiceUri + placeUri);
+		Place place = gson.fromJson(fieldRessource.toString(), Place.class);
+//		place.setID(placeUri);
+		
+		// http://...:.../broker/{gameID}/places/{placeID} 
+		//				-> liefert alle weiteren Informationen über das Feld wie (Owner, Rent, Cost, etc.)
+		String brokerPlaceUri = brokerServiceUri.replace("/broker", "")+place.getBroker();
+		JsonObject brokerPlaceResponse = get(brokerPlaceUri);
+		BrokerPlace brokerPlace = gson.fromJson(brokerPlaceResponse, BrokerPlace.class);
+		
+		System.out.println("Received BrokerPlace: " + brokerPlace);
+		// Kosten = je nach anzahl der Häuser unterschiedlich
+		int numberOfHouses = brokerPlace.getHouses();
+		if(numberOfHouses!= -1){
+			place.setCost(brokerPlace.getCost().get(numberOfHouses));
+			place.setRent(brokerPlace.getRent().get(numberOfHouses));
+		} 
+		place.setValue(brokerPlace.getValue());
+		place.setHouses(brokerPlace.getHouses());
+		place.setOwner(brokerPlace.getOwner());
+		return place;
 	}
 
 	/**

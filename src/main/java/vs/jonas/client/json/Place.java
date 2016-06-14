@@ -13,14 +13,14 @@ public class Place {
 	String name;
 	String broker; // uri to broker
 	String owner;
-	String value;
-	String rent;
-	String cost;
-	String houses;
+	int value;
+	int rent;
+	int cost;
+	int houses;
 	String hypocredit;
 	List<String> players;
 	
-	public Place(String id, String name, String broker, String owner, String value, String rent, String cost, String houses, String hypocredit) {
+	public Place(String id, String name, String broker, String owner, int value, int rent, int cost, int houses, String hypocredit) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -42,19 +42,7 @@ public class Place {
 		this.owner = owner;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-	public void setRent(String rent) {
-		this.rent = rent;
-	}
-
-	public void setCost(String cost) {
-		this.cost = cost;
-	}
-
-	public void setHouses(String houses) {
+	public void setHouses(int houses) {
 		this.houses = houses;
 	}
 
@@ -70,19 +58,7 @@ public class Place {
 		return owner;
 	}
 
-	public String getValue() {
-		return value;
-	}
-
-	public String getRent() {
-		return rent;
-	}
-
-	public String getCost() {
-		return cost;
-	}
-
-	public String getHouses() {
+	public int getHouses() {
 		return houses;
 	}
 
@@ -91,7 +67,6 @@ public class Place {
 	}
 
 	public String getID() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 	
@@ -100,7 +75,6 @@ public class Place {
 	}
 
 	public List<String> getPlayers() {
-		// TODO Auto-generated method stub
 		return this.players;
 	}
 
@@ -121,6 +95,30 @@ public class Place {
 
 	public void setBroker(String broker) {
 		this.broker = broker;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public int getRent() {
+		return rent;
+	}
+
+	public void setRent(int rent) {
+		this.rent = rent;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
 	}
 
 	public JComboBox<String> getPlayersASComboBox() {

@@ -3,6 +3,8 @@ package vs.jonas.client.controller;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +27,7 @@ import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.utils.EventTypes;
+import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
 import vs.jonas.services.json.EventData;
 
@@ -160,7 +163,48 @@ public class GameController {
 				}
 			}
 		});
+		
+		ui.getGameFIeldTable().addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int row = e.getY() / ui.getGameFIeldTable().getRowHeight();
+				GameFieldTableModel model = (GameFieldTableModel)ui.getGameFIeldTable().getModel();
+				Place place = model.getPlace(row);
+				
+				try {
+					Place placeWithWholeInformation = client.getPlace(gameID, place.getID());
+					if(placeWithWholeInformation.getValue() != -1){
+						new FieldUI(placeWithWholeInformation).showUI();
+					}
+				} catch (IOException | UnirestException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				System.err.println("A Place was selected: " + place);
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		
 	}
+		
 	
 	private void updateGame() throws Exception{
 		ladeSpielerInformationen();

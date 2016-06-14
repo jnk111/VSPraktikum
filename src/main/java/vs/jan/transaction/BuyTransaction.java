@@ -36,7 +36,6 @@ public class BuyTransaction extends Transaction {
 
 	@Override
 	public void execute() throws TransactionFailedException {
-		this.history = new BuyTransaction(this);
 		
 		try {
 			

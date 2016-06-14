@@ -18,8 +18,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultCaret;
 
 import vs.jonas.client.model.table.GameFieldTable;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
@@ -44,6 +46,7 @@ public class GameUI {
 	private JLabel lblNewLabel;
 	private JLabel userLbl;
 	private JTextArea eventsConsole;
+	private int receivedEventNumber;
 	
 	private static final Color GAMEFIELD_COLOR = new Color(204, 255, 204);
 	private static final Color TABLEHEADER_COLOR = GAMEFIELD_COLOR;
@@ -145,13 +148,23 @@ public class GameUI {
 		lblNewLabel.setBackground(SystemColor.activeCaption);
 		panel_1.add(lblNewLabel, BorderLayout.NORTH);
 		
+		receivedEventNumber = 0; // Initial Value
 		eventsConsole = new JTextArea();
 		eventsConsole.setForeground(SystemColor.text);
 		eventsConsole.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		eventsConsole.setBackground(new Color(70, 130, 180));
 		eventsConsole.setEditable(false);
-		eventsConsole.append("#Initial Entry");
-		panel_1.add(eventsConsole, BorderLayout.CENTER);
+		eventsConsole.append("#Initial Entry\n");
+		eventsConsole.setLineWrap(true);
+		
+		DefaultCaret caret = (DefaultCaret)eventsConsole.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane textPane = new JScrollPane(eventsConsole);
+		textPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		textPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+//		textPane.setAutoscrolls(true);
+		panel_1.add(textPane, BorderLayout.CENTER);
 		splitPane_2.setDividerLocation(100);
 		splitPane.setLeftComponent(playerPanel);
 		
@@ -207,5 +220,13 @@ public class GameUI {
 	
 	public static void main(String[] args) {
 		new GameUI().showUI();
+	}
+	
+	public int getEventNumber(){
+		return receivedEventNumber;
+	}
+	
+	public void setEventNumber(int number){
+		this.receivedEventNumber = number;
 	}
 }

@@ -246,7 +246,8 @@ public class GameController {
 		} else{
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
-		eventsConsole.append("\n" + event.getReason());
+		eventsConsole.append(ui.getEventNumber() + ": " + event.getReason() + "\n\n");
+		ui.setEventNumber(ui.getEventNumber()+1);
 //		eventsConsole.upd
 		try {
 			updateGame();

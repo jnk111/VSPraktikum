@@ -105,7 +105,6 @@ public abstract class Helper {
 	public void broadCastEvent(JSONEvent event, String userServiceUri) {
 
 		String json = HttpService.get(userServiceUri, HttpURLConnection.HTTP_OK);
-		List<String> clientUris = new ArrayList<>();
 		
 		@SuppressWarnings("unchecked")
 		List<String> uris = GSON.fromJson(json, List.class);
@@ -113,7 +112,7 @@ public abstract class Helper {
 		for(String uri: uris) {
 			String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
 			User user = GSON.fromJson(json2, User.class);
-			//HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+			HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
 		}
 		
 	}

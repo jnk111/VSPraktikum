@@ -86,6 +86,7 @@ public class YellowPagesService {
 		for (String uri : services.getServices()) {
 			JsonObject body = RestClient.get(YELLOW_SERVICE_IP + uri);
 			JSONService service = new Gson().fromJson(body.toString(), JSONService.class);
+//			System.out.println("Fetch Service: " + service.getService());
 			this.services.put(service.getService(), service);
 		}
 		
@@ -127,6 +128,10 @@ public class YellowPagesService {
 		JSONService board = new JSONService("/services/384", "board service", "JJMG", ServiceNames.BOARD, "running",
 				"http://localhost:4567/boards");
 		services.put(ServiceNames.BOARD, board);
+		
+		JSONService broker = new JSONService("/services/385", "broker service" , "JJMG", ServiceNames.BROKER, "running",
+				"http://localhost:4567/broker");
+		services.put(ServiceNames.BROKER, broker);
 	}
 
 	@SuppressWarnings("unused")

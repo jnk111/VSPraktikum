@@ -24,6 +24,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
 import vs.jonas.client.model.table.GameFieldTable;
+import vs.jonas.client.model.table.renderer.PlayerTableCellRenderer;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 
@@ -49,7 +50,8 @@ public class GameUI {
 	private int receivedEventNumber;
 	
 	private static final Color GAMEFIELD_COLOR = new Color(204, 255, 204);
-	private static final Color TABLEHEADER_COLOR = GAMEFIELD_COLOR;
+	private static final Color TABLEHEADER_COLOR = new Color(200, 255, 190);
+	private static final Color BUTTON_COLOR = new Color(50,60,70,80);
 
 	/**
 	 * Create the frame.
@@ -60,7 +62,7 @@ public class GameUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 850, 500);
 		frame.setLocationRelativeTo(null);
-//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setOpaque(false);
@@ -85,6 +87,7 @@ public class GameUI {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setDividerSize(0);
 		splitPane.setBackground(SystemColor.activeCaption);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.CENTER);
@@ -92,15 +95,19 @@ public class GameUI {
 		JPanel optionsPanel = new JPanel();
 		optionsPanel.setBackground(SystemColor.activeCaption);
 		JSplitPane splitPane_1 = new JSplitPane();
+		splitPane_1.setDividerSize(0);
 		splitPane_1.setBackground(SystemColor.activeCaption);
 		splitPane.setRightComponent(splitPane_1);
 
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		playerTable.getTableHeader().setOpaque(false);
-		playerTable.getTableHeader().setBackground(SystemColor.activeCaption);
+		playerTable.getTableHeader().setBackground(new Color(100, 150, 210));
+		playerTable.setEnabled(false);
 		playerTable.setOpaque(false);
-		playerTable.setBackground(SystemColor.activeCaption);
+		playerTable.setDefaultRenderer(String.class, new PlayerTableCellRenderer());
+		
 		JScrollPane playerOverview = new JScrollPane(playerTable);
+		playerOverview.getViewport().setBackground(SystemColor.activeCaption);
 		playerOverview.setBackground(SystemColor.activeCaption);
 		JPanel playerPanel = new JPanel(new BorderLayout());
 		playerPanel.setBackground(SystemColor.activeCaption);
@@ -113,17 +120,19 @@ public class GameUI {
 		optionsPanel.setLayout(new BorderLayout(0, 0));
 				
 		splitPane_2 = new JSplitPane();
+		splitPane_2.setDividerSize(0);
 		splitPane_2.setBackground(SystemColor.activeCaption);
 		splitPane_2.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		optionsPanel.add(splitPane_2);
 		
 		panel = new JPanel();
 		panel.setBackground(SystemColor.activeCaption);
-		panel.setBorder(new EmptyBorder(10, 60, 10, 60));
+		panel.setBorder(new EmptyBorder(10, 100, 10, 100));
 		splitPane_2.setLeftComponent(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 5));
 		
 		userLbl = new JLabel("Username");
+		userLbl.setFont(new Font("Kristen ITC", Font.BOLD, 14));
 		userLbl.setHorizontalTextPosition(SwingConstants.CENTER);
 		userLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(userLbl);
@@ -145,6 +154,9 @@ public class GameUI {
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		lblNewLabel = new JLabel("Received Events:");
+		lblNewLabel.setFont(new Font("Kristen ITC", Font.PLAIN, 11));
+		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setBorder(new EmptyBorder(10, 0, 5, 0));
 		lblNewLabel.setBackground(SystemColor.activeCaption);
 		panel_1.add(lblNewLabel, BorderLayout.NORTH);
 		
@@ -156,6 +168,7 @@ public class GameUI {
 		eventsConsole.setEditable(false);
 		eventsConsole.append("#Initial Entry\n");
 		eventsConsole.setLineWrap(true);
+		eventsConsole.setWrapStyleWord(true);
 		
 		DefaultCaret caret = (DefaultCaret)eventsConsole.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -173,6 +186,7 @@ public class GameUI {
 		gameFieldTable.getTableHeader().setBackground(TABLEHEADER_COLOR);
 
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
+		gameFieldScrollPane.getViewport().setBackground(GAMEFIELD_COLOR);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
 		gameFieldPanel.setBackground(GAMEFIELD_COLOR);
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");
@@ -182,8 +196,8 @@ public class GameUI {
 		
 		gameFieldPanel.add(gameFieldScrollPane, BorderLayout.CENTER);
 		splitPane_1.setRightComponent(gameFieldPanel);
-		splitPane_1.setDividerLocation(300);
-		splitPane.setDividerLocation(150);
+		splitPane_1.setDividerLocation(450);
+		splitPane.setDividerLocation(120);
 	}
 
 	public JTable getPlayerTable() {

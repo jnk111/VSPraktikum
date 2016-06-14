@@ -47,6 +47,7 @@ public class RestopolyClient {
 
 	private JSONService gameService;
 	private JSONService boardService;
+	private JSONService brokerService;
 	private String SLASH;
 	private String SLASH_PLAYERS;
 	private String SLASH_PAWNS;
@@ -77,6 +78,7 @@ public class RestopolyClient {
 			SLASH_STATUS = "/status";
 			gameService = yellowPages.getService(ServiceNames.GAME);
 			boardService = yellowPages.getService(ServiceNames.BOARD);
+			brokerService = yellowPages.getService(ServiceNames.BROKER);
 			gson = new Gson();
 		} catch (ServiceUnavailableException e) {
 			e.printStackTrace();
@@ -230,6 +232,7 @@ public class RestopolyClient {
 				}
 			} 
 			
+			System.out.println("Player Equal?:\n      " + player + "\n      " + playerWithMutex +"\n     = "+ player.equals(playerWithMutex) );
 			
 			if(player.equals(playerWithMutex)){
 				playerInformation.setHasTurn(true);
@@ -272,24 +275,26 @@ public class RestopolyClient {
 
 
 		String boardServiceUri = boardService.getUri();
+		String brokerServiceUri = brokerService.getUri();
 		// String boardsPlacesUri = boardServiceUri + "/" + gameID + "/places";
 		System.out.println(boardServiceUri);
 		Board board = gson.fromJson(get(boardServiceUri + SLASH + gameID), Board.class);
 		System.out.println("Board: " + gson.toJson(board));
+		
 
 		List<Field> fields = board.getFields();
 		for (Field field : fields) {
-//			System.out.println(gson.toJson(field));
 			String placeUri = field.getPlace().replaceAll("/boards","");
-//			System.out.println("URI: " + placeUri);
 			JsonObject fieldRessource = get(boardServiceUri + placeUri);
-//			 System.out.println("Antwort auf " + BASE_URL+placeUri + ":\n"
-//			 +fieldRessource.toString());
-//			System.out.println(fieldRessource.get("name"));
-			String id = placeUri;
 			Place place = gson.fromJson(fieldRessource.toString(), Place.class);
 			place.setPlayers(field.getPawns());
-			place.setID(id);
+			place.setID(placeUri);
+			
+			String brokerURI = place.getBroker();
+			String brokerPlaceUri = brokerServiceUri.replace("/broker", "")+brokerURI;
+			System.out.println("#***######## Broker URI: " + brokerURI);
+			
+			
 			data.add(place);
 		}
 		return data;

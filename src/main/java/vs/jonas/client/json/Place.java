@@ -11,6 +11,7 @@ public class Place {
 
 	String id;
 	String name;
+	String broker; // uri to broker
 	String owner;
 	String value;
 	String rent;
@@ -19,10 +20,11 @@ public class Place {
 	String hypocredit;
 	List<String> players;
 	
-	public Place(String id, String name, String owner, String value, String rent, String cost, String houses, String hypocredit) {
+	public Place(String id, String name, String broker, String owner, String value, String rent, String cost, String houses, String hypocredit) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.broker = broker;
 		this.owner = owner;
 		this.value = value;
 		this.rent = rent;
@@ -109,6 +111,16 @@ public class Place {
 	@Override
 	public String toString(){
 		return new Gson().toJson(this);
+	}
+	
+	
+
+	public String getBroker() {
+		return broker;
+	}
+
+	public void setBroker(String broker) {
+		this.broker = broker;
 	}
 
 	public JComboBox<String> getPlayersASComboBox() {

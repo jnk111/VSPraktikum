@@ -43,7 +43,7 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
-	private final int PORT = 4777;;
+	private final int PORT = 4778;
 	private String ip;
 	private final String PROTOCOL = "http://";
 	private Gson gson;
@@ -64,6 +64,9 @@ public class GameController {
 		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 		String ipadress = br.readLine();
 		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
+		
+		this.ip = "192.168.255.18";
+		
 		this.user.setUri("http://" + this.ip + ":" +this.PORT);
 		startClientService();
 		client.enterGame(this.gameID, this.user);
@@ -246,7 +249,7 @@ public class GameController {
 		} else{
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
-		eventsConsole.append(ui.getEventNumber() + ": " + event.getReason() + "\n\n");
+		eventsConsole.append("Event "+ui.getEventNumber() + ": " + event.getReason() + "\n\n");
 		ui.setEventNumber(ui.getEventNumber()+1);
 //		eventsConsole.upd
 		try {

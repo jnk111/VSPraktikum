@@ -58,16 +58,18 @@ public class OffeneSpieleUI {
 		JPanel auswahlPanel = new JPanel();
 		auswahlPanel.setBackground(SystemColor.activeCaption);
 		splitPane.setLeftComponent(auswahlPanel);
+		splitPane.setDividerSize(0);
 		auswahlPanel.setLayout(new BorderLayout(0, 0));
 
 		GameInformationTableModel model = new GameInformationTableModel();
 		offeneSpieleTable = new JTable(model);
 		offeneSpieleTable.setCellSelectionEnabled(true);
-//		offeneSpieleTable.getTableHeader().setOpaque(false);
-//		offeneSpieleTable.getTableHeader().setBackground(new Color(204, 255, 204));
+		offeneSpieleTable.getTableHeader().setOpaque(false);
+		offeneSpieleTable.getTableHeader().setBackground(new Color(70, 130, 180));
 
-		offeneSpieleTable.setBackground(new Color(204, 255, 204));
+		offeneSpieleTable.setBackground(SystemColor.activeCaption);
 		JScrollPane scrollPane = new JScrollPane(offeneSpieleTable);
+		scrollPane.getViewport().setBackground(SystemColor.activeCaption);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		auswahlPanel.add(scrollPane);
 

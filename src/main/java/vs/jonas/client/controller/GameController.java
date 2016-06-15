@@ -118,7 +118,7 @@ public class GameController {
 					ui.getUsernameLbl().setText(user.getName());				
 					registriereActionListener();
 					ui.showUI();
-					JOptionPane.showMessageDialog(null, "Auf 'Spiel starten' klicken, wenn Du bereit bist.");
+					JOptionPane.showMessageDialog(null, "Auf 'Spiel Starten' klicken, wenn Du bereit bist.");
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
 					e.printStackTrace();
@@ -157,11 +157,11 @@ public class GameController {
 					client.setReady(gameID, user);
 					if(client.allPlayersReady(gameID)){
 						client.startGame(gameID);
+						JOptionPane.showMessageDialog(null, "Das Spiel wurde gestartet.");
 					}
 					updateGame();
 //					startEventCheckerThread();
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -181,7 +181,6 @@ public class GameController {
 						new FieldUI(placeWithWholeInformation).showUI();
 					}
 				} catch (IOException | UnirestException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				
@@ -218,7 +217,7 @@ public class GameController {
 		int i= 0;
 		try {
 			ImageIcon diceRollImage = new ImageIcon(FieldUI.class.getResource("/dice_roll.gif"));
-			JLabel label1 = new JLabel("Roll the Dice, Baby!",diceRollImage, JLabel.CENTER);
+			JLabel label1 = new JLabel(diceRollImage, JLabel.CENTER);
 			//Set the position of the text, relative to the icon:
 			label1.setVerticalTextPosition(JLabel.BOTTOM);
 			label1.setHorizontalTextPosition(JLabel.CENTER);
@@ -228,7 +227,6 @@ public class GameController {
 //			updateGame();
 			
 		} catch (Exception ex) {
-			// TODO Auto-generated catch block
 			if(i<3){
 				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
 				i++;
@@ -267,7 +265,6 @@ public class GameController {
 	}
 	
 	private void finishRound(){
-		//TODO 
 		try {
 			client.setReady(gameID, user);
 		} catch (Exception e) {
@@ -313,6 +310,18 @@ public class GameController {
 			eventText = event.getPlayer() + " has visited " + event.getRessource();
 		} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
 			eventText = event.getPlayer() + " has bought a place.";
+		} else if(event.getType().equals(EventTypes.GOT_MONEY_ALL_PLAYERS.getType())){
+			eventText = event.getPlayer() + " has got money from all players. Such a lucker...";
+		} else if(event.getType().equals(EventTypes.GOT_MONEY_FROM_BANK.getType())){
+			eventText = event.getPlayer() + " has got money from the bank.";
+		} else if(event.getType().equals(EventTypes.PAY_RENT.getType())){
+			eventText = event.getPlayer() + " has paid the rent.";
+		} else if(event.getType().equals(EventTypes.CANNOT_BUY_PLACE.getType())){
+			eventText = event.getPlayer() + " couldn't buy the place. Bad luck. :(";
+		} else if(event.getType().equals(EventTypes.CANNOT_PAY_RENT.getType())){
+			eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
+		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
+			
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");

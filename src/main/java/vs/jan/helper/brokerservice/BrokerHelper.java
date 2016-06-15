@@ -4,7 +4,6 @@ import java.util.Map;
 
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.helper.Helper;
-import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.Error;

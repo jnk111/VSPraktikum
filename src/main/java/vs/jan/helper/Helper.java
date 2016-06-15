@@ -42,7 +42,7 @@ public abstract class Helper {
 	 *           Service nicht erreichbar
 	 */
 	public static Player getPlayer(String playerUri, String gameid) throws ResponseCodeException {
-		String json = HttpService.get(playerUri, HttpURLConnection.HTTP_OK);
+		String json = HttpService.get(services.getGamesHost() + playerUri, HttpURLConnection.HTTP_OK);
 		Player currPlayer = GSON.fromJson(json, Player.class);
 		return currPlayer;
 	}
@@ -115,7 +115,7 @@ public abstract class Helper {
 			for (String uri : uris) {
 				String json2 = HttpService.get(services.getUsersHost() + uri, HttpURLConnection.HTTP_OK);
 				User user = GSON.fromJson(json2, User.class);
-				HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
+				//HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
 			}
 		}
 	}

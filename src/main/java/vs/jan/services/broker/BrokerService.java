@@ -194,15 +194,20 @@ public class BrokerService {
 		Player player = BrokerHelper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
 
 		Place place = BrokerHelper.getPlace(broker, placeid);
+		Player owner = place.getOwner();
 		BuyTransaction buy = null;
 		JSONEvent event = null;
 
 		try {
 
-			buy = new BuyTransaction(player, place.getPrice(), this.services.getBank(), gameid, place);
-			buy.execute();
-			event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(),
-					EventTypes.BUY_PLACE.getType(), place.getUri(), player.getId());
+			if(owner == null && place.isPlace()) {
+				
+				buy = new BuyTransaction(player, place.getPrice(), this.services.getBank(), gameid, place);
+				buy.execute();
+				
+				event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(),
+						EventTypes.BUY_PLACE.getType(), place.getUri(), player.getId());
+			}
 
 		} catch (TransactionFailedException e) {
 

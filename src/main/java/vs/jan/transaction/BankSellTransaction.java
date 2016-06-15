@@ -47,7 +47,6 @@ public class BankSellTransaction extends Transaction {
 			String url = this.bankUri + "/" + this.gameId + "/transfer/to/" + toId + "/" + this.amount;
 			HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 			this.place.setHypo(true);
-			return;
 
 		} catch (Exception e) {
 			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());

@@ -13,6 +13,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import vs.gerriet.service.EventSubscriptionService;
 import vs.jonas.services.json.EventData;
 import vs.jonas.services.json.EventList;
 import vs.jonas.services.model.Event;
@@ -52,7 +53,8 @@ public class EventService {
 				Validator<EventData> validator = new EventDataValidator();
 				if(validator.isValidRessource(newEvent)){
 					dao.createEvent(newEvent);
-					res.status(HttpStatus.OK_200);				
+					res.status(HttpStatus.OK_200);	
+					EventSubscriptionService.notifySubscribers(newEvent);
 				}
 				else{
 					res.status(HttpStatus.PRECONDITION_FAILED_412);
@@ -137,6 +139,8 @@ public class EventService {
 			res.status(HttpStatus.OK_200);
 			return event;
 		},gson::toJson);
+		
+		EventSubscriptionService.run();
 	}
 	
 	public static void main(String[] args) {

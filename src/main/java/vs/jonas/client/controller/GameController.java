@@ -249,7 +249,6 @@ public class GameController {
 			label1.setHorizontalTextPosition(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null,label1);
 		} catch (UnirestException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (EstateAlreadyOwnedException e) {
 			JOptionPane.showMessageDialog(null, "Die Straﬂe wurde bereits verkauft.");

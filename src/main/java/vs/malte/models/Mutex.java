@@ -4,7 +4,7 @@ public class Mutex
 {
     private String name;
     private String permittedUser; // Spieler der die Erlaubnis hat, den Mutex zu belegen
-    private String currentUser; // Spieler der zur Zeit den Mutex hat
+    private String mutexUser; // Spieler der zur Zeit den Mutex hat
 
     private final boolean DEBUG_MODE = false;
 
@@ -22,16 +22,11 @@ public class Mutex
         this.name = name;
     }
 
-    public void setPermissionForAcquireMutex( String player )
-    {
-        this.permittedUser = player;
-    }
-
     public boolean acquire( String playerId )
     {
         boolean result = false;
 
-        this.currentUser = playerId;
+        this.mutexUser = playerId;
         result = true;
 
         if ( DEBUG_MODE )
@@ -42,9 +37,9 @@ public class Mutex
 
     public void release( String playerId )
     {
-        if ( playerId.equals( currentUser ) )
+        if ( playerId.equals( mutexUser ) )
         {
-            this.currentUser = "";
+            this.mutexUser = "";
             this.permittedUser = "";
         }
 
@@ -54,7 +49,7 @@ public class Mutex
 
     public String getCurrentUser()
     {
-        return this.currentUser;
+        return this.mutexUser;
     }
 
     public String getPermittedUser()

@@ -22,6 +22,8 @@ import vs.malte.json.GamesListDTO;
 import vs.malte.json.InitBoardDTO;
 import vs.malte.json.NewAccountDTO;
 import vs.malte.json.PawnDTO;
+import vs.jan.helper.events.EventTypes;
+import vs.jan.json.boardservice.JSONEvent;
 import vs.malte.json.AllPlayersArrayDTO;
 import vs.malte.json.AllPlayersDTO;
 import vs.malte.json.ServiceArray;
@@ -786,6 +788,9 @@ public class GamesService
 
         int responseCode = HttpService.post( playerArray[nextPlayerIndex].getUri() + "/client/turn", playerArray[nextPlayerIndex].getId() );
 
+        JSONEvent gameStartedEvent = new JSONEvent( game.getId(), EventTypes.MUTEX_CHANGE.getType(), EventTypes.MUTEX_CHANGE.getType(), EventTypes.MUTEX_CHANGE.getType(), playerArray[nextPlayerIndex].getUri() + "/ready", playerArray[nextPlayerIndex].getUri() + "/client/turn" );
+        HttpService.post( game.getServiceList().getEvents(), gameStartedEvent );
+
         if ( responseCode != 200 )
         {
             if ( DEBUG_MODE )
@@ -929,13 +934,14 @@ public class GamesService
         // ersten Spieler auswählen
         int firstPlayer = (int) ( Math.random() * playerArray.length );
 
-        // Erlaubnis an Spieler uebergeben den Mutex zu belegen
-        mutexService.assignMutexPermission( game.getId(), playerArray[firstPlayer].getId() );
-
         mutexService.acquire( game.getId(), playerArray[firstPlayer].getId() );
 
         if ( DEBUG_MODE )
             System.out.println( "\nErster Spieler: " + playerArray[firstPlayer].getId() );
+
+        JSONEvent gameStartedEvent = new JSONEvent( game.getId(), EventTypes.GAME_STARTED.getType(), EventTypes.GAME_STARTED.getType(), EventTypes.GAME_STARTED.getType(), game.getId() + "/status", null );
+
+        HttpService.post( game.getServiceList().getEvents(), gameStartedEvent );
     }
 
     /**

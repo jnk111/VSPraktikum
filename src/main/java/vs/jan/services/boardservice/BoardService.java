@@ -37,6 +37,7 @@ import vs.jan.model.boardservice.Place;
 import vs.jan.model.decksservice.ChanceCard;
 import vs.jan.model.decksservice.CommCard;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
 import vs.jan.validator.BoardValidator;
@@ -292,9 +293,10 @@ public class BoardService {
 	 * @throws InvalidInputException
 	 *           Es wurde keine gueltiger Wurf uebergeben
 	 * @throws ResponseCodeException
+	 * @throws TransactionFailedException 
 	 */
 	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
-			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException {
+			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException, TransactionFailedException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 
@@ -365,7 +367,7 @@ public class BoardService {
 		BoardHelper.postEvent(event);
 	}
 
-	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type) {
+	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type) throws TransactionFailedException {
 
 		String url = this.services.getDecks() + "/" + gameid + "/" + type;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
@@ -390,22 +392,26 @@ public class BoardService {
 		}
 	}
 
-	private void getMoneyFromBank(Pawn pawn, String gameid) {
+	private void getMoneyFromBank(Pawn pawn, String gameid) throws TransactionFailedException {
 		String toId = BoardHelper.getID(pawn.getPlayerUri());
 		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_TO_INFIX + toId + "/" + CommCard.BANK_MONEY;
+		
+		try {
+			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 
-		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+			JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(),
+					EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), pawn.getRollsUri(),
+					pawn.getPlayerUri());
 
-		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(),
-				EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), pawn.getRollsUri(),
-				pawn.getPlayerUri());
-
-		BoardHelper.broadCastEvent(event);
-		BoardHelper.postEvent(event);
-
+			BoardHelper.broadCastEvent(event);
+			BoardHelper.postEvent(event);
+			
+		} catch (Exception e) {
+			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+		}
 	}
 
-	public void getMoneyFromAllPlayers(Pawn pawn, String gameid) {
+	public void getMoneyFromAllPlayers(Pawn pawn, String gameid) throws TransactionFailedException {
 
 		String toId = BoardHelper.getID(pawn.getPlayerUri());
 		String url = this.services.getGames() + "/" + gameid + PLAYERS_SUFFIX;
@@ -415,11 +421,17 @@ public class BoardService {
 		for (JSONPlayersListElement elem : list.getPlayers()) {
 			String fromId = BoardHelper.getID(elem.getId());
 
-			// TODO: try catch
+			try {
+				String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
+						+ CommCard.PLAYER_MONEY;
+				
+				HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+				
+			} catch (Exception e) {
+				throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+			}
 
-			String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
-					+ CommCard.PLAYER_MONEY;
-			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+
 		}
 
 		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
@@ -443,10 +455,12 @@ public class BoardService {
 	 * @throws ResourceNotFoundException
 	 *           Board oder Figur nicht gefunden
 	 * @throws ResponseCodeException
+	 * @throws TransactionFailedException 
+	 * @throws InvalidInputException 
 	 * 
 	 */
 	public synchronized JSONEventList rollDice(String gameid, String pawnid)
-			throws ResourceNotFoundException, ResponseCodeException {
+			throws ResourceNotFoundException, ResponseCodeException, InvalidInputException, TransactionFailedException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), false);
@@ -601,7 +615,7 @@ public class BoardService {
 			} catch (NumberFormatException e) {
 				throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
 			}
-			;
+			
 
 			Place p = Place.values()[placeNum];
 			Field f = BoardHelper.getField(key, p.getPlaceUri());

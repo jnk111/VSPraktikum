@@ -124,12 +124,12 @@ public enum Place implements Convertable<JSONPlace> {
 	}
 
 	public boolean isPlace() {
-		return this.price > 0;
+		return this.price > 0 && this != EinkStr;
 	}
 
 	public boolean isJail() {
 
-		return GoJail.ordinal() == this.ordinal();
+		return GoJail == this;
 	}
 
 	public boolean isChance() {
@@ -141,5 +141,4 @@ public enum Place implements Convertable<JSONPlace> {
 
 		return this == Place.Gemeinschaft1 || this == Place.Gemeinschaft2 || this == Place.Gemeinschaft3;
 	}
-
 }

@@ -39,7 +39,7 @@ public class BankApi {
         final Bank bankApi = new Bank();
 
         // set service uri to localhost (for debug), remove to use yellow pages.
-        Bank.setServiceUri("http://localhost:4567");
+        bankApi.setServiceUri("http://localhost:4567");
 
         // list banks
         System.out.println("Listing banks ...");

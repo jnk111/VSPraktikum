@@ -18,12 +18,10 @@ public abstract class VsApiBase extends ApiBase {
      * Group name.
      */
     public static final String GROUP_NAME = "JJMG";
-
     /**
      * Contains the cached uri for this service.
      */
     private String uriCache;
-
     /**
      * Yellow pages instance for uri lookup.
      */
@@ -68,6 +66,28 @@ public abstract class VsApiBase extends ApiBase {
      */
     public void resetCache() {
         this.uriCache = null;
+    }
+
+    /**
+     * Resets the set service uri.
+     */
+    public void resetServiceUri() {
+        this.setServiceUri(null);
+    }
+
+    /**
+     * <p>
+     * Sets the uri for this API class to the given uri.
+     * </p>
+     * <p>
+     * Use for debug only.
+     * </p>
+     *
+     * @param uri
+     *            New service uri.
+     */
+    public void setServiceUri(final String uri) {
+        this.uriCache = uri;
     }
 
     /**

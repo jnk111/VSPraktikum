@@ -100,7 +100,7 @@ public class BrokerService {
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		Place place = BrokerHelper.getPlace(broker, placeid);
-		Player player = BrokerHelper.getPlayer(this.services.getGamesHost() + playeruri, gameid);
+		Player player = BrokerHelper.getPlayer(playeruri, gameid);
 
 		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(),
 				EventTypes.VISIT_PLACE.getType(), place.getVisitUri(), playeruri);
@@ -191,7 +191,7 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-		Player player = BrokerHelper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
+		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 
 		Place place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
@@ -233,8 +233,7 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-
-		Player player = BrokerHelper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
+		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 		Place place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
@@ -279,7 +278,7 @@ public class BrokerService {
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		Place place = BrokerHelper.getPlace(broker, placeid);
-		Player player = BrokerHelper.getPlayer(this.services.getGamesHost() + playerUri, gameid);
+		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, BrokerHelper.getID(playerUri));
 		BuyTransaction buyBack = null;
 		JSONEvent event = null;

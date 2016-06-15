@@ -32,10 +32,12 @@ import vs.jan.validator.Validator;
 
 public class BrokerService {
 
+	
 	private final String BROKER_PREFIX = "/broker/";
 	private final String PLACES_SUFFIX = "/places";
 	private final String PLACES_INFIX = PLACES_SUFFIX + "/";
 	private final String VISIT_SUFFIX = "/visit";
+	private static final String OWNER_SUFFIX = "/owner";
 	private final String HYPO_CREDIT_SUFFIX = "/hypothecarycredit";
 	private final double HYPO_INTEREST = 0.10;
 
@@ -87,7 +89,8 @@ public class BrokerService {
 		String id = BROKER_PREFIX + gameid + PLACES_INFIX + placeid;
 		String visitUri = id + VISIT_SUFFIX;
 		String hypoCreditUri = id + HYPO_CREDIT_SUFFIX;
-		Place p = new Place(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri);
+		String ownerUri = id + OWNER_SUFFIX;
+		Place p = new Place(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri, ownerUri);
 		broker.addPlace(p);
 	}
 

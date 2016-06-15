@@ -13,6 +13,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private String uri;
 	private String placeUri;
 	private Player owner;
+	private String ownerUri;
 	private int price;
 	private List<Integer> rent;
 	private List<Integer> cost;
@@ -22,14 +23,14 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private boolean hypo;
 	
 	
-	public Place(String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri){
+	public Place(String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri, String owner){
 		
-		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), houses, visitUri, hypoCreditUri);
+		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), houses, visitUri, hypoCreditUri, owner);
 
 	}
 	
 	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
-			int houses, String visitUri, String hypoCreditUri) {
+			int houses, String visitUri, String hypoCreditUri, String ownerUri) {
 		
 		this.uri = uri;
 		this.placeUri = placeUri;
@@ -40,6 +41,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.houses = houses;
 		this.visitUri = visitUri;
 		this.hypoCreditUri = hypoCreditUri;
+		this.ownerUri = ownerUri;
 		this.setHypo(false);
 		initRents();
 		initCosts();
@@ -235,11 +237,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		place.setHouses(this.houses);
 		place.setHypocredit(this.hypoCreditUri);
 		place.setId(this.uri);
-		
-		if(this.owner != null){
-			place.setOwner(this.owner.getId());
-		}
-		
+		place.setOwner(this.ownerUri);		
 		place.setPlace(this.placeUri);
 		place.setRent(this.rent);
 		place.setValue(this.price);
@@ -292,5 +290,13 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public boolean isPlace() {
 		
 		return this.price > 0;
+	}
+
+	public String getOwnerUri() {
+		return ownerUri;
+	}
+
+	public void setOwnerUri(String ownerUri) {
+		this.ownerUri = ownerUri;
 	}
 }

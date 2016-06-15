@@ -18,10 +18,9 @@ public class FieldUI {
 	
 	public FieldUI(Place place){
 		frame = new JFrame(place.getName());
-		frame.setLocationRelativeTo(null);
-		frame.setSize(200, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		frame.setSize(300, 450);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		frame.setAlwaysOnTop(true);
 		JLabel lblNewLabel = new JLabel(place.getName());
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(lblNewLabel, BorderLayout.NORTH);
@@ -35,7 +34,7 @@ public class FieldUI {
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		JLabel lblNewLabel_1 = new JLabel("Feldbild"); // Todo ImageFinder
-		lblNewLabel_1.setIcon(new ImageIcon(FieldUI.class.getResource("/vs/jonas/client/assets/monopoly.jpg")));
+//		lblNewLabel_1.setIcon(new ImageIcon(FieldUI.class.getResource("/vs/jonas/client/assets/monopolyKopf.png")));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblNewLabel_1, BorderLayout.CENTER);
 		

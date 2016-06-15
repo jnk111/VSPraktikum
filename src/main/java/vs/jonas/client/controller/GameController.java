@@ -174,7 +174,7 @@ public class GameController {
 				
 				try {
 					Place placeWithWholeInformation = client.getPlace(gameID, place.getID());
-					if(placeWithWholeInformation.getValue() != -1){
+					if(placeWithWholeInformation.getValue() != 0){
 						new FieldUI(placeWithWholeInformation).showUI();
 					}
 				} catch (IOException | UnirestException e1) {

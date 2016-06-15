@@ -316,8 +316,10 @@ public class RestopolyClient {
 		// Kosten = je nach anzahl der Häuser unterschiedlich
 		int numberOfHouses = brokerPlace.getHouses();
 		if(numberOfHouses!= -1){
-			place.setCost(brokerPlace.getCost().get(numberOfHouses));
-			place.setRent(brokerPlace.getRent().get(numberOfHouses));
+//			place.setCost(brokerPlace.getCost().get(numberOfHouses));
+//			place.setRent(brokerPlace.getRent().get(numberOfHouses));
+			place.setCost(-1000);
+			place.setRent(-1000);
 		} 
 		place.setValue(brokerPlace.getValue());
 		place.setHouses(brokerPlace.getHouses());

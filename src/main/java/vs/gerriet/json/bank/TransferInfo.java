@@ -1,4 +1,4 @@
-package vs.gerriet.json;
+package vs.gerriet.json.bank;
 
 /**
  * JSON data object for transfers.

@@ -1,4 +1,4 @@
-package vs.gerriet.model;
+package vs.gerriet.model.bank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
-import vs.gerriet.json.AccountInfo;
+import vs.gerriet.json.bank.AccountInfo;
 
 /**
  * Container class for accounts.

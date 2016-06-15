@@ -14,16 +14,16 @@ import vs.gerriet.api.VsApiBase;
 import vs.gerriet.api.YellowPages;
 import vs.gerriet.controller.ServiceOnlineController;
 import vs.gerriet.controller.bank.BankController;
-import vs.gerriet.controller.bank.BanksController;
-import vs.gerriet.controller.bank.account.AccountsController;
-import vs.gerriet.controller.bank.account.AccountsListController;
+import vs.gerriet.controller.bank.BankListController;
+import vs.gerriet.controller.bank.account.AccountController;
+import vs.gerriet.controller.bank.account.AccountListController;
 import vs.gerriet.controller.bank.transaction.TransactionController;
 import vs.gerriet.controller.bank.transaction.TransactionListController;
 import vs.gerriet.controller.bank.transfer.TransferController;
 import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
-import vs.gerriet.controller.bank.transfer.TransfersController;
+import vs.gerriet.controller.bank.transfer.TransferListController;
 import vs.gerriet.json.yellowpages.Service;
 import vs.gerriet.utils.ServiceUtils;
 
@@ -87,10 +87,10 @@ public class BankService {
      */
     public static void run() {
         // register bank access controllers
-        ServiceUtils.registerController(new BanksController());
+        ServiceUtils.registerController(new BankListController());
         ServiceUtils.registerController(new BankController());
         // register transfer controllers
-        ServiceUtils.registerController(new TransfersController());
+        ServiceUtils.registerController(new TransferListController());
         ServiceUtils.registerController(new TransferController());
         ServiceUtils.registerController(new TransferFromController());
         ServiceUtils.registerController(new TransferToController());
@@ -99,8 +99,8 @@ public class BankService {
         ServiceUtils.registerController(new TransactionListController());
         ServiceUtils.registerController(new TransactionController());
         // register accounts controllers
-        ServiceUtils.registerController(new AccountsListController());
-        ServiceUtils.registerController(new AccountsController());
+        ServiceUtils.registerController(new AccountListController());
+        ServiceUtils.registerController(new AccountController());
 
         // register default error handlers
         Spark.exception(JsonSyntaxException.class, (ex, req, res) -> {

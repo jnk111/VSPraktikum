@@ -9,26 +9,26 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
 import de.stuff42.error.ExceptionUtils;
-import vs.gerriet.controller.bank.BanksController;
-import vs.gerriet.controller.bank.account.AccountsListController;
+import vs.gerriet.controller.bank.BankListController;
+import vs.gerriet.controller.bank.account.AccountListController;
 import vs.gerriet.controller.bank.transfer.TransferFromController;
 import vs.gerriet.controller.bank.transfer.TransferFromToController;
+import vs.gerriet.controller.bank.transfer.TransferListController;
 import vs.gerriet.controller.bank.transfer.TransferToController;
-import vs.gerriet.controller.bank.transfer.TransfersController;
 import vs.gerriet.id.BankId;
 import vs.gerriet.id.GameId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.json.AccountInfo;
-import vs.gerriet.json.AccountList;
-import vs.gerriet.json.BankData;
-import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
-import vs.gerriet.json.TransactionInfo;
-import vs.gerriet.json.TransactionList;
-import vs.gerriet.json.TransferInfo;
-import vs.gerriet.json.TransferList;
+import vs.gerriet.json.bank.AccountInfo;
+import vs.gerriet.json.bank.AccountList;
+import vs.gerriet.json.bank.BankData;
+import vs.gerriet.json.bank.BankList;
+import vs.gerriet.json.bank.TransactionInfo;
+import vs.gerriet.json.bank.TransactionList;
+import vs.gerriet.json.bank.TransferInfo;
+import vs.gerriet.json.bank.TransferList;
 
 /**
  * Class for bank service API calls.
@@ -103,7 +103,7 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<AccountInfo> createAccount(final BankId bank, final AccountInfo data) {
         try {
-            final String uri = bank.getUri() + AccountsListController.URI_PART;
+            final String uri = bank.getUri() + AccountListController.URI_PART;
             return Unirest.post(this.getServiceUri() + uri)
                     .header("content-type", "application/json").body(data)
                     .asObject(AccountInfo.class);
@@ -123,7 +123,7 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<BankData> createBank(final GameId game) {
         try {
-            return Unirest.post(this.getServiceUri() + BanksController.URI)
+            return Unirest.post(this.getServiceUri() + BankListController.URI)
                     .header("content-type", "application/json")
                     .body(new GameIdContainer(game.getUri())).asObject(BankData.class);
         } catch (final UnirestException ex) {
@@ -141,7 +141,8 @@ public class Bank extends VsApiBase {
      *         body or <code>null</code> if the request failed.
      */
     public HttpResponse<String> createTransaction(final BankId bank) {
-        return this.createTransaction(bank, vs.gerriet.model.transaction.Transaction.Type.SIMPLE);
+        return this.createTransaction(bank,
+                vs.gerriet.model.bank.transaction.Transaction.Type.SIMPLE);
     }
 
     /**
@@ -155,7 +156,7 @@ public class Bank extends VsApiBase {
      *         body or <code>null</code> if the request failed.
      */
     public HttpResponse<String> createTransaction(final BankId bank,
-            final vs.gerriet.model.transaction.Transaction.Type type) {
+            final vs.gerriet.model.bank.transaction.Transaction.Type type) {
         try {
             String phases = "";
             switch (type) {
@@ -203,7 +204,7 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<AccountList> getAccountList(final BankId bank) {
         try {
-            final String uri = bank.getUri() + AccountsListController.URI_PART;
+            final String uri = bank.getUri() + AccountListController.URI_PART;
             return Unirest.get(this.getServiceUri() + uri).asObject(AccountList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
@@ -235,7 +236,8 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<BankList> getBankList() {
         try {
-            return Unirest.get(this.getServiceUri() + BanksController.URI).asObject(BankList.class);
+            return Unirest.get(this.getServiceUri() + BankListController.URI)
+                    .asObject(BankList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
@@ -306,7 +308,8 @@ public class Bank extends VsApiBase {
      */
     public HttpResponse<TransferList> getTransferList(final BankId bank) {
         try {
-            return Unirest.get(this.getServiceUri() + bank.getUri() + TransfersController.URI_PART)
+            return Unirest
+                    .get(this.getServiceUri() + bank.getUri() + TransferListController.URI_PART)
                     .asObject(TransferList.class);
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
@@ -432,7 +435,7 @@ public class Bank extends VsApiBase {
      *         request failed.
      */
     public HttpResponse<TransferInfo> performTransfer(final AccountId account,
-            final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
+            final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
             final String reason) {
         try {
             String uri = account.getBank().getUri();
@@ -485,7 +488,7 @@ public class Bank extends VsApiBase {
      *         request failed.
      */
     public HttpResponse<TransferInfo> performTransfer(final AccountId account,
-            final vs.gerriet.model.transaction.AtomicOperation.Type type, final int amount,
+            final vs.gerriet.model.bank.transaction.AtomicOperation.Type type, final int amount,
             final String reason, final TransactionId transaction) {
         try {
             String uri = account.getBank().getUri();

@@ -6,8 +6,8 @@ import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.json.TransferInfo;
-import vs.gerriet.model.Bank;
+import vs.gerriet.json.bank.TransferInfo;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for specific access on a transfer.
@@ -19,7 +19,7 @@ public class TransferController extends AbstractController implements GetControl
     /**
      * Uri to access a specific transfer on the selected bank.
      */
-    public static final String URI = TransfersController.URI + "/:transferid";
+    public static final String URI = TransferListController.URI + "/:transferid";
 
     /**
      * Returns information about the selected transfer.

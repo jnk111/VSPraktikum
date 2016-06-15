@@ -11,10 +11,10 @@ import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.json.AccountInfo;
-import vs.gerriet.json.TransactionList;
-import vs.gerriet.json.TransferList;
-import vs.gerriet.model.transaction.AtomicOperation.Type;
+import vs.gerriet.json.bank.AccountInfo;
+import vs.gerriet.json.bank.TransactionList;
+import vs.gerriet.json.bank.TransferList;
+import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 import vs.gerriet.service.BankService;
 
 /**

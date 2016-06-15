@@ -7,9 +7,9 @@ import vs.gerriet.controller.Controller;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PutController;
 import vs.gerriet.id.BankId;
-import vs.gerriet.json.BankData;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.BanksContainer;
+import vs.gerriet.json.bank.BankData;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.BanksContainer;
 
 /**
  * Controller for access on a specific bank instance.
@@ -21,7 +21,7 @@ public class BankController extends AbstractController implements GetController,
     /**
      * Uri to access a specific bank.
      */
-    public static final String URI = BanksController.URI + "/:bankid";
+    public static final String URI = BankListController.URI + "/:bankid";
 
     /**
      * Loads bank instance from query parameter.

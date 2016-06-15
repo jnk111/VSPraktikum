@@ -7,18 +7,19 @@ import vs.gerriet.controller.Controller;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.id.GameId;
-import vs.gerriet.json.BankData;
-import vs.gerriet.json.BankList;
 import vs.gerriet.json.GameIdContainer;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.BanksContainer;
+import vs.gerriet.json.bank.BankData;
+import vs.gerriet.json.bank.BankList;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.BanksContainer;
 
 /**
  * Controller for generic bank access (bank list and bank creation).
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class BanksController extends AbstractController implements GetController, PostController {
+public class BankListController extends AbstractController
+        implements GetController, PostController {
 
     /**
      * Basic uri for banks.
@@ -36,7 +37,7 @@ public class BanksController extends AbstractController implements GetController
 
     @Override
     public String getUri() {
-        return BanksController.URI;
+        return BankListController.URI;
     }
 
     /**

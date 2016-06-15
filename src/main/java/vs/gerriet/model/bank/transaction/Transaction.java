@@ -1,4 +1,4 @@
-package vs.gerriet.model.transaction;
+package vs.gerriet.model.bank.transaction;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -9,14 +9,14 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import vs.gerriet.event.AddEventQueue;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
-import vs.gerriet.json.TransactionInfo;
-import vs.gerriet.model.Bank;
+import vs.gerriet.json.bank.TransactionInfo;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.event.CreateNewEventQueue;
 import vs.gerriet.utils.LockProvider;
 
 /**
@@ -120,7 +120,7 @@ public class Transaction extends LockProvider {
     /**
      * Event queue used to create events.
      */
-    private final AddEventQueue eventQueue;
+    private final CreateNewEventQueue eventQueue;
     /**
      * Contains the transaction type.
      */
@@ -182,7 +182,7 @@ public class Transaction extends LockProvider {
      *            Bank instance for this transaction.
      */
     public Transaction(final TransactionId id, final Type type, final Bank bank,
-            final AddEventQueue eventQueue) {
+            final CreateNewEventQueue eventQueue) {
         this.id = id;
         this.type = type;
         this.bank = bank;

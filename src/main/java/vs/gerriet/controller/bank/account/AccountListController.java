@@ -9,16 +9,16 @@ import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
-import vs.gerriet.json.AccountInfo;
-import vs.gerriet.json.AccountList;
-import vs.gerriet.model.Bank;
+import vs.gerriet.json.bank.AccountInfo;
+import vs.gerriet.json.bank.AccountList;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for generic account access (account list and account creation).
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class AccountsListController extends AbstractController
+public class AccountListController extends AbstractController
         implements GetController, PostController {
 
     /**
@@ -28,7 +28,7 @@ public class AccountsListController extends AbstractController
     /**
      * Generic account access uri.
      */
-    public static final String URI = BankController.URI + AccountsListController.URI_PART;
+    public static final String URI = BankController.URI + AccountListController.URI_PART;
 
     /**
      * Returns a list of all accounts on the selected bank.
@@ -45,7 +45,7 @@ public class AccountsListController extends AbstractController
 
     @Override
     public String getUri() {
-        return AccountsListController.URI;
+        return AccountListController.URI;
     }
 
     /**

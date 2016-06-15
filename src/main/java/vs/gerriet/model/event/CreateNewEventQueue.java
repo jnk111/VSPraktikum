@@ -1,4 +1,4 @@
-package vs.gerriet.event;
+package vs.gerriet.model.event;
 
 import de.stuff42.error.ExceptionUtils;
 import vs.gerriet.api.Events;
@@ -9,7 +9,7 @@ import vs.jonas.services.json.EventData;
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class AddEventQueue extends AsyncConsumerQueue<EventData> {
+public class CreateNewEventQueue extends AsyncConsumerQueue<EventData> {
 
     /**
      * Event API instance used to create events.
@@ -20,7 +20,7 @@ public class AddEventQueue extends AsyncConsumerQueue<EventData> {
      * Creates a new queue. The internal consumer will create a new event from
      * the added event data.
      */
-    public AddEventQueue() {
+    public CreateNewEventQueue() {
         super();
         // we use the parent constructor without arguments so we can reuse the
         // API instance

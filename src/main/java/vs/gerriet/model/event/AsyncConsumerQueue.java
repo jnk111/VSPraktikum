@@ -1,4 +1,4 @@
-package vs.gerriet.event;
+package vs.gerriet.model.event;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

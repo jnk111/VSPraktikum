@@ -1,5 +1,8 @@
 package vs.gerriet.service;
 
+import vs.gerriet.controller.event.SubscriptionListController;
+import vs.gerriet.model.event.EventNotificationQueue;
+import vs.gerriet.utils.ServiceUtils;
 import vs.jonas.services.json.EventData;
 
 /**
@@ -8,6 +11,11 @@ import vs.jonas.services.json.EventData;
  * @author Gerriet Hinrichs {@literal <gerriet.hinrichs@web.de>}
  */
 public class EventSubscriptionService {
+
+    /**
+     * Queue that send event notification asynchronous.
+     */
+    public static EventNotificationQueue notificationQueue;
 
     /**
      * <p>
@@ -25,13 +33,16 @@ public class EventSubscriptionService {
      *            notifications for.
      */
     public static void notifySubscribers(final EventData event) {
-        // TODO @gerriet-hinrichs: implement
+        EventSubscriptionService.notificationQueue.push(event);
     }
 
     /**
      * Initializes required controllers for the event subscription system.
      */
     public static void run() {
-        // TODO @gerriet-hinrichs: implement
+        // initialize the notification queue first
+        EventSubscriptionService.notificationQueue = new EventNotificationQueue();
+        // register controller
+        ServiceUtils.registerController(new SubscriptionListController());
     }
 }

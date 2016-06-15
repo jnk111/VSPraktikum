@@ -8,9 +8,9 @@ import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.transaction.AtomicOperation.Type;
-import vs.gerriet.model.transaction.Transfer;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.transaction.Transfer;
+import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 
 /**
  * Controller for transfers from a specific account.

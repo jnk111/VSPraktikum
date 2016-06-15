@@ -5,15 +5,15 @@ import spark.Response;
 import vs.gerriet.controller.AbstractController;
 import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
-import vs.gerriet.json.TransferList;
-import vs.gerriet.model.Bank;
+import vs.gerriet.json.bank.TransferList;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller to access the transfer list.
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class TransfersController extends AbstractController implements GetController {
+public class TransferListController extends AbstractController implements GetController {
 
     /**
      * Uri part after bank uri (extra because used within bank).
@@ -22,7 +22,7 @@ public class TransfersController extends AbstractController implements GetContro
     /**
      * Uri for the transfer list.
      */
-    public static final String URI = BankController.URI + TransfersController.URI_PART;
+    public static final String URI = BankController.URI + TransferListController.URI_PART;
 
     /**
      * Returns a list with all transfer IDs.
@@ -40,7 +40,7 @@ public class TransfersController extends AbstractController implements GetContro
 
     @Override
     public String getUri() {
-        return TransfersController.URI;
+        return TransferListController.URI;
     }
 
 }

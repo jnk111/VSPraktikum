@@ -1,13 +1,13 @@
-package vs.gerriet.model.transaction;
+package vs.gerriet.model.bank.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.json.TransferInfo;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.transaction.AtomicOperation.Type;
+import vs.gerriet.json.bank.TransferInfo;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
 import vs.gerriet.utils.IdUtils;
 
 /**

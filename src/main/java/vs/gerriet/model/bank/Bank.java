@@ -1,12 +1,11 @@
-package vs.gerriet.model;
+package vs.gerriet.model.bank;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import vs.gerriet.controller.bank.account.AccountsListController;
-import vs.gerriet.controller.bank.transfer.TransfersController;
-import vs.gerriet.event.AddEventQueue;
+import vs.gerriet.controller.bank.account.AccountListController;
+import vs.gerriet.controller.bank.transfer.TransferListController;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.BankId;
@@ -15,15 +14,16 @@ import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
 import vs.gerriet.id.bank.TransferId;
-import vs.gerriet.json.AccountInfo;
-import vs.gerriet.json.TransactionInfo;
-import vs.gerriet.json.TransactionList;
-import vs.gerriet.json.TransferInfo;
-import vs.gerriet.json.TransferList;
-import vs.gerriet.model.transaction.AtomicOperation;
-import vs.gerriet.model.transaction.AtomicOperation.Type;
-import vs.gerriet.model.transaction.Transaction;
-import vs.gerriet.model.transaction.Transfer;
+import vs.gerriet.json.bank.AccountInfo;
+import vs.gerriet.json.bank.TransactionInfo;
+import vs.gerriet.json.bank.TransactionList;
+import vs.gerriet.json.bank.TransferInfo;
+import vs.gerriet.json.bank.TransferList;
+import vs.gerriet.model.bank.transaction.AtomicOperation;
+import vs.gerriet.model.bank.transaction.Transaction;
+import vs.gerriet.model.bank.transaction.Transfer;
+import vs.gerriet.model.bank.transaction.AtomicOperation.Type;
+import vs.gerriet.model.event.CreateNewEventQueue;
 import vs.gerriet.utils.IdUtils;
 
 /**
@@ -73,7 +73,7 @@ public class Bank {
     /**
      * Queue used to create events.
      */
-    private final AddEventQueue eventQueue;
+    private final CreateNewEventQueue eventQueue;
 
     /**
      * Creates a new bank without any accounts.
@@ -84,9 +84,9 @@ public class Bank {
         this.accounts = new AccountsContainer(this);
         this.transactions = new ConcurrentSkipListMap<>();
         this.transfers = new ConcurrentSkipListMap<>();
-        this.accountsUri = this.id.getUri() + AccountsListController.URI_PART;
-        this.transferUri = this.id.getUri() + TransfersController.URI_PART;
-        this.eventQueue = new AddEventQueue();
+        this.accountsUri = this.id.getUri() + AccountListController.URI_PART;
+        this.transferUri = this.id.getUri() + TransferListController.URI_PART;
+        this.eventQueue = new CreateNewEventQueue();
     }
 
     /**
@@ -166,7 +166,7 @@ public class Bank {
      * @return New transaction id for the added transaction.
      */
     public TransactionId
-            createTransaction(final vs.gerriet.model.transaction.Transaction.Type type) {
+            createTransaction(final vs.gerriet.model.bank.transaction.Transaction.Type type) {
         final TransactionId transactionId =
                 new TransactionId(this.getId(), Integer.valueOf(IdUtils.getUniqueRunntimeId()));
         final Transaction transaction = new Transaction(transactionId, type, this, this.eventQueue);

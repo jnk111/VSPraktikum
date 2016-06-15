@@ -1,4 +1,4 @@
-package vs.gerriet.model;
+package vs.gerriet.model.bank;
 
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.PlayerId;

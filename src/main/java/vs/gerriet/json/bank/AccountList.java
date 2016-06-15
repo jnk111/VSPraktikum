@@ -1,4 +1,4 @@
-package vs.gerriet.json;
+package vs.gerriet.json.bank;
 
 /**
  * Object for the account list.

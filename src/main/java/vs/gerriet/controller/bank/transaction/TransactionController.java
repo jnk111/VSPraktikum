@@ -11,7 +11,7 @@ import vs.gerriet.exception.TransactionException;
 import vs.gerriet.id.PlayerId;
 import vs.gerriet.id.bank.AccountId;
 import vs.gerriet.id.bank.TransactionId;
-import vs.gerriet.model.Bank;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for specific transaction access.

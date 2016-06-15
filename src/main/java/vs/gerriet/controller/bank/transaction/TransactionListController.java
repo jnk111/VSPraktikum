@@ -7,8 +7,8 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.Controller.PostController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.id.bank.TransactionId;
-import vs.gerriet.model.Bank;
-import vs.gerriet.model.transaction.Transaction.Type;
+import vs.gerriet.model.bank.Bank;
+import vs.gerriet.model.bank.transaction.Transaction.Type;
 
 /**
  * Controller for generic transaction access.

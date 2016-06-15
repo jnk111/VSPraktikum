@@ -7,18 +7,18 @@ import vs.gerriet.controller.Controller.GetController;
 import vs.gerriet.controller.bank.BankController;
 import vs.gerriet.exception.AccountAccessException;
 import vs.gerriet.id.bank.AccountId;
-import vs.gerriet.model.Bank;
+import vs.gerriet.model.bank.Bank;
 
 /**
  * Controller for account access.
  *
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
-public class AccountsController extends AbstractController implements GetController {
+public class AccountController extends AbstractController implements GetController {
     /**
      * Uri for a specific account.
      */
-    public static final String URI = AccountsListController.URI + "/:accountid";
+    public static final String URI = AccountListController.URI + "/:accountid";
 
     /**
      * Returns info about the selected account.
@@ -42,6 +42,6 @@ public class AccountsController extends AbstractController implements GetControl
 
     @Override
     public String getUri() {
-        return AccountsController.URI;
+        return AccountController.URI;
     }
 }

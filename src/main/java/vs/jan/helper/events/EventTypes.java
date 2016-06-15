@@ -7,7 +7,8 @@ public enum EventTypes {
 					"takehypothecary"), DELETE_HYPO("deletehypothecary"), CANNOT_DELETE_HYPO(
 							"cannotdeletehypothecary"), MOVED_TO_JAIL("movedtojail"), TRADE_PLACE("tradeplace"), CANNOT_TRADE_PLACE(
 									"cannottradeplace"), GOT_MONEY_ALL_PLAYERS("gotmoneyallplayers"), GOT_MONEY_FROM_BANK(
-											"got money from bank"), MOVED_OVER_GO("movedovergo");
+											"got money from bank"), MOVED_OVER_GO("movedovergo"), CANNOT_PAY_MONEY_COMMUNITY(
+													"cannotpaymoney");
 
 	private String type;
 

@@ -293,7 +293,7 @@ public class BoardService {
 	 * @throws InvalidInputException
 	 *           Es wurde keine gueltiger Wurf uebergeben
 	 * @throws ResponseCodeException
-	 * @throws TransactionFailedException 
+	 * @throws TransactionFailedException
 	 */
 	public synchronized void movePawn(String gameid, String pawnid, int rollValue)
 			throws ResourceNotFoundException, InvalidInputException, ResponseCodeException, TransactionFailedException {
@@ -367,7 +367,8 @@ public class BoardService {
 		BoardHelper.postEvent(event);
 	}
 
-	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type) throws TransactionFailedException {
+	private void doFurtherDecksActions(String gameid, int newPos, Board board, Pawn pawn, String type)
+			throws TransactionFailedException {
 
 		String url = this.services.getDecks() + "/" + gameid + "/" + type;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
@@ -395,17 +396,19 @@ public class BoardService {
 	private void getMoneyFromBank(Pawn pawn, String gameid) throws TransactionFailedException {
 		String toId = BoardHelper.getID(pawn.getPlayerUri());
 		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_TO_INFIX + toId + "/" + CommCard.BANK_MONEY;
+		JSONEvent event = null;
 		
 		try {
+			
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 
-			JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(),
+			event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(),
 					EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), pawn.getRollsUri(),
 					pawn.getPlayerUri());
 
 			BoardHelper.broadCastEvent(event);
 			BoardHelper.postEvent(event);
-			
+
 		} catch (Exception e) {
 			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 		}
@@ -417,6 +420,7 @@ public class BoardService {
 		String url = this.services.getGames() + "/" + gameid + PLAYERS_SUFFIX;
 		String players = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONPlayersList list = GSON.fromJson(players, JSONPlayersList.class);
+		JSONEvent event = null;
 
 		for (JSONPlayersListElement elem : list.getPlayers()) {
 			String fromId = BoardHelper.getID(elem.getId());
@@ -424,22 +428,28 @@ public class BoardService {
 			try {
 				String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
 						+ CommCard.PLAYER_MONEY;
-				
+
 				HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
-				
+
+				event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
+						EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), pawn.getRollsUri(),
+						pawn.getPlayerUri());
+
 			} catch (Exception e) {
+				
+				event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(),
+						EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(), EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(),
+						pawn.getRollsUri(), elem.getId());
+				
 				throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+
+			} finally {
+
+				BoardHelper.broadCastEvent(event);
+				BoardHelper.postEvent(event);
 			}
 
-
 		}
-
-		JSONEvent event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
-				EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), pawn.getRollsUri(),
-				pawn.getPlayerUri());
-
-		BoardHelper.broadCastEvent(event);
-		BoardHelper.postEvent(event);
 	}
 
 	/**
@@ -455,8 +465,8 @@ public class BoardService {
 	 * @throws ResourceNotFoundException
 	 *           Board oder Figur nicht gefunden
 	 * @throws ResponseCodeException
-	 * @throws TransactionFailedException 
-	 * @throws InvalidInputException 
+	 * @throws TransactionFailedException
+	 * @throws InvalidInputException
 	 * 
 	 */
 	public synchronized JSONEventList rollDice(String gameid, String pawnid)
@@ -615,7 +625,6 @@ public class BoardService {
 			} catch (NumberFormatException e) {
 				throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
 			}
-			
 
 			Place p = Place.values()[placeNum];
 			Field f = BoardHelper.getField(key, p.getPlaceUri());

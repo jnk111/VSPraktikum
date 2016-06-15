@@ -5,19 +5,19 @@ import vs.jan.model.Convertable;
 
 public enum CommCard implements Convertable<JSONCard> {
 
-	
-	GET_MONEY_FROM_BANK("get 2000$ from Bank",
-			"get 2000$ from Bank"), GET_MONEY_FROM_ALL_PLAYERS("get 1000$ from every player", "get 1000$ from every player");
+	GET_MONEY_FROM_BANK("get <money>$ from Bank", "get <money>$ from Bank"), GET_MONEY_FROM_ALL_PLAYERS(
+			"get <money>$ from every player", "get <money>$ from every player");
 
 	private String name;
 	private String text;
 
 	public final static int BANK_MONEY = 2000;
 	public final static int PLAYER_MONEY = 1000;
+	private final String PLACE_HOLDER = "<money>";
 
 	private CommCard(String name, String text) {
-		this.name = name;
-		this.text = text;
+		this.name = name.replace(PLACE_HOLDER, String.valueOf(BANK_MONEY));
+		this.text = text.replace(PLACE_HOLDER, String.valueOf(BANK_MONEY));
 	}
 
 	@Override

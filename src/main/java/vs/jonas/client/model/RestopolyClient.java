@@ -49,14 +49,15 @@ public class RestopolyClient {
 	private JSONService gameService;
 	private JSONService boardService;
 	private JSONService brokerService;
-	private String SLASH;
-	private String SLASH_PLAYERS;
-	private String SLASH_PAWNS;
-	private String SLASH_ROLL;
-	private String SLASH_READY;
-	private String SLASH_CURRENT;
-	private String SLASH_TURN;
-	private String SLASH_STATUS;
+	private final String SLASH = "/";
+	private final String SLASH_PLAYERS = "/players";
+	private final String SLASH_PAWNS = "/pawns";
+	private final String SLASH_ROLL = "/roll";
+	private final String SLASH_READY = "/ready";
+	private final String SLASH_CURRENT = "/current";
+	private final String SLASH_TURN = "/turn";
+	private final String SLASH_STATUS = "/status";
+	private static final String SLASH_OWNER = "/owner";
 	private Gson gson;
 
 	/**
@@ -69,14 +70,6 @@ public class RestopolyClient {
 	 */
 	public RestopolyClient(YellowPagesService yellowPages) throws IOException, UnirestException, Exception {
 		try {
-			SLASH = "/";
-			SLASH_PLAYERS = "/players";
-			SLASH_PAWNS = "/pawns";
-			SLASH_ROLL = "/roll";
-			SLASH_READY = "/ready";
-			SLASH_CURRENT = "/current";
-			SLASH_TURN = "/turn";
-			SLASH_STATUS = "/status";
 			gameService = yellowPages.getService(ServiceNames.GAME);
 			boardService = yellowPages.getService(ServiceNames.BOARD);
 			brokerService = yellowPages.getService(ServiceNames.BROKER);
@@ -263,6 +256,25 @@ public class RestopolyClient {
 	
 	/* ************************************ BoardServices ***************************************** */
 	
+	public void buyEstate(String gameID, User user) throws UnirestException, IOException {
+		// TODO Auto-generated method stub
+		System.out.println("\n ************* Buy Estate ***************");
+		System.out.println(user.getName());
+		
+		String boardsServiceUri = boardService.getUri();
+		String boardsPlaceUri = boardsServiceUri.replaceAll("/boards", "") + getPlaceUri(gameID, user);
+		System.out.println("Received Place URI: " + boardsPlaceUri);
+		
+		Place place = gson.fromJson(get(boardsPlaceUri),Place.class);
+		
+		String brokerPlaceUri = place.getBroker();
+		
+		System.out.println("BrokerUri: " + brokerPlaceUri);		
+		String brokerServiceUri = brokerService.getUri();
+		String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+brokerPlaceUri+SLASH_OWNER;
+		System.out.println("Uri to Owner Endpoint:" + brokerPlaceOwnerUri);
+	}
+	
 	/**
 	 * Liefert alle Places des Spielfeldes.
 	 * @param gameID Die ID des Games
@@ -276,8 +288,6 @@ public class RestopolyClient {
 
 
 		String boardServiceUri = boardService.getUri();
-		String brokerServiceUri = brokerService.getUri();
-		// String boardsPlacesUri = boardServiceUri + "/" + gameID + "/places";
 		System.out.println(boardServiceUri);
 		Board board = gson.fromJson(get(boardServiceUri + SLASH + gameID), Board.class);
 		System.out.println("Board: " + gson.toJson(board));
@@ -355,22 +365,13 @@ public class RestopolyClient {
 	 * @throws UnirestException
 	 * @throws IOException
 	 */
-	public String getPawnID(String gameID, User user) throws UnirestException, IOException{
-		System.out.println("\n************** Get PawnID **************");
-		
-		
-		
-		List<Pawn> data = getPawns(gameID);
-		
-		// TODO getPawns liefert bisher noch nichts zurück
-		
-		String result = "";
-		for(Pawn pawn : data){
-			if(pawn.getPlayer().equals(user.getName())){
-				result = pawn.getPlayer();
-			}
-		}		
-		return result;
+	public String getPlaceUri(String gameID, User user) throws UnirestException, IOException{
+		String boardServiceUri = boardService.getUri();
+		String boardsPawnsUri = boardServiceUri + SLASH + gameID + SLASH_PAWNS + SLASH + user.getName();
+		System.out.println("BoardsPawnsUri: " + boardsPawnsUri);
+		JsonObject json = get(boardsPawnsUri);
+		Pawn playerPawn = gson.fromJson(json, Pawn.class);
+		return playerPawn.getPlace();
 	}
 
 	/**
@@ -392,10 +393,17 @@ public class RestopolyClient {
 		HttpResponse<String> result = Unirest.post(boardsDiceRollUri).asString();
 		System.out.println(result.getBody());
 
-		JsonObject diceRolls = get(boardsDiceRollUri);
+		Dice lastThrown = getLastDiceRoll(SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL);
+		return lastThrown.getNumber();
+	}
+	
+	public Dice getLastDiceRoll(String boardsDiceRollUri) throws IOException, UnirestException{
+		String boardServiceUri = boardService.getUri();
+		String uri = boardServiceUri + boardsDiceRollUri;
+		JsonObject diceRolls = get(uri);
 		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
 		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
-		return lastThrown.getNumber();
+		return lastThrown;
 	}
 
 	/**
@@ -443,4 +451,5 @@ public class RestopolyClient {
 		}
 		return true;
 	}
+
 }

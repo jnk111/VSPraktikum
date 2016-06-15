@@ -52,4 +52,10 @@ public class EventData {
 		return player;
 	}
 
+	@Override
+	public String toString() {
+		return "Event [game=" + game + ", type=" + type + ", name=" + name + ", reason=" + reason + ", ressource="
+				+ ressource + ", player=" + player + "]";
+	}
+
 }

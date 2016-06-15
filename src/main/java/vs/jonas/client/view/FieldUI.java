@@ -35,7 +35,7 @@ public class FieldUI {
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		ImageIcon fieldImage = new ImageIcon(FieldUI.class.getResource("/monopoly.jpg"));
+		ImageIcon fieldImage = new ImageIcon(FieldUI.class.getResource("/house.gif"));
 		JLabel lblNewLabel_1 = new JLabel(fieldImage); // Todo ImageFinder
 //		lblNewLabel_1.setIcon(new ImageIcon(FieldUI.class.getResource("/vs/jonas/client/assets/monopolyKopf.png")));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);

@@ -76,7 +76,7 @@ public class GameController {
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();
-		System.err.println("**##** Response: "+ client.get(PROTOCOL + ip+":" + PORT + SLASH_CLIENT));
+//		System.err.println("**##** Response: "+ client.get(PROTOCOL + ip+":" + PORT + SLASH_CLIENT));
 	}
 
 	private void startClientService() {	
@@ -118,6 +118,7 @@ public class GameController {
 					ui.getUsernameLbl().setText(user.getName());				
 					registriereActionListener();
 					ui.showUI();
+					JOptionPane.showMessageDialog(null, "Auf 'Spiel starten' klicken, wenn Du bereit bist.");
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
 					e.printStackTrace();
@@ -138,7 +139,7 @@ public class GameController {
 				JComboBox<String> aktionen = ui.getAktionen();
 				switch(aktionen.getSelectedItem().toString()){
 				case "Wuerfeln": rollDice();break;
-				case "Kaufen": buy(); break;
+				case "Kaufen": buy("", user); break;
 				case "Verkaufen": sell(); break;
 				case "Ereigniskarte spielen": playChanceCard(); break;
 				case "Zug beenden": finishRound();break;
@@ -238,8 +239,14 @@ public class GameController {
 		} 
 	}
 	
-	private void buy(){
+	private void buy(String placeID, User user){
 		//TODO
+		try {
+			client.buyEstate(gameID, user);
+		} catch (UnirestException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.err.println("Dummy: Buy");
 	}
 	
@@ -289,19 +296,20 @@ public class GameController {
 	 * Handles the incoming events
 	 */
 	private void handleIncomingEvent(EventData event) {
-		//TODO
+		System.err.println("IncomingEvent: " + event);
 		JTextArea eventsConsole = ui.getEventsConsole();
-		
-		if(event.getType().equals(EventTypes.MOVE_PAWN)){
-//			movePawn(event);
-//			JOptionPane.showMessageDialog(null, event.getReason());
-			
-		} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL)){
-//			JOptionPane.showMessageDialog(null, event.getPlayer() + " has moved to Jail.");
-		} else{
+		String eventText = "";
+		if(event.getType().equals(EventTypes.MOVE_PAWN.getType())){
+			eventText = event.getPlayer() + " has moved his pawn.";
+		} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL.getType())){
+			eventText = event.getPlayer() + " has been sent to jail.";
+		} else if (event.getType().equals(EventTypes.VISIT_PLACE.getType())){
+			eventText = event.getPlayer() + " has visited " + event.getRessource();
+		} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
+			eventText = event.getPlayer() + " has bought a place.";
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
-		eventsConsole.append("Event "+ui.getEventNumber() + ": " + event.getReason() + "\n\n");
+		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");
 		ui.setEventNumber(ui.getEventNumber()+1);
 //		eventsConsole.upd
 		try {

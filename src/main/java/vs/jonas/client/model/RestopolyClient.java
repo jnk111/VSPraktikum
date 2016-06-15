@@ -367,11 +367,13 @@ public class RestopolyClient {
 	}
 
 	public List<Place> getPlacesFor(String gameID, String pawnID) throws IOException, UnirestException{
+		System.out.println("*** Fetch Places For " + pawnID + " ****");
 		List<Place> places = new ArrayList<>();
 		
 		for(Place place : getPlaces(gameID)){
 			Place placeWithWholeInformation = getPlace(gameID, place.getID());
-			if(placeWithWholeInformation.getOwner() != null || !placeWithWholeInformation.getOwner().equals("")){
+			if(placeWithWholeInformation.getOwner() != null && !placeWithWholeInformation.getOwner().equals("")){
+				System.out.println("Owner: " + placeWithWholeInformation.getOwner());
 				String brokerServiceUri = brokerService.getUri();
 				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+placeWithWholeInformation.getOwner();
 				System.out.println("BrokerPlaceOwnerUri: " + brokerPlaceOwnerUri);
@@ -379,6 +381,10 @@ public class RestopolyClient {
 				try {
 					JsonObject ownerResponse = get(brokerPlaceOwnerUri);
 					System.out.println("Response: " + ownerResponse);
+					PlayerResponse response = gson.fromJson(ownerResponse, PlayerResponse.class);
+					if(response.getPawn().equals(pawnID)){
+						places.add(placeWithWholeInformation);
+					}
 				} catch (UnirestException e) {
 				}
 				}

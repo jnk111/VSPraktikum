@@ -542,7 +542,7 @@ public class GamesService
 
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
                 userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/users/", "" ) );
-                userServiceDTO.setUri( newPlayer.getUri() + "/client/" + userServiceDTO.getName() + "/events" );
+                userServiceDTO.setUri( newPlayer.getUri() );
 
                 if ( DEBUG_MODE )
                 {

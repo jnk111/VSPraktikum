@@ -746,6 +746,11 @@ public class GamesService
                     }
                     player.setReady( false );
                 }
+                else if ( game.allPlayersReady() && !game.isRunning() )
+                {
+                    startGame( game );
+                    resp.status( 200 ); // ok
+                }
             }
             else
             {

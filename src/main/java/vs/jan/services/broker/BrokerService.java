@@ -174,7 +174,7 @@ public class BrokerService {
 			return p.getOwner();
 		}
 
-		throw new PlaceNotHasAnOwnerException(Error.NO_OWNER.getMsg());
+		return null;
 	}
 
 	public JSONEstates getPlaces(String gameid) {

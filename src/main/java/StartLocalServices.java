@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
+import spark.Spark;
 import vs.gerriet.service.BankService;
 import vs.jan.api.boardservice.BoardRESTApi;
 import vs.jan.api.broker.BrokerAPI;
@@ -83,6 +84,7 @@ public class StartLocalServices {
         /*  Initializes BoardService */
         new BoardRESTApi();
 
+        Spark.awaitInitialization();
 
         // Initialize URIs
         gamesUri = yellowPages.getService(ServiceNames.GAME).getUri();//"http://localhost:4567/games";

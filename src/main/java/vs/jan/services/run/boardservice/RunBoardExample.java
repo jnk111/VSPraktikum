@@ -20,7 +20,6 @@ import vs.jan.json.boardservice.JSONGameURI;
 import vs.jan.json.boardservice.JSONPawn;
 import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONService;
-import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.ServiceNames;
 import vs.jan.model.boardservice.Player;
 import vs.jan.tools.HttpService;
@@ -220,16 +219,6 @@ public class RunBoardExample {
 
 	}
 
-
-	private static void initStartBalances(String gamePlayerUri, Player p1) {
-		String json = HttpService.get(BANK_URI + "/" + BOARD_ID + "/accounts/" + getID(p1.getUser()), 200);
-		System.out.println("Got Account: " + json);
-		JSONAccount acc = GSON.fromJson(json, JSONAccount.class);
-		String uri = BANK_URI + "/" + BOARD_ID + "/transfer/to/" + getID(p1.getUser()) + "/" + (acc.getSaldo() + 20000);
-		System.out.println("Set start saldo: ");
-		HttpService.post(uri, null, 201);
-		
-	}
 
 	private static String getID(String uri) {
 		String [] u = uri.split("/");

@@ -95,6 +95,10 @@ public class PlayerOverviewTableModel extends DefaultTableModel {
 		}
 	}
 	
+	public PlayerInformation getPlayerInformation(int row){
+		return players.get(row);	
+	}
+	
 	@Override
 	public boolean isCellEditable(int row, int col)
 	{

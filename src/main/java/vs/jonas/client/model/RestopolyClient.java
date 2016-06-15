@@ -334,7 +334,7 @@ public class RestopolyClient {
 		JsonObject brokerPlaceResponse = get(brokerPlaceUri);
 		BrokerPlace brokerPlace = gson.fromJson(brokerPlaceResponse, BrokerPlace.class);
 		
-		System.out.println("Received BrokerPlace: " + brokerPlace);
+//		System.out.println("Received BrokerPlace: " + brokerPlace);
 		// Kosten = je nach anzahl der Häuser unterschiedlich
 		int numberOfHouses = brokerPlace.getHouses();
 		if(numberOfHouses!= -1){
@@ -343,8 +343,48 @@ public class RestopolyClient {
 		} 
 		place.setValue(brokerPlace.getValue());
 		place.setHouses(brokerPlace.getHouses());
-		place.setOwner(brokerPlace.getOwner());
+		
+		String owner = getOwner(brokerPlace.getOwner());
+		place.setOwner(owner);
 		return place;
+	}
+	
+	private String getOwner(String ownerUri) throws IOException {
+		if(ownerUri != null && !ownerUri.equals("")){
+			System.out.println("\n********* GetOwner ***********");
+			String brokerServiceUri = brokerService.getUri();
+			String brokerServiceOwnerUri = brokerServiceUri.replaceAll("/broker", "") + ownerUri;
+			try {
+				JsonObject json = get(brokerServiceOwnerUri);
+				PlayerResponse response = gson.fromJson(json, PlayerResponse.class);
+				System.out.println("Response: " + response);
+				return response.getId();
+			} catch (UnirestException e) {
+				
+			}
+		}
+		return "";
+	}
+
+	public List<Place> getPlacesFor(String gameID, String pawnID) throws IOException, UnirestException{
+		List<Place> places = new ArrayList<>();
+		
+		for(Place place : getPlaces(gameID)){
+			Place placeWithWholeInformation = getPlace(gameID, place.getID());
+			if(placeWithWholeInformation.getOwner() != null || !placeWithWholeInformation.getOwner().equals("")){
+				String brokerServiceUri = brokerService.getUri();
+				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+placeWithWholeInformation.getOwner();
+				System.out.println("BrokerPlaceOwnerUri: " + brokerPlaceOwnerUri);
+				
+				try {
+					JsonObject ownerResponse = get(brokerPlaceOwnerUri);
+					System.out.println("Response: " + ownerResponse);
+				} catch (UnirestException e) {
+				}
+				}
+		}
+		
+		return places;
 	}
 
 	/**
@@ -368,6 +408,30 @@ public class RestopolyClient {
 		return data;
 	}
 	
+	public Player getPlayerWithWholeInformation(String gameID, PlayerInformation player) throws IOException, UnirestException {
+		// TODO Auto-generated method stub
+		Player result = new Player();
+		List<Place> places = getPlacesFor(gameID, player.getPawn());
+		System.out.println("PlayerPawnUri: " + player.getPawn());
+		double averageDiceRoll = getAverageDiceRollRateFor(gameID,player.getPawn());
+		result.setName(player.getPawn());
+		result.setAccount(player.getAccount());
+		result.setPlaces(places);
+		result.setAverageDiceRoll(averageDiceRoll);
+		return result;
+	}
+	
+	private double getAverageDiceRollRateFor(String gameID, String boardsPawnUri) throws IOException, UnirestException {
+		
+		//SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL
+		String boardServiceUri = boardService.getUri();
+		String uri = boardServiceUri.replaceAll("/boards", "")+ boardsPawnUri + SLASH_ROLL;
+		JsonObject diceRolls = get(uri);
+		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);
+		System.out.println(rolls);
+		return 0;
+	}
+
 	/**
 	 * Liefert die URI der Spielfigur des Users
 	 * @param gameID Die ID des Games
@@ -410,6 +474,7 @@ public class RestopolyClient {
 	public Dice getLastDiceRoll(String boardsDiceRollUri) throws IOException, UnirestException{
 		String boardServiceUri = boardService.getUri();
 		String uri = boardServiceUri + boardsDiceRollUri;
+		System.out.println("GetLastDiceRollUri: " + uri);
 		JsonObject diceRolls = get(uri);
 		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);	
 		Dice lastThrown = rolls.getRolls().get(rolls.getRolls().size()-1);
@@ -461,5 +526,6 @@ public class RestopolyClient {
 		}
 		return true;
 	}
+
 
 }

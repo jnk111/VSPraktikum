@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,12 +24,15 @@ import vs.jonas.client.json.ClientTurn;
 import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.User;
+import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
+import vs.jonas.client.model.table.MyTableMouseListener;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.utils.EventTypes;
 import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
+import vs.jonas.client.view.PlayerUI;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.services.json.EventData;
 
@@ -73,7 +75,7 @@ public class GameController {
 		
 		this.ip = "192.168.255.18";
 		
-		this.user.setUri("http://" + this.ip + ":" +this.PORT);
+		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();
@@ -101,7 +103,6 @@ public class GameController {
 			ladeSpielerInformationen();
 			return "";
 		});
-		
 		
 	}
 
@@ -167,7 +168,26 @@ public class GameController {
 			}
 		});
 		
-		ui.getGameFIeldTable().addMouseListener(new MouseListener() {
+		ui.getPlayerTable().addMouseListener(new MyTableMouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int row = e.getY() / ui.getGameFIeldTable().getRowHeight();
+				PlayerOverviewTableModel model = (PlayerOverviewTableModel)ui.getPlayerTable().getModel();
+				PlayerInformation playerInformation = model.getPlayerInformation(row);
+				
+				try {
+					Player player = client.getPlayerWithWholeInformation(gameID,playerInformation);
+					new PlayerUI(player).showUI();
+					System.err.println("A Player was selected: " + player);			
+				} catch (IOException | UnirestException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
+		ui.getGameFIeldTable().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -185,23 +205,6 @@ public class GameController {
 				}
 				
 				System.err.println("A Place was selected: " + place);
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		
@@ -227,6 +230,7 @@ public class GameController {
 //			updateGame();
 			
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			if(i<3){
 				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
 				i++;

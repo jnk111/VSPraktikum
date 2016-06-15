@@ -2,6 +2,7 @@ package vs.jonas.client.view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ public class FieldUI {
 	public FieldUI(Place place){
 		frame = new JFrame(place.getName());
 		frame.setSize(300, 450);
+		frame.setLocation(500,100);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 //		frame.setAlwaysOnTop(true);
 		JLabel lblNewLabel = new JLabel(place.getName());
@@ -33,7 +35,8 @@ public class FieldUI {
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel lblNewLabel_1 = new JLabel("Feldbild"); // Todo ImageFinder
+		ImageIcon fieldImage = new ImageIcon(FieldUI.class.getResource("/monopoly.jpg"));
+		JLabel lblNewLabel_1 = new JLabel(fieldImage); // Todo ImageFinder
 //		lblNewLabel_1.setIcon(new ImageIcon(FieldUI.class.getResource("/vs/jonas/client/assets/monopolyKopf.png")));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblNewLabel_1, BorderLayout.CENTER);
@@ -72,7 +75,18 @@ public class FieldUI {
 		panel_1.add(lblCost);
 		JLabel lblCostresult = new JLabel(place.getCost()+"");
 		panel_1.add(lblCostresult);
-		splitPane.setDividerLocation(100);
+		splitPane.setDividerLocation(200);
+	}
+	
+	/** Returns an ImageIcon, or null if the path was invalid. */
+	protected ImageIcon createImageIcon(String path, String description) {
+	    URL imgURL = getClass().getResource(path);
+	    if (imgURL != null) {
+	        return new ImageIcon(imgURL, description);
+	    } else {
+	        System.err.println("Couldn't find file: " + path);
+	        return null;
+	    }
 	}
 	
 	public void showUI(){

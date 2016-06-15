@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
@@ -214,6 +216,12 @@ public class GameController {
 	private void rollDice() {
 		int i= 0;
 		try {
+			ImageIcon diceRollImage = new ImageIcon(FieldUI.class.getResource("/dice.gif"));
+			JLabel label1 = new JLabel("Roll the Dice, Baby!",diceRollImage, JLabel.CENTER);
+			//Set the position of the text, relative to the icon:
+			label1.setVerticalTextPosition(JLabel.BOTTOM);
+			label1.setHorizontalTextPosition(JLabel.CENTER);
+			JOptionPane.showMessageDialog(null,label1);
 			int number = client.rollDice(gameID, user);
 			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
 //			updateGame();

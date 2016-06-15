@@ -140,6 +140,14 @@ public class EventNotificationQueue extends AsyncConsumerQueue<EventData> {
             final Set<String> eventSubscribers = eventTypeMapping.get(event);
             // remove subscription from registry
             eventSubscribers.remove(data.uri);
+            // remove set instance if the set is empty
+            if (eventSubscribers.isEmpty()) {
+                eventTypeMapping.remove(event);
+            }
+        }
+        // remove game map if the game has no subscriptions
+        if (eventTypeMapping.isEmpty()) {
+            this.subscribers.remove(data.game);
         }
     }
 }

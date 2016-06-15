@@ -15,7 +15,7 @@ public class MutexService
     }
 
     /**
-     * Erstellt ein neues Mutexobjekt fuer ein Spielt
+     * Erstellt ein neues Mutexobjekt fuer ein Spiel
      * 
      * @param gameId
      */

@@ -31,14 +31,11 @@ public class Mutex
     {
         boolean result = false;
 
-        if ( playerId.equals( permittedUser ) )
-        {
-            this.currentUser = playerId;
-            result = true;
+        this.currentUser = playerId;
+        result = true;
 
-            if ( DEBUG_MODE )
-                System.out.println( playerId + " hat die Erlaubnis den Mutex anzufordern." );
-        }
+        if ( DEBUG_MODE )
+            System.out.println( playerId + " hat die Erlaubnis den Mutex anzufordern." );
 
         return result;
     }
@@ -59,7 +56,7 @@ public class Mutex
     {
         return this.currentUser;
     }
-    
+
     public String getPermittedUser()
     {
         return this.permittedUser;

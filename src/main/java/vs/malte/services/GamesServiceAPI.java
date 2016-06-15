@@ -31,7 +31,7 @@ public class GamesServiceAPI
         initPutGameComponent();
         initPutPlayerReady();
         initPutGameStatus();
-        initPutPlayersTurn();
+        // initPutPlayersTurn();
 
         // initExceptions();
     }
@@ -122,7 +122,7 @@ public class GamesServiceAPI
     {
         post( "/games/:gameId/players", ( req, resp ) ->
         {
-            return gameService.createNewPlayer( req, resp );
+            return gameService.postNewPlayer( req, resp );
         } );
     }
 
@@ -190,19 +190,19 @@ public class GamesServiceAPI
         } );
     }
 
-    /**
-     * Versucht den Mutex fuer den jeweiligen Spieler zuerhalten. Klappt nur wenn dieser auch an der Reihe ist.
-     * 
-     * Uebergeben werden muss ein Playerobjekt als json. ( Die Methode verwendet nur die ID des Playerobjekts, die anderen Felder koennen leer bleiben )
-     * 
-     */
-    private void initPutPlayersTurn()
-    {
-        put( "/games/:gameId/player/turn", ( req, resp ) ->
-        {
-            return gameService.putPlayersTurn( req, resp );
-        } );
-    }
+    // /**
+    // * Versucht den Mutex fuer den jeweiligen Spieler zuerhalten. Klappt nur wenn dieser auch an der Reihe ist.
+    // *
+    // * Uebergeben werden muss ein Playerobjekt als json. ( Die Methode verwendet nur die ID des Playerobjekts, die anderen Felder koennen leer bleiben )
+    // *
+    // */
+    // private void initPutPlayersTurn()
+    // {
+    // put( "/games/:gameId/player/turn", ( req, resp ) ->
+    // {
+    // return gameService.putPlayersTurn( req, resp );
+    // } );
+    // }
 
     private void initGetPlayersTurn()
     {

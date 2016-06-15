@@ -217,6 +217,11 @@ public class ServiceList
         this.games = games;
     }
 
+    /**
+     * Adresse des Userservice
+     * 
+     * @return
+     */
     public String getUsers()
     {
         return users;

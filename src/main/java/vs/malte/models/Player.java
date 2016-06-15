@@ -16,7 +16,6 @@ public class Player
     private String pawn;
     private String account;
     private String uri;
-    
 
     public Player( String user, String id, String pawn, String account, String uri, boolean ready )
     {
@@ -127,4 +126,5 @@ public class Player
 			this.uri = uri;
 		}
 
+		
 }

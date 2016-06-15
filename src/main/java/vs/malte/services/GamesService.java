@@ -14,11 +14,9 @@ import spark.Request;
 import spark.Response;
 import vs.malte.json.BankDTO;
 import vs.malte.json.CreateBoardDTO;
-import vs.malte.json.BrokerDTO;
 import vs.malte.json.CreateGameDTO;
 import vs.malte.json.CreateUserDTO;
 import vs.malte.json.CurrentPlayerDTO;
-import vs.malte.json.DecksDTO;
 import vs.malte.json.GameDTO;
 import vs.malte.json.GamesListDTO;
 import vs.malte.json.InitBoardDTO;
@@ -304,31 +302,31 @@ public class GamesService
         return game;
     }
 
-    private Game createBroker( Game game )
-    {
-        String brokerUrl = game.getServiceList().getBroker();
-        BrokerDTO brokerDTO = new BrokerDTO();
-        brokerDTO.setGame( game.getId() );
-
-        int responseCode = HttpService.post( brokerUrl, brokerDTO );
-
-        if ( DEBUG_MODE )
-        {
-            System.out.println( "\n********************CREATE BROKER FOR " + game.getName() + "********************" );
-            System.out.println( "With DTO: " + new Gson().toJson( brokerDTO ) );
-        }
-
-        if ( responseCode == 200 )
-        {
-            game.getComponents().setBroker( brokerUrl + "/" + game.getName() );
-        }
-        else
-        {
-            // TODO throw Component not available Exception
-        }
-
-        return game;
-    }
+    // private Game createBroker( Game game )
+    // {
+    // String brokerUrl = game.getServiceList().getBroker();
+    // BrokerDTO brokerDTO = new BrokerDTO();
+    // brokerDTO.setGame( game.getId() );
+    //
+    // int responseCode = HttpService.post( brokerUrl, brokerDTO );
+    //
+    // if ( DEBUG_MODE )
+    // {
+    // System.out.println( "\n********************CREATE BROKER FOR " + game.getName() + "********************" );
+    // System.out.println( "With DTO: " + new Gson().toJson( brokerDTO ) );
+    // }
+    //
+    // if ( responseCode == 200 )
+    // {
+    // game.getComponents().setBroker( brokerUrl + "/" + game.getName() );
+    // }
+    // else
+    // {
+    // // TODO throw Component not available Exception
+    // }
+    //
+    // return game;
+    // }
 
     /**
      * Initialisiert die GET-Methode zur Abfrage der aktuellen Spiele
@@ -511,7 +509,7 @@ public class GamesService
      * 
      * URI: /games/:gameId/players
      */
-    public synchronized String createNewPlayer( Request req, Response resp )
+    public synchronized String postNewPlayer( Request req, Response resp )
     {
 
         resp.header( "Content-Type", "application/json" );
@@ -521,7 +519,7 @@ public class GamesService
 
         if ( !game.isRunning() )
         {
-            //String clientUri = "http://" + req.ip() + ":" + req.port();
+            // String clientUri = "http://" + req.ip() + ":" + req.port();
 
             Player newPlayer = new Gson().fromJson( req.body(), Player.class );   // Erstellt Playerobjekt mit Namen
             String mapKey = newPlayer.getUserName().toLowerCase();
@@ -544,7 +542,7 @@ public class GamesService
 
                 CreateUserDTO userServiceDTO = new CreateUserDTO();
                 userServiceDTO.setName( newPlayer.getUserName().replaceAll( "/users/", "" ) );
-                userServiceDTO.setUri(newPlayer.getUri() + "/client/" + userServiceDTO.getName() + "/events");
+                userServiceDTO.setUri( newPlayer.getUri() + "/client/" + userServiceDTO.getName() + "/events" );
 
                 if ( DEBUG_MODE )
                 {
@@ -760,7 +758,7 @@ public class GamesService
     }
 
     /**
-     * Erteilt die Erlaubnis an den naechsten Spieler den Mutex in Anspruchzunehmen
+     * Ermittelt den naechsten Spieler und uebergibt diesen den Mutex.
      */
     private void initNextPlayersTurn( Game game )
     {
@@ -784,7 +782,16 @@ public class GamesService
             System.out.println( "\nNext Player: " + new Gson().toJson( playerArray[nextPlayerIndex].getUserName() ) );
 
         mutexService.release( game.getId(), currentPlayerID );
-        mutexService.assignMutexPermission( game.getId(), playerArray[nextPlayerIndex].getId() );
+        mutexService.acquire( game.getId(), playerArray[nextPlayerIndex].getId() );
+
+        int responseCode = HttpService.post( playerArray[nextPlayerIndex].getUri() + "/client/turn", playerArray[nextPlayerIndex].getId() );
+
+        if ( responseCode != 200 )
+        {
+            if ( DEBUG_MODE )
+                System.err.println( "Fehler beim Posten des \"Turn-Events\" an " + playerArray[nextPlayerIndex].getUserName() );
+
+        }
     }
 
     /**
@@ -938,32 +945,32 @@ public class GamesService
      * 
      * URI: /games/:gameId/player/turn
      */
-    public String putPlayersTurn( Request req, Response resp )
-    {
-        resp.header( "Content-Type", "application/json" );
-        resp.status( 500 ); // Internal Server Error
-
-        Game game = getGame( req.params( ":gameId" ) );
-        Player player = new Gson().fromJson( req.body(), Player.class );
-
-        if ( game != null && game.isRunning() && player != null )       // TODO Fehlercode falls der Spieler den Mutex bereits hat
-        {
-            if ( mutexService.acquire( game.getId(), player.getId() ) )
-            {
-                resp.status( 201 ); // aquired the mutex
-
-                if ( DEBUG_MODE )
-                    System.out.println( "\nMutex acquired to: " + player.getId() );
-            }
-            else
-                resp.status( 409 ); // already aquired by an other player
-        }
-        else
-        {
-            resp.status( 400 ); // Bad Request
-        }
-        return "";
-    }
+    // public String putPlayersTurn( Request req, Response resp )
+    // {
+    // resp.header( "Content-Type", "application/json" );
+    // resp.status( 500 ); // Internal Server Error
+    //
+    // Game game = getGame( req.params( ":gameId" ) );
+    // Player player = new Gson().fromJson( req.body(), Player.class );
+    //
+    // if ( game != null && game.isRunning() && player != null ) // TODO Fehlercode falls der Spieler den Mutex bereits hat
+    // {
+    // if ( mutexService.acquire( game.getId(), player.getId() ) )
+    // {
+    // resp.status( 201 ); // aquired the mutex
+    //
+    // if ( DEBUG_MODE )
+    // System.out.println( "\nMutex acquired to: " + player.getId() );
+    // }
+    // else
+    // resp.status( 409 ); // already aquired by an other player
+    // }
+    // else
+    // {
+    // resp.status( 400 ); // Bad Request
+    // }
+    // return "";
+    // }
 
     /**
      * URI: /games/:gameId/player/turn

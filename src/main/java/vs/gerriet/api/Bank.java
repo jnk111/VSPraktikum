@@ -36,32 +36,6 @@ import vs.gerriet.json.TransferList;
  * @author Gerriet Hinrichs {@literal<gerriet.hinrichs@web.de>}
  */
 public class Bank extends VsApiBase {
-    /**
-     * Contains the set service uri for this API class.
-     */
-    private static String serviceUri = null;
-
-    /**
-     * Resets the bank set bank service uri.
-     */
-    public static void resetServiceUri() {
-        Bank.setServiceUri(null);
-    }
-
-    /**
-     * <p>
-     * Sets the uri for this API class to the given uri.
-     * </p>
-     * <p>
-     * Use for debug only.
-     * </p>
-     *
-     * @param uri
-     *            New bank service uri.
-     */
-    public static void setServiceUri(final String uri) {
-        Bank.serviceUri = uri;
-    }
 
     /**
      * <p>
@@ -266,14 +240,6 @@ public class Bank extends VsApiBase {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));
             return null;
         }
-    }
-
-    @Override
-    public String getServiceUri() {
-        if (Bank.serviceUri != null) {
-            return Bank.serviceUri;
-        }
-        return super.getServiceUri();
     }
 
     /**

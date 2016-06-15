@@ -29,13 +29,11 @@ public class BoardHelper extends Helper {
 	 *          Die Gameid des Boards
 	 * @return Board Das Board zu der Gameid
 	 */
-	public static Board getBoard(Map<Board, JSONGameURI> boards, String gameid) {
+	public static Board getBoard(Map<String, Board> boards, String gameid) {
 
-		for (Board b : boards.keySet()) {
-			JSONGameURI uri = boards.get(b);
-			if (uri.getURI().contains(gameid)) {
-				return b;
-			}
+		Board b = boards.get(gameid);
+		if(b != null) {
+			return b;
 		}
 		throw new ResourceNotFoundException(Error.BOARD_NOT_FOUND.getMsg());
 	}

@@ -15,7 +15,11 @@ import vs.jan.validator.DecksValidator;
 
 public class DecksService {
 
-	private Map<Decks, JSONGameURI> decks;
+	private final String DECKS_INFIX = "/decks/";
+	private final String COMMUNITY_SUFFIX = "/community";
+	private final String CHANCE_SUFFIX = "/chance";
+	
+	private Map<String, Decks> decks;
 	private DecksValidator validator;
 	private DecksHelper helper;
 
@@ -28,22 +32,19 @@ public class DecksService {
 	public JSONDecksList getAllDecksURIS() {
 
 		JSONDecksList list = new JSONDecksList();
-
-		for (Decks d : this.decks.keySet()) {
-			list.addUri(d.getUri());
-		}
-
+		this.decks.forEach((k, v) -> list.getDecks().add(v.getUri()));
 		return list;
 
 	}
 
 	public void createDecks(JSONGameURI uri) {
 		validator.checkJsonIsValid(uri, Error.JSON_GAME_URI.getMsg());
-		String decksUri = "/decks/" + helper.getID(uri.getURI());
-		String commUri = decksUri + "/community";
-		String chanceUri = decksUri + "/chance";
+		String id = DecksHelper.getID(uri.getURI());
+		String decksUri = DECKS_INFIX + id;
+		String commUri = decksUri + COMMUNITY_SUFFIX;
+		String chanceUri = decksUri + CHANCE_SUFFIX;
 		Decks decks = new Decks(decksUri, commUri, chanceUri);
-		this.decks.put(decks, uri);		
+		this.decks.put(id, decks);		
 	}
 
 	public JSONCard getNextCommunityCard(String gameid) {

@@ -62,10 +62,10 @@ public abstract class Helper {
 	 * @param neededServices2
 	 * @throws ResponseCodeException
 	 */
-	public static void postEvent(JSONEvent event, String uri) throws ResponseCodeException {
+	public static void postEvent(JSONEvent event) throws ResponseCodeException {
 
 		if (event != null) {
-			HttpService.post(uri, event, HttpURLConnection.HTTP_OK);
+			HttpService.post(services.getEvents(), event, HttpURLConnection.HTTP_OK);
 		}
 
 	}
@@ -84,9 +84,9 @@ public abstract class Helper {
 	 * @return List<Event> Die Liste aller Events fuer diesen Wurf
 	 * 
 	 */
-	public static JSONEventList receiveEventList(String eventServiceUri, String playeruri, String gameid, Date date) {
+	public static JSONEventList receiveEventList(String playeruri, String gameid, Date date) {
 		//
-		String url = eventServiceUri + "?game=" + gameid + "&player=" + playeruri;
+		String url = services.getEvents() + "?game=" + gameid + "&player=" + playeruri;
 		String json = HttpService.get(url, HttpURLConnection.HTTP_OK);
 		JSONEventList list = GSON.fromJson(json, JSONEventList.class);
 		return list;
@@ -103,20 +103,34 @@ public abstract class Helper {
 		return GSON.fromJson(json, User.class);
 	}
 
-	public static void broadCastEvent(JSONEvent event, String userServiceUri) {
+	public static void broadCastEvent(JSONEvent event) {
 
 		if (event != null) {
 
-			String json = HttpService.get(userServiceUri, HttpURLConnection.HTTP_OK);
+			String json = HttpService.get(services.getUsers(), HttpURLConnection.HTTP_OK);
 
 			@SuppressWarnings("unchecked")
 			List<String> uris = GSON.fromJson(json, List.class);
 
 			for (String uri : uris) {
-				String json2 = HttpService.get(userServiceUri.replace("/users", "") + uri, HttpURLConnection.HTTP_OK);
+				String json2 = HttpService.get(services.getUsersHost() + uri, HttpURLConnection.HTTP_OK);
 				User user = GSON.fromJson(json2, User.class);
 				HttpService.post(user.getUri(), event, HttpURLConnection.HTTP_OK);
 			}
 		}
 	}
+
+	public static ServiceList getServices() {
+		return services;
+	}
+
+	public static void setServices(ServiceList services) {
+		Helper.services = services;
+	}
+
+	public static Gson getGson() {
+		return GSON;
+	}
+	
+	
 }

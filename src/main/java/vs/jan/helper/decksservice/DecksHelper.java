@@ -10,14 +10,14 @@ import vs.jan.model.exception.Error;
 
 public class DecksHelper extends Helper {
 
-	public Decks getDecks(Map<Decks, JSONGameURI> decks, String gameid) {
+	public Decks getDecks(Map<String, Decks> decks, String gameid) {
 
-		for (Decks d : decks.keySet()) {
-			JSONGameURI uri = decks.get(d);
-			if (uri.getURI().contains(gameid)) {
-				return d;
-			}
+		Decks d = decks.get(gameid);
+
+		if (d != null) {
+			return d;
 		}
+
 		throw new ResourceNotFoundException(Error.DECKS_NOT_FOUND.getMsg());
 	}
 }

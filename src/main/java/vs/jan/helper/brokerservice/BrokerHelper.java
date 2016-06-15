@@ -11,12 +11,12 @@ import vs.jan.model.exception.Error;
 
 public class BrokerHelper extends Helper {
 
-	public static Broker getBroker(Map<Broker, JSONGameURI> brokers, String gameid) {
+	public static Broker getBroker(Map<String, Broker> brokers, String gameid) {
 
-		for (Broker b : brokers.keySet()) {
-			if (b.getUri().contains(gameid)) {
-				return b;
-			}
+		Broker b = brokers.get(gameid);
+
+		if (b != null) {
+			return b;
 		}
 
 		throw new ResourceNotFoundException(Error.BROKER_NOT_FOUND.getMsg());

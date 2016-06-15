@@ -51,7 +51,7 @@ public class TradeTransaction extends Transaction {
 			String fromId = BrokerHelper.getID(this.fromAcc.getPlayer());
 			String toId = BrokerHelper.getID(this.toAcc.getPlayer());
 			
-			if(this.fromAcc.getSaldo() >= this.place.getRent().get(this.place.getLevel())) {
+			if(this.fromAcc.getSaldo() >= this.place.getRent().get(this.place.getHouses())) {
 				
 				String url = this.bankUri + "/" + this.gameId + "/transfer/from/" + fromId + "/to/" + toId + "/" + this.amount;
 				HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);

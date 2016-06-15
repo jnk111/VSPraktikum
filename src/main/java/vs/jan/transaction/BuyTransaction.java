@@ -36,17 +36,18 @@ public class BuyTransaction extends Transaction {
 
 	@Override
 	public void execute() throws TransactionFailedException {
-		
+
 		try {
-			
+
 			JSONAccount accFrom = BrokerHelper.getAccount(this.from.getAccount());
 			String fromId = BrokerHelper.getID(accFrom.getPlayer());
-			
-			if(accFrom.getSaldo() >= this.amount) {
+
+			if (accFrom.getSaldo() >= this.amount) {
 				String url = this.bankUri + "/" + this.gameId + "/transfer/from/" + fromId + "/" + this.amount;
 				HttpService.post(url, null, HttpURLConnection.HTTP_CREATED);
 				this.place.setOwner(this.from);
 				return;
+
 			}
 		} catch (Exception e) {
 			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
@@ -56,7 +57,7 @@ public class BuyTransaction extends Transaction {
 	}
 
 	@Override
-	public void rollBack() throws TransactionRollBackException{
+	public void rollBack() throws TransactionRollBackException {
 
 		JSONAccount from = Helper.getAccount(this.from.getAccount());
 		BuyTransaction history = (BuyTransaction) this.history;
@@ -65,7 +66,6 @@ public class BuyTransaction extends Transaction {
 			this.place.setOwner(null);
 			throw new TransactionRollBackException(Error.TRANS_FAIL.getMsg());
 		}
-
 	}
 
 	public Place getPlace() {

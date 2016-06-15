@@ -200,7 +200,7 @@ public class GamesService
     {
         game = createBoard( game );
         game = createBank( game );
-        game = createBroker( game );
+        // game = createBroker( game );
 
         // initialize dice
         game.getComponents().setDice( game.getServiceList().getDice() );

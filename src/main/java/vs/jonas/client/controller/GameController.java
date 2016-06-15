@@ -31,6 +31,7 @@ import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.utils.EventTypes;
 import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
+import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.services.json.EventData;
 
 /**
@@ -48,9 +49,9 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
-	private final int PORT = 4778;
+	private final int PORT = 4779;
 	private String ip;
-	private final String PROTOCOL = "http://";
+//	private final String PROTOCOL = "http://";
 	private Gson gson;
 	
 	/**
@@ -76,7 +77,6 @@ public class GameController {
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();
-//		System.err.println("**##** Response: "+ client.get(PROTOCOL + ip+":" + PORT + SLASH_CLIENT));
 	}
 
 	private void startClientService() {	
@@ -139,7 +139,7 @@ public class GameController {
 				JComboBox<String> aktionen = ui.getAktionen();
 				switch(aktionen.getSelectedItem().toString()){
 				case "Wuerfeln": rollDice();break;
-				case "Kaufen": buy("", user); break;
+				case "Kaufen": buy(); break;
 				case "Verkaufen": sell(); break;
 				case "Ereigniskarte spielen": playChanceCard(); break;
 				case "Zug beenden": finishRound();break;
@@ -217,7 +217,7 @@ public class GameController {
 	private void rollDice() {
 		int i= 0;
 		try {
-			ImageIcon diceRollImage = new ImageIcon(FieldUI.class.getResource("/dice.gif"));
+			ImageIcon diceRollImage = new ImageIcon(FieldUI.class.getResource("/dice_roll.gif"));
 			JLabel label1 = new JLabel("Roll the Dice, Baby!",diceRollImage, JLabel.CENTER);
 			//Set the position of the text, relative to the icon:
 			label1.setVerticalTextPosition(JLabel.BOTTOM);
@@ -239,13 +239,20 @@ public class GameController {
 		} 
 	}
 	
-	private void buy(String placeID, User user){
-		//TODO
+	private void buy(){
 		try {
 			client.buyEstate(gameID, user);
+			ImageIcon yeahImage = new ImageIcon(FieldUI.class.getResource("/yes.gif"));
+			JLabel label1 = new JLabel("So wird's gemacht!",yeahImage, JLabel.CENTER);
+			//Set the position of the text, relative to the icon:
+			label1.setVerticalTextPosition(JLabel.BOTTOM);
+			label1.setHorizontalTextPosition(JLabel.CENTER);
+			JOptionPane.showMessageDialog(null,label1);
 		} catch (UnirestException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (EstateAlreadyOwnedException e) {
+			JOptionPane.showMessageDialog(null, "Die Straﬂe wurde bereits verkauft.");
 		}
 		System.err.println("Dummy: Buy");
 	}

@@ -31,6 +31,7 @@ import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
 
@@ -256,7 +257,7 @@ public class RestopolyClient {
 	
 	/* ************************************ BoardServices ***************************************** */
 	
-	public void buyEstate(String gameID, User user) throws UnirestException, IOException {
+	public void buyEstate(String gameID, User user) throws UnirestException, IOException, EstateAlreadyOwnedException {
 		// TODO Auto-generated method stub
 		System.out.println("\n ************* Buy Estate ***************");
 		System.out.println(user.getName());
@@ -273,6 +274,17 @@ public class RestopolyClient {
 		String brokerServiceUri = brokerService.getUri();
 		String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+brokerPlaceUri+SLASH_OWNER;
 		System.out.println("Uri to Owner Endpoint:" + brokerPlaceOwnerUri);
+		
+		//games {gameid} players {playerid} 
+		PlayerResponse thisPlayer = getPlayerWithMutex(gameID);
+		System.out.println("ThisPlayerID: " + thisPlayer.getId());
+//		JsonObject response = postData(thisPlayer.getId(), brokerPlaceOwnerUri);
+		HttpResponse<String> response = Unirest.post(brokerPlaceOwnerUri).body(gson.toJson(thisPlayer.getId())).asString();
+		System.out.println("Response: "+response + " Status: " + response.getStatus());
+		if(response.getStatus() != 200){
+			throw new EstateAlreadyOwnedException();
+		}
+		
 	}
 	
 	/**

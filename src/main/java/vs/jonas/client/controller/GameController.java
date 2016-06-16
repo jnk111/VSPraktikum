@@ -52,7 +52,11 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
+<<<<<<< HEAD
 	private final int PORT = 4777;
+=======
+	private final int PORT = 4779;
+>>>>>>> refs/remotes/origin/master
 	private String ip;
 //	private final String PROTOCOL = "http://";
 	private Gson gson;
@@ -173,7 +177,7 @@ public class GameController {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				int row = e.getY() / ui.getPlayerTable().getRowHeight();
+				int row = e.getY() / ui.getGameFIeldTable().getRowHeight();
 				PlayerOverviewTableModel model = (PlayerOverviewTableModel)ui.getPlayerTable().getModel();
 				PlayerInformation playerInformation = model.getPlayerInformation(row);
 				
@@ -329,8 +333,6 @@ public class GameController {
 			eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
 		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
 			
-		} else {
-			eventText = "Unimplemented:" + event.getType() + " Ausgelöst durch: " + event.getPlayer();
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");

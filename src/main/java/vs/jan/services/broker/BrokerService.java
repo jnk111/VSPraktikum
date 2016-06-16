@@ -124,7 +124,7 @@ public class BrokerService {
 				rent.execute();
 
 				event = new JSONEvent(gameid, EventTypes.PAY_RENT.getType(), EventTypes.PAY_RENT.getType(),
-						EventTypes.PAY_RENT.getType(), place.getVisitUri(), place.getVisitUri());
+						EventTypes.PAY_RENT.getType(), place.getVisitUri(), playeruri);
 
 			}
 		} catch (TransactionFailedException e) {
@@ -132,7 +132,7 @@ public class BrokerService {
 			rent.rollBack();
 
 			event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_RENT.getType(), EventTypes.CANNOT_PAY_RENT.getType(),
-					EventTypes.CANNOT_PAY_RENT.getType(), place.getUri(), player.getId());
+					EventTypes.CANNOT_PAY_RENT.getType(), place.getVisitUri(), playeruri);
 
 			throw new TransactionFailedException(e.getMessage());
 

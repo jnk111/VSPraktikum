@@ -306,7 +306,7 @@ public class BoardService {
 		int newPos = oldPos + rollValue; // Neue Position der Figur
 
 		// Eine Runde rumgelaufen?
-		if (newPos >= b.getFields().size() - 1) {
+		if (newPos >= b.getFields().size()) {
 			newPos = ((newPos % b.getFields().size()));
 			payRunOverGoValue(p, gameid);
 		}

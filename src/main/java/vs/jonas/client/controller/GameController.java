@@ -52,11 +52,7 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
-<<<<<<< HEAD
 	private final int PORT = 4777;
-=======
-	private final int PORT = 4779;
->>>>>>> refs/remotes/origin/master
 	private String ip;
 //	private final String PROTOCOL = "http://";
 	private Gson gson;

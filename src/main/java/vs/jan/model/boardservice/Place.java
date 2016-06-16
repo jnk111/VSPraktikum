@@ -124,7 +124,7 @@ public enum Place implements Convertable<JSONPlace> {
 	}
 
 	public boolean isPlace() {
-		return this.price > 0 && this != EinkStr;
+		return this.price > 0 && this != EinkStr && this != ZusatzStr;
 	}
 
 	public boolean isJail() {

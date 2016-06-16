@@ -109,9 +109,9 @@ public class GameController {
 			return "";
 		});
 		
-		Events events = new Events();
-		String[] eventData = {EventTypes.MOVE_PAWN.getType()};
-		events.addSubscription(new SubscriptionRegisterData(gameID, user.getUri(), eventData));
+//		Events events = new Events();
+//		String[] eventData = {EventTypes.MOVE_PAWN.getType()};
+//		events.addSubscription(new SubscriptionRegisterData(gameID, user.getUri(), eventData));
 	}
 
 

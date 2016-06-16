@@ -424,16 +424,21 @@ public class BoardService {
 
 		for (JSONPlayersListElement elem : list.getPlayers()) {
 			String fromId = BoardHelper.getID(elem.getId());
+			String selfId = BoardHelper.getID(pawn.getPlayerUri());
 
 			try {
-				String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
-						+ CommCard.PLAYER_MONEY;
+				
+				if(!fromId.equals(selfId)) {
+					
+					String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
+							+ CommCard.PLAYER_MONEY;
 
-				HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+					HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 
-				event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
-						EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), pawn.getRollsUri(),
-						pawn.getPlayerUri());
+					event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
+							EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), pawn.getRollsUri(),
+							pawn.getPlayerUri());
+				}
 
 			} catch (Exception e) {
 				

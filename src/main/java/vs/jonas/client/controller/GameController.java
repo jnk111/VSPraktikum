@@ -73,11 +73,11 @@ public class GameController {
 		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 		String ipadress = br.readLine();
 //		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
-		this.ip = JOptionPane.showInputDialog("IP Andresse angeben. (z.b. localhost oder 192.168.99.100");
-		 //this.ip = "0.0.0.0";
+		this.ip = JOptionPane.showInputDialog("IP Andresseangeben: (z.b. localhost oder 192.168.99.100");
+		String port = JOptionPane.showInputDialog("Port angeben: (z.B. 4777");
 //		this.ip = "192.168.255.18";
-		
-		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
+		this.user.setUri("http://" + this.ip + ":" +port + SLASH_CLIENT + "/" + user.getName());
+//		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();

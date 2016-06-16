@@ -101,7 +101,7 @@ public class GameUI {
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		playerTable.getTableHeader().setOpaque(false);
 		playerTable.getTableHeader().setBackground(SystemColor.inactiveCaption);
-		playerTable.setEnabled(false);
+//		playerTable.setEnabled(false);
 		playerTable.setOpaque(false);
 		playerTable.setDefaultRenderer(String.class, new PlayerTableCellRenderer());
 		

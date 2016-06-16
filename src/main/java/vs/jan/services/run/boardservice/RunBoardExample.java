@@ -76,7 +76,7 @@ public class RunBoardExample {
 		createBoard();
 		createBank();
 		setupUser();
-		startGame();
+		//startGame();
 		letCurrPlayerRollDice();
 		buyPlaces();
 		getFinalBoardState();
@@ -162,12 +162,12 @@ public class RunBoardExample {
 //		}
 	}
 
-	private static void startGame() throws ResponseCodeException {
-		System.out.println("Start game: " + GAME_URI + "/" + BOARD_ID);
-		System.out.println("-------------------------------------------------------------------------------------------");
-		HttpService.put(GAME_URI + "/" + BOARD_ID + "/status", null, 200);
-		System.out.println();
-	}
+//	private static void startGame() throws ResponseCodeException {
+//		System.out.println("Start game: " + GAME_URI + "/" + BOARD_ID);
+//		System.out.println("-------------------------------------------------------------------------------------------");
+//		HttpService.put(GAME_URI + "/" + BOARD_ID + "/status", null, 200);
+//		System.out.println();
+//	}
 
 
 	private static void setupUser() throws InterruptedException, ResponseCodeException {

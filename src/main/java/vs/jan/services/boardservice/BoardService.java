@@ -321,8 +321,8 @@ public class BoardService {
 		p.updatePlaceUri(newPos);
 
 		String resource = p.getRollsUri();
-		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVE_PAWN.getType(), EventTypes.MOVE_PAWN.getType(),
-				EventTypes.MOVE_PAWN.getType(), resource, p.getPlayerUri());
+		String type = EventTypes.MOVE_PAWN.getType();
+		JSONEvent event = new JSONEvent(gameid, type, type, type, resource, p.getPlayerUri());
 
 		BoardHelper.broadCastEvent(event);
 		BoardHelper.postEvent(event);
@@ -341,36 +341,43 @@ public class BoardService {
 
 		} else if (place.isCommunity()) {
 			doFurtherDecksActions(gameid, newPos, b, p, DECK_TYPES[1]);
-			
+
 		} else if (place.isTax()) {
 			payTax(p, gameid);
 		}
 	}
 
 	private void payTax(Pawn p, String gameid) throws TransactionFailedException {
-		
 		String fromId = BoardHelper.getID(p.getPawnUri());
-		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + "/" + Place.EinkStr.getPrice();
+		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + "/"
+				+ Place.EinkStr.getPrice();
 		JSONEvent event = null;
-		
+		String type = null;
+
 		try {
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
-			event = new JSONEvent(gameid, EventTypes.PAYED_TAX.getType(), EventTypes.PAYED_TAX.getType(), EventTypes.PAYED_TAX.getType(), p.getRollsUri(), p.getPlayerUri());
+			type = EventTypes.PAYED_TAX.getType();
+			event = new JSONEvent(gameid, type, type, type, p.getRollsUri(), p.getPlayerUri());
+
 		} catch (Exception e) {
-			event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_TAX.getType(), EventTypes.CANNOT_PAY_TAX.getType(), EventTypes.CANNOT_PAY_TAX.getType(), p.getRollsUri(), p.getPlayerUri());
+			type = EventTypes.CANNOT_PAY_TAX.getType();
+			event = new JSONEvent(gameid, type, type, type, p.getRollsUri(), p.getPlayerUri());
 			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+
 		} finally {
 			BoardHelper.postEvent(event);
 			BoardHelper.broadCastEvent(event);
+
 		}
 	}
 
 	private void payRunOverGoValue(Pawn p, String gameid) {
 		String toId = BoardHelper.getID(p.getPawnUri());
 		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_TO_INFIX + toId + "/" + GO_VALUE;
+
 		HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
-		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_OVER_GO.getType(), EventTypes.MOVED_OVER_GO.getType(),
-				EventTypes.MOVED_OVER_GO.getType(), p.getRollsUri(), p.getPlayerUri());
+		String type = EventTypes.MOVED_OVER_GO.getType();
+		JSONEvent event = new JSONEvent(gameid, type, type, type, p.getRollsUri(), p.getPlayerUri());
 
 		BoardHelper.broadCastEvent(event);
 		BoardHelper.postEvent(event);
@@ -384,8 +391,8 @@ public class BoardService {
 		board.updatePositions(newPos, jailPos);
 		pawn.updatePlaceUri(jailPos);
 
-		JSONEvent event = new JSONEvent(gameid, EventTypes.MOVED_TO_JAIL.getType(), EventTypes.MOVED_TO_JAIL.getType(),
-				EventTypes.MOVED_TO_JAIL.getType(), pawn.getRollsUri(), pawn.getPlayerUri());
+		String type = EventTypes.MOVED_TO_JAIL.getType();
+		JSONEvent event = new JSONEvent(gameid, type, type, type, pawn.getRollsUri(), pawn.getPlayerUri());
 
 		BoardHelper.broadCastEvent(event);
 		BoardHelper.postEvent(event);
@@ -421,14 +428,13 @@ public class BoardService {
 		String toId = BoardHelper.getID(pawn.getPlayerUri());
 		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_TO_INFIX + toId + "/" + CommCard.BANK_MONEY;
 		JSONEvent event = null;
-		
+
 		try {
-			
+
 			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
 
-			event = new JSONEvent(gameid, EventTypes.GOT_MONEY_FROM_BANK.getType(),
-					EventTypes.GOT_MONEY_FROM_BANK.getType(), EventTypes.GOT_MONEY_FROM_BANK.getType(), pawn.getRollsUri(),
-					pawn.getPlayerUri());
+			String type = EventTypes.GOT_MONEY_FROM_BANK.getType();
+			event = new JSONEvent(gameid, type, type, type, pawn.getRollsUri(), pawn.getPlayerUri());
 
 			BoardHelper.broadCastEvent(event);
 			BoardHelper.postEvent(event);
@@ -439,7 +445,6 @@ public class BoardService {
 	}
 
 	public void getMoneyFromAllPlayers(Pawn pawn, String gameid) throws TransactionFailedException {
-
 		String toId = BoardHelper.getID(pawn.getPlayerUri());
 		String url = this.services.getGames() + "/" + gameid + PLAYERS_SUFFIX;
 		String players = HttpService.get(url, HttpURLConnection.HTTP_OK);
@@ -451,25 +456,19 @@ public class BoardService {
 			String selfId = BoardHelper.getID(pawn.getPlayerUri());
 
 			try {
-				
-				if(!fromId.equals(selfId)) {
-					
+				if (!fromId.equals(selfId)) {
+
 					String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + TO_INFIX + toId + "/"
 							+ CommCard.PLAYER_MONEY;
-
 					HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+					String type = EventTypes.GOT_MONEY_ALL_PLAYERS.getType();
+					event = new JSONEvent(gameid, type, type, type, pawn.getRollsUri(), pawn.getPlayerUri());
 
-					event = new JSONEvent(gameid, EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
-							EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), EventTypes.GOT_MONEY_ALL_PLAYERS.getType(), pawn.getRollsUri(),
-							pawn.getPlayerUri());
 				}
 
 			} catch (Exception e) {
-				
-				event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(),
-						EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(), EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(),
-						pawn.getRollsUri(), elem.getId());
-				
+				String type = EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType();
+				event = new JSONEvent(gameid, type, type, type, pawn.getRollsUri(), elem.getId());
 				throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
 
 			} finally {
@@ -498,26 +497,26 @@ public class BoardService {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public synchronized JSONEventList rollDice(String gameid, String pawnid)
-			throws ResourceNotFoundException, ResponseCodeException, InvalidInputException, TransactionFailedException, PlayerHasAlreadyRolledException {
+	public synchronized JSONEventList rollDice(String gameid, String pawnid) throws ResourceNotFoundException,
+			ResponseCodeException, InvalidInputException, TransactionFailedException, PlayerHasAlreadyRolledException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), false);
 
 		Board board = BoardHelper.getBoard(boards, gameid);
 		Pawn pawn = BoardHelper.getPawn(board, pawnid);
-		
-		if(this.currPlayer == null || !pawn.equals(this.currPlayer)) {
-			
+
+		if (this.currPlayer == null || !pawn.equals(this.currPlayer)) {
+
 			this.currPlayer = pawn;
 			Dice roll = rollDice(pawn, gameid); // Zum Testen Local
 			movePawn(gameid, pawnid, roll.getNumber());
 			BoardHelper.addThrow(this.throwMap, pawn, roll);
-			
+
 			return BoardHelper.receiveEventList(pawn.getPlayerUri(), gameid, new Date());
 		}
 
-		throw new PlayerHasAlreadyRolledException(Error.ALR_ROLLED.getMsg());		
+		throw new PlayerHasAlreadyRolledException(Error.ALR_ROLLED.getMsg());
 	}
 
 	/**

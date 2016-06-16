@@ -134,12 +134,12 @@ public enum Place implements Convertable<JSONPlace> {
 
 	public boolean isChance() {
 
-		return this == Place.Ereignis1 || this == Place.Ereignis2 || this == Place.Ereignis3;
+		return this == Ereignis1 || this == Ereignis2 || this == Ereignis3;
 	}
 
 	public boolean isCommunity() {
 
-		return this == Place.Gemeinschaft1 || this == Place.Gemeinschaft2 || this == Place.Gemeinschaft3;
+		return this == Gemeinschaft1 || this == Gemeinschaft2 || this == Gemeinschaft3;
 	}
 
 	public boolean isTax() {

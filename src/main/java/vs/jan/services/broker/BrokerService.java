@@ -31,7 +31,6 @@ import vs.jan.validator.Validator;
 
 public class BrokerService {
 
-	
 	private final String BROKER_PREFIX = "/broker/";
 	private final String PLACES_SUFFIX = "/places";
 	private final String PLACES_INFIX = PLACES_SUFFIX + "/";
@@ -104,13 +103,14 @@ public class BrokerService {
 		Place place = BrokerHelper.getPlace(broker, placeid);
 		Player player = BrokerHelper.getPlayer(playeruri, gameid);
 
-		JSONEvent event = new JSONEvent(gameid, EventTypes.VISIT_PLACE.getType(), EventTypes.VISIT_PLACE.getType(),
-				EventTypes.VISIT_PLACE.getType(), place.getVisitUri(), playeruri);
+		String type = EventTypes.VISIT_PLACE.getType();
+		JSONEvent event = new JSONEvent(gameid, type, type, type, place.getVisitUri(), playeruri);
 
 		BrokerHelper.postEvent(event);
 		BrokerHelper.broadCastEvent(event);
 
 		event = null;
+		type = null;
 
 		Player owner = place.getOwner();
 		RentTransaction rent = null;
@@ -118,21 +118,17 @@ public class BrokerService {
 		try {
 
 			if (owner != null && !owner.equals(player) && !place.isHypo() && place.isPlace()) {
-
 				int amount = place.getRent().get(place.getHouses());
 				rent = new RentTransaction(player, owner, amount, this.services.getBank(), gameid, place);
 				rent.execute();
-
-				event = new JSONEvent(gameid, EventTypes.PAY_RENT.getType(), EventTypes.PAY_RENT.getType(),
-						EventTypes.PAY_RENT.getType(), place.getVisitUri(), playeruri);
+				type = EventTypes.PAY_RENT.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getVisitUri(), playeruri);
 
 			}
 		} catch (TransactionFailedException e) {
-
 			rent.rollBack();
-
-			event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_RENT.getType(), EventTypes.CANNOT_PAY_RENT.getType(),
-					EventTypes.CANNOT_PAY_RENT.getType(), place.getVisitUri(), playeruri);
+			type = EventTypes.CANNOT_PAY_RENT.getType();
+			event = new JSONEvent(gameid, type, type, type, place.getVisitUri(), playeruri);
 
 			throw new TransactionFailedException(e.getMessage());
 
@@ -199,24 +195,22 @@ public class BrokerService {
 		Player owner = place.getOwner();
 		BuyTransaction buy = null;
 		JSONEvent event = null;
+		String type = null;
 
 		try {
-
-			if(owner == null && place.isPlace()) {
-				
+			if (owner == null && place.isPlace()) {
 				buy = new BuyTransaction(player, place.getPrice(), this.services.getBank(), gameid, place);
 				buy.execute();
-				
-				event = new JSONEvent(gameid, EventTypes.BUY_PLACE.getType(), EventTypes.BUY_PLACE.getType(),
-						EventTypes.BUY_PLACE.getType(), place.getUri(), player.getId());
+
+				type = EventTypes.BUY_PLACE.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
 			}
 
 		} catch (TransactionFailedException e) {
-
 			buy.rollBack();
 
-			event = new JSONEvent(gameid, EventTypes.CANNOT_BUY_PLACE.getType(), EventTypes.CANNOT_BUY_PLACE.getType(),
-					EventTypes.CANNOT_BUY_PLACE.getType(), place.getUri(), player.getId());
+			type = EventTypes.CANNOT_BUY_PLACE.getType();
+			event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
 
 			throw new TransactionFailedException(e.getMessage());
 
@@ -239,6 +233,7 @@ public class BrokerService {
 		Place place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
+		String type = null;
 		BankSellTransaction sell = null;
 
 		try {
@@ -252,8 +247,8 @@ public class BrokerService {
 				sell = new BankSellTransaction(player, amount, this.services.getBank(), gameid, place);
 				sell.execute();
 
-				event = new JSONEvent(gameid, EventTypes.TAKE_HYPO.getType(), EventTypes.TAKE_HYPO.getType(),
-						EventTypes.TAKE_HYPO.getType(), place.getHypoCreditUri(), playerUri);
+				type = EventTypes.TAKE_HYPO.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getHypoCreditUri(), playerUri);
 
 				broker.addHypothecaryCredit(sell);
 
@@ -283,6 +278,7 @@ public class BrokerService {
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, BrokerHelper.getID(playerUri));
 		BuyTransaction buyBack = null;
+		String type = null;
 		JSONEvent event = null;
 
 		try {
@@ -293,17 +289,18 @@ public class BrokerService {
 				buyBack = new BuyTransaction(player, amount, this.services.getBank(), gameid, place);
 				buyBack.execute();
 
-				event = new JSONEvent(gameid, EventTypes.DELETE_HYPO.getType(), EventTypes.DELETE_HYPO.getType(),
-						EventTypes.DELETE_HYPO.getType(), place.getHypoCreditUri(), playerUri);
+				type = EventTypes.DELETE_HYPO.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getHypoCreditUri(), playerUri);
 				broker.removehypothecaryCredit(credit);
 				place.setHypo(false);
 			}
 
 		} catch (TransactionFailedException e) {
-			broker.removehypothecaryCredit(credit);
 			buyBack.rollBack();
-			event = new JSONEvent(gameid, EventTypes.CANNOT_DELETE_HYPO.getType(), EventTypes.CANNOT_DELETE_HYPO.getType(),
-					EventTypes.CANNOT_DELETE_HYPO.getType(), place.getHypoCreditUri(), playerUri);
+			broker.removehypothecaryCredit(credit);
+
+			type = EventTypes.CANNOT_DELETE_HYPO.getType();
+			event = new JSONEvent(gameid, type, type, type, place.getHypoCreditUri(), playerUri);
 			throw new TransactionFailedException(e.getMessage());
 
 		} finally {
@@ -325,6 +322,7 @@ public class BrokerService {
 		Player owner = place.getOwner();
 		JSONEvent event = null;
 		TradeTransaction trade = null;
+		String type = null;
 
 		try {
 
@@ -334,14 +332,15 @@ public class BrokerService {
 				trade = new TradeTransaction(player, owner, amount, this.services.getBank(), gameid, place);
 				trade.execute();
 
-				event = new JSONEvent(gameid, EventTypes.TRADE_PLACE.getType(), EventTypes.TRADE_PLACE.getType(),
-						EventTypes.TRADE_PLACE.getType(), place.getUri(), owner.getId());
+				type = EventTypes.TRADE_PLACE.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
+
 			}
 		} catch (TransactionFailedException e) {
-
 			trade.rollBack();
-			event = new JSONEvent(gameid, EventTypes.CANNOT_TRADE_PLACE.getType(), EventTypes.CANNOT_TRADE_PLACE.getType(),
-					EventTypes.CANNOT_TRADE_PLACE.getType(), place.getUri(), owner.getId());
+
+			type = EventTypes.CANNOT_TRADE_PLACE.getType();
+			event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
 
 			throw new TransactionFailedException(e.getMessage());
 

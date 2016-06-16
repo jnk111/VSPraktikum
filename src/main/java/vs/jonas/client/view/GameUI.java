@@ -207,7 +207,7 @@ public class GameUI {
 		return playerTable;
 	}
 	
-	public JTable getGameFIeldTable(){
+	public JTable getGameFieldTable(){
 		return gameFieldTable;
 	}
 

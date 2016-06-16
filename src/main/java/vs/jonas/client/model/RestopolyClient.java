@@ -34,7 +34,9 @@ import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
 import vs.jonas.client.model.comparator.PlaceComparator;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
-import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDice;
+import vs.jonas.exceptions.NotExpectedStatusCodeException;
+import vs.jonas.exceptions.PlayerDoesNotHaveTheMutexException;
+import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDiceException;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
 
@@ -68,11 +70,9 @@ public class RestopolyClient {
 	 * Initialisiert den Client
 	 * @param yellowPages Wird benötigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
 	 * @param user Der angemeldete User.
-	 * @throws IOException
 	 * @throws UnirestException
-	 * @throws Exception
 	 */
-	public RestopolyClient(YellowPagesService yellowPages) throws IOException, UnirestException, Exception {
+	public RestopolyClient(YellowPagesService yellowPages) throws UnirestException{
 		try {
 			gameService = yellowPages.getService(ServiceNames.GAME);
 			boardService = yellowPages.getService(ServiceNames.BOARD);
@@ -88,10 +88,10 @@ public class RestopolyClient {
 	/**
 	 * Erstellt ein neues Spiel
 	 * @param gameName Der Name des Spiels
-	 * @throws IOException
 	 * @throws UnirestException
+	 * @throws NotExpectedStatusCodeException 
 	 */
-	public void createANewGame(String gameName) throws IOException, UnirestException {
+	public void createANewGame(String gameName) throws UnirestException, NotExpectedStatusCodeException {
 		System.out.println("\n************* Create New Game *************");
 		String uri = gameService.getUri();
 		CreateGame game = new CreateGame(gameName);
@@ -104,9 +104,9 @@ public class RestopolyClient {
 	 * Laedt die aktuellen Spiele
 	 * 
 	 * @return Eine Liste mit Game-Informationen.
-	 * @throws Exception 
+	 * @throws UnirestException 
 	 */
-	public List<GameResponse> getGames() throws Exception {
+	public List<GameResponse> getGames() throws UnirestException {
 		System.out.println("\n************* Get Games *************");
 		List<GameResponse> data = new ArrayList<>();
 		String uri = gameService.getUri();
@@ -127,10 +127,10 @@ public class RestopolyClient {
 	/**
 	 * Meldet des User als Spieler bei einem Game an.
 	 * @param gameID Die ID des Games.
-	 * @throws IOException
 	 * @throws UnirestException
+	 * @throws NotExpectedStatusCodeException 
 	 */
-	public void enterGame(String gameID, User user) throws IOException, UnirestException {
+	public void enterGame(String gameID, User user) throws UnirestException, NotExpectedStatusCodeException {
 		System.out.println("\n************* Enter Game *************");
 		String uri = gameService.getUri();
 		String gamesPlayersUri = uri + SLASH + gameID + SLASH_PLAYERS;
@@ -145,10 +145,9 @@ public class RestopolyClient {
 	 * wenn er mit seinem Spielzug fertig ist.
 	 * @param gameID
 	 * @param user
-	 * @throws IOException
-	 * @throws Exception
+	 * @throws UnirestException 
 	 */
-	public void setReady(String gameID, User user) throws IOException, Exception{
+	public void setReady(String gameID, User user) throws UnirestException{
 		System.out.println("\n************** SetReady ************** ");
 		String readyUri = gameService.getUri() + SLASH + gameID + SLASH_PLAYERS + SLASH + user.getName() + SLASH_READY;
 		System.out.println(readyUri);
@@ -163,7 +162,7 @@ public class RestopolyClient {
 	/* ************************************ PlayerServices ***************************************** */
 	
 
-	public boolean allPlayersReady(String gameID) throws IOException, UnirestException, Exception {
+	public boolean allPlayersReady(String gameID) throws UnirestException{
 		System.out.println("\n********** Players Ready? ************");
 		boolean bool = true;
 		List<PlayerInformation> players = getPlayers(gameID);
@@ -182,11 +181,9 @@ public class RestopolyClient {
 	 * Liefert alle beim Game angemeldeten Spieler
 	 * @param gameID Die ID des Games
 	 * @return Eine Liste mit Informationen über alle Spieler. 
-	 * @throws IOException
 	 * @throws UnirestException
-	 * @throws Exception
 	 */
-	public List<PlayerInformation> getPlayers(String gameID) throws IOException, UnirestException, Exception {
+	public List<PlayerInformation> getPlayers(String gameID) throws UnirestException {
 		System.out.println("\n**************  Get Players **************");
 		List<PlayerInformation> data = new ArrayList<>();
 
@@ -242,7 +239,7 @@ public class RestopolyClient {
 		return data;
 	}
 	
-	public String getCurrentlyActivePlayer(String gameID) throws IOException, UnirestException{
+	public String getCurrentlyActivePlayer(String gameID) throws UnirestException{
 		System.out.println("\n************** Get currently active player **************");
 		String gameServiceUri = gameService.getUri();
 		String gamesPlayersUri = gameServiceUri + SLASH + gameID + "/player" + SLASH_CURRENT;
@@ -252,7 +249,7 @@ public class RestopolyClient {
 		return "";
 	}
 	
-	public PlayerResponse getPlayerWithMutex(String gameID) throws IOException, UnirestException{
+	public PlayerResponse getPlayerWithMutex(String gameID) throws UnirestException{
 		System.out.println("\n ************** Get Player With Mutex **************");
 		String playerUri = gameService.getUri() + SLASH + gameID + "/player" + SLASH_TURN;
 		System.out.println(playerUri);
@@ -262,7 +259,7 @@ public class RestopolyClient {
 	
 	/* ************************************ BoardServices ***************************************** */
 	
-	public void buyEstate(String gameID, User user) throws UnirestException, IOException, EstateAlreadyOwnedException {
+	public void buyEstate(String gameID, User user) throws UnirestException, EstateAlreadyOwnedException {
 		// TODO Auto-generated method stub
 		System.out.println("\n ************* Buy Estate ***************");
 		System.out.println(user.getName());
@@ -296,10 +293,9 @@ public class RestopolyClient {
 	 * Liefert alle Places des Spielfeldes.
 	 * @param gameID Die ID des Games
 	 * @return Eine Liste aller Places.
-	 * @throws IOException
 	 * @throws UnirestException
 	 */
-	public List<Place> getPlaces(String gameID) throws IOException, UnirestException {
+	public List<Place> getPlaces(String gameID) throws UnirestException {
 		System.out.println("\n**************  Get Fields **************");
 		List<Place> data = new ArrayList<>();
 
@@ -325,7 +321,7 @@ public class RestopolyClient {
 		return data;
 	}
 	
-	public Place getPlace(String gameID, String placeUri) throws IOException, UnirestException{
+	public Place getPlace(String gameID, String placeUri) throws UnirestException{
 		String boardServiceUri = boardService.getUri();
 		String brokerServiceUri = brokerService.getUri();
 //		System.out.println("Try: " + boardServiceUri + placeUri);
@@ -354,7 +350,7 @@ public class RestopolyClient {
 		return place;
 	}
 	
-	private String getOwner(String ownerUri) throws IOException {
+	private String getOwner(String ownerUri) {
 		if(ownerUri != null && !ownerUri.equals("")){
 			String brokerServiceUri = brokerService.getUri();
 			String brokerServiceOwnerUri = brokerServiceUri.replaceAll("/broker", "") + ownerUri;
@@ -370,7 +366,7 @@ public class RestopolyClient {
 		return "";
 	}
 
-	public List<Place> getPlacesFor(String gameID, String pawnID) throws IOException, UnirestException{
+	public List<Place> getPlacesFor(String gameID, String pawnID) throws UnirestException{
 		System.out.println("*** Fetch Places For " + pawnID + " ****");
 		List<Place> places = new ArrayList<>();
 		
@@ -403,7 +399,6 @@ public class RestopolyClient {
 	 * @param gameID Die ID des games
 	 * @return Liste aller Spielfiguren
 	 * @throws UnirestException
-	 * @throws IOException
 	 */
 	public List<Pawn> getPawns(String gameID) throws UnirestException, IOException {
 		System.out.println("\n**************  Get Pawns **************");
@@ -419,7 +414,7 @@ public class RestopolyClient {
 		return data;
 	}
 	
-	public Player getPlayerWithWholeInformation(String gameID, PlayerInformation player) throws IOException, UnirestException {
+	public Player getPlayerWithWholeInformation(String gameID, PlayerInformation player) throws UnirestException {
 		Player result = new Player();
 		List<Place> places = getPlacesFor(gameID, player.getPawn());
 		System.out.println("PlayerPawnUri: " + player.getPawn());
@@ -453,7 +448,7 @@ public class RestopolyClient {
 		return result;
 	}
 
-	private double getAverageDiceRollRateFor(String gameID, String boardsPawnUri) throws IOException, UnirestException {
+	private double getAverageDiceRollRateFor(String gameID, String boardsPawnUri) throws UnirestException {
 		
 		//SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL
 		String boardServiceUri = boardService.getUri();
@@ -476,9 +471,8 @@ public class RestopolyClient {
 	 * @param gameID Die ID des Games
 	 * @return Die Uri des Pawn-Objektes des Users
 	 * @throws UnirestException
-	 * @throws IOException
 	 */
-	public String getPlaceUri(String gameID, User user) throws UnirestException, IOException{
+	public String getPlaceUri(String gameID, User user) throws UnirestException{
 		String boardServiceUri = boardService.getUri();
 		String boardsPawnsUri = boardServiceUri + SLASH + gameID + SLASH_PAWNS + SLASH + user.getName();
 		System.out.println("BoardsPawnsUri: " + boardsPawnsUri);
@@ -492,11 +486,11 @@ public class RestopolyClient {
 	 * Außerdem wird die Spielfigur verschoben.
 	 * 
 	 * @return Das Wurfergebnis
-	 * @throws IOException
 	 * @throws UnirestException 
-	 * @throws PlayerHasAlreadyRolledTheDice 
+	 * @throws PlayerHasAlreadyRolledTheDiceException 
+	 * @throws PlayerDoesNotHaveTheMutexException 
 	 */
-	public int rollDice(String gameID, User user) throws IOException, UnirestException, PlayerHasAlreadyRolledTheDice {
+	public int rollDice(String gameID, User user) throws UnirestException, PlayerHasAlreadyRolledTheDiceException, PlayerDoesNotHaveTheMutexException {
 		System.out.println("\n**************  Roll Dice  **************");
 
 		String boardServiceUri = boardService.getUri();
@@ -506,15 +500,16 @@ public class RestopolyClient {
 		
 		HttpResponse<String> result = Unirest.post(boardsDiceRollUri).asString();
 		System.out.println(result.getBody());
-		if(result.getStatus() == 409){
-			throw new PlayerHasAlreadyRolledTheDice();
+		switch(result.getStatus()){
+		case 409: throw new PlayerHasAlreadyRolledTheDiceException(user.getName() + " hat bereits gewuerfelt."); 
+		case 400: throw new PlayerDoesNotHaveTheMutexException(user.getName() + " hat den Mutex nicht.");
 		}
 
 		Dice lastThrown = getLastDiceRoll(SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL);
 		return lastThrown.getNumber();
 	}
 	
-	public Dice getLastDiceRoll(String boardsDiceRollUri) throws IOException, UnirestException{
+	public Dice getLastDiceRoll(String boardsDiceRollUri) throws UnirestException{
 		String boardServiceUri = boardService.getUri();
 		String uri = boardServiceUri + boardsDiceRollUri;
 		System.out.println("GetLastDiceRollUri: " + uri);
@@ -531,13 +526,15 @@ public class RestopolyClient {
 	 *            Das Objekt, dass eingetragen werden soll.
 	 * @param serviceUri
 	 * @return Den Statuscode der Anfrage.
-	 * @throws IOException
 	 * @throws UnirestException
+	 * @throws NotExpectedStatusCodeException 
 	 */
-	public JsonObject postData(Object object, String serviceUri) throws IOException, UnirestException {
+	public JsonObject postData(Object object, String serviceUri) throws UnirestException, NotExpectedStatusCodeException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post(serviceUri).header("accept", "application/json")
 				.body(gson.toJson(object)).asJson();
-
+		if(jsonResponse.getStatus() != 200){
+			throw new NotExpectedStatusCodeException("Invalid Response: " + jsonResponse.getStatus()+jsonResponse.getStatusText());
+		}
 		JsonObject responseObject = gson.fromJson(String.valueOf(jsonResponse.getBody()), JsonObject.class);
 		return responseObject;
 	}
@@ -548,10 +545,9 @@ public class RestopolyClient {
 	 * @param uri
 	 *            Die URI vom Service
 	 * @return
-	 * @throws IOException
 	 * @throws UnirestException
 	 */
-	public JsonObject get(String uri) throws IOException, UnirestException {
+	public JsonObject get(String uri) throws UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get(uri).header("accept", "application/json").asJson();
 
 		JsonObject responseObject = gson.fromJson(String.valueOf(jsonResponse.getBody()), JsonObject.class);

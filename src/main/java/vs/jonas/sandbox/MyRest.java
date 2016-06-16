@@ -56,10 +56,7 @@ public class MyRest {
 			}
 			
 			
-		} catch (IOException | UnirestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

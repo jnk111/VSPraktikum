@@ -17,8 +17,6 @@ import com.google.gson.Gson;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import spark.Spark;
-import vs.gerriet.api.Events;
-import vs.gerriet.json.event.SubscriptionRegisterData;
 import vs.jonas.client.json.ClientTurn;
 import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
@@ -33,7 +31,9 @@ import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
 import vs.jonas.client.view.PlayerUI;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
-import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDice;
+import vs.jonas.exceptions.NotExpectedStatusCodeException;
+import vs.jonas.exceptions.PlayerDoesNotHaveTheMutexException;
+import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDiceException;
 import vs.jonas.services.json.EventData;
 
 /**
@@ -60,10 +60,11 @@ public class GameController {
 	 * Initialisiert den Controller
 	 * @param client Der Client, der mit den Services kommuniziert
 	 * @param gameID Die ID des Games
-	 * @throws IOException
 	 * @throws UnirestException
+	 * @throws NotExpectedStatusCodeException 
+	 * @throws  
 	 */
-	public GameController(RestopolyClient client, String gameID, User user) throws IOException, UnirestException{
+	public GameController(RestopolyClient client, String gameID, User user) throws UnirestException, NotExpectedStatusCodeException{
 		this.client = client;
 		this.gameID = gameID;
 		this.user = user;
@@ -187,19 +188,19 @@ public class GameController {
 					Player player = client.getPlayerWithWholeInformation(gameID,playerInformation);
 					new PlayerUI(player).showUI();
 					System.err.println("A Player was selected: " + player);			
-				} catch (IOException | UnirestException e1) {
+				} catch (UnirestException e1) {
 					e1.printStackTrace();
 				}
 				
 			}
 		});
 		
-		ui.getGameFIeldTable().addMouseListener(new MyTableMouseListener() {
+		ui.getGameFieldTable().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				int row = e.getY() / ui.getGameFIeldTable().getRowHeight();
-				GameFieldTableModel model = (GameFieldTableModel)ui.getGameFIeldTable().getModel();
+				int row = e.getY() / ui.getGameFieldTable().getRowHeight();
+				GameFieldTableModel model = (GameFieldTableModel)ui.getGameFieldTable().getModel();
 				Place place = model.getPlace(row);
 				
 				try {
@@ -207,7 +208,7 @@ public class GameController {
 					if(placeWithWholeInformation.getValue() != 0){
 						new FieldUI(placeWithWholeInformation).showUI();
 					}
-				} catch (IOException | UnirestException e1) {
+				} catch (UnirestException e1) {
 					e1.printStackTrace();
 				}
 				
@@ -228,16 +229,15 @@ public class GameController {
 		try {
 			ImageIcon diceRollImage = new ImageIcon(FieldUI.class.getResource("/dice_roll.gif"));
 			JLabel label1 = new JLabel(diceRollImage, JLabel.CENTER);
-			//Set the position of the text, relative to the icon:
 			label1.setVerticalTextPosition(JLabel.BOTTOM);
 			label1.setHorizontalTextPosition(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null,label1);
 			int number = client.rollDice(gameID, user);
 			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
-//			updateGame();
-			
-		} catch(PlayerHasAlreadyRolledTheDice ex){
+		} catch(PlayerHasAlreadyRolledTheDiceException ex){
 			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gewürfelt!");
+		} catch(PlayerDoesNotHaveTheMutexException ex){
+			JOptionPane.showMessageDialog(null, "Ich weiß, das Leben ist hart, aber du bist noch nicht and der Reihe.");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(i<3){
@@ -261,8 +261,8 @@ public class GameController {
 			JOptionPane.showMessageDialog(null,label1);
 		} catch (EstateAlreadyOwnedException e) {
 			JOptionPane.showMessageDialog(null, "Die Straï¿½e wurde bereits verkauft.");
-		} catch (UnirestException | IOException e) {
-			e.printStackTrace();
+		} catch (UnirestException ex) {
+			ex.printStackTrace();
 		}
 		System.err.println("Dummy: Buy");
 	}
@@ -298,11 +298,10 @@ public class GameController {
 	
 	/**
 	 * Laedt die Spielfeld-Informationen
-	 * @throws IOException
 	 * @throws UnirestException
 	 */
 	private void ladeGameFieldInformationen() throws IOException, UnirestException {
-		GameFieldTableModel model = (GameFieldTableModel) ui.getGameFIeldTable().getModel();
+		GameFieldTableModel model = (GameFieldTableModel) ui.getGameFieldTable().getModel();
 		List<Place> data = client.getPlaces(gameID);
 		model.loadData(data);
 		

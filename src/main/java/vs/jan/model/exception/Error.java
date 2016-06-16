@@ -17,7 +17,8 @@ public enum Error {
 																											"roll back failed"), JSON_PLAYER(
 																													"player input is not valid"), DECKS_NOT_FOUND(
 																															"decks not found"), TRANS_FAIL_NEGATIVE_SALDO(
-																																	"transaction failed, not enough credits");
+																																	"transaction failed, not enough credits"), ALR_ROLLED(
+																																			"current player has already rolled the dice");
 
 	private String msg;
 

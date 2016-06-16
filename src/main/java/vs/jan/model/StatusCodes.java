@@ -12,5 +12,6 @@ public class StatusCodes {
 	public static final int CREATED = 201;
 	public static final int BAD_REQ = 400;
 	public static final int NOT_FOUND = 404;
+	public static final int CONFLICT = 409;
 
 }

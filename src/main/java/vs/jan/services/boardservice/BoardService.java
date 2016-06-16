@@ -37,6 +37,7 @@ import vs.jan.model.boardservice.Place;
 import vs.jan.model.decksservice.ChanceCard;
 import vs.jan.model.decksservice.CommCard;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.PlayerHasAlreadyRolledException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.tools.HttpService;
@@ -67,6 +68,7 @@ public class BoardService {
 	private ServiceList services;
 
 	private Map<JSONThrowsURI, JSONThrowsList> throwMap;
+	private Pawn currPlayer;
 
 	/**
 	 * Defaultkonstruktor
@@ -76,6 +78,7 @@ public class BoardService {
 		this.boards = new HashMap<>();
 		this.throwMap = new HashMap<>();
 		this.validator = new BoardValidator();
+		this.currPlayer = null;
 	}
 
 	/**
@@ -496,20 +499,25 @@ public class BoardService {
 	 * 
 	 */
 	public synchronized JSONEventList rollDice(String gameid, String pawnid)
-			throws ResourceNotFoundException, ResponseCodeException, InvalidInputException, TransactionFailedException {
+			throws ResourceNotFoundException, ResponseCodeException, InvalidInputException, TransactionFailedException, PlayerHasAlreadyRolledException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), false);
 
 		Board board = BoardHelper.getBoard(boards, gameid);
 		Pawn pawn = BoardHelper.getPawn(board, pawnid);
-		Dice roll = rollDice(pawn, gameid); // Zum Testen Local
+		
+		if(this.currPlayer == null || !pawn.equals(this.currPlayer)) {
+			
+			this.currPlayer = pawn;
+			Dice roll = rollDice(pawn, gameid); // Zum Testen Local
+			movePawn(gameid, pawnid, roll.getNumber());
+			BoardHelper.addThrow(this.throwMap, pawn, roll);
+			
+			return BoardHelper.receiveEventList(pawn.getPlayerUri(), gameid, new Date());
+		}
 
-		movePawn(gameid, pawnid, roll.getNumber());
-
-		BoardHelper.addThrow(this.throwMap, pawn, roll);
-
-		return BoardHelper.receiveEventList(pawn.getPlayerUri(), gameid, new Date());
+		throw new PlayerHasAlreadyRolledException(Error.ALR_ROLLED.getMsg());		
 	}
 
 	/**
@@ -696,5 +704,13 @@ public class BoardService {
 		p.setPlayerUri(pawn.getPlayer());
 		p.setPosition(pawn.getPosition());
 		p.setRollsUri(pawn.getRoll());
+	}
+
+	public Pawn getCurrplayer() {
+		return currPlayer;
+	}
+
+	public void setCurrplayer(Pawn currplayer) {
+		this.currPlayer = currplayer;
 	}
 }

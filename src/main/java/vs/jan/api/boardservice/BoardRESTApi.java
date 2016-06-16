@@ -20,6 +20,7 @@ import vs.jan.json.boardservice.JSONPawnList;
 import vs.jan.json.boardservice.JSONPlace;
 import vs.jan.json.boardservice.JSONThrowsList;
 import vs.jan.model.StatusCodes;
+import vs.jan.model.exception.PlayerHasAlreadyRolledException;
 import vs.jan.services.boardservice.BoardService;
 
 /**
@@ -145,6 +146,13 @@ public class BoardRESTApi {
 
 			response.status(StatusCodes.BAD_REQ);
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
+			exception.printStackTrace();
+		});
+		
+		exception(PlayerHasAlreadyRolledException.class, (exception, request, response) -> {
+
+			response.status(StatusCodes.CONFLICT);
+			response.body(StatusCodes.CONFLICT + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
 	}

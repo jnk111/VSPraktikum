@@ -10,6 +10,10 @@ public class Player {
 	private String uri;
 	private String account;
 	private double averageDiceRoll;
+	private double averagePlaceValue;
+	private double averageRentValue;
+	private double averagePlaceCostValue;
+	private double averageHouses;
 	private List<Place> places;
 
 	public String getName() {
@@ -50,5 +54,39 @@ public class Player {
 
 	public void setPlaces(List<Place> places) {
 		this.places = places;
+	}
+
+	public double getAveragePlaceValue() {
+		return averagePlaceValue;
+	}
+
+	public void setAveragePlaceValue(double averagePlaceValue) {
+		this.averagePlaceValue = averagePlaceValue;
+	}
+
+	public double getAverageRentValue() {
+		return averageRentValue;
+	}
+
+	public void setAverageRentValue(double averageRentValue) {
+		this.averageRentValue = averageRentValue;
+	}
+
+	public double getAveragePlaceCostValue() {
+		return averagePlaceCostValue;
+	}
+
+	public void setAveragePlaceCostValue(double averagePlaceCostValue) {
+		this.averagePlaceCostValue = averagePlaceCostValue;
+	}
+
+	public double getAverageHouses() {
+		return averageHouses;
+	}
+
+	public void setAverageHouses(double averageHouses) {
+		this.averageHouses = averageHouses;
 	}	
+	
+	
 }

@@ -418,18 +418,38 @@ public class RestopolyClient {
 	}
 	
 	public Player getPlayerWithWholeInformation(String gameID, PlayerInformation player) throws IOException, UnirestException {
-		// TODO Auto-generated method stub
 		Player result = new Player();
 		List<Place> places = getPlacesFor(gameID, player.getPawn());
 		System.out.println("PlayerPawnUri: " + player.getPawn());
 		double averageDiceRoll = getAverageDiceRollRateFor(gameID,player.getPawn());
+		int placesValue = 0;
+		int placesRent = 0;
+		int placesCost = 0;
+		int placesHouses = 0;
+		for(Place place : places){
+			placesValue+= place.getValue();
+			placesRent += place.getRent();
+			placesCost += place.getCost();
+			placesHouses += place.getHouses();
+		}		
 		result.setName(player.getPawn());
 		result.setAccount(player.getAccount());
 		result.setPlaces(places);
 		result.setAverageDiceRoll(averageDiceRoll);
+		if(places.size()>0){
+			result.setAveragePlaceValue(placesValue/places.size());
+			result.setAverageRentValue(placesRent/places.size());
+			result.setAveragePlaceCostValue(placesCost/places.size());
+			result.setAverageHouses(placesHouses/places.size());
+		} else{
+//			result.setAveragePlaceValue(placesValue/places.size());
+//			result.setAverageRentValue(placesRent/places.size());
+//			result.setAveragePlaceCostValue(placesCost/places.size());
+//			result.setAverageHouses(placesHouses/places.size());
+		}
 		return result;
 	}
-	
+
 	private double getAverageDiceRollRateFor(String gameID, String boardsPawnUri) throws IOException, UnirestException {
 		
 		//SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL
@@ -438,7 +458,14 @@ public class RestopolyClient {
 		JsonObject diceRolls = get(uri);
 		DiceRolls rolls = gson.fromJson(diceRolls, DiceRolls.class);
 		System.out.println(rolls);
-		return 0;
+		
+		int averageRate = 0;
+		for(Dice dice : rolls.getRolls()){
+			averageRate+=dice.getNumber();
+		}		
+		if(rolls.getRolls().size()>0){
+			return averageRate/rolls.getRolls().size();
+		} else return 0;
 	}
 
 	/**

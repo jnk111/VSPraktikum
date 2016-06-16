@@ -74,7 +74,7 @@ public class GameController {
 		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
 		
 		// this.ip = "0.0.0.0";
-		this.ip = "192.168.255.18";
+//		this.ip = "192.168.255.18";
 		
 		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();

@@ -4,10 +4,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -20,6 +17,8 @@ import com.google.gson.Gson;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import spark.Spark;
+import vs.gerriet.api.Events;
+import vs.gerriet.json.event.SubscriptionRegisterData;
 import vs.jonas.client.json.ClientTurn;
 import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
@@ -69,9 +68,9 @@ public class GameController {
 		this.gameID = gameID;
 		this.user = user;
 		this.gson = new Gson();
-		URL url = new URL("http://checkip.amazonaws.com/");
-		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-		String ipadress = br.readLine();
+//		URL url = new URL("http://checkip.amazonaws.com/");
+//		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+//		String ipadress = br.readLine();
 //		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
 		this.ip = JOptionPane.showInputDialog("IP Andresseangeben: (z.b. localhost oder 192.168.99.100");
 		String port = JOptionPane.showInputDialog("Port angeben: (z.B. 4777");
@@ -110,6 +109,9 @@ public class GameController {
 			return "";
 		});
 		
+		Events events = new Events();
+		String[] eventData = {EventTypes.MOVE_PAWN.getType()};
+		events.addSubscription(new SubscriptionRegisterData(gameID, user.getUri(), eventData));
 	}
 
 
@@ -140,7 +142,6 @@ public class GameController {
 	private void registriereActionListener() {		
 		ui.getAktionAusfuehrenBtn().addActionListener(new ActionListener() {
 			
-			int i=0;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> aktionen = ui.getAktionen();

@@ -173,7 +173,7 @@ public class GameController {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				int row = e.getY() / ui.getGameFIeldTable().getRowHeight();
+				int row = e.getY() / ui.getPlayerTable().getRowHeight();
 				PlayerOverviewTableModel model = (PlayerOverviewTableModel)ui.getPlayerTable().getModel();
 				PlayerInformation playerInformation = model.getPlayerInformation(row);
 				
@@ -253,10 +253,10 @@ public class GameController {
 			label1.setVerticalTextPosition(JLabel.BOTTOM);
 			label1.setHorizontalTextPosition(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null,label1);
-		} catch (UnirestException | IOException e) {
-			e.printStackTrace();
 		} catch (EstateAlreadyOwnedException e) {
 			JOptionPane.showMessageDialog(null, "Die Straï¿½e wurde bereits verkauft.");
+		} catch (UnirestException | IOException e) {
+			e.printStackTrace();
 		}
 		System.err.println("Dummy: Buy");
 	}
@@ -329,6 +329,8 @@ public class GameController {
 			eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
 		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
 			
+		} else{
+			eventText = "Unimplemented: " + event + " Ausgelöst durch: " + event.getPlayer();
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");

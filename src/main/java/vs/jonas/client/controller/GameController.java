@@ -72,7 +72,8 @@ public class GameController {
 		URL url = new URL("http://checkip.amazonaws.com/");
 		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 		String ipadress = br.readLine();
-		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
+//		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
+		this.ip = JOptionPane.showInputDialog("IP Andresse angeben. (z.b. localhost oder 192.168.99.100");
 		 //this.ip = "0.0.0.0";
 //		this.ip = "192.168.255.18";
 		

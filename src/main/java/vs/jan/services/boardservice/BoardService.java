@@ -338,6 +338,27 @@ public class BoardService {
 
 		} else if (place.isCommunity()) {
 			doFurtherDecksActions(gameid, newPos, b, p, DECK_TYPES[1]);
+			
+		} else if (place.isTax()) {
+			payTax(p, gameid);
+		}
+	}
+
+	private void payTax(Pawn p, String gameid) throws TransactionFailedException {
+		
+		String fromId = BoardHelper.getID(p.getPawnUri());
+		String bankUri = this.services.getBank() + "/" + gameid + TRANSER_FROM_INFIX + fromId + "/" + Place.EinkStr.getPrice();
+		JSONEvent event = null;
+		
+		try {
+			HttpService.post(bankUri, null, HttpURLConnection.HTTP_CREATED);
+			event = new JSONEvent(gameid, EventTypes.PAYED_TAX.getType(), EventTypes.PAYED_TAX.getType(), EventTypes.PAYED_TAX.getType(), p.getRollsUri(), p.getPlayerUri());
+		} catch (Exception e) {
+			event = new JSONEvent(gameid, EventTypes.CANNOT_PAY_TAX.getType(), EventTypes.CANNOT_PAY_TAX.getType(), EventTypes.CANNOT_PAY_TAX.getType(), p.getRollsUri(), p.getPlayerUri());
+			throw new TransactionFailedException(Error.TRANS_FAIL.getMsg());
+		} finally {
+			BoardHelper.postEvent(event);
+			BoardHelper.broadCastEvent(event);
 		}
 	}
 

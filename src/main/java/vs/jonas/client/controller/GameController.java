@@ -72,14 +72,8 @@ public class GameController {
 		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 		String ipadress = br.readLine();
 		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
-		
-<<<<<<< HEAD
 		// this.ip = "0.0.0.0";
 //		this.ip = "192.168.255.18";
-=======
-		//this.ip = "0.0.0.0";
-		this.ip = "192.168.255.18";
->>>>>>> branch 'master' of https://github.com/jnk111/VSPraktikum.git
 		
 		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();

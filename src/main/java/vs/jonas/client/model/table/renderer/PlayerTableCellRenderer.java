@@ -19,7 +19,7 @@ public class PlayerTableCellRenderer extends DefaultTableCellRenderer{
 			boolean isSelected, boolean hasFocus, int row, int col) {
 		JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 //		GameFieldTableModel model = (GameFieldTableModel) table.getModel();
-		label.setBackground(SystemColor.activeCaption);
+		label.setBackground(SystemColor.inactiveCaption);
 		return label;
 	}
 

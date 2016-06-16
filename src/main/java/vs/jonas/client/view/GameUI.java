@@ -51,7 +51,6 @@ public class GameUI {
 	
 	private static final Color GAMEFIELD_COLOR = new Color(204, 255, 204);
 	private static final Color TABLEHEADER_COLOR = new Color(200, 255, 190);
-	private static final Color BUTTON_COLOR = new Color(50,60,70,80);
 
 	/**
 	 * Create the frame.
@@ -64,7 +63,7 @@ public class GameUI {
 		frame.setLocationRelativeTo(null);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		contentPane = new JPanel();
-		contentPane.setBackground(SystemColor.activeCaption);
+		contentPane.setBackground(SystemColor.inactiveCaption);
 		contentPane.setOpaque(false);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
@@ -88,30 +87,31 @@ public class GameUI {
 
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setDividerSize(0);
-		splitPane.setBackground(SystemColor.activeCaption);
+		splitPane.setBackground(SystemColor.inactiveCaption);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 
 		JPanel optionsPanel = new JPanel();
-		optionsPanel.setBackground(SystemColor.activeCaption);
+		optionsPanel.setBackground(SystemColor.inactiveCaption);
 		JSplitPane splitPane_1 = new JSplitPane();
 		splitPane_1.setDividerSize(0);
-		splitPane_1.setBackground(SystemColor.activeCaption);
+		splitPane_1.setBackground(SystemColor.inactiveCaption);
 		splitPane.setRightComponent(splitPane_1);
 
 		playerTable = new JTable(new PlayerOverviewTableModel());
 		playerTable.getTableHeader().setOpaque(false);
-		playerTable.getTableHeader().setBackground(new Color(100, 150, 210));
+		playerTable.getTableHeader().setBackground(SystemColor.inactiveCaption);
 		playerTable.setEnabled(false);
 		playerTable.setOpaque(false);
 		playerTable.setDefaultRenderer(String.class, new PlayerTableCellRenderer());
 		
 		JScrollPane playerOverview = new JScrollPane(playerTable);
-		playerOverview.getViewport().setBackground(SystemColor.activeCaption);
-		playerOverview.setBackground(SystemColor.activeCaption);
+		playerOverview.getViewport().setBackground(SystemColor.inactiveCaption);
+		playerOverview.setBackground(SystemColor.inactiveCaption);
 		JPanel playerPanel = new JPanel(new BorderLayout());
-		playerPanel.setBackground(SystemColor.activeCaption);
+		playerPanel.setBackground(SystemColor.inactiveCaption);
 		JLabel playerHeader = new JLabel("********** Spieler **********");
+		playerHeader.setForeground(Color.BLACK);
 		playerHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
 		playerHeader.setHorizontalAlignment(SwingConstants.CENTER);
 		playerPanel.add(playerHeader, BorderLayout.NORTH);
@@ -121,17 +121,18 @@ public class GameUI {
 				
 		splitPane_2 = new JSplitPane();
 		splitPane_2.setDividerSize(0);
-		splitPane_2.setBackground(SystemColor.activeCaption);
+		splitPane_2.setBackground(SystemColor.inactiveCaption);
 		splitPane_2.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		optionsPanel.add(splitPane_2);
 		
 		panel = new JPanel();
-		panel.setBackground(SystemColor.activeCaption);
+		panel.setBackground(SystemColor.inactiveCaption);
 		panel.setBorder(new EmptyBorder(10, 100, 10, 100));
 		splitPane_2.setLeftComponent(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 5));
 		
 		userLbl = new JLabel("Username");
+		userLbl.setForeground(Color.BLACK);
 		userLbl.setFont(new Font("Kristen ITC", Font.BOLD, 14));
 		userLbl.setHorizontalTextPosition(SwingConstants.CENTER);
 		userLbl.setHorizontalAlignment(SwingConstants.CENTER);
@@ -155,7 +156,7 @@ public class GameUI {
 		
 		lblNewLabel = new JLabel("Received Events:");
 		lblNewLabel.setFont(new Font("Kristen ITC", Font.PLAIN, 11));
-		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setForeground(Color.BLACK);
 		lblNewLabel.setBorder(new EmptyBorder(10, 0, 5, 0));
 		lblNewLabel.setBackground(SystemColor.activeCaption);
 		panel_1.add(lblNewLabel, BorderLayout.NORTH);
@@ -188,8 +189,10 @@ public class GameUI {
 		JScrollPane gameFieldScrollPane = new JScrollPane(gameFieldTable);
 		gameFieldScrollPane.getViewport().setBackground(GAMEFIELD_COLOR);
 		JPanel gameFieldPanel = new JPanel(new BorderLayout());
-		gameFieldPanel.setBackground(GAMEFIELD_COLOR);
+		gameFieldPanel.setBackground(SystemColor.inactiveCaption);
 		JLabel gameFieldHeader = new JLabel("********** Spielfeld **********");
+		gameFieldHeader.setBackground(SystemColor.activeCaption);
+		gameFieldHeader.setForeground(Color.BLACK);
 		gameFieldHeader.setFont(new Font("Kristen ITC", Font.PLAIN, 14));
 		gameFieldHeader.setHorizontalAlignment(SwingConstants.CENTER);
 		gameFieldPanel.add(gameFieldHeader, BorderLayout.NORTH);

@@ -2,6 +2,7 @@ package vs.jonas.client.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.naming.ServiceUnavailableException;
@@ -31,6 +32,7 @@ import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerList;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.client.model.comparator.PlaceComparator;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
@@ -353,7 +355,6 @@ public class RestopolyClient {
 	
 	private String getOwner(String ownerUri) throws IOException {
 		if(ownerUri != null && !ownerUri.equals("")){
-			System.out.println("\n********* GetOwner ***********");
 			String brokerServiceUri = brokerService.getUri();
 			String brokerServiceOwnerUri = brokerServiceUri.replaceAll("/broker", "") + ownerUri;
 			try {
@@ -432,6 +433,7 @@ public class RestopolyClient {
 			placesCost += place.getCost();
 			placesHouses += place.getHouses();
 		}		
+		Collections.sort(places, new PlaceComparator());
 		result.setName(player.getPawn());
 		result.setAccount(player.getAccount());
 		result.setPlaces(places);

@@ -34,6 +34,7 @@ import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
 import vs.jonas.client.view.PlayerUI;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
+import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDice;
 import vs.jonas.services.json.EventData;
 
 /**
@@ -51,7 +52,7 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
-	private final int PORT = 4778;
+	private final int PORT = 4777;
 	private String ip;
 //	private final String PROTOCOL = "http://";
 	private Gson gson;
@@ -73,7 +74,7 @@ public class GameController {
 		String ipadress = br.readLine();
 		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
 		 //this.ip = "0.0.0.0";
-		this.ip = "192.168.255.18";
+//		this.ip = "192.168.255.18";
 		
 		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();
@@ -229,10 +230,12 @@ public class GameController {
 			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
 //			updateGame();
 			
+		} catch(PlayerHasAlreadyRolledTheDice ex){
+			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gewürfelt!");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(i<3){
-				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Mï¿½glicherweise sind Sie nur nicht an der Reihe.");
+				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal.");
 				i++;
 			} else{
 				JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");

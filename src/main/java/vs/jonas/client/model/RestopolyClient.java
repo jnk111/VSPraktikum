@@ -34,6 +34,7 @@ import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
 import vs.jonas.client.model.comparator.PlaceComparator;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
+import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDice;
 import vs.jonas.services.model.Dice;
 import vs.jonas.services.services.YellowPagesService;
 
@@ -493,8 +494,9 @@ public class RestopolyClient {
 	 * @return Das Wurfergebnis
 	 * @throws IOException
 	 * @throws UnirestException 
+	 * @throws PlayerHasAlreadyRolledTheDice 
 	 */
-	public int rollDice(String gameID, User user) throws IOException, UnirestException {
+	public int rollDice(String gameID, User user) throws IOException, UnirestException, PlayerHasAlreadyRolledTheDice {
 		System.out.println("\n**************  Roll Dice  **************");
 
 		String boardServiceUri = boardService.getUri();
@@ -504,6 +506,9 @@ public class RestopolyClient {
 		
 		HttpResponse<String> result = Unirest.post(boardsDiceRollUri).asString();
 		System.out.println(result.getBody());
+		if(result.getStatus() == 409){
+			throw new PlayerHasAlreadyRolledTheDice();
+		}
 
 		Dice lastThrown = getLastDiceRoll(SLASH + gameID + SLASH_PAWNS + SLASH + user.getName() + SLASH_ROLL);
 		return lastThrown.getNumber();

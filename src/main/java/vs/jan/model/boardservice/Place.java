@@ -6,7 +6,7 @@ import vs.jan.model.Convertable;
 public enum Place implements Convertable<JSONPlace> {
 
 	Los("Los"), Bad("Badstrasse", 40, PlaceColors.DARK_BLUE), Gemeinschaft1("Gemeinschaftsfeld"), Turm("Turmstrasse", 80,
-			PlaceColors.DARK_BLUE), EinkStr("Einkommenssteuer"), Suedbhf("Suedbahnhof", 200), Chaussee("Chaussestrasse", 120,
+			PlaceColors.DARK_BLUE), EinkStr("Einkommenssteuer", 1000), Suedbhf("Suedbahnhof", 200), Chaussee("Chaussestrasse", 120,
 					PlaceColors.TURQUOISE), Ereignis1("Ereignisfeld"), Elisen("Elisenstrasse", 120, PlaceColors.TURQUOISE), Post(
 							"Poststrasse", 160,
 							PlaceColors.TURQUOISE), InJail("Gefaengnis"), See("Seestrasse", 200, PlaceColors.VIOLET), EWerk(
@@ -28,7 +28,7 @@ public enum Place implements Convertable<JSONPlace> {
 																																					200), Ereignis3("Ereignisfeld"), Park(
 																																							"Parkstrasse", 700,
 																																							PlaceColors.DARK_BLUE), ZusatzStr(
-																																									"Zusatzsteuer"), Schloss(
+																																									"Zusatzsteuer", 1000), Schloss(
 																																											"Schlossallee", 1000,
 																																											PlaceColors.DARK_BLUE);
 
@@ -140,5 +140,10 @@ public enum Place implements Convertable<JSONPlace> {
 	public boolean isCommunity() {
 
 		return this == Place.Gemeinschaft1 || this == Place.Gemeinschaft2 || this == Place.Gemeinschaft3;
+	}
+
+	public boolean isTax() {
+		
+		return this == EinkStr || this == ZusatzStr;
 	}
 }

@@ -20,13 +20,12 @@ import vs.jan.model.boardservice.Player;
 import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Place;
 import vs.jan.model.exception.Error;
-import vs.jan.model.exception.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.services.allocator.ServiceAllocator;
+import vs.jan.transaction.BankSellTransaction;
 import vs.jan.transaction.BuyTransaction;
 import vs.jan.transaction.RentTransaction;
 import vs.jan.transaction.TradeTransaction;
-import vs.jan.transaction.BankSellTransaction;
 import vs.jan.validator.BrokerValidator;
 import vs.jan.validator.Validator;
 

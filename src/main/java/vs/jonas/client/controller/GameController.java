@@ -37,7 +37,7 @@ import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.services.json.EventData;
 
 /**
- * Diese Klasse implementiert einen Controller für die GamesUI.
+ * Diese Klasse implementiert einen Controller fï¿½r die GamesUI.
  * Er nimmt Nutzeranfragen entgegen und leitet sie weiter.
  * @author Jones
  *
@@ -232,7 +232,7 @@ public class GameController {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(i<3){
-				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Möglicherweise sind Sie nur nicht an der Reihe.");
+				JOptionPane.showMessageDialog(null, "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal. Mï¿½glicherweise sind Sie nur nicht an der Reihe.");
 				i++;
 			} else{
 				JOptionPane.showMessageDialog(null, "Der Fehler konnte nicht behoben werden. Bitte starten sie das Programm neu.");
@@ -253,7 +253,7 @@ public class GameController {
 		} catch (UnirestException | IOException e) {
 			e.printStackTrace();
 		} catch (EstateAlreadyOwnedException e) {
-			JOptionPane.showMessageDialog(null, "Die Straße wurde bereits verkauft.");
+			JOptionPane.showMessageDialog(null, "Die Straï¿½e wurde bereits verkauft.");
 		}
 		System.err.println("Dummy: Buy");
 	}

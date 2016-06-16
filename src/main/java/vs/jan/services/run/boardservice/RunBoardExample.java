@@ -134,32 +134,32 @@ public class RunBoardExample {
 
 	private static void letCurrPlayerRollDice() throws ResponseCodeException {
 		
-		for(int i = 0; i < MAX_PLAYERS; i++){
-			System.out.println("Let Player with mutex roll the dice");
-			System.out.println("-------------------------------------------------------------------------------------------");
-			String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/player/current", 200);
-			Player p = GSON.fromJson(json, Player.class);
-			HttpService.put(GAME_URI + "/" + BOARD_ID + "/player/turn", p, 201);
-			
-
-			String pawnUri = p.getPawn();
-			String [] u = pawnUri.split("/");
-			String id = u[u.length - 1];
-			String uri = BOARD_URI + "/" + BOARD_ID +"/pawns/" + id;
-			p.setPawn(uri);
-			System.out.println("Get Pawn with uri: " + p.getPawn());
-			String json2 = HttpService.get(p.getPawn(), 200);
-			JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
-			System.out.println("Pawn rolls dice: " + json2);
-			String list = HttpService.post(HOST + pawn.getRoll(), null, 200);
-			System.out.println();
-			System.out.println("RECEIVED EVENTLIST: ");
-			System.out.println(list);
-			System.out.println();
-			System.out.println();
-			System.out.println("Player: " + json + " releases the Mutex");
-			HttpService.put(GAME_URI + "/" + BOARD_ID + "/players/" + id + "/ready", null, 200);
-		}
+//		for(int i = 0; i < MAX_PLAYERS; i++){
+//			System.out.println("Let Player with mutex roll the dice");
+//			System.out.println("-------------------------------------------------------------------------------------------");
+//			//String json = HttpService.get(GAME_URI + "/" + BOARD_ID + "/player/current", 200);
+//			//Player p = GSON.fromJson(json, Player.class);
+//			//HttpService.put(GAME_URI + "/" + BOARD_ID + "/player/turn", p, 201);
+//			
+//
+//			String pawnUri = p.getPawn();
+//			String [] u = pawnUri.split("/");
+//			String id = u[u.length - 1];
+//			String uri = BOARD_URI + "/" + BOARD_ID +"/pawns/" + id;
+//			p.setPawn(uri);
+//			System.out.println("Get Pawn with uri: " + p.getPawn());
+//			String json2 = HttpService.get(p.getPawn(), 200);
+//			JSONPawn pawn = GSON.fromJson(json2, JSONPawn.class);
+//			System.out.println("Pawn rolls dice: " + json2);
+//			String list = HttpService.post(HOST + pawn.getRoll(), null, 200);
+//			System.out.println();
+//			System.out.println("RECEIVED EVENTLIST: ");
+//			System.out.println(list);
+//			System.out.println();
+//			System.out.println();
+//			System.out.println("Player: " + json + " releases the Mutex");
+//			HttpService.put(GAME_URI + "/" + BOARD_ID + "/players/" + id + "/ready", null, 200);
+//		}
 	}
 
 	private static void startGame() throws ResponseCodeException {

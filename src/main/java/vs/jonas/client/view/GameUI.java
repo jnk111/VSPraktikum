@@ -246,4 +246,8 @@ public class GameUI {
 	public void setEventNumber(int number){
 		this.receivedEventNumber = number;
 	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
 }

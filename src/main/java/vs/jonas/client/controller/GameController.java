@@ -52,7 +52,7 @@ public class GameController {
 	private final String SLASH_TURN = "/turn";
 	private final String SLASH_EVENT = "/events";
 	private User user;
-	private final int PORT = 4777;
+	private int PORT = 4777;
 	private String ip;
 //	private final String PROTOCOL = "http://";
 	private Gson gson;
@@ -75,9 +75,13 @@ public class GameController {
 //		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
 		this.ip = JOptionPane.showInputDialog("IP Andresseangeben: (z.b. localhost oder 192.168.99.100");
 		String port = JOptionPane.showInputDialog("Port angeben: (z.B. 4777");
+		if(this.ip == null || port == null){
+			ui.getFrame().dispose();
+			JOptionPane.showMessageDialog(null, "Einige Angaben waren leer. Das Programm wurde beendet.");
+		}
 //		this.ip = "192.168.255.18";
-		this.user.setUri("http://" + this.ip + ":" +port + SLASH_CLIENT + "/" + user.getName());
-//		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
+		this.PORT = Integer.valueOf(port);
+		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();

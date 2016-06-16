@@ -3,7 +3,6 @@ package vs.jonas.client.controller;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -18,6 +17,7 @@ import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.table.tablemodel.GameInformationTableModel;
 import vs.jonas.client.view.OffeneSpieleUI;
+import vs.jonas.exceptions.NotExpectedStatusCodeException;
 
 /**
  * Diese Klasse kontrolliert die Aktionen auf der OffeneSpieleUI,
@@ -108,8 +108,11 @@ public class OffeneSpieleController {
 							ui.getFrame().dispose();
 							User user = new User(username.toLowerCase());
 							new GameController(client,gameID, user);
-						} catch (IOException | UnirestException e1) {
+						} catch (UnirestException e1) {
 							JOptionPane.showMessageDialog(null, "Ein Verbindungsfehler ist aufgetreten.");
+							e1.printStackTrace();
+						} catch (NotExpectedStatusCodeException e1) {
+							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}

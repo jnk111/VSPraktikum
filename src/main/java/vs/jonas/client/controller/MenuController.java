@@ -3,7 +3,6 @@ package vs.jonas.client.controller;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
@@ -11,6 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.view.RestopolyMenuUI;
+import vs.jonas.exceptions.NotExpectedStatusCodeException;
 
 /**
  * Diese Klasse implementiert einen Controller für die MenuUI.
@@ -75,10 +75,9 @@ public class MenuController {
 					if(!gameName.equals("")){
 						try {
 							client.createANewGame(gameName);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
 						} catch (UnirestException e1) {
+							e1.printStackTrace();
+						} catch (NotExpectedStatusCodeException e1) {
 							e1.printStackTrace();
 						}
 					}

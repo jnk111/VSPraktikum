@@ -1,7 +1,6 @@
 package vs.jonas.sandbox;
 import static spark.Spark.get;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import vs.jonas.client.json.User;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.services.services.YellowPagesService;
 

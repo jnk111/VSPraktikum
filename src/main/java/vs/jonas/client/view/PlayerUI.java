@@ -2,9 +2,10 @@ package vs.jonas.client.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -16,12 +17,9 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import vs.jonas.client.json.Place;
 import vs.jonas.client.model.Player;
 import vs.jonas.client.model.table.renderer.PlayerTableCellRenderer;
 import vs.jonas.client.model.table.tablemodel.PlayersPlacesTableModel;
-import java.awt.SystemColor;
-import java.awt.Font;
 
 public class PlayerUI {
 
@@ -75,7 +73,7 @@ public class PlayerUI {
 		lblOwner.setForeground(Color.BLACK);
 		lblOwner.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblOwner);
-		JLabel lblOwnerresult = new JLabel(player.getAccount());
+		JLabel lblOwnerresult = new JLabel(player.getAccount() + " Rubel");
 		lblOwnerresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblOwnerresult.setForeground(Color.BLACK);
 		panel_1.add(lblOwnerresult);
@@ -96,18 +94,18 @@ public class PlayerUI {
 		lblPlaceValue.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblPlaceValue);
 		
-		JLabel lblResultPlaceValue = new JLabel(player.getAveragePlaceValue()+"");
+		JLabel lblResultPlaceValue = new JLabel(player.getAveragePlaceValue()+" Rubel");
 		lblResultPlaceValue.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblResultPlaceValue.setForeground(Color.BLACK);
 		panel_1.add(lblResultPlaceValue);
 		
-		JLabel lblrent = new JLabel("~ Rent:");
+		JLabel lblrent = new JLabel("~ Place Rent:");
 		lblrent.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblrent.setForeground(Color.BLACK);
 		lblrent.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblrent);
 		
-		JLabel lblRentResult = new JLabel(player.getAverageRentValue()+"");
+		JLabel lblRentResult = new JLabel(player.getAverageRentValue() + " Rubel");
 		lblRentResult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblRentResult.setForeground(Color.BLACK);
 		panel_1.add(lblRentResult);
@@ -118,7 +116,7 @@ public class PlayerUI {
 		lblCost.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblCost);
 		
-		JLabel lblResultCost = new JLabel(player.getAveragePlaceCostValue()+"");
+		JLabel lblResultCost = new JLabel(player.getAveragePlaceCostValue()+ " Rubel");
 		lblResultCost.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblResultCost.setForeground(Color.BLACK);
 		panel_1.add(lblResultCost);
@@ -145,14 +143,7 @@ public class PlayerUI {
 		lblGrundstckeImBesitz.setBorder(new EmptyBorder(5, 0, 5, 0));
 		panel_2.add(lblGrundstckeImBesitz, BorderLayout.NORTH);
 		
-		List<Place> places = player.getPlaces();
-		String[] placeData = new String[places.size()];
-		for(int i=0; i<places.size(); i++){
-			Place place = places.get(i);
-			placeData[i] = place.getID();
-		}
-
-		JTable placeTable = new JTable(new PlayersPlacesTableModel(places));
+		JTable placeTable = new JTable(new PlayersPlacesTableModel(player.getPlaces()));
 		placeTable.getTableHeader().setOpaque(false);
 		placeTable.getTableHeader().setBackground(new Color(100, 150, 210));
 		placeTable.getTableHeader().setForeground(Color.WHITE);

@@ -70,7 +70,7 @@ public class FieldUI {
 		lblValue.setForeground(Color.BLACK);
 		lblValue.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblValue);
-		JLabel lblValueresult = new JLabel(place.getValue()+"");
+		JLabel lblValueresult = new JLabel(place.getValue()+" Rubel");
 		lblValueresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblValueresult.setForeground(Color.BLACK);
 		panel_1.add(lblValueresult);
@@ -80,7 +80,7 @@ public class FieldUI {
 		lblRent.setForeground(Color.BLACK);
 		lblRent.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblRent);
-		JLabel lblRentresult = new JLabel(place.getRent()+"");
+		JLabel lblRentresult = new JLabel(place.getRent()+" Rubel");
 		lblRentresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblRentresult.setForeground(Color.BLACK);
 		panel_1.add(lblRentresult);
@@ -101,7 +101,7 @@ public class FieldUI {
 		lblCost.setForeground(Color.BLACK);
 		lblCost.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblCost);
-		JLabel lblCostresult = new JLabel(place.getCost()+"");
+		JLabel lblCostresult = new JLabel(place.getCost()+" Rubel");
 		lblCostresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblCostresult.setForeground(Color.BLACK);
 		panel_1.add(lblCostresult);

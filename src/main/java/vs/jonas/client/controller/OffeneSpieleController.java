@@ -105,15 +105,15 @@ public class OffeneSpieleController {
 					}
 					if(username != null){
 						try {
-							ui.getFrame().dispose();
 							User user = new User(username.toLowerCase());
 							new GameController(client,gameID, user);
+							ui.getFrame().dispose();
 						} catch (UnirestException e1) {
 							JOptionPane.showMessageDialog(null, "Ein Verbindungsfehler ist aufgetreten.");
 							e1.printStackTrace();
 						} catch (NotExpectedStatusCodeException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Das Spiel konnte nicht betreten werden. Bitte wähle einen neuen Usernamen und versuchen es erneut.");
 						}
 					}
 				}

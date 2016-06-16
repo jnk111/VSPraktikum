@@ -13,7 +13,6 @@ import vs.jan.api.decksservice.DecksAPI;
 import vs.jan.api.userservice.UserServiceRESTApi;
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
-import vs.jan.services.decks.DecksService;
 import vs.jan.tools.HttpService;
 import vs.jonas.services.services.DiceService;
 import vs.jonas.services.services.EventService;

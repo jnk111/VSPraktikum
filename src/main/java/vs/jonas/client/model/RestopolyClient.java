@@ -532,8 +532,10 @@ public class RestopolyClient {
 	public JsonObject postData(Object object, String serviceUri) throws UnirestException, NotExpectedStatusCodeException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post(serviceUri).header("accept", "application/json")
 				.body(gson.toJson(object)).asJson();
-		if(jsonResponse.getStatus() != 200){
-			throw new NotExpectedStatusCodeException("Invalid Response: " + jsonResponse.getStatus()+jsonResponse.getStatusText());
+		int status = jsonResponse.getStatus();
+		System.err.println("Received Statuscode: " + status);
+		if(status != 200 && status != 201){
+			throw new NotExpectedStatusCodeException("Invalid Response: " + jsonResponse.getStatus()+ " " +jsonResponse.getStatusText());
 		}
 		JsonObject responseObject = gson.fromJson(String.valueOf(jsonResponse.getBody()), JsonObject.class);
 		return responseObject;

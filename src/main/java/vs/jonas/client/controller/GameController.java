@@ -105,8 +105,8 @@ public class GameController {
 		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_TURN, "application/json",(req,res) -> {
 			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
 			System.out.println("########Incoming Turn Message");
-			ui.getEventsConsole().append("*************************************\n" + turn.getPlayer()  + " ist jetzt an der Reihe.\n"
-					+ " *************************************\n\n");
+			ui.getEventsConsole().append("**********************************************\n" + turn.getPlayer()  + " ist jetzt an der Reihe.\n"
+					+ "**********************************************\n\n");
 //			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
 			ladeSpielerInformationen();
 			return "";
@@ -315,34 +315,42 @@ public class GameController {
 	private void handleIncomingEvent(EventData event) {
 		System.err.println("IncomingEvent: " + event);
 		JTextArea eventsConsole = ui.getEventsConsole();
-		String eventText = "";
-		if(event.getType().equals(EventTypes.MOVE_PAWN.getType())){
-			eventText = event.getPlayer() + " has moved his pawn.";
-		} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL.getType())){
-			eventText = event.getPlayer() + " has been sent to jail.";
-		} else if (event.getType().equals(EventTypes.VISIT_PLACE.getType())){
-			eventText = event.getPlayer() + " has visited " + event.getRessource();
-		} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
-			eventText = event.getPlayer() + " has bought a place.";
-		} else if(event.getType().equals(EventTypes.GOT_MONEY_ALL_PLAYERS.getType())){
-			eventText = event.getPlayer() + " has got money from all players. Such a lucker...";
-		} else if(event.getType().equals(EventTypes.GOT_MONEY_FROM_BANK.getType())){
-			eventText = event.getPlayer() + " has got money from the bank.";
-		} else if(event.getType().equals(EventTypes.PAY_RENT.getType())){
-			eventText = event.getPlayer() + " has paid the rent.";
-		} else if(event.getType().equals(EventTypes.CANNOT_BUY_PLACE.getType())){
-			eventText = event.getPlayer() + " couldn't buy the place. Bad luck. :(";
-		} else if(event.getType().equals(EventTypes.CANNOT_PAY_RENT.getType())){
-			eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
-		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
-			
+		
+		if(event.getType().equals(EventTypes.GAME_STARTED.getType())){
+			eventsConsole.append("**********************************************\n"
+					+ "Das Spiel wurde gestartet.\n"
+					+ "**********************************************\n\n");;
 		} else{
-			eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();
+			String eventText = "";
+			if(event.getType().equals(EventTypes.MOVE_PAWN.getType())){
+				eventText = event.getPlayer() + " has moved his pawn.";
+			} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL.getType())){
+				eventText = event.getPlayer() + " has been sent to jail.";
+			} else if (event.getType().equals(EventTypes.VISIT_PLACE.getType())){
+				eventText = event.getPlayer() + " has visited " + event.getRessource();
+			} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
+				eventText = event.getPlayer() + " has bought a place.";
+			} else if(event.getType().equals(EventTypes.GOT_MONEY_ALL_PLAYERS.getType())){
+				eventText = event.getPlayer() + " has got money from all players. Such a lucker...";
+			} else if(event.getType().equals(EventTypes.GOT_MONEY_FROM_BANK.getType())){
+				eventText = event.getPlayer() + " has got money from the bank.";
+			} else if(event.getType().equals(EventTypes.PAY_RENT.getType())){
+				eventText = event.getPlayer() + " has paid the rent.";
+			} else if(event.getType().equals(EventTypes.CANNOT_BUY_PLACE.getType())){
+				eventText = event.getPlayer() + " couldn't buy the place. Bad luck. :(";
+			} else if(event.getType().equals(EventTypes.CANNOT_PAY_RENT.getType())){
+				eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
+			} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
+				eventText = event.getPlayer() + " has traded a place.";
+			} else if(event.getType().equals(EventTypes.MUTEX_CHANGE.getType())){
+				eventText = "The Mutex has been moved to another player.";
+			}
+			else{
+				eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();
+			}
+			eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");
+			ui.setEventNumber(ui.getEventNumber()+1);
 		}
-//			JOptionPane.showMessageDialog(null, event.getReason());
-		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");
-		ui.setEventNumber(ui.getEventNumber()+1);
-//		eventsConsole.upd
 		try {
 			updateGame();
 		} catch (Exception e) {

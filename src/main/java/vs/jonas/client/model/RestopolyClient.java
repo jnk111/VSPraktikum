@@ -66,7 +66,7 @@ public class RestopolyClient {
 
 	/**
 	 * Initialisiert den Client
-	 * @param yellowPages Wird benötigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
+	 * @param yellowPages Wird benï¿½tigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
 	 * @param user Der angemeldete User.
 	 * @throws UnirestException
 	 */
@@ -177,7 +177,7 @@ public class RestopolyClient {
 	/**
 	 * Liefert alle beim Game angemeldeten Spieler
 	 * @param gameID Die ID des Games
-	 * @return Eine Liste mit Informationen über alle Spieler. 
+	 * @return Eine Liste mit Informationen ï¿½ber alle Spieler. 
 	 * @throws UnirestException
 	 */
 	public List<PlayerInformation> getPlayers(String gameID) throws UnirestException {
@@ -318,12 +318,12 @@ public class RestopolyClient {
 		Place place = gson.fromJson(fieldRessource.toString(), Place.class);
 		
 		// http://...:.../broker/{gameID}/places/{placeID} 
-		//				-> liefert alle weiteren Informationen über das Feld wie (Owner, Rent, Cost, etc.)
+		//				-> liefert alle weiteren Informationen ï¿½ber das Feld wie (Owner, Rent, Cost, etc.)
 		String brokerPlaceUri = brokerServiceUri.replace("/broker", "")+place.getBroker();
 		JsonObject brokerPlaceResponse = get(brokerPlaceUri);
 		BrokerPlace brokerPlace = gson.fromJson(brokerPlaceResponse, BrokerPlace.class);
 		
-		// Kosten = je nach anzahl der Häuser unterschiedlich
+		// Kosten = je nach anzahl der Hï¿½user unterschiedlich
 		int numberOfHouses = brokerPlace.getHouses();
 		if(numberOfHouses!= -1){
 			place.setCost(brokerPlace.getCost().get(numberOfHouses));
@@ -461,7 +461,7 @@ public class RestopolyClient {
 
 	/**
 	 * Wuerfelt fuer den angemeldeten User und liefert das Ergebnis zurueck.
-	 * Außerdem wird die Spielfigur verschoben.
+	 * Auï¿½erdem wird die Spielfigur verschoben.
 	 * 
 	 * @return Das Wurfergebnis
 	 * @throws UnirestException 

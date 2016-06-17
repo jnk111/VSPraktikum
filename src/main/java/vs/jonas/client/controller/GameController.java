@@ -235,9 +235,9 @@ public class GameController {
 			int number = client.rollDice(gameID, user);
 			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
 		} catch(PlayerHasAlreadyRolledTheDiceException ex){
-			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gewürfelt!");
+			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gewï¿½rfelt!");
 		} catch(PlayerDoesNotHaveTheMutexException ex){
-			JOptionPane.showMessageDialog(null, "Ich weiß, das Leben ist hart, aber du bist noch nicht and der Reihe.");
+			JOptionPane.showMessageDialog(null, "Ich weiï¿½, das Leben ist hart, aber du bist noch nicht and der Reihe.");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(i<3){
@@ -335,7 +335,7 @@ public class GameController {
 		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
 			
 		} else{
-			eventText = "Unimplemented: " + event + " Ausgelöst durch: " + event.getPlayer();
+			eventText = "Unimplemented: " + event + " Ausgelï¿½st durch: " + event.getPlayer();
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");

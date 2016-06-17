@@ -62,6 +62,7 @@ public class BoardService {
 	private final String HTTP_PREFIX = "http://";
 	private final String PLAYERS_SUFFIX = "/players";
 	private final String SERVICE_QPARAM = "?services=";
+	private final boolean RUNNING_LOCAL = true;
 
 	private final Gson GSON = new Gson();
 
@@ -506,12 +507,12 @@ public class BoardService {
 			ResponseCodeException, InvalidInputException, TransactionFailedException, PlayerHasAlreadyRolledException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
-		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame(), false);
+		validator.checkPlayerHasMutex(gameid, pawnid, this.services.getGame());
 
 		Board board = BoardHelper.getBoard(boards, gameid);
 		Pawn pawn = BoardHelper.getPawn(board, pawnid);
 
-		if (this.currPlayer == null || !pawn.equals(this.currPlayer)) {
+		if ((this.currPlayer == null || !pawn.equals(this.currPlayer)) || RUNNING_LOCAL) {
 
 			this.currPlayer = pawn;
 			Dice roll = rollDice(pawn, gameid); // Zum Testen Local

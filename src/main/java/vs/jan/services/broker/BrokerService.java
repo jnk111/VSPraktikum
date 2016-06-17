@@ -201,16 +201,16 @@ public class BrokerService {
 		String type = null;
 
 		if (owner == null && place.isPlace()) {
-			
+
 			try {
-				
+
 				buy = new BuyTransaction(player, place.getPrice(), this.services.getBank(), gameid, place);
 				buy.execute();
 				type = EventTypes.BUY_PLACE.getType();
 				event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
-				
+
 			} catch (TransactionFailedException e) {
-				
+
 				buy.rollBack();
 				type = EventTypes.CANNOT_BUY_PLACE.getType();
 				event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
@@ -224,10 +224,7 @@ public class BrokerService {
 		} else if (owner.equals(player)) {
 
 			buyHouse(broker, place, owner, gameid);
-			type = EventTypes.BUY_HOUSE.getType();
-			event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
 		}
-		
 
 		return BrokerHelper.receiveEventList(playerUri, gameid, new Date());
 	}
@@ -236,24 +233,27 @@ public class BrokerService {
 
 		JSONEvent event = null;
 		HouseTransaction buy = null;
-		
+
 		if (hasAllPlacesOfGroup(broker.getPlaces(), place, owner)) {
-			
+
 			int houses = place.getHouses() + 1;
-			
+
 			try {
-				
-				if(houses < place.getRent().size()) {
-					buy = new HouseTransaction(owner, place.getCost().get(place.getHouses()), this.services.getBank(), gameid, place);
+
+				if (houses < place.getRent().size()) {
+					buy = new HouseTransaction(owner, place.getCost().get(place.getHouses()), this.services.getBank(), gameid,
+							place);
 					buy.execute();
 					String type = EventTypes.BUY_HOUSE.getType();
-					event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getUri());
+					event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
 				}
-				
+
 			} catch (TransactionFailedException e) {
 				buy.rollBack();
+				String type = EventTypes.CANNOT_BUY_HOUSE.getType();
+				event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
 				throw new TransactionFailedException(e.getMessage());
-				
+
 			} finally {
 				BrokerHelper.postEvent(event);
 				BrokerHelper.broadCastEvent(event);
@@ -266,21 +266,19 @@ public class BrokerService {
 
 		Set<Place> ownerPlaces = new HashSet<>();
 		Set<vs.jan.model.boardservice.Place> group = new HashSet<>();
-		
-		for(Place p: places) {
-			if(p.getOwner().equals(place.getOwner()) 
-					&& p.getColor() != null 
-						&& p.getColor().equals(place.getColor())) {
+
+		for (Place p : places) {
+			if (p.getOwner().equals(place.getOwner()) && p.getColor() != null && p.getColor().equals(place.getColor())) {
 				ownerPlaces.add(p);
 			}
 		}
-		
-		for(vs.jan.model.boardservice.Place p: vs.jan.model.boardservice.Place.values()) {
-			if(p.getColor().equals(place.getColor())) {
+
+		for (vs.jan.model.boardservice.Place p : vs.jan.model.boardservice.Place.values()) {
+			if (p.getColor().equals(place.getColor())) {
 				group.add(p);
 			}
 		}
-		
+
 		return group.size() == ownerPlaces.size();
 	}
 

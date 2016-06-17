@@ -9,7 +9,7 @@ public enum EventTypes {
 									"cannottradeplace"), GOT_MONEY_ALL_PLAYERS("gotmoneyallplayers"), GOT_MONEY_FROM_BANK(
 											"got money from bank"), MOVED_OVER_GO("movedovergo"), CANNOT_PAY_MONEY_COMMUNITY(
 													"cannotpaymoney"), MUTEX_CHANGE("mutexchanged"), GAME_STARTED("gamestarted"), CANNOT_PAY_TAX(
-															"cannotpaytax"), PAYED_TAX("payedtax"), TRADE_REQ("tradereq");
+															"cannotpaytax"), PAYED_TAX("payedtax"), TRADE_REQ("tradereq"), BUY_HOUSE("buyedhouse");
 
 	private String type;
 

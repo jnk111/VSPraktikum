@@ -6,6 +6,7 @@ import java.util.List;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.Convertable;
 import vs.jan.model.Updatable;
+import vs.jan.model.boardservice.PlaceColors;
 import vs.jan.model.boardservice.Player;
 
 public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
@@ -298,5 +299,10 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 
 	public void setOwnerUri(String ownerUri) {
 		this.ownerUri = ownerUri;
+	}
+
+	public PlaceColors getColor() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

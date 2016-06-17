@@ -19,5 +19,9 @@ public enum PlaceColors {
 		this.farbe = farbe;
 	}
 	
+	public PlaceColors getColor() {
+		return null;
+	}
+	
 	
 }

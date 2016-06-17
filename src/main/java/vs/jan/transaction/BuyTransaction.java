@@ -22,6 +22,7 @@ public class BuyTransaction extends Transaction {
 		this.gameId = gameId;
 		this.place = place;
 		this.fromAcc = BrokerHelper.getAccount(player.getAccount());
+		this.history = new BuyTransaction(this);
 	}
 
 	public BuyTransaction(BuyTransaction trans) {

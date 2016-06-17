@@ -51,6 +51,7 @@ public class BoardService {
 	private final String BOARDS_PREFIX = "/boards/";
 	private final String MOVE_SUFFIX = "/move";
 	private final String ROLL_SUFFIX = "/roll";
+	private final String SERVICE_SUFFIX = "/services";
 	private final String PLACES_INFIX = "/places/";
 	private final String TRANSER_TO_INFIX = "/transfer/to/";
 	private final String TO_INFIX = "/to/";
@@ -58,7 +59,9 @@ public class BoardService {
 	private final String BROKER_PREFIX = "/broker/";
 	private final String VISIT_INFIX = "/visit/";
 	private final String GAMES_PREFIX = "/games/";
+	private final String HTTP_PREFIX = "http://";
 	private final String PLAYERS_SUFFIX = "/players";
+	private final String SERVICE_QPARAM = "?services=";
 
 	private final Gson GSON = new Gson();
 
@@ -110,13 +113,15 @@ public class BoardService {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 
 		String gameId = BoardHelper.getID(game.getURI());
+		String gsServiceUri = HTTP_PREFIX + host + GAMES_PREFIX + gameId + SERVICE_SUFFIX;
 		String boardUri = BOARDS_PREFIX + gameId;
 		Board b = new Board(boardUri);
 		boards.put(BoardHelper.getID(game.getURI()), b);
-		this.services = ServiceAllocator.initServices(host, gameId);
+		this.services = ServiceAllocator.initServices(gsServiceUri, gameId);
 		BoardHelper.setServices(this.services);
-
-		HttpService.post(this.services.getBroker(), game, HttpURLConnection.HTTP_OK);
+		String queryParam = gsServiceUri;
+		String serviceUri = this.services.getBroker() + SERVICE_QPARAM + queryParam;
+		HttpService.post(serviceUri, game, HttpURLConnection.HTTP_OK);
 	}
 
 	/**

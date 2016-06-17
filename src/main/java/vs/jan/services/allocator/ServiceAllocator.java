@@ -11,13 +11,11 @@ public class ServiceAllocator {
 	
 	private final static Gson GSON = new Gson();	
 	
-	public static ServiceList initServices(String host, String gameid) 
+	public static ServiceList initServices(String serviceUri, String gameid) 
 			throws ResponseCodeException{
 		
-		String gameServiceUri = "http://" + host;
-		gameServiceUri += "/games/" + gameid + "/services";
-		System.out.println("Gameservice URI: " + gameServiceUri);
-		String json = HttpService.get(gameServiceUri, HttpURLConnection.HTTP_OK);
+		System.out.println("Gameservice URI: " + serviceUri);
+		String json = HttpService.get(serviceUri, HttpURLConnection.HTTP_OK);
 		ServiceList list = GSON.fromJson(json, ServiceList.class);
 		
 		// Temp

@@ -48,7 +48,7 @@ public class BrokerService {
 		brokers = new HashMap<>();
 	};
 
-	public synchronized void createBroker(JSONGameURI game, String host) throws ResponseCodeException {
+	public synchronized void createBroker(JSONGameURI game, String serviceUri) throws ResponseCodeException {
 		validator.checkJsonIsValid(game, Error.JSON_GAME_URI.getMsg());
 
 		String baseUri = BROKER_PREFIX;
@@ -60,7 +60,7 @@ public class BrokerService {
 		b.setEstateUri(id + PLACES_SUFFIX);
 
 		brokers.put(gameid, b);
-		this.services = ServiceAllocator.initServices(host, BrokerHelper.getID(game.getURI()));
+		this.services = ServiceAllocator.initServices(serviceUri, gameid);
 		BrokerHelper.setServices(this.services);
 	}
 

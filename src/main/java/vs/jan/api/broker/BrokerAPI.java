@@ -53,24 +53,25 @@ public class BrokerAPI {
 		initGETSpecificPlace();
 		initGetOwner();
 	}
-	
+
 	/**
 	 * POST-Handler initialisieren
 	 */
 	private void initPOST() {
-		
+
 		initPOSTCreateBroker();
 		initPostBuyPlace();
 		initPostVisitPlace();
+		initPostTradeRequest();
 	}
-	
+
 	private void initPUT() {
 		initPutBroker();
 		initPUTRegisterPlace();
 		initPUTTradePlace();
 		initPUTTakeHypothecaryCredit();
 	}
-	
+
 	private void initDELETE() {
 		initDELETERemoveHypothecaryCredit();
 	}
@@ -78,7 +79,8 @@ public class BrokerAPI {
 	private void initDELETERemoveHypothecaryCredit() {
 		delete("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
 			String playerUri = GSON.fromJson(req.body(), String.class);
-			JSONEventList list = service.deleteHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
+			JSONEventList list = service.deleteHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri,
+					req.pathInfo());
 			return GSON.toJson(list);
 		});
 	}
@@ -86,15 +88,16 @@ public class BrokerAPI {
 	private void initPUTTakeHypothecaryCredit() {
 		put("/broker/:gameid/places/:placeid/hypothecarycredit", CONTENT_TYPE, (req, resp) -> {
 			String playerUri = GSON.fromJson(req.body(), String.class);
-			JSONEventList list = service.takeHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
+			JSONEventList list = service.takeHypothecaryCredit(req.params(":gameid"), req.params(":placeid"), playerUri,
+					req.pathInfo());
 			return GSON.toJson(list);
 		});
-		
+
 	}
 
 	private void initPUTTradePlace() {
 		put("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
-			
+
 			Player player = GSON.fromJson(req.body(), Player.class);
 			JSONEventList list = service.tradePlace(req.params(":gameid"), req.params(":placeid"), player, req.pathInfo());
 			return GSON.toJson(list);
@@ -104,13 +107,12 @@ public class BrokerAPI {
 	// Handler-Initialisieren
 	// --------------------------------------------------------------------------------------
 
-
 	private void initGetOwner() {
 		get(" /broker/:gameid/places/:placeid/owner ", CONTENT_TYPE, (req, resp) -> {
 			Player owner = service.getOwner(req.params(":gameid"), req.params(":placeid"));
 			return GSON.toJson(owner);
 		});
-		
+
 	}
 
 	private void initGETBrokers() {
@@ -119,21 +121,21 @@ public class BrokerAPI {
 			return GSON.toJson(list);
 		});
 	}
-	
+
 	private void initGETSpecificBroker() {
 		get("/broker/:gameid", CONTENT_TYPE, (req, resp) -> {
 			JSONBroker broker = service.getSpecificBroker(req.params(":gameid"));
 			return GSON.toJson(broker);
 		});
 	}
-	
+
 	private void initGETPlaces() {
 		get("/broker/:gameid/places", CONTENT_TYPE, (req, resp) -> {
 			JSONEstates estates = service.getPlaces(req.params(":gameid"));
 			return GSON.toJson(estates);
 		});
 	}
-	
+
 	private void initGETSpecificPlace() {
 		get("/broker/:gameid/places/:placeid", CONTENT_TYPE, (req, resp) -> {
 			JSONPlace place = service.getSpecificPlace(req.params(":gameid"), req.params(":placeid"));
@@ -149,22 +151,30 @@ public class BrokerAPI {
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
-	
+
 	private void initPostVisitPlace() {
 		post("/broker/:gameid/places/:placeid/visit/:pawnid", CONTENT_TYPE, (req, resp) -> {
 			String playerUri = GSON.fromJson(req.body(), String.class);
-			JSONEventList list = service.visitPlace(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), playerUri, req.pathInfo());
+			JSONEventList list = service.visitPlace(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"),
+					playerUri, req.pathInfo());
 			return GSON.toJson(list);
 		});
 	}
-	
-	
+
 	private void initPostBuyPlace() {
 		post("/broker/:gameid/places/:placeid/owner", CONTENT_TYPE, (req, resp) -> {
 			String playerUri = GSON.fromJson(req.body(), String.class);
 			JSONEventList list = service.buyPlace(req.params(":gameid"), req.params(":placeid"), playerUri, req.pathInfo());
 			return GSON.toJson(list);
 		});
+	}
+
+	private void initPostTradeRequest() {
+		post("/broker/:gameid/places/:placeid/trade/:pawnid", CONTENT_TYPE, (req, resp) -> {
+			service.tradeRequest(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), req.pathInfo());
+			return StatusCodes.CREATED + CLRF;
+		});
+
 	}
 
 	private void initPUTRegisterPlace() {
@@ -183,7 +193,6 @@ public class BrokerAPI {
 			return StatusCodes.SUCCESS + CLRF;
 		});
 	}
-
 
 	/**
 	 * Exception-Handling initialsisieren Hier werden Exceptions gefangen und ein
@@ -218,28 +227,28 @@ public class BrokerAPI {
 			response.body(StatusCodes.BAD_REQ + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(NotImplementedException.class, (exception, request, response) -> {
 
 			response.status(HttpURLConnection.HTTP_BAD_METHOD);
 			response.body(HttpURLConnection.HTTP_BAD_METHOD + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(TransactionFailedException.class, (exception, request, response) -> {
 
 			response.status(HttpURLConnection.HTTP_CONFLICT);
 			response.body(HttpURLConnection.HTTP_CONFLICT + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(PlaceNotHasAnOwnerException.class, (exception, request, response) -> {
 
 			response.status(HttpURLConnection.HTTP_NOT_FOUND);
 			response.body(HttpURLConnection.HTTP_NOT_FOUND + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
-		
+
 		exception(TransactionRollBackException.class, (exception, request, response) -> {
 
 			response.status(HttpURLConnection.HTTP_CONFLICT);

@@ -360,4 +360,22 @@ public class BrokerService {
 	public void setServices(ServiceList services) {
 		this.services = services;
 	}
+
+	public void tradeRequest(String gameid, String placeid, String pawnid, String ressource) {
+		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
+		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
+		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
+		
+		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
+		Place place = BrokerHelper.getPlace(broker, placeid);
+		Player owner = place.getOwner();
+		String ownerId = BrokerHelper.getID(owner.getId());
+		
+		if(!ownerId.equals(pawnid)) {
+			String type = EventTypes.TRADE_REQ.getType();
+			JSONEvent event = new JSONEvent(gameid, type, type, type, ressource, owner.getId());
+			BrokerHelper.postEvent(event);
+			BrokerHelper.broadCastEvent(event);
+		}		
+	}
 }

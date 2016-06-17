@@ -15,6 +15,7 @@ import vs.jonas.client.json.Place;
 import java.awt.SystemColor;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.JButton;
 
 public class FieldUI {
 
@@ -105,6 +106,12 @@ public class FieldUI {
 		lblCostresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblCostresult.setForeground(Color.BLACK);
 		panel_1.add(lblCostresult);
+		
+		JButton btnKaufen = new JButton("Kaufen");
+		panel_1.add(btnKaufen);
+		
+		JButton btnVerkaufen = new JButton("Verkaufen");
+		panel_1.add(btnVerkaufen);
 		splitPane.setDividerLocation(200);
 	}
 	

@@ -23,13 +23,13 @@ import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.User;
 import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
+import vs.jonas.client.model.ShowMessageThread;
 import vs.jonas.client.model.table.MyTableMouseListener;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.utils.EventTypes;
 import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
-import vs.jonas.client.view.PlayerUI;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.exceptions.NotExpectedStatusCodeException;
 import vs.jonas.exceptions.PlayerDoesNotHaveTheMutexException;
@@ -97,17 +97,17 @@ public class GameController {
 		});
 		
 		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_EVENT,"application/json", (req,res)->{
-			System.out.println("########Incoming Event");
 			handleIncomingEvent(gson.fromJson(req.body(),EventData.class));
 			return "";
 		});
 
 		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_TURN, "application/json",(req,res) -> {
 			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
-			System.out.println("########Incoming Turn Message");
 			ui.getEventsConsole().append("**********************************************\n" + turn.getPlayer()  + " ist jetzt an der Reihe.\n"
 					+ "**********************************************\n\n");
-//			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
+			if(turn.getPlayer().equals(user.getPlayerUri())){
+				new ShowMessageThread("Du bist an der Reihe!").start();
+			}
 			ladeSpielerInformationen();
 			return "";
 		});
@@ -178,7 +178,7 @@ public class GameController {
 			}
 		});
 		
-		ui.getPlayerTable().addMouseListener(new MyTableMouseListener() {
+		ui.getPlayerTable().addMouseListener(new MyTableMouseListener(this) {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -188,7 +188,7 @@ public class GameController {
 				
 				try {
 					Player player = client.getPlayerWithWholeInformation(gameID,playerInformation);
-					new PlayerUI(player).showUI();
+					new PlayerController(this.getController(),player);
 					System.err.println("A Player was selected: " + player);			
 				} catch (UnirestException e1) {
 					e1.printStackTrace();
@@ -197,7 +197,7 @@ public class GameController {
 			}
 		});
 		
-		ui.getGameFieldTable().addMouseListener(new MyTableMouseListener() {
+		ui.getGameFieldTable().addMouseListener(new MyTableMouseListener(this) {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -283,7 +283,6 @@ public class GameController {
 		try {
 			client.setReady(gameID, user);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -354,9 +353,13 @@ public class GameController {
 		try {
 			updateGame();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void buyRequest(Player player) {
+		// TODO
+		new ShowMessageThread("TODO Buy Request!").start();
 	}
 
 }

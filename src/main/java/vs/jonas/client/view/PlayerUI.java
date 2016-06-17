@@ -8,6 +8,7 @@ import java.awt.SystemColor;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import vs.jonas.client.model.Player;
+import vs.jonas.client.model.table.renderer.PlayerPlacesTableCellRenderer;
 import vs.jonas.client.model.table.renderer.PlayerTableCellRenderer;
 import vs.jonas.client.model.table.tablemodel.PlayersPlacesTableModel;
 
@@ -25,6 +27,7 @@ public class PlayerUI {
 
 
 	private JFrame frame;
+	private JButton btnKaufanfrage;
 	
 	public PlayerUI(Player player){
 		frame = new JFrame(player.getName());
@@ -144,6 +147,9 @@ public class PlayerUI {
 		panel_2.add(lblGrundstckeImBesitz, BorderLayout.NORTH);
 		
 		JTable placeTable = new JTable(new PlayersPlacesTableModel(player.getPlaces()));
+  	  	PlayerPlacesTableCellRenderer renderer = new PlayerPlacesTableCellRenderer();
+  	  	renderer.setHorizontalAlignment(JLabel.CENTER);
+  	  	placeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		placeTable.getTableHeader().setOpaque(false);
 		placeTable.getTableHeader().setBackground(new Color(100, 150, 210));
 		placeTable.getTableHeader().setForeground(Color.WHITE);
@@ -156,6 +162,13 @@ public class PlayerUI {
 		placesPane.getViewport().setBackground(SystemColor.activeCaption);
 		placesPane.setBackground(SystemColor.activeCaption);
 		panel_2.add(placesPane, BorderLayout.CENTER);
+		
+		JPanel panel_3 = new JPanel();
+		panel_2.add(panel_3, BorderLayout.SOUTH);
+		panel_3.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		btnKaufanfrage = new JButton("Kaufanfrage stellen");
+		panel_3.add(btnKaufanfrage);
 	}
 	
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -172,4 +185,10 @@ public class PlayerUI {
 	public void showUI(){
 		frame.setVisible(true);
 	}
+
+	public JButton getBtnKaufanfrage() {
+		return btnKaufanfrage;
+	}
+	
+	
 }

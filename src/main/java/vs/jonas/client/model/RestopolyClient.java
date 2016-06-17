@@ -134,8 +134,10 @@ public class RestopolyClient {
 		String gamesPlayersUri = uri + SLASH + gameID + SLASH_PLAYERS;
 		
 		System.out.println(gamesPlayersUri);
-		postData(user, gamesPlayersUri);
+		JsonObject response = postData(user, gamesPlayersUri);
 		System.out.println("Der User " + gson.toJson(user) + " betritt das Spiel.");
+		System.out.println("Received: " + response);
+		user.setPlayerUri("/games" + SLASH + gameID + SLASH_PLAYERS+"/"+user.getName());
 	}
 	
 	/**

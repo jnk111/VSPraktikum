@@ -4,6 +4,7 @@ public class User {
 
 	private String uri;
 	private String user;
+	private String playerUri; // nicht Raml-konform.. wird aber dennoch benötigt. ;)
 
 	public User(String name) {
 		this.user = name;
@@ -24,6 +25,14 @@ public class User {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getPlayerUri() {
+		return playerUri;
+	}
+
+	public void setPlayerUri(String playerUri) {
+		this.playerUri = playerUri;
 	}
 	
 	

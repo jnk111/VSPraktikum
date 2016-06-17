@@ -62,7 +62,7 @@ public class BoardService {
 	private final String HTTP_PREFIX = "http://";
 	private final String PLAYERS_SUFFIX = "/players";
 	private final String SERVICE_QPARAM = "?services=";
-	private final boolean RUNNING_LOCAL = true;
+	private boolean RUNNING_LOCAL = true;
 
 	private final Gson GSON = new Gson();
 

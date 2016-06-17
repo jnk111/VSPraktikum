@@ -275,6 +275,7 @@ public class BrokerService {
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		Place place = BrokerHelper.getPlace(broker, placeid);
+		Player owner = place.getOwner();
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, BrokerHelper.getID(playerUri));
 		BuyTransaction buyBack = null;
@@ -283,7 +284,7 @@ public class BrokerService {
 
 		try {
 
-			if (credit != null && place.isPlace()) {
+			if (credit != null && place.isPlace() && owner != null && owner.equals(player)) {
 
 				int amount = (int) (credit.getAmount() + (credit.getAmount() * HYPO_INTEREST));
 				buyBack = new BuyTransaction(player, amount, this.services.getBank(), gameid, place);

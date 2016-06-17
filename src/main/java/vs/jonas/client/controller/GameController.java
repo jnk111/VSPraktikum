@@ -105,7 +105,9 @@ public class GameController {
 		Spark.post(SLASH_CLIENT + "/:userid" + SLASH_TURN, "application/json",(req,res) -> {
 			ClientTurn turn = gson.fromJson(req.body(), ClientTurn.class);
 			System.out.println("########Incoming Turn Message");
-			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
+			ui.getEventsConsole().append("*************************************\n" + turn.getPlayer()  + " ist jetzt an der Reihe.\n"
+					+ " *************************************\n\n");
+//			JOptionPane.showMessageDialog(null, "Der Spieler '" + turn.getPlayer() + "' ist jetzt an der Reihe" );
 			ladeSpielerInformationen();
 			return "";
 		});
@@ -335,7 +337,7 @@ public class GameController {
 		} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
 			
 		} else{
-			eventText = "Unimplemented: " + event + " Ausgel�st durch: " + event.getPlayer();
+			eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();
 		}
 //			JOptionPane.showMessageDialog(null, event.getReason());
 		eventsConsole.append("Event "+ui.getEventNumber() + ": " + eventText + "\n\n");

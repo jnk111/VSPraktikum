@@ -5,39 +5,39 @@ import vs.jan.model.Convertable;
 
 public enum Place implements Convertable<JSONPlace> {
 
-	Los("Los"), Bad("Badstrasse", 40, PlaceColors.DARK_BLUE), Gemeinschaft1("Gemeinschaftsfeld"), Turm("Turmstrasse", 80,
-			PlaceColors.DARK_BLUE), EinkStr("Einkommenssteuer", 1000), Suedbhf("Suedbahnhof", 200), Chaussee("Chaussestrasse", 120,
-					PlaceColors.TURQUOISE), Ereignis1("Ereignisfeld"), Elisen("Elisenstrasse", 120, PlaceColors.TURQUOISE), Post(
+	Los("Los"), Bad("Badstrasse", 40, PlaceColor.DARK_BLUE), Gemeinschaft1("Gemeinschaftsfeld"), Turm("Turmstrasse", 80,
+			PlaceColor.DARK_BLUE), EinkStr("Einkommenssteuer", 1000), Suedbhf("Suedbahnhof", 200), Chaussee("Chaussestrasse", 120,
+					PlaceColor.TURQUOISE), Ereignis1("Ereignisfeld"), Elisen("Elisenstrasse", 120, PlaceColor.TURQUOISE), Post(
 							"Poststrasse", 160,
-							PlaceColors.TURQUOISE), InJail("Gefaengnis"), See("Seestrasse", 200, PlaceColors.VIOLET), EWerk(
-									"Elektrizitaetswerk", 150), Hafen("Hafenstrasse", 200, PlaceColors.VIOLET), Neue("Neuestrasse", 240,
-											PlaceColors.VIOLET), Westbhf("Westbahnhof", 200), Muenchner("Muenchnerstrasse", 280,
-													PlaceColors.ORANGE), Gemeinschaft2("Gemeinschaftsfeld"), Wiener("Wienerstrasse", 280,
-															PlaceColors.ORANGE), Berliner("Berlinerstrasse", 320, PlaceColors.ORANGE), FreiParken(
-																	"Frei Parken"), Theater("Theaterstrasse", 360, PlaceColors.RED), Ereignis2(
-																			"Ereignisfeld"), Museum("Museumstrasse", 360, PlaceColors.RED), Opern(
-																					"Opernplatz", 400, PlaceColors.RED), Nordbhf("Nordbahnhof", 200), Lessing(
-																							"Lessingstrasse", 440, PlaceColors.YELLOW), Schiller("Schillerstrasse",
-																									440, PlaceColors.YELLOW), Wasser("Wasserwerk", 150), Goethe(
+							PlaceColor.TURQUOISE), InJail("Gefaengnis"), See("Seestrasse", 200, PlaceColor.VIOLET), EWerk(
+									"Elektrizitaetswerk", 150), Hafen("Hafenstrasse", 200, PlaceColor.VIOLET), Neue("Neuestrasse", 240,
+											PlaceColor.VIOLET), Westbhf("Westbahnhof", 200), Muenchner("Muenchnerstrasse", 280,
+													PlaceColor.ORANGE), Gemeinschaft2("Gemeinschaftsfeld"), Wiener("Wienerstrasse", 280,
+															PlaceColor.ORANGE), Berliner("Berlinerstrasse", 320, PlaceColor.ORANGE), FreiParken(
+																	"Frei Parken"), Theater("Theaterstrasse", 360, PlaceColor.RED), Ereignis2(
+																			"Ereignisfeld"), Museum("Museumstrasse", 360, PlaceColor.RED), Opern(
+																					"Opernplatz", 400, PlaceColor.RED), Nordbhf("Nordbahnhof", 200), Lessing(
+																							"Lessingstrasse", 440, PlaceColor.YELLOW), Schiller("Schillerstrasse",
+																									440, PlaceColor.YELLOW), Wasser("Wasserwerk", 150), Goethe(
 																											"Goethestrasse", 480,
-																											PlaceColors.YELLOW), GoJail("Gehe ins Gefaengnis"), Rathaus(
-																													"Rathausplatz", 520, PlaceColors.GREEN), Haupt("Hauptstrasse",
-																															520, PlaceColors.GREEN), Gemeinschaft3(
+																											PlaceColor.YELLOW), GoJail("Gehe ins Gefaengnis"), Rathaus(
+																													"Rathausplatz", 520, PlaceColor.GREEN), Haupt("Hauptstrasse",
+																															520, PlaceColor.GREEN), Gemeinschaft3(
 																																	"Gemeinschaftsfeld"), Bhf("Bahnhofstrasse", 560,
-																																			PlaceColors.GREEN), Hauptbhf("Hauptbahnhof",
+																																			PlaceColor.GREEN), Hauptbhf("Hauptbahnhof",
 																																					200), Ereignis3("Ereignisfeld"), Park(
 																																							"Parkstrasse", 700,
-																																							PlaceColors.DARK_BLUE), ZusatzStr(
+																																							PlaceColor.DARK_BLUE), ZusatzStr(
 																																									"Zusatzsteuer", 1000), Schloss(
 																																											"Schlossallee", 1000,
-																																											PlaceColors.DARK_BLUE);
+																																											PlaceColor.DARK_BLUE);
 
 	private String name;
 	private String brokerUri;
 	private String placeUri; // Uri to the place on the board
 	private int price;
 	private int houses;
-	private PlaceColors color;
+	private PlaceColor color;
 
 	private Place() {
 		this(null);
@@ -53,7 +53,7 @@ public enum Place implements Convertable<JSONPlace> {
 		this(name, price, null);
 	}
 
-	private Place(String name, int price, PlaceColors color) {
+	private Place(String name, int price, PlaceColor color) {
 
 		this.name = name;
 		this.price = price;
@@ -101,11 +101,11 @@ public enum Place implements Convertable<JSONPlace> {
 		this.houses = housesPrice;
 	}
 
-	public PlaceColors getColor() {
+	public PlaceColor getColor() {
 		return color;
 	}
 
-	public void setColor(PlaceColors color) {
+	public void setColor(PlaceColor color) {
 		this.color = color;
 	}
 

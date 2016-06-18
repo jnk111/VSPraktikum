@@ -5,7 +5,7 @@ import java.util.Map;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.helper.Helper;
 import vs.jan.model.brokerservice.Broker;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.Error;
 
 public class BrokerHelper extends Helper {
@@ -21,9 +21,9 @@ public class BrokerHelper extends Helper {
 		throw new ResourceNotFoundException(Error.BROKER_NOT_FOUND.getMsg());
 	}
 
-	public static Place getPlace(Broker b, String placeid) {
+	public static Estate getPlace(Broker b, String placeid) {
 
-		for (Place p : b.getPlaces()) {
+		for (Estate p : b.getPlaces()) {
 			String id = getID(p.getPlaceUri());
 			if (id.equals(placeid)) {
 				return p;

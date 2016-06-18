@@ -6,7 +6,7 @@ import vs.jan.helper.Helper;
 import vs.jan.helper.brokerservice.BrokerHelper;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.boardservice.Player;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.Error;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
@@ -15,7 +15,7 @@ import vs.jan.tools.HttpService;
 public class BankSellTransaction extends Transaction {
 
 
-	public BankSellTransaction(Player to, int amount, String bankUri, String gameId, Place place) {
+	public BankSellTransaction(Player to, int amount, String bankUri, String gameId, Estate place) {
 
 		this.to = to;
 		this.amount = amount;
@@ -31,10 +31,10 @@ public class BankSellTransaction extends Transaction {
 
 		this.to = trans.getTo();
 		this.amount = trans.getAmount();
-		this.place = new Place(trans.getPlace());
+		this.place = new Estate(trans.getPlace());
 		this.bankUri = trans.getBankUri();
 		this.gameId = trans.getGameId();
-		this.place = new Place(trans.getPlace());
+		this.place = new Estate(trans.getPlace());
 		this.toAcc = new JSONAccount(trans.getToAcc());
 	}
 
@@ -53,16 +53,16 @@ public class BankSellTransaction extends Transaction {
 		}
 	}
 
-	public Place getPlace() {
+	public Estate getPlace() {
 		return place;
 	}
 
-	public void setPlace(Place place) {
+	public void setPlace(Estate place) {
 		this.place = place;
 	}
 
 	@Override
-	public void rollBack() {
+	public void rollBack() throws TransactionRollBackException{
 
 		JSONAccount to = Helper.getAccount(this.to.getAccount());
 		BankSellTransaction history = (BankSellTransaction) this.history;
@@ -70,7 +70,7 @@ public class BankSellTransaction extends Transaction {
 		if (to.getSaldo() != history.getToAcc().getSaldo()) {
 
 			this.place.setHypo(false);
-			throw new TransactionRollBackException(Error.TRANS_FAIL.getMsg());
+			throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 		}
 
 	}

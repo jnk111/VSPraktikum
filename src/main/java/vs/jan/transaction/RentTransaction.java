@@ -8,7 +8,7 @@ import vs.jan.helper.events.EventTypes;
 import vs.jan.json.boardservice.JSONEvent;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.boardservice.Player;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.Error;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
@@ -16,7 +16,7 @@ import vs.jan.tools.HttpService;
 
 public class RentTransaction extends Transaction {
 
-	public RentTransaction(Player from, Player to, int amount, String bankUri, String gameId, Place place) {
+	public RentTransaction(Player from, Player to, int amount, String bankUri, String gameId, Estate place) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -36,7 +36,7 @@ public class RentTransaction extends Transaction {
 		this.amount = trans.getAmount();
 		this.bankUri = trans.getBankUri();
 		this.gameId = trans.getGameId();
-		this.place = new Place(trans.getPlace());
+		this.place = new Estate(trans.getPlace());
 		this.fromAcc = new JSONAccount(trans.getFromAcc());
 		this.toAcc = new JSONAccount(trans.getToAcc());
 	}
@@ -72,15 +72,15 @@ public class RentTransaction extends Transaction {
 		throw new TransactionFailedException(Error.TRANS_FAIL_NEGATIVE_SALDO.getMsg());
 	}
 
-	public Place getPlace() {
+	public Estate getPlace() {
 		return place;
 	}
 
-	public void setPlace(Place place) {
+	public void setPlace(Estate place) {
 		this.place = place;
 	}
 
-	public void rollBack() {
+	public void rollBack() throws TransactionRollBackException{
 
 		JSONAccount from = Helper.getAccount(this.from.getAccount());
 		JSONAccount to = Helper.getAccount(this.to.getAccount());
@@ -88,7 +88,7 @@ public class RentTransaction extends Transaction {
 
 		if (from.getSaldo() != history.getFromAcc().getSaldo() || to.getSaldo() != history.getToAcc().getSaldo()) {
 
-			throw new TransactionRollBackException(Error.TRANS_FAIL.getMsg());
+			throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 		}
 	}
 }

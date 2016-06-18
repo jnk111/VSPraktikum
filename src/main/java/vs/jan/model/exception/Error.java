@@ -18,7 +18,8 @@ public enum Error {
 																													"player input is not valid"), DECKS_NOT_FOUND(
 																															"decks not found"), TRANS_FAIL_NEGATIVE_SALDO(
 																																	"transaction failed, not enough credits"), ALR_ROLLED(
-																																			"current player has already rolled the dice");
+																																			"current player has already rolled the dice"), TRANS_FAIL_HOUSE_GROUP(
+																																					"player has not all places of this group");
 
 	private String msg;
 

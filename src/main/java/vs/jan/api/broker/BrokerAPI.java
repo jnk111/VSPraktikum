@@ -13,6 +13,7 @@ import com.google.gson.JsonSyntaxException;
 
 import vs.jan.exception.ConnectionRefusedException;
 import vs.jan.exception.InvalidInputException;
+import vs.jan.exception.InvalidPlaceIDException;
 import vs.jan.exception.NotImplementedException;
 import vs.jan.exception.ResourceNotFoundException;
 import vs.jan.json.boardservice.JSONEventList;
@@ -27,6 +28,7 @@ import vs.jan.model.exception.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.services.broker.BrokerService;
+import vs.jan.services.broker.HasNotAllPlacesOfGroupException;
 
 public class BrokerAPI {
 
@@ -253,6 +255,20 @@ public class BrokerAPI {
 
 			response.status(HttpURLConnection.HTTP_CONFLICT);
 			response.body(HttpURLConnection.HTTP_CONFLICT + ": " + exception.getMessage());
+			exception.printStackTrace();
+		});
+		
+		exception(InvalidPlaceIDException.class, (exception, request, response) -> {
+
+			response.status(HttpURLConnection.HTTP_BAD_REQUEST);
+			response.body(HttpURLConnection.HTTP_BAD_REQUEST + ": " + exception.getMessage());
+			exception.printStackTrace();
+		});
+		
+		exception(HasNotAllPlacesOfGroupException.class, (exception, request, response) -> {
+
+			response.status(HttpURLConnection.HTTP_BAD_REQUEST);
+			response.body(HttpURLConnection.HTTP_BAD_REQUEST + ": " + exception.getMessage());
 			exception.printStackTrace();
 		});
 	}

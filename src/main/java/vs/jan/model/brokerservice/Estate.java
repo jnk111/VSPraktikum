@@ -3,13 +3,19 @@ package vs.jan.model.brokerservice;
 import java.util.ArrayList;
 import java.util.List;
 
+import vs.jan.exception.InvalidPlaceIDException;
+import vs.jan.helper.brokerservice.BrokerHelper;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.Convertable;
 import vs.jan.model.Updatable;
-import vs.jan.model.boardservice.PlaceColors;
+import vs.jan.model.brokerservice.PlaceColor;
 import vs.jan.model.boardservice.Player;
+import vs.jan.model.exception.Error;
 
-public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
+public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
+	
+	private final int MAX_HOUSES = 5;
+	private final int COST_MULT = 2;
 	
 	private String uri;
 	private String placeUri;
@@ -22,15 +28,16 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private String visitUri;
 	private String hypoCreditUri;
 	private boolean hypo;
+	private PlaceColor color;
 	
 	
-	public Place(String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri, String owner){
+	public Estate(String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri, String owner){
 		
 		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), houses, visitUri, hypoCreditUri, owner);
 
 	}
 	
-	public Place(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
+	public Estate(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
 			int houses, String visitUri, String hypoCreditUri, String ownerUri) {
 		
 		this.uri = uri;
@@ -46,9 +53,11 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.setHypo(false);
 		initRents();
 		initCosts();
+		initColor();
 	}
 
-	public Place(Place place) {
+
+	public Estate(Estate place) {
 		this.uri = place.getUri();
 		this.placeUri = place.getPlaceUri();
 		this.owner = place.getOwner();
@@ -58,14 +67,12 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.houses = place.getHouses();
 		this.visitUri = place.getVisitUri();
 		this.hypoCreditUri = place.getHypoCreditUri();
-		initRents();
-		initCosts();
 	}
 
 	private void initCosts() {
 		
-		for(int i = 1; i < 6; i++){
-			this.cost.add(this.price * (i * 10));
+		for(int i = 1; i < MAX_HOUSES + 1; i++){
+			this.cost.add(this.price * (i * COST_MULT));
 		}
 	}
 
@@ -73,11 +80,28 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		int price = this.price;
 		this.rent.add(price);
 		
-		for(int i = 1; i < 6; i++){
+		for(int i = 0; i < MAX_HOUSES; i++){
 			price = price * 2;
 			this.rent.add(price);
 		}
+	}
+	
+	private void initColor() throws InvalidPlaceIDException{
 		
+		String id = BrokerHelper.getID(this.placeUri);
+		
+		try {
+			int num = Integer.parseInt(id);
+			
+			for(BoardPlace p: BoardPlace.values()) {
+				if(p.ordinal() == num) {
+					this.color = p.getColor();
+					return;
+				}
+			}
+		} catch (NumberFormatException e) {
+			throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
+		}		
 	}
 
 	public String getUri() {
@@ -178,7 +202,7 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Place other = (Place) obj;
+		Estate other = (Estate) obj;
 		if (cost == null) {
 			if (other.cost != null)
 				return false;
@@ -263,9 +287,6 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 			this.setHypoCreditUri(place.getHypocredit());
 		}
 		
-		if(place.getOwner() != null){
-			// TODO: Owner
-		}
 		
 		if(place.getValue() > 0){
 			this.setPrice(place.getValue());
@@ -301,8 +322,11 @@ public class Place implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.ownerUri = ownerUri;
 	}
 
-	public PlaceColors getColor() {
-		// TODO Auto-generated method stub
-		return null;
+	public PlaceColor getColor() {
+		return this.color;
+	}
+
+	public void setColor(PlaceColor color) {
+		this.color = color;
 	}
 }

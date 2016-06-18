@@ -6,7 +6,7 @@ import vs.jan.helper.Helper;
 import vs.jan.helper.brokerservice.BrokerHelper;
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.boardservice.Player;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.tools.HttpService;
@@ -14,11 +14,11 @@ import vs.jan.model.exception.Error;
 
 public class TradeTransaction extends Transaction {
 
-	private Place place;
+	private Estate place;
 	private JSONAccount fromAcc;
 	private JSONAccount toAcc;
 
-	public TradeTransaction(Player from, Player to, int amount, String bankUri, String gameId, Place place) {
+	public TradeTransaction(Player from, Player to, int amount, String bankUri, String gameId, Estate place) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -38,7 +38,7 @@ public class TradeTransaction extends Transaction {
 		this.amount = trans.getAmount();
 		this.bankUri = trans.getBankUri();
 		this.gameId = trans.getGameId();
-		this.place = new Place(trans.getPlace());
+		this.place = new Estate(trans.getPlace());
 		this.fromAcc = new JSONAccount(trans.getFromAcc());
 		this.toAcc = new JSONAccount(trans.getToAcc());
 	}
@@ -66,15 +66,15 @@ public class TradeTransaction extends Transaction {
 		throw new TransactionFailedException(Error.TRANS_FAIL_NEGATIVE_SALDO.getMsg());
 	}
 
-	public Place getPlace() {
+	public Estate getPlace() {
 		return place;
 	}
 
-	public void setPlace(Place place) {
+	public void setPlace(Estate place) {
 		this.place = place;
 	}
 
-	public void rollBack() {
+	public void rollBack() throws TransactionRollBackException{
 		
 		JSONAccount from = Helper.getAccount(this.from.getAccount());
 		JSONAccount to = Helper.getAccount(this.to.getAccount());
@@ -84,7 +84,7 @@ public class TradeTransaction extends Transaction {
 				|| to.getSaldo() != history.getToAcc().getSaldo()) {
 			
 			this.place.setOwner(history.getPlace().getOwner());
-			throw new TransactionRollBackException(Error.TRANS_FAIL.getMsg());
+			throw new TransactionRollBackException(Error.ROLL_BACK_FAILED.getMsg());
 		}		
 	}
 }

@@ -15,7 +15,7 @@ public class Broker implements Convertable<JSONBroker> {
 	private String gameUri;
 	private String name;
 	private String estateUri;
-	private List<Place> places;
+	private List<Estate> places;
 	private Set<BankSellTransaction> hypothecaryCredits;
 
 	public Broker() {
@@ -30,7 +30,7 @@ public class Broker implements Convertable<JSONBroker> {
 		this(uri, gameUri, new ArrayList<>());
 	}
 
-	public Broker(String uri, String gameUri, List<Place> places) {
+	public Broker(String uri, String gameUri, List<Estate> places) {
 
 		this.uri = uri;
 		this.gameUri = gameUri;
@@ -55,11 +55,11 @@ public class Broker implements Convertable<JSONBroker> {
 		this.gameUri = gameUri;
 	}
 
-	public List<Place> getPlaces() {
+	public List<Estate> getPlaces() {
 		return places;
 	}
 
-	public void setPlaces(List<Place> places) {
+	public void setPlaces(List<Estate> places) {
 		this.places = places;
 	}
 
@@ -137,7 +137,7 @@ public class Broker implements Convertable<JSONBroker> {
 				+ places + ", hypothecaryCredits=" + hypothecaryCredits + "]";
 	}
 
-	public void addPlace(Place p) {
+	public void addPlace(Estate p) {
 		if (!this.places.contains(p)) {
 			this.places.add(p);
 		}
@@ -175,7 +175,7 @@ public class Broker implements Convertable<JSONBroker> {
 		this.hypothecaryCredits = hypothecaryCredits;
 	}
 
-	public BankSellTransaction getHypothecaryCredit(Place place, String id) {
+	public BankSellTransaction getHypothecaryCredit(Estate place, String id) {
 		
 		for(BankSellTransaction credit: this.hypothecaryCredits) {
 			

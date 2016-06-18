@@ -10,7 +10,8 @@ public enum EventTypes {
 											"got money from bank"), MOVED_OVER_GO("movedovergo"), CANNOT_PAY_MONEY_COMMUNITY(
 													"cannotpaymoney"), MUTEX_CHANGE("mutexchanged"), GAME_STARTED("gamestarted"), CANNOT_PAY_TAX(
 															"cannotpaytax"), PAYED_TAX("payedtax"), TRADE_REQ("tradereq"), BUY_HOUSE(
-																	"buyedhouse"), CANNOT_BUY_HOUSE("cannotbuyhouse");
+																	"buyedhouse"), CANNOT_BUY_HOUSE("cannotbuyhouse"), MAX_HOUSES(
+																			"maxhouses"), CANNOT_BUY_HOUSE_GROUP("hasnotallplacesofgroup");
 
 	private String type;
 

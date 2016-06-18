@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import vs.jan.exception.InvalidPlaceIDException;
 import vs.jan.exception.ResponseCodeException;
 import vs.jan.helper.Helper;
 import vs.jan.helper.brokerservice.BrokerHelper;
@@ -20,13 +21,16 @@ import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.ServiceList;
 import vs.jan.model.boardservice.Player;
+import vs.jan.model.brokerservice.BoardPlace;
 import vs.jan.model.brokerservice.Broker;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.Error;
 import vs.jan.model.exception.TransactionFailedException;
+import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.services.allocator.ServiceAllocator;
 import vs.jan.transaction.BankSellTransaction;
 import vs.jan.transaction.BuyTransaction;
+import vs.jan.transaction.HouseTransaction;
 import vs.jan.transaction.RentTransaction;
 import vs.jan.transaction.TradeTransaction;
 import vs.jan.validator.BrokerValidator;
@@ -81,7 +85,8 @@ public class BrokerService {
 		b.setName(broker.getName());
 	}
 
-	public synchronized void registerPlace(String gameid, String placeid, JSONPlace place) {
+	public synchronized void registerPlace(String gameid, String placeid, JSONPlace place)
+			throws InvalidPlaceIDException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		validator.checkJsonIsValid(place, Error.JSON_PLACE.getMsg());
@@ -91,19 +96,19 @@ public class BrokerService {
 		String visitUri = id + VISIT_SUFFIX;
 		String hypoCreditUri = id + HYPO_CREDIT_SUFFIX;
 		String ownerUri = id + OWNER_SUFFIX;
-		Place p = new Place(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri, ownerUri);
+		Estate p = new Estate(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri, ownerUri);
 		broker.addPlace(p);
 	}
 
 	public synchronized JSONEventList visitPlace(String gameid, String placeid, String pawnid, String playeruri,
-			String path) throws TransactionFailedException {
+			String path) throws TransactionFailedException, TransactionRollBackException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 		validator.checkPlayerUriIsValid(playeruri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player player = BrokerHelper.getPlayer(playeruri, gameid);
 
 		String type = EventTypes.VISIT_PLACE.getType();
@@ -156,7 +161,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 
 		Broker b = BrokerHelper.getBroker(this.brokers, gameid);
-		Place place = BrokerHelper.getPlace(b, placeid);
+		Estate place = BrokerHelper.getPlace(b, placeid);
 
 		return place.convert();
 	}
@@ -166,7 +171,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 
 		Broker b = BrokerHelper.getBroker(this.brokers, gameid);
-		Place p = BrokerHelper.getPlace(b, placeid);
+		Estate p = BrokerHelper.getPlace(b, placeid);
 
 		if (p.getOwner() != null) {
 			return p.getOwner();
@@ -186,7 +191,7 @@ public class BrokerService {
 	}
 
 	public synchronized JSONEventList buyPlace(String gameid, String placeid, String playerUri, String path)
-			throws TransactionFailedException {
+			throws TransactionFailedException, TransactionRollBackException, HasNotAllPlacesOfGroupException {
 		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		validator.checkIdIsNotNull(placeid, Error.PLACE_ID.getMsg());
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
@@ -194,7 +199,7 @@ public class BrokerService {
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		BuyTransaction buy = null;
 		JSONEvent event = null;
@@ -221,7 +226,7 @@ public class BrokerService {
 				Helper.postEvent(event);
 				Helper.broadCastEvent(event);
 			}
-		} else if (owner.equals(player)) {
+		} else if (owner.equals(player) && place.getColor() != null) {
 
 			buyHouse(broker, place, owner, gameid);
 		}
@@ -229,57 +234,71 @@ public class BrokerService {
 		return BrokerHelper.receiveEventList(playerUri, gameid, new Date());
 	}
 
-	private void buyHouse(Broker broker, Place place, Player owner, String gameid) throws TransactionFailedException {
+	private void buyHouse(Broker broker, Estate place, Player owner, String gameid)
+			throws TransactionFailedException, TransactionRollBackException, HasNotAllPlacesOfGroupException {
 
 		JSONEvent event = null;
+		String type = null;
 		HouseTransaction buy = null;
 
-		if (hasAllPlacesOfGroup(broker.getPlaces(), place, owner)) {
+		try {
 
-			int houses = place.getHouses() + 1;
-
-			try {
-
-				if (houses < place.getRent().size()) {
+			if (hasAllPlacesOfGroup(broker.getPlaces(), place, owner)) {
+				if (place.getHouses() < place.getRent().size() - 1) {
+					System.out.println("ACT_HOUSES: " + place.getHouses());
+					System.out.println("MAX_HOUSES: " + place.getRent().size());
 					buy = new HouseTransaction(owner, place.getCost().get(place.getHouses()), this.services.getBank(), gameid,
 							place);
 					buy.execute();
-					String type = EventTypes.BUY_HOUSE.getType();
+					type = EventTypes.BUY_HOUSE.getType();
+					event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
+				} else {
+					type = EventTypes.MAX_HOUSES.getType();
 					event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
 				}
-
-			} catch (TransactionFailedException e) {
-				buy.rollBack();
-				String type = EventTypes.CANNOT_BUY_HOUSE.getType();
+			} else {
+				type = EventTypes.CANNOT_BUY_HOUSE_GROUP.getType();
 				event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
-				throw new TransactionFailedException(e.getMessage());
-
-			} finally {
-				BrokerHelper.postEvent(event);
-				BrokerHelper.broadCastEvent(event);
+				throw new HasNotAllPlacesOfGroupException(Error.TRANS_FAIL_HOUSE_GROUP.getMsg());
 			}
+		} catch (TransactionFailedException e) {
+			buy.rollBack();
+			type = EventTypes.CANNOT_BUY_HOUSE.getType();
+			event = new JSONEvent(gameid, type, type, type, place.getUri(), owner.getId());
+			throw new TransactionFailedException(e.getMessage());
 
+		} finally {
+			BrokerHelper.postEvent(event);
+			BrokerHelper.broadCastEvent(event);
 		}
 	}
 
-	private boolean hasAllPlacesOfGroup(List<Place> places, Place place, Player owner) {
+	private boolean hasAllPlacesOfGroup(List<Estate> places, Estate place, Player owner) {
 
-		Set<Place> ownerPlaces = new HashSet<>();
-		Set<vs.jan.model.boardservice.Place> group = new HashSet<>();
+		Set<Estate> ownerPlaces = new HashSet<>();
+		Set<BoardPlace> group = new HashSet<>();
+		boolean hasAllPlaces = false;
 
-		for (Place p : places) {
-			if (p.getOwner().equals(place.getOwner()) && p.getColor() != null && p.getColor().equals(place.getColor())) {
-				ownerPlaces.add(p);
+		if (place.isPlace() && place.getColor() != null && place.getOwner() != null) {
+			for (Estate p : places) {
+				if (p.getOwner() != null && p.getOwner().equals(place.getOwner()) && p.getColor() != null
+						&& p.getColor().equals(place.getColor())) {
+					ownerPlaces.add(p);
+				}
 			}
+			for (BoardPlace p : BoardPlace.values()) {
+				if (p.getColor() != null && p.getColor().equals(place.getColor())) {
+					group.add(p);
+				}
+			}
+
+			System.out.println("GROUP: " + group);
+			System.out.println(group.size());
+			System.out.println(ownerPlaces.size());
+			hasAllPlaces = group.size() == ownerPlaces.size();
 		}
 
-		for (vs.jan.model.boardservice.Place p : vs.jan.model.boardservice.Place.values()) {
-			if (p.getColor().equals(place.getColor())) {
-				group.add(p);
-			}
-		}
-
-		return group.size() == ownerPlaces.size();
+		return hasAllPlaces;
 	}
 
 	public synchronized JSONEventList takeHypothecaryCredit(String gameid, String placeid, String playerUri, String path)
@@ -290,7 +309,7 @@ public class BrokerService {
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
 		String type = null;
@@ -334,7 +353,7 @@ public class BrokerService {
 		validator.checkPlayerUriIsValid(playerUri, Error.PLAYER_URI.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, BrokerHelper.getID(playerUri));
@@ -379,7 +398,7 @@ public class BrokerService {
 		validator.checkJsonIsValid(player, Error.JSON_PLAYER.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		JSONEvent event = null;
 		TradeTransaction trade = null;
@@ -427,7 +446,7 @@ public class BrokerService {
 		validator.checkIdIsNotNull(pawnid, Error.PAWN_ID.getMsg());
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
-		Place place = BrokerHelper.getPlace(broker, placeid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		String ownerId = BrokerHelper.getID(owner.getId());
 

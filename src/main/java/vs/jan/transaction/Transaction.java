@@ -2,8 +2,9 @@ package vs.jan.transaction;
 
 import vs.jan.json.brokerservice.JSONAccount;
 import vs.jan.model.boardservice.Player;
-import vs.jan.model.brokerservice.Place;
+import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.TransactionFailedException;
+import vs.jan.model.exception.TransactionRollBackException;
 
 public abstract class Transaction {
 
@@ -14,12 +15,12 @@ public abstract class Transaction {
 	protected String gameId;
 	protected String bankUri;
 	
-	protected Place place;
+	protected Estate place;
 	protected JSONAccount fromAcc;
 	protected JSONAccount toAcc;
 
 	public abstract void execute() throws TransactionFailedException;
-	public abstract void rollBack();
+	public abstract void rollBack() throws TransactionRollBackException;
 
 	public Player getFrom() {
 		return from;
@@ -69,11 +70,11 @@ public abstract class Transaction {
 		this.bankUri = bankUri;
 	}
 	
-	public Place getPlace() {
+	public Estate getPlace() {
 		return place;
 	}
 	
-	public void setPlace(Place place) {
+	public void setPlace(Estate place) {
 		this.place = place;
 	}
 	

@@ -14,12 +14,6 @@ public abstract class Validator {
 			throw new InvalidInputException(msg);
 		}
 	}
-	
-	public void checkIdIsNotNull(String placeid, String msg) {
-		if (placeid == null) {
-			throw new InvalidInputException(msg);
-		}
-	}
 
 	public Gson getGSON() {
 		return GSON;

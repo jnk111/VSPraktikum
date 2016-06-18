@@ -48,17 +48,14 @@ public class DecksService {
 	}
 
 	public JSONCard getNextCommunityCard(String gameid) {
-		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		Decks decks = helper.getDecks(this.decks, gameid);
 		CommCard next = decks.getNextCommCard();		
 		return next.convert();
 	}
 
 	public JSONCard getNextChanceCard(String gameid) {
-		validator.checkIdIsNotNull(gameid, Error.GAME_ID.getMsg());
 		Decks decks = helper.getDecks(this.decks, gameid);
 		ChanceCard next = decks.getNextChanceCard();
 		return next.convert();
 	}
-
 }

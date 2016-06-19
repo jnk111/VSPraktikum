@@ -9,6 +9,16 @@ public class PlayerInformation {
 	String position;
 	boolean isReady;
 	boolean hasTurn;
+	String uri;
+	
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
 	public String getPawn() {
 		return pawn;

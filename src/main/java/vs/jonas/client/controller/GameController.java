@@ -372,5 +372,9 @@ public class GameController {
 			e.printStackTrace();
 		}
 	}
+	
+	public User getUser(){
+		return user;
+	}
 
 }

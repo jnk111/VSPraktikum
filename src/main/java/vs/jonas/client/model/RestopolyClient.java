@@ -13,7 +13,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.HttpRequestWithBody;
 
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
@@ -223,6 +222,9 @@ public class RestopolyClient {
 					playerInformation.setReady(true);
 				}
 			} 
+			if(checkNotNull(player.getId())){
+				playerInformation.setUri(player.getId());
+			}
 			
 			if(player.equals(playerWithMutex)){
 				playerInformation.setHasTurn(true);
@@ -418,6 +420,7 @@ public class RestopolyClient {
 			placesHouses += place.getHouses();
 		}		
 		Collections.sort(places, new PlaceComparator());
+		result.setUri(player.getUri());
 		result.setName(player.getPawn());
 		result.setAccount(player.getAccount());
 		result.setPlaces(places);

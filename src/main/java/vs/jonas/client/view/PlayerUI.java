@@ -29,9 +29,11 @@ public class PlayerUI {
 	private JFrame frame;
 	private JButton btnKaufanfrage;
 	private JTable placeTable;
+	private JButton btnHausKaufen;
+	private JButton btnHypothekAufnehmen;
 	
 	
-	public PlayerUI(Player player){
+	public PlayerUI(Player player, boolean isClient){
 		frame = new JFrame(player.getName());
 		frame.getContentPane().setBackground(SystemColor.inactiveCaption);
 		frame.setSize(430, 500);
@@ -170,7 +172,14 @@ public class PlayerUI {
 		panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		btnKaufanfrage = new JButton("Kaufanfrage stellen");
-		panel_3.add(btnKaufanfrage);
+		btnHausKaufen = new JButton("Haus kaufen");
+		btnHypothekAufnehmen = new JButton("Hypothek aufnehmen");
+		if(!isClient){
+			panel_3.add(btnKaufanfrage);
+		} else{
+			panel_3.add(btnHausKaufen);
+			panel_3.add(btnHypothekAufnehmen);
+		}
 	}
 	
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -190,6 +199,14 @@ public class PlayerUI {
 
 	public JButton getBtnKaufanfrage() {
 		return btnKaufanfrage;
+	}
+	
+	public JButton getBtnHausKaufen(){
+		return btnHausKaufen;
+	}
+	
+	public JButton getBtnHypothekAufnehmen(){
+		return btnHypothekAufnehmen;
 	}
 	
 	public JTable getTable(){

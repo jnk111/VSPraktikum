@@ -17,7 +17,10 @@ public class PlayerController {
 	public PlayerController(GameController controller, Player player){
 		this.controller = controller;
 		this.player = player;
-		this.ui = new PlayerUI(this.player);
+		System.out.println("Neuer PlayerController....");
+		System.out.println("Player: " + player.getUri());
+		System.out.println("Client: " + controller.getUser().getPlayerUri());
+		this.ui = new PlayerUI(this.player, controller.getUser().getPlayerUri().equals(player.getUri()));
 		registriereListener();
 		this.ui.showUI();
 	}

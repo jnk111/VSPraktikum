@@ -98,9 +98,9 @@ public class OffeneSpieleController {
 				if(!gameID.equals("")){
 					String username = "";
 					while(username != null && username.equals("")){
-						username = JOptionPane.showInputDialog(ui.getFrame(), "Bitte wählen Sie einen Usernamen.");
+						username = JOptionPane.showInputDialog(ui.getFrame(), "Bitte waehlen Sie einen Usernamen.");
 						if(username != null && username.equals("")){
-							JOptionPane.showMessageDialog(ui.getFrame(), "Dieser Username ist nicht gültig. Der Username darf nicht leer sein.");
+							JOptionPane.showMessageDialog(ui.getFrame(), "Dieser Username ist nicht gueltig. Der Username darf nicht leer sein.");
 						}
 					}
 					if(username != null){
@@ -113,7 +113,7 @@ public class OffeneSpieleController {
 							e1.printStackTrace();
 						} catch (NotExpectedStatusCodeException e1) {
 							e1.printStackTrace();
-							JOptionPane.showMessageDialog(null, "Das Spiel konnte nicht betreten werden. Bitte wähle einen neuen Usernamen und versuchen es erneut.");
+							JOptionPane.showMessageDialog(null, "Das Spiel konnte nicht betreten werden. Bitte waehle einen neuen Usernamen und versuche es erneut.");
 						}
 					}
 				}

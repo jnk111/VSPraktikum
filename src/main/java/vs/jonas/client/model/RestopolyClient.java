@@ -13,6 +13,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.HttpRequestWithBody;
 
 import vs.jan.json.boardservice.JSONService;
 import vs.jan.model.ServiceNames;
@@ -66,7 +67,7 @@ public class RestopolyClient {
 
 	/**
 	 * Initialisiert den Client
-	 * @param yellowPages Wird ben�tigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
+	 * @param yellowPages Wird benï¿½tigt, um die IP-Adressen der Services (speziell des GameServices) zu erhalten
 	 * @param user Der angemeldete User.
 	 * @throws UnirestException
 	 */
@@ -179,7 +180,7 @@ public class RestopolyClient {
 	/**
 	 * Liefert alle beim Game angemeldeten Spieler
 	 * @param gameID Die ID des Games
-	 * @return Eine Liste mit Informationen �ber alle Spieler. 
+	 * @return Eine Liste mit Informationen ï¿½ber alle Spieler. 
 	 * @throws UnirestException
 	 */
 	public List<PlayerInformation> getPlayers(String gameID) throws UnirestException {
@@ -320,16 +321,18 @@ public class RestopolyClient {
 		Place place = gson.fromJson(fieldRessource.toString(), Place.class);
 		
 		// http://...:.../broker/{gameID}/places/{placeID} 
-		//				-> liefert alle weiteren Informationen �ber das Feld wie (Owner, Rent, Cost, etc.)
+		//				-> liefert alle weiteren Informationen ï¿½ber das Feld wie (Owner, Rent, Cost, etc.)
 		String brokerPlaceUri = brokerServiceUri.replace("/broker", "")+place.getBroker();
 		JsonObject brokerPlaceResponse = get(brokerPlaceUri);
 		BrokerPlace brokerPlace = gson.fromJson(brokerPlaceResponse, BrokerPlace.class);
 		
-		// Kosten = je nach anzahl der H�user unterschiedlich
+		// Kosten = je nach anzahl der Hï¿½user unterschiedlich
 		int numberOfHouses = brokerPlace.getHouses();
-		if(numberOfHouses!= -1){
-			place.setCost(brokerPlace.getCost().get(numberOfHouses));
+		if(numberOfHouses != -1){
 			place.setRent(brokerPlace.getRent().get(numberOfHouses));
+			if(numberOfHouses < 5){
+				place.setCost(brokerPlace.getCost().get(numberOfHouses));
+			} 
 		} 
 		place.setValue(brokerPlace.getValue());
 		place.setHouses(brokerPlace.getHouses());
@@ -463,7 +466,7 @@ public class RestopolyClient {
 
 	/**
 	 * Wuerfelt fuer den angemeldeten User und liefert das Ergebnis zurueck.
-	 * Au�erdem wird die Spielfigur verschoben.
+	 * Auï¿½erdem wird die Spielfigur verschoben.
 	 * 
 	 * @return Das Wurfergebnis
 	 * @throws UnirestException 
@@ -499,6 +502,18 @@ public class RestopolyClient {
 		return lastThrown;
 	}
 
+	public void sendTradeRequest(String gameID, String placeName, String pawnName) throws UnirestException{
+//		 /broker/<gameid>/places/<placeid>/trade/<pawnid>
+		System.out.println("\n*********** Send Trade Request *************");
+		String brokerUri = brokerService.getUri();
+//		String tradeRequestUri = brokerUri + SLASH + gameID + "/places" + SLASH + placeName + "/trade" + SLASH + pawnName;
+		String tradeRequestUri = brokerUri.replaceAll("/broker", "") + placeName + "/trade" + SLASH + pawnName;
+		System.out.println("Senden an: " + tradeRequestUri);
+		HttpResponse<String> response = Unirest.post(tradeRequestUri).asString();
+		System.out.println("Received: " + gson.fromJson(response.getBody(), String.class) + "  "+response.getStatus());
+	}
+	
+	// *************************************** POST & GET *******************************************
 	/**
 	 * Sendet ein Objekt an einen Service
 	 * 

@@ -28,11 +28,13 @@ public class PlayerUI {
 
 	private JFrame frame;
 	private JButton btnKaufanfrage;
+	private JTable placeTable;
+	
 	
 	public PlayerUI(Player player){
 		frame = new JFrame(player.getName());
 		frame.getContentPane().setBackground(SystemColor.inactiveCaption);
-		frame.setSize(400, 500);
+		frame.setSize(430, 500);
 		frame.setLocation(500,100);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 //		frame.setAlwaysOnTop(true);
@@ -146,14 +148,14 @@ public class PlayerUI {
 		lblGrundstckeImBesitz.setBorder(new EmptyBorder(5, 0, 5, 0));
 		panel_2.add(lblGrundstckeImBesitz, BorderLayout.NORTH);
 		
-		JTable placeTable = new JTable(new PlayersPlacesTableModel(player.getPlaces()));
+		placeTable = new JTable(new PlayersPlacesTableModel(player.getPlaces()));
   	  	PlayerPlacesTableCellRenderer renderer = new PlayerPlacesTableCellRenderer();
   	  	renderer.setHorizontalAlignment(JLabel.CENTER);
   	  	placeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		placeTable.getTableHeader().setOpaque(false);
 		placeTable.getTableHeader().setBackground(new Color(100, 150, 210));
 		placeTable.getTableHeader().setForeground(Color.WHITE);
-		placeTable.setEnabled(false);
+//		placeTable.setEnabled(false);
 		placeTable.setOpaque(false);
 		placeTable.setDefaultRenderer(String.class, new PlayerTableCellRenderer());
 		placeTable.setBackground(SystemColor.activeCaption);
@@ -190,5 +192,8 @@ public class PlayerUI {
 		return btnKaufanfrage;
 	}
 	
+	public JTable getTable(){
+		return placeTable;
+	}
 	
 }

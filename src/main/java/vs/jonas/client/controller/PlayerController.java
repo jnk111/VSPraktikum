@@ -3,7 +3,9 @@ package vs.jonas.client.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import vs.jonas.client.json.Place;
 import vs.jonas.client.model.Player;
+import vs.jonas.client.model.table.tablemodel.PlayersPlacesTableModel;
 import vs.jonas.client.view.PlayerUI;
 
 public class PlayerController {
@@ -25,8 +27,14 @@ public class PlayerController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				controller.buyRequest(player);
+				int selectedRow = ui.getTable().getSelectedRow();
+				
+				PlayersPlacesTableModel model = (PlayersPlacesTableModel) ui.getTable().getModel();
+				Place place = model.getPlace(selectedRow);
+				
+				controller.buyRequest(place);
 			}
 		});
+		
 	}
 }

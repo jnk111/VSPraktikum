@@ -20,6 +20,7 @@ import spark.Spark;
 import vs.jonas.client.json.ClientTurn;
 import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
+import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
 import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
@@ -28,6 +29,7 @@ import vs.jonas.client.model.table.MyTableMouseListener;
 import vs.jonas.client.model.table.tablemodel.GameFieldTableModel;
 import vs.jonas.client.model.table.tablemodel.PlayerOverviewTableModel;
 import vs.jonas.client.utils.EventTypes;
+import vs.jonas.client.utils.JailReasonGenerator;
 import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
 import vs.jonas.exceptions.EstateAlreadyOwnedException;
@@ -73,7 +75,7 @@ public class GameController {
 //		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 //		String ipadress = br.readLine();
 //		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
-		this.ip = JOptionPane.showInputDialog("IP Andresseangeben: (z.b. localhost oder 192.168.99.100");
+		this.ip = JOptionPane.showInputDialog("IP Andresse angeben: (z.b. localhost oder 192.168.99.100");
 		String port = JOptionPane.showInputDialog("Port angeben: (z.B. 4777");
 		if(this.ip == null || port == null){
 			ui.getFrame().dispose();
@@ -132,7 +134,7 @@ public class GameController {
 					ui.showUI();
 					JOptionPane.showMessageDialog(null, "Auf 'Spiel Starten' klicken, wenn Du bereit bist.");
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Hier ist ein Kommunikationsfehler aufgetreten.");
+					JOptionPane.showMessageDialog(null, "Ein Kommunikationsfehler ist aufgetreten.");
 					e.printStackTrace();
 				}
 			}
@@ -237,9 +239,9 @@ public class GameController {
 			int number = client.rollDice(gameID, user);
 			JOptionPane.showMessageDialog(null, "Wurfergebnis: " + number);
 		} catch(PlayerHasAlreadyRolledTheDiceException ex){
-			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gew�rfelt!");
+			JOptionPane.showMessageDialog(null, "So nicht, Freundchen. Du hast bereits gewürfelt!");
 		} catch(PlayerDoesNotHaveTheMutexException ex){
-			JOptionPane.showMessageDialog(null, "Ich wei�, das Leben ist hart, aber du bist noch nicht and der Reihe.");
+			JOptionPane.showMessageDialog(null, "Ich weiß, das Leben ist hart, aber du bist noch nicht and der Reihe.");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(i<3){
@@ -262,11 +264,10 @@ public class GameController {
 			label1.setHorizontalTextPosition(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null,label1);
 		} catch (EstateAlreadyOwnedException e) {
-			JOptionPane.showMessageDialog(null, "Die Stra�e wurde bereits verkauft.");
+			JOptionPane.showMessageDialog(null, "Das Grundstück wurde bereits verkauft.");
 		} catch (UnirestException ex) {
 			ex.printStackTrace();
 		}
-		System.err.println("Dummy: Buy");
 	}
 	
 	private void sell(){
@@ -316,33 +317,40 @@ public class GameController {
 		JTextArea eventsConsole = ui.getEventsConsole();
 		
 		if(event.getType().equals(EventTypes.GAME_STARTED.getType())){
+			System.out.println("************** GAME STARTED *****************");
 			eventsConsole.append("**********************************************\n"
 					+ "Das Spiel wurde gestartet.\n"
-					+ "**********************************************\n\n");;
+					+ "**********************************************\n\n");
+			try {
+				PlayerResponse response = client.getPlayerWithMutex(gameID);
+				new ShowMessageThread(response.getPawn() + " schnappt sich die Wuerfel vor allen anderen und darf beginnen.").start();
+			} catch (UnirestException e) {
+				e.printStackTrace();
+			}
 		} else{
 			String eventText = "";
 			if(event.getType().equals(EventTypes.MOVE_PAWN.getType())){
-				eventText = event.getPlayer() + " has moved his pawn.";
+				eventText = event.getPlayer() + " hat seine Spielfigur bewegt.";
 			} else if (event.getType().equals(EventTypes.MOVED_TO_JAIL.getType())){
-				eventText = event.getPlayer() + " has been sent to jail.";
+				eventText = event.getPlayer() + " " +JailReasonGenerator.getRandomReason();
 			} else if (event.getType().equals(EventTypes.VISIT_PLACE.getType())){
-				eventText = event.getPlayer() + " has visited " + event.getRessource();
+				eventText = event.getPlayer() + " ist auf dem Feld " + event.getRessource() + " gelandet.";
 			} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
-				eventText = event.getPlayer() + " has bought a place.";
+				eventText = event.getPlayer() + " hat ein Grundstueck gekauft.";
 			} else if(event.getType().equals(EventTypes.GOT_MONEY_ALL_PLAYERS.getType())){
-				eventText = event.getPlayer() + " has got money from all players. Such a lucker...";
+				eventText = event.getPlayer() + " wurde von seinen Mitspielern mit Geld ueberschuettet.";
 			} else if(event.getType().equals(EventTypes.GOT_MONEY_FROM_BANK.getType())){
-				eventText = event.getPlayer() + " has got money from the bank.";
+				eventText = event.getPlayer() + " hat Geld von der Bank bekommen.";
 			} else if(event.getType().equals(EventTypes.PAY_RENT.getType())){
-				eventText = event.getPlayer() + " has paid the rent.";
+				eventText = event.getPlayer() + " hat die Miete bezahlt.";
 			} else if(event.getType().equals(EventTypes.CANNOT_BUY_PLACE.getType())){
-				eventText = event.getPlayer() + " couldn't buy the place. Bad luck. :(";
+				eventText = event.getPlayer() + " konnte das Grundstueck nicht kaufen.";
 			} else if(event.getType().equals(EventTypes.CANNOT_PAY_RENT.getType())){
-				eventText = event.getPlayer() + " couldn't pay his rent. Monopoly is fun, isn't it?";
+				eventText = event.getPlayer() + " konnte seine Miete nicht bezahlen. Monopoly macht Spaß, oder nicht?";
 			} else if(event.getType().equals(EventTypes.TRADE_PLACE.getType())){
-				eventText = event.getPlayer() + " has traded a place.";
+				eventText = event.getPlayer() + " hat ein Grundstueck verkauft.";
 			} else if(event.getType().equals(EventTypes.MUTEX_CHANGE.getType())){
-				eventText = "The Mutex has been moved to another player.";
+				eventText = "Der Mutex wurde dem nächsten Spieler übergeben.";
 			}
 			else{
 				eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();
@@ -357,9 +365,12 @@ public class GameController {
 		}
 	}
 
-	public void buyRequest(Player player) {
-		// TODO
-		new ShowMessageThread("TODO Buy Request!").start();
+	public void buyRequest(Place place) {
+		try {
+			client.sendTradeRequest(gameID, place.getBroker(), user.getName());
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -90,10 +90,13 @@ public class BrokerService {
 
 		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
 		String id = BROKER_PREFIX + gameid + PLACES_INFIX + placeid;
+		int num = Integer.parseInt(BrokerHelper.getID(id));
 		String visitUri = id + VISIT_SUFFIX;
 		String hypoCreditUri = id + HYPO_CREDIT_SUFFIX;
 		String ownerUri = id + OWNER_SUFFIX;
-		Estate p = new Estate(id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri, ownerUri);
+		Estate p = new Estate(num, id, place.getPlace(), place.getValue(), place.getHouses(), visitUri, hypoCreditUri,
+				ownerUri);
+		p.initInformation();
 		broker.addPlace(p);
 	}
 
@@ -118,7 +121,7 @@ public class BrokerService {
 		RentTransaction rent = null;
 
 		try {
-			if (owner != null && !owner.equals(player) && !place.isHypo() && place.isPlace()) {
+			if (owner != null && !owner.equals(player) && !place.isHypo() && place.isStreet()) {
 				int amount = place.getRent().get(place.getHouses());
 				rent = new RentTransaction(player, owner, amount, this.services.getBank(), gameid, place);
 				rent.execute();
@@ -186,7 +189,7 @@ public class BrokerService {
 		JSONEvent event = null;
 		String type = null;
 
-		if (owner == null && place.isPlace()) {
+		if (owner == null && place.isBuyable()) {
 			try {
 				buy = new BuyTransaction(player, place.getPrice(), this.services.getBank(), gameid, place);
 				buy.execute();
@@ -195,17 +198,17 @@ public class BrokerService {
 
 			} catch (TransactionFailedException e) {
 				buy.rollBack();
-				
+
 				type = EventTypes.CANNOT_BUY_PLACE.getType();
 				event = new JSONEvent(gameid, type, type, type, place.getUri(), player.getId());
-				
+
 				throw new TransactionFailedException(e.getMessage());
 
 			} finally {
 				Helper.postEvent(event);
 				Helper.broadCastEvent(event);
 			}
-		} else if (owner.equals(player) && place.getColor() != null) {
+		} else if (owner != null && owner.equals(player) && place.isStreet()) {
 
 			buyHouse(broker, place, owner, gameid);
 		}
@@ -257,7 +260,7 @@ public class BrokerService {
 		Set<BoardPlace> group = new HashSet<>();
 		boolean hasAllPlaces = false;
 
-		if (place.isPlace() && place.getColor() != null && place.getOwner() != null) {
+		if (place.isStreet() && place.getColor() != null && place.getOwner() != null) {
 			for (Estate p : places) {
 				if (p.getOwner() != null && p.getOwner().equals(place.getOwner()) && p.getColor() != null
 						&& p.getColor().equals(place.getColor())) {
@@ -292,7 +295,7 @@ public class BrokerService {
 		BankSellTransaction sell = null;
 
 		try {
-			if (owner != null && owner.equals(player) && place.isPlace()) {
+			if (owner != null && owner.equals(player) && place.isStreet()) {
 				int amountRent = (int) place.getPrice() / 2;
 				int amountHouses = (int) (place.getCost().get(place.getHouses()) / 2);
 				int amount = amountRent + amountHouses;
@@ -328,18 +331,18 @@ public class BrokerService {
 		Estate place = BrokerHelper.getPlace(broker, placeid);
 		Player owner = place.getOwner();
 		Player player = BrokerHelper.getPlayer(playerUri, gameid);
-		
+
 		BankSellTransaction credit = broker.getHypothecaryCredit(place, BrokerHelper.getID(playerUri));
 		BuyTransaction buyBack = null;
 		String type = null;
 		JSONEvent event = null;
 
 		try {
-			if (credit != null && place.isPlace() && owner != null && owner.equals(player)) {
+			if (credit != null && place.isStreet() && owner != null && owner.equals(player)) {
 				int amount = (int) (credit.getAmount() + (credit.getAmount() * HYPO_INTEREST));
 				buyBack = new BuyTransaction(player, amount, this.services.getBank(), gameid, place);
 				buyBack.execute();
-				
+
 				type = EventTypes.DELETE_HYPO.getType();
 				event = new JSONEvent(gameid, type, type, type, place.getHypoCreditUri(), playerUri);
 				broker.removehypothecaryCredit(credit);
@@ -375,7 +378,7 @@ public class BrokerService {
 
 		try {
 
-			if (owner != null && !player.equals(owner) && place.isPlace()) {
+			if (owner != null && !player.equals(owner) && place.isStreet()) {
 				int amount = place.getRent().get(place.getHouses());
 				trade = new TradeTransaction(player, owner, amount, this.services.getBank(), gameid, place);
 				trade.execute();

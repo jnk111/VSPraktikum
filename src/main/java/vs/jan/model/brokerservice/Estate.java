@@ -13,10 +13,13 @@ import vs.jan.model.boardservice.Player;
 import vs.jan.model.exception.Error;
 
 public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
-	
+
 	private final int MAX_HOUSES = 5;
+	private final int MAX_STATIONS = 4;
+	private final int MAX_FACTORY = 2;
 	private final int COST_MULT = 2;
-	
+
+	private int position;
 	private String uri;
 	private String placeUri;
 	private Player owner;
@@ -29,17 +32,18 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	private String hypoCreditUri;
 	private boolean hypo;
 	private PlaceColor color;
-	
-	
-	public Estate(String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri, String owner){
-		
-		this(uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), houses, visitUri, hypoCreditUri, owner);
+
+	public Estate(int num, String uri, String placeUri, int rentPrice, int houses, String visitUri, String hypoCreditUri,
+			String owner) {
+
+		this(num, uri, placeUri, null, rentPrice, new ArrayList<>(), new ArrayList<>(), houses, visitUri, hypoCreditUri,
+				owner);
 
 	}
-	
-	public Estate(String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
+
+	public Estate(int num, String uri, String placeUri, Player owner, int price, List<Integer> rent, List<Integer> cost,
 			int houses, String visitUri, String hypoCreditUri, String ownerUri) {
-		
+
 		this.uri = uri;
 		this.placeUri = placeUri;
 		this.owner = owner;
@@ -51,11 +55,11 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.hypoCreditUri = hypoCreditUri;
 		this.ownerUri = ownerUri;
 		this.setHypo(false);
+		this.position = num;
 		initRents();
 		initCosts();
 		initColor();
 	}
-
 
 	public Estate(Estate place) {
 		this.uri = place.getUri();
@@ -67,41 +71,48 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.houses = place.getHouses();
 		this.visitUri = place.getVisitUri();
 		this.hypoCreditUri = place.getHypoCreditUri();
+		this.position = place.getPosition();
 	}
 
+	public void initInformation() {
+		initRents();
+		initCosts();
+		initColor();
+	}
+	
+
 	private void initCosts() {
-		
-		for(int i = 1; i < MAX_HOUSES + 1; i++){
-			this.cost.add(this.price * (i * COST_MULT));
+		for (int i = 0; i < MAX_HOUSES; i++) {
+			this.cost.add(this.price * ((i + 1) * COST_MULT));
 		}
 	}
 
 	private void initRents() {
 		int price = this.price;
 		this.rent.add(price);
-		
-		for(int i = 0; i < MAX_HOUSES; i++){
+
+		for (int i = 0; i < MAX_HOUSES; i++) {
 			price = price * 2;
 			this.rent.add(price);
 		}
 	}
-	
-	private void initColor() throws InvalidPlaceIDException{
-		
+
+	private void initColor() throws InvalidPlaceIDException {
+
 		String id = BrokerHelper.getID(this.placeUri);
-		
+
 		try {
 			int num = Integer.parseInt(id);
-			
-			for(BoardPlace p: BoardPlace.values()) {
-				if(p.ordinal() == num) {
+
+			for (BoardPlace p : BoardPlace.values()) {
+				if (p.ordinal() == num) {
 					this.color = p.getColor();
 					return;
 				}
 			}
 		} catch (NumberFormatException e) {
 			throw new InvalidPlaceIDException(Error.PLACE_ID_NUM.getMsg());
-		}		
+		}
 	}
 
 	public String getUri() {
@@ -175,8 +186,6 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public void setHypoCreditUri(String hypoCreditUri) {
 		this.hypoCreditUri = hypoCreditUri;
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
@@ -244,63 +253,59 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 			return false;
 		return true;
 	}
-	
-	
 
 	@Override
 	public String toString() {
 		return "Place [uri=" + uri + ", placeUri=" + placeUri + ", owner=" + owner + ", price=" + price + ", rent=" + rent
-				+ ", cost=" + cost + ", housesPrice=" + houses + ", visitUri=" + visitUri + ", hypoCreditUri="
-				+ hypoCreditUri + "]";
+				+ ", cost=" + cost + ", housesPrice=" + houses + ", visitUri=" + visitUri + ", hypoCreditUri=" + hypoCreditUri
+				+ "]";
 	}
 
 	@Override
 	public JSONPlace convert() {
-		
+
 		JSONPlace place = new JSONPlace(this.placeUri);
 		place.setCost(this.cost);
 		place.setHouses(this.houses);
 		place.setHypocredit(this.hypoCreditUri);
 		place.setId(this.uri);
-		place.setOwner(this.ownerUri);		
+		place.setOwner(this.ownerUri);
 		place.setPlace(this.placeUri);
 		place.setRent(this.rent);
 		place.setValue(this.price);
 		place.setVisit(this.visitUri);
-		
+
 		return place;
 	}
 
-
 	@Override
 	public void update(JSONPlace place) {
-		
+
 		if (place.getCost() != null) {
 			this.setCost(place.getCost());
 		}
-		
-		if(place.getHouses() > 0){
+
+		if (place.getHouses() > 0) {
 			this.setHouses(this.houses = place.getHouses());
 		}
-		
-		if(place.getHypocredit() != null){
+
+		if (place.getHypocredit() != null) {
 			this.setHypoCreditUri(place.getHypocredit());
 		}
-		
-		
-		if(place.getValue() > 0){
+
+		if (place.getValue() > 0) {
 			this.setPrice(place.getValue());
 		}
-		
-		if(place.getRent() != null){
+
+		if (place.getRent() != null) {
 			this.setRent(place.getRent());
 		}
-		
-		if(place.getVisit() != null){
+
+		if (place.getVisit() != null) {
 			this.setVisitUri(place.getVisit());
 		}
 	}
-	
+
 	public boolean isHypo() {
 		return hypo;
 	}
@@ -309,9 +314,9 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 		this.hypo = hypo;
 	}
 
-	public boolean isPlace() {
-		
-		return this.price > 0;
+	public boolean isStreet() {
+
+		return this.isBuyable() && this.color != null;
 	}
 
 	public String getOwnerUri() {
@@ -329,4 +334,48 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	public void setColor(PlaceColor color) {
 		this.color = color;
 	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public boolean isCommunity() {
+		return this.position == BoardPlace.Ereignis1.ordinal() || this.position == BoardPlace.Ereignis2.ordinal()
+				|| this.position == BoardPlace.Ereignis3.ordinal();
+	}
+
+	public boolean isChance() {
+		return this.position == BoardPlace.Ereignis1.ordinal() || this.position == BoardPlace.Ereignis2.ordinal()
+				|| this.position == BoardPlace.Ereignis3.ordinal();
+	}
+
+	public boolean isTax() {
+		return this.position == BoardPlace.EinkStr.ordinal() || this.position == BoardPlace.ZusatzStr.ordinal();
+	}
+
+	public boolean isFreeParking() {
+		return this.position == BoardPlace.FreiParken.ordinal();
+	}
+
+	public boolean isJail() {
+		return this.position == BoardPlace.InJail.ordinal() || this.position == BoardPlace.GoJail.ordinal();
+	}
+
+	public boolean isStation() {
+		return this.position == BoardPlace.Bhf.ordinal() || this.position == BoardPlace.Suedbhf.ordinal()
+				|| this.position == BoardPlace.Westbhf.ordinal() || this.position == BoardPlace.Nordbhf.ordinal();
+	}
+	
+	public boolean isFactory() {
+		return this.position == BoardPlace.EWerk.ordinal() || this.position == BoardPlace.Wasser.ordinal();
+	}
+
+	public boolean isBuyable() {
+		return !(this.isJail() || this.isFreeParking() || this.isChance() || this.isCommunity() || this.isTax());
+	}
+
 }

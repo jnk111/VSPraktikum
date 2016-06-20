@@ -21,6 +21,7 @@ import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.client.model.MyCallback;
 import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.ShowMessageThread;
@@ -343,6 +344,18 @@ public class GameController {
 				eventText = event.getPlayer() + " hat ein Grundstueck verkauft.";
 			} else if(event.getType().equals(EventTypes.MUTEX_CHANGE.getType())){
 				eventText = "Der Mutex wurde dem nächsten Spieler übergeben.";
+			} else if(event.getType().equals(EventTypes.TRADE_REQ.getType())){
+				String grundstück = event.getRessource();
+				new ShowMessageThread(event.getPlayer() + " möchte ihr Grundstück " 
+				+ grundstück + " erwerben. Sind Sie damit einverstanden?", new MyCallback() {
+					
+					@Override
+					public void onReceive(Integer value) {
+						if(value == JOptionPane.YES_OPTION){
+							new ShowMessageThread("TODO NOT IMPLEMENTED").start();
+						}
+					}
+				}).start();
 			}
 			else{
 				eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();

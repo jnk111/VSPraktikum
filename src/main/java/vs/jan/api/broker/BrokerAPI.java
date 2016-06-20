@@ -24,11 +24,11 @@ import vs.jan.json.brokerservice.JSONGameURI;
 import vs.jan.json.brokerservice.JSONPlace;
 import vs.jan.model.StatusCodes;
 import vs.jan.model.boardservice.Player;
+import vs.jan.model.exception.HasNotAllPlacesOfGroupException;
 import vs.jan.model.exception.PlaceNotHasAnOwnerException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.services.broker.BrokerService;
-import vs.jan.services.broker.HasNotAllPlacesOfGroupException;
 
 public class BrokerAPI {
 

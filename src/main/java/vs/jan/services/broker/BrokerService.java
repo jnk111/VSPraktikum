@@ -25,6 +25,7 @@ import vs.jan.model.brokerservice.BoardPlace;
 import vs.jan.model.brokerservice.Broker;
 import vs.jan.model.brokerservice.Estate;
 import vs.jan.model.exception.Error;
+import vs.jan.model.exception.HasNotAllPlacesOfGroupException;
 import vs.jan.model.exception.TransactionFailedException;
 import vs.jan.model.exception.TransactionRollBackException;
 import vs.jan.services.allocator.ServiceAllocator;

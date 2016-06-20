@@ -6,7 +6,7 @@ public class ServiceList {
 	private String games;
 	private String dice;
 	private String boards;
-	private String bank;
+	private String banks;
 	private String broker;
 	private String decks;
 	private String events;
@@ -29,7 +29,7 @@ public class ServiceList {
 		this.games = game;
 		this.dice = dice;
 		this.boards = board;
-		this.bank = bank;
+		this.banks = bank;
 		this.broker = broker;
 		this.decks = decks;
 		this.events = events;
@@ -45,7 +45,7 @@ public class ServiceList {
 	}
 
 	public String getBank() {
-		return bank;
+		return banks;
 	}
 
 	public String getBroker() {
@@ -83,7 +83,7 @@ public class ServiceList {
 	}
 
 	public void setBank(String bank) {
-		this.bank = bank;
+		this.banks = bank;
 	}
 
 	public void setBroker(String broker) {
@@ -100,7 +100,7 @@ public class ServiceList {
 
 	@Override
 	public String toString() {
-		return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + boards + ", bank=" + bank + ", broker="
+		return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + boards + ", bank=" + banks + ", broker="
 				+ broker + ", decks=" + decks + ", events=" + events + "]";
 	}
 
@@ -196,7 +196,7 @@ public class ServiceList {
 		this.gamesHost = this.games.replace("/games", "");
 		this.diceHost = this.dice.replace("/dice", "");
 		this.boardHost = this.boards.replace("/boards", "");
-		this.bankHost = this.bank.replace("/banks", "");
+		this.bankHost = this.banks.replace("/banks", "");
 		this.brokerHost = this.broker.replace("/broker", "");
 		this.decksHost = this.decks.replace("/decks", "");
 		this.eventsHost = this.events.replace("/events", "");

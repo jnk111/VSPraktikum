@@ -1,4 +1,4 @@
-package vs.jan.services.broker;
+package vs.jan.model.exception;
 
 public class HasNotAllPlacesOfGroupException extends Exception {
 

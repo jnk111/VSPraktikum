@@ -121,7 +121,7 @@ public class BrokerService {
 		RentTransaction rent = null;
 
 		try {
-			if (owner != null && !owner.equals(player) && !place.isHypo() && place.isStreet()) {
+			if (owner != null && !owner.equals(player) && !place.isHypo() && place.isBuyable()) {
 				int amount = place.getRent().get(place.getHouses());
 				rent = new RentTransaction(player, owner, amount, this.services.getBank(), gameid, place);
 				rent.execute();

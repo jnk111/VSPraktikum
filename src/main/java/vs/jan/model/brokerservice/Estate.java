@@ -344,8 +344,8 @@ public class Estate implements Convertable<JSONPlace>, Updatable<JSONPlace> {
 	}
 
 	public boolean isCommunity() {
-		return this.position == BoardPlace.Ereignis1.ordinal() || this.position == BoardPlace.Ereignis2.ordinal()
-				|| this.position == BoardPlace.Ereignis3.ordinal();
+		return this.position == BoardPlace.Gemeinschaft1.ordinal() || this.position == BoardPlace.Gemeinschaft2.ordinal()
+				|| this.position == BoardPlace.Gemeinschaft3.ordinal();
 	}
 
 	public boolean isChance() {

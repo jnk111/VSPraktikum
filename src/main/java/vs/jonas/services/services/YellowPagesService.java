@@ -86,7 +86,7 @@ public class YellowPagesService {
 		for (String uri : services.getServices()) {
 			JsonObject body = RestClient.get(YELLOW_SERVICE_IP + uri);
 			JSONService service = new Gson().fromJson(body.toString(), JSONService.class);
-//			System.out.println("Fetch Service: " + service.getService());
+			System.out.println("Fetch Service: " + service.getService());
 			this.services.put(service.getService(), service);
 		}
 		

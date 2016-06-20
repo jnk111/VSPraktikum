@@ -368,6 +368,7 @@ public class RestopolyClient {
 						places.add(placeWithWholeInformation);
 					}
 				} catch (UnirestException e) {
+					e.printStackTrace();
 				}
 				}
 		}

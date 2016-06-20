@@ -42,7 +42,7 @@ public class GamesService {
 
 	private final boolean DEBUG_MODE = true; // Zu Testzwecken: Konsolenausgaben
 																						// aktivieren
-	private final boolean LOCAL = true; // Zu Testzwecken: LOCAL auf true, wenn
+	private final boolean LOCAL = false; // Zu Testzwecken: LOCAL auf true, wenn
 																			// alle Services lokal laufen sollen
 
 	// **************************PREFIXES************************** //

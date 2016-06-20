@@ -21,8 +21,6 @@ public class BuyTransaction extends Transaction {
 		this.bankUri = bankUri;
 		this.gameId = gameId;
 		this.place = place;
-		this.fromAcc = BrokerHelper.getAccount(player.getAccount());
-		this.history = new BuyTransaction(this);
 	}
 
 	public BuyTransaction(BuyTransaction trans) {
@@ -37,7 +35,9 @@ public class BuyTransaction extends Transaction {
 
 	@Override
 	public void execute() throws TransactionFailedException {
-
+		this.fromAcc = BrokerHelper.getAccount(this.from.getAccount());
+		this.history = new BuyTransaction(this);
+		
 		try {
 
 			JSONAccount accFrom = BrokerHelper.getAccount(this.from.getAccount());

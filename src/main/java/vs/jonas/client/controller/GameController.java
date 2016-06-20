@@ -4,7 +4,12 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -21,6 +26,7 @@ import vs.jonas.client.json.Place;
 import vs.jonas.client.json.PlayerInformation;
 import vs.jonas.client.json.PlayerResponse;
 import vs.jonas.client.json.User;
+import vs.jonas.client.model.MyCallback;
 import vs.jonas.client.model.Player;
 import vs.jonas.client.model.RestopolyClient;
 import vs.jonas.client.model.ShowMessageThread;
@@ -53,7 +59,8 @@ public class GameController {
 	private User user;
 	private int PORT = 4777;
 	private String ip;
-//	private final String PROTOCOL = "http://";
+	private final String HTTP_PROTOCOL = "http://";
+	private final String HTTPS_PROTOCOL = "https://";
 	private Gson gson;
 	
 	/**
@@ -69,19 +76,33 @@ public class GameController {
 		this.gameID = gameID;
 		this.user = user;
 		this.gson = new Gson();
-//		URL url = new URL("http://checkip.amazonaws.com/");
-//		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-//		String ipadress = br.readLine();
-//		this.ip = ipadress;//InetAddress.getLocalHost().getHostAddress();
+//		try {
+//			URL url = new URL("http://checkip.amazonaws.com/");
+//			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+//			String ipadress = br.readLine();
+//			this.ip = ipadress;//
+//			System.out.println("IP über InetAdress.getLocalHost: " +InetAddress.getLocalHost().getHostAddress());
+//			System.out.println("IP-Adresse:" + this.ip);
+//		} catch (MalformedURLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		this.ip = JOptionPane.showInputDialog("IP Andresse angeben: (z.b. localhost oder 192.168.99.100");
 		String port = JOptionPane.showInputDialog("Port angeben: (z.B. 4777");
 		if(this.ip == null || port == null){
 			ui.getFrame().dispose();
 			JOptionPane.showMessageDialog(null, "Einige Angaben waren leer. Das Programm wurde beendet.");
 		}
-//		this.ip = "192.168.255.18";
 		this.PORT = Integer.valueOf(port);
-		this.user.setUri("http://" + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
+//		this.ip = "192.168.255.18"; // im Docker-VPN 
+//		this.ip = "141.22.34.15"; // amazonaws im Docker VPN
+//		this.ip = "169.254.41.219"; // im Docker-VPN InetAdress.getLocalHost().getHostAdress()
+//		this.ip = 172.0.0.3 // den IPService fragen
+		
+		this.user.setUri(HTTP_PROTOCOL + this.ip + ":" +this.PORT + SLASH_CLIENT + "/" + user.getName());
 		startClientService();
 		client.enterGame(this.gameID, this.user);
 		initialisiereUI();
@@ -91,6 +112,11 @@ public class GameController {
 		Spark.port(this.PORT);
 		
 		Spark.ipAddress(ip);
+		
+		Spark.get("", (req,res) -> {
+			return "Hello from " + user.getName();
+		});
+		
 		Spark.get(SLASH_CLIENT, (req, res) -> {
 			System.out.println("Received request for route /client from: "+req.ip());
 			return new Gson().toJson(user);
@@ -180,10 +206,10 @@ public class GameController {
 				try {
 					ui.getSpielStartenMenuItem().setEnabled(false);
 					client.setReady(gameID, user);
-					if(client.allPlayersReady(gameID)){
-						client.startGame(gameID);
-						JOptionPane.showMessageDialog(null, "Das Spiel wurde gestartet.");
-					}
+//					if(client.allPlayersReady(gameID)){
+//						client.startGame(gameID);
+//						JOptionPane.showMessageDialog(null, "Das Spiel wurde gestartet.");
+//					}
 					updateGame();
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -343,6 +369,18 @@ public class GameController {
 				eventText = event.getPlayer() + " hat ein Grundstueck verkauft.";
 			} else if(event.getType().equals(EventTypes.MUTEX_CHANGE.getType())){
 				eventText = "Der Mutex wurde dem nächsten Spieler übergeben.";
+			} else if(event.getType().equals(EventTypes.TRADE_REQ.getType())){
+				String grundstück = event.getRessource();
+				new ShowMessageThread(event.getPlayer() + " möchte ihr Grundstück " 
+				+ grundstück + " erwerben. Sind Sie damit einverstanden?", new MyCallback() {
+					
+					@Override
+					public void onReceive(Integer value) {
+						if(value == JOptionPane.YES_OPTION){
+							new ShowMessageThread("TODO NOT IMPLEMENTED").start();
+						}
+					}
+				}).start();
 			}
 			else{
 				eventText = "Unimplemented: " + event + " Ausgeloest durch: " + event.getPlayer();

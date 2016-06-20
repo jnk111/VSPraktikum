@@ -3,6 +3,8 @@ package vs.jonas.client.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JOptionPane;
+
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import vs.jonas.client.json.Place;
@@ -36,7 +38,14 @@ public class FieldController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					client.buyEstate(gameID, place, user);
+					Place currentPlace = client.getCurrentPlace(gameID, user.getName());
+					if(currentPlace.getName().equals(place.getName())){
+						client.buyEstate(gameID, place, user);
+						ui.getFrame().dispose();
+					} else{
+						JOptionPane.showMessageDialog(null, "Du kannst nur ein Grundstück erwerben,"
+								+ " wenn Du dich auch auf dem Grundstück befindest!");
+					}
 				} catch (UnirestException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

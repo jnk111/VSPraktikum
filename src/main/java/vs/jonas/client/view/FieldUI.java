@@ -160,5 +160,9 @@ public class FieldUI {
 	public JButton getBtnKaufen() {
 		return btnKaufen;
 	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
 	
 }

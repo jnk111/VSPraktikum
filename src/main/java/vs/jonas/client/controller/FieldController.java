@@ -68,7 +68,7 @@ public class FieldController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					client.takeHypothecaryCredit(place.getBroker());
+					client.takeHypothecaryCredit(place.getBroker(),user.getPlayerUri());
 				} catch (UnirestException e1) {
 					//TODO
 					e1.printStackTrace();

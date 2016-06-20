@@ -31,7 +31,6 @@ import vs.jonas.client.utils.EventTypes;
 import vs.jonas.client.utils.JailReasonGenerator;
 import vs.jonas.client.view.FieldUI;
 import vs.jonas.client.view.GameUI;
-import vs.jonas.exceptions.EstateAlreadyOwnedException;
 import vs.jonas.exceptions.NotExpectedStatusCodeException;
 import vs.jonas.exceptions.PlayerDoesNotHaveTheMutexException;
 import vs.jonas.exceptions.PlayerHasAlreadyRolledTheDiceException;
@@ -143,22 +142,7 @@ public class GameController {
 	/**
 	 * Registriert die Listener an der UI
 	 */
-	private void registriereActionListener() {		
-//		ui.getAktionAusfuehrenBtn().addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				JComboBox<String> aktionen = ui.getAktionen();
-//				switch(aktionen.getSelectedItem().toString()){
-//				case "Wuerfeln": rollDice();break;
-//				case "Kaufen": buy(); break;
-//				case "Verkaufen": sell(); break;
-////				case "Ereigniskarte spielen": playChanceCard(); break;
-//				case "Zug beenden": finishRound();break;
-//				}
-//			}
-//		});
-		
+	private void registriereActionListener() {				
 		ui.getLblWrfeln().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
@@ -281,32 +265,6 @@ public class GameController {
 		} 
 	}
 	
-	private void buy(){
-		try{
-			Place currentPlace = client.getCurrentPlace(gameID, user.getName());
-			client.buyEstate(gameID,currentPlace,user);
-			ImageIcon yeahImage = new ImageIcon(GameController.class.getResource("/yes.gif"));
-			JLabel label1 = new JLabel("So wird's gemacht!",yeahImage, JLabel.CENTER);
-			label1.setVerticalTextPosition(JLabel.BOTTOM);
-			label1.setHorizontalTextPosition(JLabel.CENTER);
-			JOptionPane.showMessageDialog(null,label1);
-		} catch (UnirestException e1) {
-			e1.printStackTrace();
-		} catch (EstateAlreadyOwnedException e1) {
-			e1.printStackTrace();
-		}
-	}
-	
-	private void sell(){
-		//TODO
-		System.err.println("Dummy: Sell");
-	}
-	
-//	private void playChanceCard(){
-//		//TODO
-//		System.err.println("Dummy: PlayChanceCard");
-//	}
-	
 	private void finishRound(){
 		try {
 			client.setReady(gameID, user);
@@ -364,6 +322,13 @@ public class GameController {
 				eventText = event.getPlayer() + " ist auf dem Feld " + event.getRessource() + " gelandet.";
 			} else if(event.getType().equals(EventTypes.BUY_PLACE.getType())){
 				eventText = event.getPlayer() + " hat ein Grundstueck gekauft.";
+				if(event.getPlayer().equals(user.getPlayerUri())){
+					ImageIcon yeahImage = new ImageIcon(GameController.class.getResource("/yes.gif"));
+					JLabel label1 = new JLabel("So wird's gemacht!",yeahImage, JLabel.CENTER);
+					label1.setVerticalTextPosition(JLabel.BOTTOM);
+					label1.setHorizontalTextPosition(JLabel.CENTER);
+					new ShowMessageThread(label1).start();
+				}
 			} else if(event.getType().equals(EventTypes.GOT_MONEY_ALL_PLAYERS.getType())){
 				eventText = event.getPlayer() + " wurde von seinen Mitspielern mit Geld ueberschuettet.";
 			} else if(event.getType().equals(EventTypes.GOT_MONEY_FROM_BANK.getType())){

@@ -397,12 +397,12 @@ public class RestopolyClient {
 	 * @param placeBrokerUri
 	 * @throws UnirestException
 	 */
-	public void takeHypothecaryCredit(String placeBrokerUri) throws UnirestException {
+	public void takeHypothecaryCredit(String placeBrokerUri, String playerUri) throws UnirestException {
 		System.out.println("Take HypothecaryCredit...");
 		String brokerUri = brokerService.getUri();
 		String tradeRequestUri = brokerUri.replaceAll("/broker", "") + placeBrokerUri + SLASH_HYPOTHECARYCREDIT;
 		
-		HttpResponse<String> response = Unirest.put(tradeRequestUri).asString();
+		HttpResponse<String> response = Unirest.put(tradeRequestUri).body(gson.toJson(playerUri)).asString();
 		System.out.println("Received Response: " + response.getBody() + " " + response.getStatus());
 	}
 	

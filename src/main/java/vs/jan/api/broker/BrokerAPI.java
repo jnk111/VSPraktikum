@@ -72,6 +72,7 @@ public class BrokerAPI {
 		initPUTRegisterPlace();
 		initPUTTradePlace();
 		initPUTTakeHypothecaryCredit();
+		initPUTRejectTradeRequest();
 	}
 
 	private void initDELETE() {
@@ -105,6 +106,14 @@ public class BrokerAPI {
 			return GSON.toJson(list);
 		});
 	}
+	
+	private void initPUTRejectTradeRequest() {
+		put("/broker/:gameid/places/:placeid/trade/:pawnid", CONTENT_TYPE, (req, resp) -> {
+			service.rejectTradeRequest(req.params(":gameid"), req.params(":placeid"), req.params(":pawnid"), req.pathInfo());
+			return StatusCodes.SUCCESS + CLRF;
+		});
+	}
+
 
 	// Handler-Initialisieren
 	// --------------------------------------------------------------------------------------

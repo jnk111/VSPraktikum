@@ -423,4 +423,19 @@ public class BrokerService {
 			BrokerHelper.broadCastEvent(event);
 		}
 	}
+
+	public void rejectTradeRequest(String gameid, String placeid, String pawnid, String ressource) {
+		Broker broker = BrokerHelper.getBroker(this.brokers, gameid);
+		Estate place = BrokerHelper.getPlace(broker, placeid);
+		Player owner = place.getOwner();
+		String ownerId = BrokerHelper.getID(owner.getId());
+		
+		if(!ownerId.equals(pawnid)) {
+			String type = EventTypes.REJ_TRADE_REQUEST.getType();
+			JSONEvent event = new JSONEvent(gameid, type, type, type, ressource, owner.getId());
+			BrokerHelper.postEvent(event);
+			BrokerHelper.broadCastEvent(event);
+		}
+		
+	}
 }

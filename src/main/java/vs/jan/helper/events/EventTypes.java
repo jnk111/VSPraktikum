@@ -11,7 +11,8 @@ public enum EventTypes {
 													"cannotpaymoney"), MUTEX_CHANGE("mutexchanged"), GAME_STARTED("gamestarted"), CANNOT_PAY_TAX(
 															"cannotpaytax"), PAYED_TAX("payedtax"), TRADE_REQ("tradereq"), BUY_HOUSE(
 																	"buyedhouse"), CANNOT_BUY_HOUSE("cannotbuyhouse"), MAX_HOUSES(
-																			"maxhouses"), CANNOT_BUY_HOUSE_GROUP("hasnotallplacesofgroup");
+																			"maxhouses"), CANNOT_BUY_HOUSE_GROUP("hasnotallplacesofgroup"), REJ_TRADE_REQUEST(
+																					"tradereqrejected");
 
 	private String type;
 

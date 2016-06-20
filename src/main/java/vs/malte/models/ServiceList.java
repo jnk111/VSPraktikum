@@ -8,7 +8,7 @@ public class ServiceList
     private String games;
     private String dice;
     private String boards;
-    private String bank;
+    private String banks;
     private String broker;
     private String decks;
     private String events;
@@ -19,7 +19,7 @@ public class ServiceList
         this.games = game;
         this.dice = dice;
         this.boards = board;
-        this.bank = bank;
+        this.banks = bank;
         this.broker = broker;
         this.decks = decks;
         this.events = events;
@@ -46,7 +46,7 @@ public class ServiceList
 
     public String getBank()
     {
-        return bank;
+        return banks;
     }
 
     public String getBroker()
@@ -82,8 +82,8 @@ public class ServiceList
         if ( boards != null )
             services.put( "boards", boards );
 
-        if ( bank != null )
-            services.put( "bank", bank );
+        if ( banks != null )
+            services.put( "bank", banks );
 
         if ( broker != null )
             services.put( "broker", broker );
@@ -117,8 +117,8 @@ public class ServiceList
         if ( newServices.containsKey( "boards" ) && this.boards == null )
             setBoard( newServices.get( "boards" ) );
 
-        if ( newServices.containsKey( "bank" ) && this.bank == null )
-            setBank( newServices.get( "bank" ) );
+        if ( newServices.containsKey( "banks" ) && this.banks == null )
+            setBank( newServices.get( "banks" ) );
 
         if ( newServices.containsKey( "broker" ) && this.broker == null )
             setBroker( newServices.get( "broker" ) );
@@ -151,7 +151,7 @@ public class ServiceList
 
     public void setBank( String bank )
     {
-        this.bank = bank;
+        this.banks = bank;
     }
 
     public void setBroker( String broker )
@@ -175,7 +175,7 @@ public class ServiceList
         return "ServiceList [game=" + games + ",\n"
                 + " dice=" + dice + ",\n"
                 + " board=" + boards + ",\n"
-                + " bank=" + bank + ",\n"
+                + " bank=" + banks + ",\n"
                 + " broker=" + broker + ",\n"
                 + " decks=" + decks + ",\n"
                 + " events=" + events + "]";

@@ -100,7 +100,7 @@ public class ServiceList {
 
 	@Override
 	public String toString() {
-		return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + boards + ", bank=" + banks + ", broker="
+		return "ServiceList [game=" + games + ", dice=" + dice + ", board=" + boards + ", banks=" + banks + ", broker="
 				+ broker + ", decks=" + decks + ", events=" + events + "]";
 	}
 

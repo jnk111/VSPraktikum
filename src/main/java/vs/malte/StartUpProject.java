@@ -12,7 +12,7 @@ import vs.malte.services.GamesServiceAPI;
 
 public class StartUpProject
 {
-    private static final boolean LOCAL = false;
+    private static final boolean LOCAL = true;
 
     public static void main( String[] args )
     {

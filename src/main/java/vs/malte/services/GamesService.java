@@ -176,7 +176,7 @@ public class GamesService {
 			newServices.put("games", "http://localhost:4567/games");
 			newServices.put("dice", "http://localhost:4567/dice");
 			newServices.put("boards", "http://localhost:4567/boards");
-			newServices.put("bank", "http://localhost:4567/banks");
+			newServices.put("banks", "http://localhost:4567/banks");
 			newServices.put("broker", "http://localhost:4567/broker");
 			newServices.put("decks", "http://localhost:4567/decks");
 			newServices.put("events", "http://localhost:4567/events");

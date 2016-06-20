@@ -17,7 +17,7 @@ public class ServiceAllocator {
 		System.out.println("Gameservice URI: " + serviceUri);
 		String json = HttpService.get(serviceUri, HttpURLConnection.HTTP_OK);
 		ServiceList list = GSON.fromJson(json, ServiceList.class);
-		
+		System.out.println("LISTE: " + list);
 		// Temp
 		list.setClient("http://localhost:4567/client");
 		list.initializeHosts();

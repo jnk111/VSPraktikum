@@ -85,7 +85,7 @@ public class PlayerUI {
 		lblOwnerresult.setForeground(Color.BLACK);
 		panel_1.add(lblOwnerresult);
 		
-		JLabel lblDiceRoll = new JLabel("~ DiceRoll:");
+		JLabel lblDiceRoll = new JLabel("Durchschnittliches Würfelergebnis:");
 		lblDiceRoll.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblDiceRoll.setForeground(Color.BLACK);
 		lblDiceRoll.setHorizontalAlignment(SwingConstants.CENTER);
@@ -95,7 +95,7 @@ public class PlayerUI {
 		lblResultDiceRoll.setForeground(Color.BLACK);
 		panel_1.add(lblResultDiceRoll);
 		
-		JLabel lblPlaceValue = new JLabel("~ Place Value:");
+		JLabel lblPlaceValue = new JLabel("Durchschnittlicher Grundstückswert:");
 		lblPlaceValue.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblPlaceValue.setForeground(Color.BLACK);
 		lblPlaceValue.setHorizontalAlignment(SwingConstants.CENTER);
@@ -106,7 +106,7 @@ public class PlayerUI {
 		lblResultPlaceValue.setForeground(Color.BLACK);
 		panel_1.add(lblResultPlaceValue);
 		
-		JLabel lblrent = new JLabel("~ Place Rent:");
+		JLabel lblrent = new JLabel("Durschnittlicher Mietpreis:");
 		lblrent.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblrent.setForeground(Color.BLACK);
 		lblrent.setHorizontalAlignment(SwingConstants.CENTER);
@@ -117,18 +117,7 @@ public class PlayerUI {
 		lblRentResult.setForeground(Color.BLACK);
 		panel_1.add(lblRentResult);
 		
-		JLabel lblCost = new JLabel("~ Place Cost:");
-		lblCost.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		lblCost.setForeground(Color.BLACK);
-		lblCost.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblCost);
-		
-		JLabel lblResultCost = new JLabel(player.getAveragePlaceCostValue()+ " Rubel");
-		lblResultCost.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		lblResultCost.setForeground(Color.BLACK);
-		panel_1.add(lblResultCost);
-		
-		JLabel lblHouses = new JLabel("~ Houses:");
+		JLabel lblHouses = new JLabel("Durchschnittliche Anzahl Häuser:");
 		lblHouses.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblHouses.setForeground(Color.BLACK);
 		lblHouses.setHorizontalAlignment(SwingConstants.CENTER);

@@ -1,8 +1,8 @@
 package vs.jonas.client.json;
 
-import com.google.gson.Gson;
-
 import java.util.List;
+
+import com.google.gson.Gson;
 
 /**
  * Created by Jones on 24.05.2016.

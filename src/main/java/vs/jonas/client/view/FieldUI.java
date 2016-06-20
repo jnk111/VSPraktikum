@@ -1,10 +1,14 @@
 package vs.jonas.client.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,16 +16,15 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
 import vs.jonas.client.json.Place;
-import java.awt.SystemColor;
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.JButton;
 
 public class FieldUI {
 
 	private JFrame frame;
+	private JButton btnHausKaufen;
+	private JButton btnHypothekAufnehmen;
+	private JButton btnKaufen;
 	
-	public FieldUI(Place place){
+	public FieldUI(Place place, boolean isClient){
 		frame = new JFrame(place.getName());
 		frame.getContentPane().setBackground(SystemColor.inactiveCaption);
 		frame.setSize(300, 450);
@@ -54,64 +57,80 @@ public class FieldUI {
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(SystemColor.inactiveCaption);
 		splitPane.setRightComponent(panel_1);
-		panel_1.setLayout(new GridLayout(0, 2, 5, 5));
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(SystemColor.inactiveCaption);
+		panel_1.add(panel_2);
+		panel_2.setLayout(new GridLayout(0, 2, 0, 0));
 		
 		JLabel lblOwner = new JLabel("Owner:");
+		panel_2.add(lblOwner);
 		lblOwner.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblOwner.setForeground(Color.BLACK);
 		lblOwner.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblOwner);
 		JLabel lblOwnerresult = new JLabel(place.getOwner());
+		panel_2.add(lblOwnerresult);
 		lblOwnerresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblOwnerresult.setForeground(Color.BLACK);
-		panel_1.add(lblOwnerresult);
 		
 		JLabel lblValue = new JLabel("Value:");
+		panel_2.add(lblValue);
 		lblValue.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblValue.setForeground(Color.BLACK);
 		lblValue.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblValue);
 		JLabel lblValueresult = new JLabel(place.getValue()+" Rubel");
+		panel_2.add(lblValueresult);
 		lblValueresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblValueresult.setForeground(Color.BLACK);
-		panel_1.add(lblValueresult);
 		
 		JLabel lblRent = new JLabel("Rent:");
+		panel_2.add(lblRent);
 		lblRent.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblRent.setForeground(Color.BLACK);
 		lblRent.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblRent);
 		JLabel lblRentresult = new JLabel(place.getRent()+" Rubel");
+		panel_2.add(lblRentresult);
 		lblRentresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblRentresult.setForeground(Color.BLACK);
-		panel_1.add(lblRentresult);
 		
 		JLabel lblHouses = new JLabel("Houses:");
+		panel_2.add(lblHouses);
 		lblHouses.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblHouses.setForeground(Color.BLACK);
 		lblHouses.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblHouses);
 		JLabel lblHousesresult = new JLabel(place.getHouses()+"");
+		panel_2.add(lblHousesresult);
 		lblHousesresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblHousesresult.setForeground(Color.BLACK);
 		lblHousesresult.setHorizontalAlignment(SwingConstants.LEFT);
-		panel_1.add(lblHousesresult);
 		
 		JLabel lblCost = new JLabel("Cost:");
+		panel_2.add(lblCost);
 		lblCost.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblCost.setForeground(Color.BLACK);
 		lblCost.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblCost);
 		JLabel lblCostresult = new JLabel(place.getCost()+" Rubel");
+		panel_2.add(lblCostresult);
 		lblCostresult.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblCostresult.setForeground(Color.BLACK);
-		panel_1.add(lblCostresult);
 		
-		JButton btnKaufen = new JButton("Kaufen");
-		panel_1.add(btnKaufen);
+		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(SystemColor.inactiveCaption);
+		panel_1.add(panel_3, BorderLayout.SOUTH);
 		
-		JButton btnVerkaufen = new JButton("Verkaufen");
-		panel_1.add(btnVerkaufen);
+		btnHausKaufen = new JButton("Haus Kaufen");
+		btnHypothekAufnehmen = new JButton("Hypothek Aufnehmen");
+		btnKaufen = new JButton("Kaufen");
+		
+		if(isClient){
+			panel_3.add(btnHausKaufen);
+			panel_3.add(btnHypothekAufnehmen);
+		} else{
+			panel_3.add(btnKaufen);
+		}
+		
+		
 		splitPane.setDividerLocation(200);
 	}
 	
@@ -129,4 +148,17 @@ public class FieldUI {
 	public void showUI(){
 		frame.setVisible(true);
 	}
+
+	public JButton getBtnHausKaufen() {
+		return btnHausKaufen;
+	}
+
+	public JButton getBtnHypothekAufnehmen() {
+		return btnHypothekAufnehmen;
+	}
+
+	public JButton getBtnKaufen() {
+		return btnKaufen;
+	}
+	
 }

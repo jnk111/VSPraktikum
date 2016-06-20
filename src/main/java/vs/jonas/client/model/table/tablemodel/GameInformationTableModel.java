@@ -1,12 +1,13 @@
 package vs.jonas.client.model.table.tablemodel;
 
-import vs.jonas.client.json.GameResponse;
-import vs.jonas.client.model.comparator.GameNumberOfPlayerComparator;
-
-import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
+
+import vs.jonas.client.json.GameResponse;
+import vs.jonas.client.model.comparator.GameNumberOfPlayerComparator;
 
 @SuppressWarnings("serial")
 /**

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -145,21 +144,50 @@ public class GameController {
 	 * Registriert die Listener an der UI
 	 */
 	private void registriereActionListener() {		
-		ui.getAktionAusfuehrenBtn().addActionListener(new ActionListener() {
+//		ui.getAktionAusfuehrenBtn().addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				JComboBox<String> aktionen = ui.getAktionen();
+//				switch(aktionen.getSelectedItem().toString()){
+//				case "Wuerfeln": rollDice();break;
+//				case "Kaufen": buy(); break;
+//				case "Verkaufen": sell(); break;
+////				case "Ereigniskarte spielen": playChanceCard(); break;
+//				case "Zug beenden": finishRound();break;
+//				}
+//			}
+//		});
+		
+		ui.getLblWrfeln().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JComboBox<String> aktionen = ui.getAktionen();
-				switch(aktionen.getSelectedItem().toString()){
-				case "Wuerfeln": rollDice();break;
-				case "Kaufen": buy(); break;
-				case "Verkaufen": sell(); break;
-				case "Ereigniskarte spielen": playChanceCard(); break;
-				case "Zug beenden": finishRound();break;
-				}
+			public void mouseReleased(MouseEvent e) {
+				rollDice();
 			}
 		});
 		
+		ui.getLblPlayerOverview().addMouseListener(new MyTableMouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				try {
+					Player player = client.getPlayer(gameID,user.getPlayerUri());
+					new PlayerController(client,player,gameID,user);
+					System.err.println("A Player was selected: " + player);			
+				} catch (UnirestException e1) {
+					e1.printStackTrace();
+				}				
+			}
+		});
+		
+		ui.getLblSpielzugBeenden().addMouseListener(new MyTableMouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				finishRound();
+			}
+		});
 		
 		ui.getSpielStartenMenuItem().addActionListener(new ActionListener() {
 			
@@ -173,14 +201,13 @@ public class GameController {
 						JOptionPane.showMessageDialog(null, "Das Spiel wurde gestartet.");
 					}
 					updateGame();
-//					startEventCheckerThread();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
 		
-		ui.getPlayerTable().addMouseListener(new MyTableMouseListener(this) {
+		ui.getPlayerTable().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -190,7 +217,7 @@ public class GameController {
 				
 				try {
 					Player player = client.getPlayerWithWholeInformation(gameID,playerInformation);
-					new PlayerController(this.getController(),player);
+					new PlayerController(client,player,gameID,user);
 					System.err.println("A Player was selected: " + player);			
 				} catch (UnirestException e1) {
 					e1.printStackTrace();
@@ -199,7 +226,7 @@ public class GameController {
 			}
 		});
 		
-		ui.getGameFieldTable().addMouseListener(new MyTableMouseListener(this) {
+		ui.getGameFieldTable().addMouseListener(new MyTableMouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -208,9 +235,9 @@ public class GameController {
 				Place place = model.getPlace(row);
 				
 				try {
-					Place placeWithWholeInformation = client.getPlace(gameID, place.getID());
+					Place placeWithWholeInformation = client.getPlace(place.getID());
 					if(placeWithWholeInformation.getValue() != 0){
-						new FieldUI(placeWithWholeInformation).showUI();
+						new FieldController(client,placeWithWholeInformation,user,gameID);
 					}
 				} catch (UnirestException e1) {
 					e1.printStackTrace();
@@ -255,18 +282,18 @@ public class GameController {
 	}
 	
 	private void buy(){
-		try {
-			client.buyEstate(gameID, user);
-			ImageIcon yeahImage = new ImageIcon(FieldUI.class.getResource("/yes.gif"));
+		try{
+			Place currentPlace = client.getCurrentPlace(gameID, user.getName());
+			client.buyEstate(gameID,currentPlace,user);
+			ImageIcon yeahImage = new ImageIcon(GameController.class.getResource("/yes.gif"));
 			JLabel label1 = new JLabel("So wird's gemacht!",yeahImage, JLabel.CENTER);
-			//Set the position of the text, relative to the icon:
 			label1.setVerticalTextPosition(JLabel.BOTTOM);
 			label1.setHorizontalTextPosition(JLabel.CENTER);
 			JOptionPane.showMessageDialog(null,label1);
-		} catch (EstateAlreadyOwnedException e) {
-			JOptionPane.showMessageDialog(null, "Das Grundstück wurde bereits verkauft.");
-		} catch (UnirestException ex) {
-			ex.printStackTrace();
+		} catch (UnirestException e1) {
+			e1.printStackTrace();
+		} catch (EstateAlreadyOwnedException e1) {
+			e1.printStackTrace();
 		}
 	}
 	
@@ -275,10 +302,10 @@ public class GameController {
 		System.err.println("Dummy: Sell");
 	}
 	
-	private void playChanceCard(){
-		//TODO
-		System.err.println("Dummy: PlayChanceCard");
-	}
+//	private void playChanceCard(){
+//		//TODO
+//		System.err.println("Dummy: PlayChanceCard");
+//	}
 	
 	private void finishRound(){
 		try {
@@ -364,17 +391,4 @@ public class GameController {
 			e.printStackTrace();
 		}
 	}
-
-	public void buyRequest(Place place) {
-		try {
-			client.sendTradeRequest(gameID, place.getBroker(), user.getName());
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public User getUser(){
-		return user;
-	}
-
 }

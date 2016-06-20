@@ -4,7 +4,7 @@ public class User {
 
 	private String uri;
 	private String user;
-	private String playerUri; // nicht Raml-konform.. wird aber dennoch benötigt. ;)
+	private String playerUri; // nicht Raml-konform.. wird aber dennoch benï¿½tigt. ;)
 
 	public User(String name) {
 		this.user = name;
@@ -33,6 +33,11 @@ public class User {
 
 	public void setPlayerUri(String playerUri) {
 		this.playerUri = playerUri;
+	}
+
+	@Override
+	public String toString() {
+		return "User [uri=" + uri + ", user=" + user + ", playerUri=" + playerUri + "]";
 	}
 	
 	

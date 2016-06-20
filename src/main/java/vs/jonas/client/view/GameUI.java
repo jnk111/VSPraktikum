@@ -6,8 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -42,15 +41,16 @@ public class GameUI {
 	private JSplitPane splitPane_2;
 	private JPanel panel;
 	private JPanel panel_1;
-	private JComboBox<String> aktionen;
-	private JButton btnAusfhren;
-	private JLabel lblNewLabel;
 	private JLabel userLbl;
 	private JTextArea eventsConsole;
 	private int receivedEventNumber;
 	
 	private static final Color GAMEFIELD_COLOR = new Color(204, 255, 204);
 	private static final Color TABLEHEADER_COLOR = new Color(200, 255, 190);
+	private JLabel lblWrfeln;
+	private JPanel panel_2;
+	private JLabel lblPlayerOverview;
+	private JLabel lblSpielzugBeenden;
 
 	/**
 	 * Create the frame.
@@ -126,34 +126,47 @@ public class GameUI {
 		
 		panel = new JPanel();
 		panel.setBackground(SystemColor.inactiveCaption);
-		panel.setBorder(new EmptyBorder(10, 100, 10, 100));
+		panel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		splitPane_2.setLeftComponent(panel);
-		panel.setLayout(new GridLayout(0, 1, 0, 5));
+		panel.setLayout(new BorderLayout(0, 0));
 		
 		userLbl = new JLabel("Username");
+		userLbl.setBorder(null);
 		userLbl.setForeground(Color.BLACK);
 		userLbl.setFont(new Font("Kristen ITC", Font.BOLD, 14));
 		userLbl.setHorizontalTextPosition(SwingConstants.CENTER);
 		userLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		panel.add(userLbl);
+		panel.add(userLbl, BorderLayout.NORTH);
 		
-		aktionen = new JComboBox<String>();
-		aktionen.addItem("Wuerfeln");
-		aktionen.addItem("Kaufen");
-		aktionen.addItem("Verkaufen");
-		aktionen.addItem("Ereigniskarte spielen");
-		aktionen.addItem("Zug beenden");
-		panel.add(aktionen);
+		panel_2 = new JPanel();
+		panel_2.setBackground(SystemColor.inactiveCaption);
+		panel.add(panel_2, BorderLayout.CENTER);
+		panel_2.setLayout(new GridLayout(0, 3, 0, 0));
+
+		ImageIcon dice = new ImageIcon(FieldUI.class.getResource("/dice_sprite.png"));
+		lblWrfeln = new JLabel("Würfeln",dice,JLabel.CENTER);
+		lblWrfeln.setVerticalTextPosition(JLabel.BOTTOM);
+		lblWrfeln.setHorizontalTextPosition(JLabel.CENTER);
+		panel_2.add(lblWrfeln);
 		
-		btnAusfhren = new JButton("Ausf\u00FChren");
-		panel.add(btnAusfhren);
+		ImageIcon playerImage = new ImageIcon(FieldUI.class.getResource("/stick_man.gif"));
+		lblPlayerOverview = new JLabel("Übersicht",playerImage,JLabel.CENTER);
+		lblPlayerOverview.setVerticalTextPosition(JLabel.BOTTOM);
+		lblPlayerOverview.setHorizontalTextPosition(JLabel.CENTER);
+		panel_2.add(lblPlayerOverview);
 		
+		ImageIcon zugbeenden = new ImageIcon(FieldUI.class.getResource("/finished_round.png"));
+		lblSpielzugBeenden = new JLabel("Fertig",zugbeenden,JLabel.CENTER);
+		lblSpielzugBeenden.setVerticalTextPosition(JLabel.BOTTOM);
+		lblSpielzugBeenden.setHorizontalTextPosition(JLabel.CENTER);
+		panel_2.add(lblSpielzugBeenden);
+				
 		panel_1 = new JPanel();
 		panel_1.setBackground(SystemColor.activeCaption);
 		splitPane_2.setRightComponent(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		lblNewLabel = new JLabel("Received Events:");
+		JLabel lblNewLabel = new JLabel("Received Events:");
 		lblNewLabel.setFont(new Font("Kristen ITC", Font.PLAIN, 11));
 		lblNewLabel.setForeground(Color.BLACK);
 		lblNewLabel.setBorder(new EmptyBorder(10, 0, 5, 0));
@@ -178,7 +191,7 @@ public class GameUI {
 		textPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 //		textPane.setAutoscrolls(true);
 		panel_1.add(textPane, BorderLayout.CENTER);
-		splitPane_2.setDividerLocation(100);
+		splitPane_2.setDividerLocation(180);
 		splitPane.setLeftComponent(playerPanel);
 		
 		gameFieldTable = new GameFieldTable(new GameFieldTableModel());
@@ -213,15 +226,7 @@ public class GameUI {
 	public void showUI() {
 		frame.setVisible(true);
 	}
-	
-	public JComboBox<String> getAktionen(){
-		return aktionen;
-	}
-
-	public JButton getAktionAusfuehrenBtn(){
-		return btnAusfhren;
-	}
-	
+		
 	public JTextArea getEventsConsole(){
 		return eventsConsole;
 	}
@@ -245,8 +250,22 @@ public class GameUI {
 	public void setEventNumber(int number){
 		this.receivedEventNumber = number;
 	}
-
+	
 	public JFrame getFrame() {
 		return frame;
 	}
+
+	public JLabel getLblWrfeln() {
+		return lblWrfeln;
+	}
+
+	public JLabel getLblPlayerOverview() {
+		return lblPlayerOverview;
+	}
+
+	public JLabel getLblSpielzugBeenden() {
+		return lblSpielzugBeenden;
+	}
+	
+	
 }

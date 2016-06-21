@@ -1,0 +1,35 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english,german]{babel}
+\usepackage{tikz}
+
+\usetikzlibrary{shapes.geometric, arrows, positioning}
+
+\tikzstyle{box}   = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\begin{document}
+
+\section{Ausgangssituation:}
+\begin{itemize}
+    \item Es existiert das Spiel /games/foo
+    \item Clientservice \#2 ist bereits dem Spiel begetreten
+    \item Das Spiel ist noch nicht gestartet (weitere Spiele können beitreten)
+\end{itemize}
+
+\section{Diagramm:}
+\begin{tikzpicture}[node distance=5cm]
+    \node (client1)      [box]                            {Clientservice \#1};
+    \node (gameservice)  [box, right= 5cm of client1]     {Gameservice};
+    \node (eventservice) [box, below of=gameservice]      {Eventservice};
+    \node (client2)      [box, left= 5cm of eventservice] {Clientservice \#2};
+    \node (gui)          [box, below of=client2]          {GUI (Client \#2)};
+
+    \draw [arrow] (client1)      -- node[anchor=south] {Betritt Spiel /games/foo}   (gameservice);
+    \draw [arrow] (gameservice)  -- node[anchor=east]  {Erstellt Event über Beitritt}  (eventservice);
+    \draw [arrow] (eventservice) -- node[anchor=north] {Informiert über das Event}     (client2);
+    \draw [arrow] (client2)      -- node[anchor=west]  {Aktualisiert Spielerliste}     (gui);
+\end{tikzpicture}
+
+\end{document}

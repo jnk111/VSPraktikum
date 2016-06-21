@@ -57,7 +57,7 @@ public class GameController {
 	private int PORT = 4777;
 	private String ip;
 	private final String HTTP_PROTOCOL = "http://";
-	private final String HTTPS_PROTOCOL = "https://";
+//	private final String HTTPS_PROTOCOL = "https://";
 	private Gson gson;
 	
 	/**
@@ -138,22 +138,37 @@ public class GameController {
 		
 		Events events = new Events();
 		String[] eventData = {
-				EventTypes.MOVE_PAWN.getType(),
+				// 
 				EventTypes.GAME_STARTED.getType(),
+				EventTypes.MUTEX_CHANGE.getType(),
+				// player movement
+				EventTypes.ROLL_DICE.getType(),
+				EventTypes.MOVE_PAWN.getType(),
+				EventTypes.VISIT_PLACE.getType(),
+				EventTypes.MOVED_OVER_GO.getType(),
+				EventTypes.MOVED_TO_JAIL.getType(),
+				// player interactions
 				EventTypes.BUY_HOUSE.getType(),
 				EventTypes.BUY_PLACE.getType(),
-				EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
-				EventTypes.MOVED_OVER_GO.getType(),
-				EventTypes.VISIT_PLACE.getType(),
-				EventTypes.MUTEX_CHANGE.getType(),
-				EventTypes.MOVED_TO_JAIL.getType(),
-				EventTypes.GOT_MONEY_FROM_BANK.getType(),
 				EventTypes.PAY_RENT.getType(),
 				EventTypes.PAYED_TAX.getType(),
 				EventTypes.TAKE_HYPO.getType(),
 				EventTypes.TRADE_PLACE.getType(),
 				EventTypes.TRADE_REQ.getType(),
-				EventTypes.CANNOT_BUY_HOUSE.getType()
+				EventTypes.DELETE_HYPO.getType(),
+				// events
+				EventTypes.GOT_MONEY_ALL_PLAYERS.getType(),
+				EventTypes.GOT_MONEY_FROM_BANK.getType(),
+				EventTypes.MAX_HOUSES.getType(),
+				// errors
+				EventTypes.CANNOT_BUY_HOUSE.getType(),
+				EventTypes.CANNOT_BUY_HOUSE_GROUP.getType(),
+				EventTypes.CANNOT_BUY_PLACE.getType(),
+				EventTypes.CANNOT_DELETE_HYPO.getType(),
+				EventTypes.CANNOT_PAY_MONEY_COMMUNITY.getType(),
+				EventTypes.CANNOT_PAY_RENT.getType(),
+				EventTypes.CANNOT_PAY_TAX.getType(),
+				EventTypes.CANNOT_TRADE_PLACE.getType()
 				};
 		events.addSubscription(new SubscriptionRegisterData(gameID, user.getUri(), eventData));
 	}

@@ -105,19 +105,19 @@ public abstract class Helper {
 
 	public static void broadCastEvent(JSONEvent event) {
 
-		if (event != null) {
-
-			String json = HttpService.get(services.getUsers(), HttpURLConnection.HTTP_OK);
-
-			@SuppressWarnings("unchecked")
-			List<String> uris = GSON.fromJson(json, List.class);
-
-			for (String uri : uris) {
-				String json2 = HttpService.get(services.getUsersHost() + uri, HttpURLConnection.HTTP_OK);
-				User user = GSON.fromJson(json2, User.class);
-				HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
-			}
-		}
+//		if (event != null) {
+//
+//			String json = HttpService.get(services.getUsers(), HttpURLConnection.HTTP_OK);
+//
+//			@SuppressWarnings("unchecked")
+//			List<String> uris = GSON.fromJson(json, List.class);
+//
+//			for (String uri : uris) {
+//				String json2 = HttpService.get(services.getUsersHost() + uri, HttpURLConnection.HTTP_OK);
+//				User user = GSON.fromJson(json2, User.class);
+//				HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
+//			}
+//		}
 	}
 
 	public static ServiceList getServices() {

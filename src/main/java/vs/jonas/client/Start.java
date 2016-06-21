@@ -11,7 +11,7 @@ public class Start {
 		
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
-		YellowPagesService yellowPagesService = new YellowPagesService(true);		
+		YellowPagesService yellowPagesService = new YellowPagesService(false);		
 		 RestopolyClient client = new RestopolyClient(yellowPagesService);
 		new MenuController(client);
 	}

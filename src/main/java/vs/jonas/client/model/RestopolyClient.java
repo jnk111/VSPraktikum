@@ -360,6 +360,7 @@ public class RestopolyClient {
 			if(placeWithWholeInformation.getOwner() != null && !placeWithWholeInformation.getOwner().equals("")){
 				String brokerServiceUri = brokerService.getUri();
 				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+placeWithWholeInformation.getOwner();
+				System.out.println("BROKER OWNER URI: " + brokerPlaceOwnerUri);
 				try {
 					JsonObject ownerResponse = get(brokerPlaceOwnerUri);
 					PlayerResponse response = gson.fromJson(ownerResponse, PlayerResponse.class);

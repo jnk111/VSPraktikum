@@ -114,6 +114,7 @@ public class HttpService {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod(method);
 			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "application/json");
 			return connection;
 		} catch (MalformedURLException mfe) {
 			throw new InvalidInputException();

@@ -19,22 +19,33 @@ public class RegisterService {
 	private final static String SERVICE_URI = YELLOW_HOST_URI + "/services";
 	private final static String SO_NAME_URI = SERVICE_URI + "/of/name";
 	private final static String SERVICE_REQ_URI = SO_NAME_URI + "/" + GROUP_NAME;
+	private final static int DEFAULT_PORT = 4567;
 
-	public static void registerService(String type, String serviceUri, boolean delete) throws UnknownHostException, UnirestException {
+	public static void registerService(String type, String host, boolean delete) throws UnknownHostException, UnirestException {
 		
 		String json = HttpService.get(SERVICE_REQ_URI, HttpURLConnection.HTTP_OK);
 		JSONServiceURIs uris = CONVERT.fromJson(json, JSONServiceURIs.class);
 		
 		boolean success = false;
-		if (delete) success = tryDeleteOldService(uris, type);
+		if (delete) { success = tryDeleteOldService(uris, type); } else { success = true; };
 		
 		if (success)
-			postService(type, serviceUri);
+			postService(type, host);
 	}
 
-	private static void postService(String type, String serviceUri) throws UnknownHostException {
-		JSONPOSTService post = new JSONPOSTService(GROUP_NAME, type, type, serviceUri);
-		HttpService.post(SERVICE_URI, post, HttpURLConnection.HTTP_CREATED);
+	private static void postService(String type, String host) {
+		
+		String url = "http://" + host + ":" + DEFAULT_PORT + "/" + type;
+		try {
+			JSONPOSTService post = new JSONPOSTService(GROUP_NAME, type, type, url);
+			String json = new Gson().toJson(post);
+			System.out.println("POST: " + json);
+			System.out.println("URI: " + SERVICE_URI);
+			HttpService.post(SERVICE_URI, post, HttpURLConnection.HTTP_CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 
 	}
 
@@ -43,7 +54,7 @@ public class RegisterService {
 		try {
 			for (String uri : uris.getServices()) {
 				System.out.println(YELLOW_HOST_URI + uri);
-				String jsonUri = HttpService.get(uri, HttpURLConnection.HTTP_OK);
+				String jsonUri = HttpService.get(YELLOW_HOST_URI + uri, HttpURLConnection.HTTP_OK);
 				JSONGETService src = CONVERT.fromJson(jsonUri, JSONGETService.class);
 
 				if (src.getService().equals(type)) {

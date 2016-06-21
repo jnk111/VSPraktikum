@@ -294,9 +294,11 @@ public class BrokerService {
 		JSONEvent event = null;
 		String type = null;
 		BankSellTransaction sell = null;
+		BankSellTransaction check = broker.getHypothecaryCredit(place, BrokerHelper.getID(owner.getId()));
 
 		try {
-			if (owner != null && owner.equals(player) && place.isStreet()) {
+			if (owner != null && owner.equals(player) && place.isStreet() && check == null) {
+				System.out.println("CHECK : " + check);
 				int amountRent = (int) place.getPrice() / 2;
 				int amountHouses = (int) (place.getCost().get(place.getHouses()) / 2);
 				int amount = amountRent + amountHouses;

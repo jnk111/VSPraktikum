@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import vs.jan.helper.brokerservice.BrokerHelper;
 import vs.jan.json.brokerservice.JSONBroker;
 import vs.jan.model.Convertable;
 import vs.jan.transaction.BankSellTransaction;
@@ -175,12 +176,12 @@ public class Broker implements Convertable<JSONBroker> {
 		this.hypothecaryCredits = hypothecaryCredits;
 	}
 
-	public BankSellTransaction getHypothecaryCredit(Estate place, String id) {
+	public BankSellTransaction getHypothecaryCredit(Estate place, String pawnid) {
 		
 		for(BankSellTransaction credit: this.hypothecaryCredits) {
 			
 			if(place.equals(credit.getPlace())
-					&& id.equals(credit.getTo())) {
+					&& pawnid.equals(BrokerHelper.getID(credit.getTo().getId()))) {
 				return credit;
 			}
 		}

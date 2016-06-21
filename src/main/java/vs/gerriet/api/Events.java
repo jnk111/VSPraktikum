@@ -27,7 +27,7 @@ public class Events extends VsApiBase {
      */
     public HttpResponse<String> addSubscription(final SubscriptionRegisterData data) {
         try {
-            return Unirest.post(this.getServiceUri() + SubscriptionListController.URI)
+            return Unirest.post("http://localhost" + SubscriptionListController.URI)
                     .header("content-type", "application/json").body(data).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));

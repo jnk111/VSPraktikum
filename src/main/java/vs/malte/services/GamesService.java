@@ -954,23 +954,23 @@ public class GamesService {
 	// -------------------- NEU -----------------------------------------------------------------------
 	private void broadCastEvent(Game game, JSONEvent event) {
 
-		String usersUri = game.getServiceList().getUsers();
-		String usersHost = usersUri.replace("/users", "");
-		Gson convert = new Gson();
-		
-		if (event != null && game != null) {
-
-			String json = vs.jan.tools.HttpService.get(usersUri, HttpURLConnection.HTTP_OK);
-
-			@SuppressWarnings("unchecked")
-			List<String> uris = convert.fromJson(json, List.class);
-
-			for (String uri : uris) {
-				String jsonUser = vs.jan.tools.HttpService.get(usersHost + uri, HttpURLConnection.HTTP_OK);
-				User user = convert.fromJson(jsonUser, User.class);
-				vs.jan.tools.HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
-			}
-		}
+//		String usersUri = game.getServiceList().getUsers();
+//		String usersHost = usersUri.replace("/users", "");
+//		Gson convert = new Gson();
+//		
+//		if (event != null && game != null) {
+//
+//			String json = vs.jan.tools.HttpService.get(usersUri, HttpURLConnection.HTTP_OK);
+//
+//			@SuppressWarnings("unchecked")
+//			List<String> uris = convert.fromJson(json, List.class);
+//
+//			for (String uri : uris) {
+//				String jsonUser = vs.jan.tools.HttpService.get(usersHost + uri, HttpURLConnection.HTTP_OK);
+//				User user = convert.fromJson(jsonUser, User.class);
+//				vs.jan.tools.HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
+//			}
+//		}
 	}
 	
 	// ------------------------------------------------------------------------------------------------

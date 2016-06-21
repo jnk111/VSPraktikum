@@ -134,6 +134,7 @@ public class GameController {
 			ladeSpielerInformationen();
 			return "";
 		});
+		Spark.awaitInitialization();
 		
 		Events events = new Events();
 		String[] eventData = {

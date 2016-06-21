@@ -155,9 +155,11 @@ public class EventDAOImpl implements EventDAO {
 				break;
 			}
 			case "player": {
-				if (!filter.get(s).matches(event.getPlayer())) {
-					matchesAll = false;
-					break;
+				if(event.getPlayer() != null){
+					if (!filter.get(s).matches(event.getPlayer())) {
+						matchesAll = false;
+						break;
+					}
 				}
 			}
 			}

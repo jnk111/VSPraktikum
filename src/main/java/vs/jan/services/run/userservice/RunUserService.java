@@ -12,12 +12,15 @@ import vs.jan.services.yellowpages.RegisterService;
 public class RunUserService {
 	public static void main(String[] args) throws UnknownHostException, UnirestException {
 		
+		boolean local = true;
 		new UserServiceRESTApi();
 		
 		Spark.awaitInitialization();
 		
-		String ip = Inet4Address.getLocalHost().getHostAddress();
-		
-		RegisterService.registerService("users", ip, true);
+		if(!local) {
+			String ip = Inet4Address.getLocalHost().getHostAddress();
+			RegisterService.registerService("users", ip, true);
+		}
+
 	}
 }

@@ -358,8 +358,14 @@ public class RestopolyClient {
 		for(Place place : getPlaces(gameID)){
 			Place placeWithWholeInformation = getPlace(place.getID());
 			if(placeWithWholeInformation.getOwner() != null && !placeWithWholeInformation.getOwner().equals("")){
-				String brokerServiceUri = brokerService.getUri();
-				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+placeWithWholeInformation.getOwner();
+				
+//				Vorher
+//				String brokerServiceUri = brokerService.getUri();
+//				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/broker", "")+placeWithWholeInformation.getOwner();
+				
+				// Nachher
+				String brokerServiceUri = gameService.getUri();
+				String brokerPlaceOwnerUri = brokerServiceUri.replaceAll("/games", "")+placeWithWholeInformation.getOwner();
 				System.out.println("BROKER OWNER URI: " + brokerPlaceOwnerUri);
 				try {
 					JsonObject ownerResponse = get(brokerPlaceOwnerUri);
@@ -498,6 +504,7 @@ public class RestopolyClient {
 		JsonObject playerRessource = get(newUri + playerID);
 		
 		PlayerResponse player = gson.fromJson(playerRessource, PlayerResponse.class);
+		System.out.println("PLAYER RESPONSE: " + player.toString());
 		PlayerInformation playerInformation = new PlayerInformation();
 		if (checkNotNull(player.getPawn())) {
 			String boardServiceUri = boardService.getUri();

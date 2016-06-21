@@ -1,5 +1,8 @@
 package vs.gerriet.api;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -27,7 +30,12 @@ public class Events extends VsApiBase {
 	 * 
 	 */
 	public String getServiceUri(){
+		
+		/**
+		 * Workaround
+		 */
 		return "http://localhost:4567";
+		//return "http://172.18.0.35:4567"; -> Eventservice Uri
 	}
 	
     /**

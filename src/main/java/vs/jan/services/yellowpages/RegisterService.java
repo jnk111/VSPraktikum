@@ -21,7 +21,7 @@ public class RegisterService {
 	private final static String SERVICE_REQ_URI = SO_NAME_URI + "/" + GROUP_NAME;
 	private final static int DEFAULT_PORT = 4567;
 
-	public static void registerService(String type, String host, boolean delete) throws UnknownHostException, UnirestException {
+	public static void registerService(String type, String host, boolean delete) throws UnknownHostException {
 		
 		String json = HttpService.get(SERVICE_REQ_URI, HttpURLConnection.HTTP_OK);
 		JSONServiceURIs uris = CONVERT.fromJson(json, JSONServiceURIs.class);

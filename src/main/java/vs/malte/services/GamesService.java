@@ -767,7 +767,7 @@ public class GamesService {
 			String type = EventTypes.MUTEX_CHANGE.getType();
 			String readyUri = nextPlayer.getUri() + "/ready";
 			String turnUri = nextPlayer.getUri() + "/turn";
-			JSONEvent mutexChangedEvent = new JSONEvent( game.getId(), type, type, type, readyUri, turnUri );
+			JSONEvent mutexChangedEvent = new JSONEvent(game.getId(), type, type, type, readyUri, turnUri);
 			postEvent(game, mutexChangedEvent);
 			broadCastEvent(game, mutexChangedEvent);
 		}
@@ -903,12 +903,12 @@ public class GamesService {
 
 		if (DEBUG_MODE)
 			System.out.println("\nErster Spieler: " + playerArray[firstPlayer].getId());
-		
+
 		// neu
 		// -----------------------------------------------------------------------------------------
 		String type = EventTypes.GAME_STARTED.getType();
 		String statusUri = game.getId() + "/status";
-		JSONEvent gameStartedEvent = new JSONEvent(game.getId(), type, type, type, statusUri, null);
+		JSONEvent gameStartedEvent = new JSONEvent(Helper.getID(game.getId()), type, type, type, statusUri, null);
 		System.out.println("GAME STARTED: " + gameStartedEvent.toString());
 		postEvent(game, gameStartedEvent);
 		broadCastEvent(game, gameStartedEvent);
@@ -923,7 +923,8 @@ public class GamesService {
 	 * nur die ID des Playerobjekts, die anderen Felder koennen leer bleiben )
 	 * 
 	 * URI: /games/:gameId/player/turn
-	 * @param game 
+	 * 
+	 * @param game
 	 */
 	// public String putPlayersTurn( Request req, Response resp )
 	// {
@@ -953,39 +954,42 @@ public class GamesService {
 	// return "";
 	// }
 
-	// -------------------- NEU -----------------------------------------------------------------------
+	// -------------------- NEU
+	// -----------------------------------------------------------------------
 	private void broadCastEvent(Game game, JSONEvent event) {
 
-//		String usersUri = game.getServiceList().getUsers();
-//		String usersHost = usersUri.replace("/users", "");
-//		Gson convert = new Gson();
-//		
-//		if (event != null && game != null) {
-//
-//			String json = vs.jan.tools.HttpService.get(usersUri, HttpURLConnection.HTTP_OK);
-//
-//			@SuppressWarnings("unchecked")
-//			List<String> uris = convert.fromJson(json, List.class);
-//
-//			for (String uri : uris) {
-//				String jsonUser = vs.jan.tools.HttpService.get(usersHost + uri, HttpURLConnection.HTTP_OK);
-//				User user = convert.fromJson(jsonUser, User.class);
-//				vs.jan.tools.HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
-//			}
-//		}
+		// String usersUri = game.getServiceList().getUsers();
+		// String usersHost = usersUri.replace("/users", "");
+		// Gson convert = new Gson();
+		//
+		// if (event != null && game != null) {
+		//
+		// String json = vs.jan.tools.HttpService.get(usersUri,
+		// HttpURLConnection.HTTP_OK);
+		//
+		// @SuppressWarnings("unchecked")
+		// List<String> uris = convert.fromJson(json, List.class);
+		//
+		// for (String uri : uris) {
+		// String jsonUser = vs.jan.tools.HttpService.get(usersHost + uri,
+		// HttpURLConnection.HTTP_OK);
+		// User user = convert.fromJson(jsonUser, User.class);
+		// vs.jan.tools.HttpService.post(user.getUri() + "/events", event,
+		// HttpURLConnection.HTTP_OK);
+		// }
+		// }
 	}
-	
+
 	private void postEvent(Game game, JSONEvent event) {
-		
+
 		String eventUri = game.getServiceList().getEvents();
 		if (event != null && game != null) {
 			vs.jan.tools.HttpService.post(eventUri, event, HttpURLConnection.HTTP_OK);
 		}
-		
-	}
-	
-	// ------------------------------------------------------------------------------------------------
 
+	}
+
+	// ------------------------------------------------------------------------------------------------
 
 	/**
 	 * URI: /games/:gameId/player/turn

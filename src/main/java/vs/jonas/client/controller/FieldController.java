@@ -1,5 +1,6 @@
 package vs.jonas.client.controller;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -27,9 +28,18 @@ public class FieldController {
 		this.place = place;
 		this.user = user;
 		this.gameID = gameID;
-		this.ui = new FieldUI(place, user.getPlayerUri().equals(place.getOwner()));
-		registriereActionListener();
-		this.ui.showUI();
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ui = new FieldUI(place, user.getPlayerUri().equals(place.getOwner()));
+					registriereActionListener();
+					ui.showUI();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Fehler. Es gibt Probleme mit der Kommunikation zwischen unseren Services.");
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	private void registriereActionListener() {

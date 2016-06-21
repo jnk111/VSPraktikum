@@ -17,6 +17,19 @@ import vs.jonas.services.json.EventData;
  */
 public class Events extends VsApiBase {
 
+	
+	@Override
+	/**
+	 * 
+	 * ACHTUNG GERRIET: Dies wird zum lokalen testen verwendet
+	 * 											 und kann auskommentiert werden
+	 * 
+	 * 
+	 */
+	public String getServiceUri(){
+		return "http://localhost";
+	}
+	
     /**
      * Adds subscription for the events specified by the given subscription
      * data.
@@ -27,7 +40,7 @@ public class Events extends VsApiBase {
      */
     public HttpResponse<String> addSubscription(final SubscriptionRegisterData data) {
         try {
-            return Unirest.post("http://localhost" + SubscriptionListController.URI)
+            return Unirest.post(this.getServiceUri() + SubscriptionListController.URI)
                     .header("content-type", "application/json").body(data).asString();
         } catch (final UnirestException ex) {
             System.err.println(ExceptionUtils.getExceptionInfo(ex, "API"));

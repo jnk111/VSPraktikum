@@ -78,5 +78,25 @@ public class PlayerController {
 			}
 		});
 		
+		ui.getBtnHypothekAufnehmen().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selectedRow = ui.getTable().getSelectedRow();
+				
+				if(selectedRow != -1){
+					PlayersPlacesTableModel model = (PlayersPlacesTableModel) ui.getTable().getModel();
+					Place place = model.getPlace(selectedRow);
+					try {
+						client.takeHypothecaryCredit(place.getBroker(),user.getPlayerUri());
+					} catch (UnirestException e1) {
+						e1.printStackTrace();
+					} 
+				} else{
+					new ShowMessageThread("Es wurde kein Grundstück ausgewählt.").start();
+				}
+			}
+		});
+		
 	}
 }

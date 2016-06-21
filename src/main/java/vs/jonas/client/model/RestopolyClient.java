@@ -371,7 +371,7 @@ public class RestopolyClient {
 				} catch (UnirestException e) {
 					e.printStackTrace();
 				}
-				}
+			}
 		}
 		
 		return places;

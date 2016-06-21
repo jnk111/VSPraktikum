@@ -63,7 +63,7 @@ public class EventNotificationQueue extends AsyncConsumerQueue<EventData> {
             for (final String targetUri : eventSubscribers) {
                 try {
                     // send notification (we don't care about the response)
-                    Unirest.post(targetUri).header("content-type", "application-json")
+                    Unirest.post(targetUri+"/events").header("content-type", "application-json")
                             .body(gson.toJson(event)).asString();
                 } catch (final Exception ex) {
                     System.out.println(ExceptionUtils.getExceptionInfo(ex, "NOTIFICATION"));

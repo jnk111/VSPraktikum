@@ -27,7 +27,7 @@ public class Events extends VsApiBase {
 	 * 
 	 */
 	public String getServiceUri(){
-		return "http://localhost";
+		return "http://localhost:4567";
 	}
 	
     /**
@@ -40,6 +40,9 @@ public class Events extends VsApiBase {
      */
     public HttpResponse<String> addSubscription(final SubscriptionRegisterData data) {
         try {
+        	System.out.println(this.getServiceUri());
+        	System.out.println(SubscriptionListController.URI);
+        	System.out.println(this.getServiceUri() + SubscriptionListController.URI);
             return Unirest.post(this.getServiceUri() + SubscriptionListController.URI)
                     .header("content-type", "application/json").body(data).asString();
         } catch (final UnirestException ex) {

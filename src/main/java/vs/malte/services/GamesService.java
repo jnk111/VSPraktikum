@@ -24,6 +24,7 @@ import vs.malte.json.GamesListDTO;
 import vs.malte.json.InitBoardDTO;
 import vs.malte.json.NewAccountDTO;
 import vs.malte.json.PawnDTO;
+import vs.jan.helper.Helper;
 import vs.jan.helper.events.EventTypes;
 import vs.jan.json.boardservice.JSONEvent;
 import vs.jan.model.User;
@@ -767,7 +768,7 @@ public class GamesService {
 			String readyUri = nextPlayer.getUri() + "/ready";
 			String turnUri = nextPlayer.getUri() + "/turn";
 			JSONEvent mutexChangedEvent = new JSONEvent( game.getId(), type, type, type, readyUri, turnUri );
-			HttpService.post( game.getServiceList().getEvents(), mutexChangedEvent );
+			postEvent(game, mutexChangedEvent);
 			broadCastEvent(game, mutexChangedEvent);
 		}
 		// -------------------------------------------------------------------------
@@ -908,7 +909,8 @@ public class GamesService {
 		String type = EventTypes.GAME_STARTED.getType();
 		String statusUri = game.getId() + "/status";
 		JSONEvent gameStartedEvent = new JSONEvent(game.getId(), type, type, type, statusUri, null);
-		HttpService.post(game.getServiceList().getEvents(), gameStartedEvent);
+		System.out.println("GAME STARTED: " + gameStartedEvent.toString());
+		postEvent(game, gameStartedEvent);
 		broadCastEvent(game, gameStartedEvent);
 		// -----------------------------------------------------------------------------------------
 	}
@@ -971,6 +973,15 @@ public class GamesService {
 //				vs.jan.tools.HttpService.post(user.getUri() + "/events", event, HttpURLConnection.HTTP_OK);
 //			}
 //		}
+	}
+	
+	private void postEvent(Game game, JSONEvent event) {
+		
+		String eventUri = game.getServiceList().getEvents();
+		if (event != null && game != null) {
+			vs.jan.tools.HttpService.post(eventUri, event, HttpURLConnection.HTTP_OK);
+		}
+		
 	}
 	
 	// ------------------------------------------------------------------------------------------------

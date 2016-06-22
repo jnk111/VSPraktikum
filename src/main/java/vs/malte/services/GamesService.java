@@ -2,7 +2,6 @@ package vs.malte.services;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +26,6 @@ import vs.malte.json.PawnDTO;
 import vs.jan.helper.Helper;
 import vs.jan.helper.events.EventTypes;
 import vs.jan.json.boardservice.JSONEvent;
-import vs.jan.model.User;
 import vs.malte.json.AllPlayersArrayDTO;
 import vs.malte.json.AllPlayersDTO;
 import vs.malte.json.ServiceArray;
@@ -767,7 +765,7 @@ public class GamesService {
 			String type = EventTypes.MUTEX_CHANGE.getType();
 			String readyUri = nextPlayer.getUri() + "/ready";
 			String turnUri = nextPlayer.getUri() + "/turn";
-			JSONEvent mutexChangedEvent = new JSONEvent(game.getId(), type, type, type, readyUri, turnUri);
+			JSONEvent mutexChangedEvent = new JSONEvent(Helper.getID(game.getId()), type, type, type, readyUri, turnUri);
 			postEvent(game, mutexChangedEvent);
 			broadCastEvent(game, mutexChangedEvent);
 		}

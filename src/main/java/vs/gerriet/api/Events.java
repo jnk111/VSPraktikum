@@ -34,8 +34,8 @@ public class Events extends VsApiBase {
 		/**
 		 * Workaround
 		 */
-		return "http://localhost:4567";
-		//return "http://172.18.0.35:4567"; -> Eventservice Uri
+		//return "http://localhost:4567";
+		return "http://172.18.0.35:4567"; //-> Eventservice Uri
 	}
 	
     /**
